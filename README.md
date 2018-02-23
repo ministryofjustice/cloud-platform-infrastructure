@@ -18,7 +18,11 @@ git clone git@github.com:ministryofjustice/kubernetes-investigations.git
 
 ### 2. Create a branch
 
-e.g. `git checkout -b spike/monitoring-investigation`
+For example:
+
+```
+git checkout -b spike/monitoring-investigation
+```
 
 I used `spike/monitoring-investigation` as an example of a pattern for branch names. You can come up with your own branch name that matches the pattern (e.g. `feature/a-new-monitoring-stack` or `idea/deploy-using-bash-scripts`).
 
@@ -41,7 +45,6 @@ other members of the team would know how to add code to the repo.
 I aimed to make the instructions clear and simple to follow. I also
 wanted to make sure that people left good context for the contributions
 that they were making, so I added quite a lot about commit messages.
-
 ```
 
 ### 5. Raise a pull request
@@ -50,7 +53,6 @@ Raise a pull request by pushing your branch to the GitHub:
 
 ```
 git push origin master spike/monitoring-investigation
-
 ```
 
 and then navigating to the repo in GitHub and using the create a new pull request button.
