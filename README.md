@@ -8,7 +8,7 @@ We will also document some of the thinking behind how the code is written so tha
 
 ## How to add your examples
 
-Generally speaking, follow the Ministry of Justice's [GitHub good practice]().
+Generally speaking, follow the Ministry of Justice's [Using git](https://ministryofjustice.github.io/technical-guidance/guides/using-git/#commit-locally-regularly) guide.
 
 ### 1. Clone the repo
 
