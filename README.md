@@ -64,3 +64,35 @@ If you can't find anyone add Kerin or Kalbir.
 ### 6. *Optional* Add some information to the confluence docs
 
 If there is more information that you think would be useful add it into confluence in our Kubernetes section (sorry for those of you reading this outside of our team).
+
+## Sandbox Cluster
+
+A sandbox cluster for experimentation has been created - `cloud-platforms-sandbox.k8s.integration.dsd.io` - using Terraform and Kops.
+
+### Terraform
+
+The `terraform/` directory contains Terraform resources to create DNS zones for the sandbox cluster, and an S3 bucket for Kops state store. To make changes:
+
+```
+$ cd terraform
+$ terraform init
+$ terraform apply
+```
+
+### Kops
+
+The `kops/` directory contains the cluster specification, including an additional IAM policy to allow Route53 management, and config for OIDC authentication and RBAC. To make changes, edit `kops/sandboc_cluster.yaml` and:
+
+```
+$ cd kops
+$ kops replace -f sandbox_cluster.yaml
+$ kops cluster update
+$ kops cluster update --yes
+```
+
+If your changes require changes to instances or launch configs, you will also need to perform a rolling update to replace instances:
+
+```
+$ kops cluster rolling-update
+$ kops cluster rolling-update --yes
+```
