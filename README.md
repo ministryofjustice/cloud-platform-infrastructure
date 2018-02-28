@@ -38,12 +38,12 @@ If you need to add more documentation than seems appropriate for a readme, add a
 
 ### 5. Commit your code
 
-Write a commit message that might be useful for people who come to the code to find out what it is for. This might be helpful: [How to write a git commit message](https://chris.beams.io/posts/git-commit/).
+Write a commit message that might be useful for people who come to the code to find out why you've made the change. This might be helpful: [How to write a git commit message](https://chris.beams.io/posts/git-commit/).
 
 Here's an example:
 
 ```
-Added contributing instructions
+Add contributing instructions
 
 I added some instructions to the repo in a README file so that
 other members of the team would know how to add code to the repo.
@@ -53,12 +53,14 @@ wanted to make sure that people left good context for the contributions
 that they were making, so I added quite a lot about commit messages.
 ```
 
+The first (subject) line should be written so that it completes the sentence "If applied, this commit will…", and not end with a full stop.
+
 ### 6. Raise a pull request
 
 Raise a pull request by pushing your branch to the GitHub:
 
 ```
-git push origin master spike/monitoring-investigation
+git push origin spike/monitoring-investigation
 ```
 
 and then navigating to the repo in GitHub and using the create a new pull request button.
