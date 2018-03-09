@@ -30,14 +30,20 @@ I used `spike/monitoring-investigation` as an example of a pattern for branch na
 
 Think about where to put it &mdash; perhaps in a directory with a useful name (e.g. "prometheus") and collect together similar things (e.g. put "prometheus" directory under a "monitoring" directory).
 
-### 4. Commit your code
+### 4. Document what you've done
 
-Write a commit message that might be useful for people who come to the code to find out what it is for. This might be helpful: [How to write a git commit message](https://chris.beams.io/posts/git-commit/).
+Add (or add to) a `README.md` in the aforementioned folder describing the work you've done, why you've done it, how people can use it, or what it might mean.
+
+If you need to add more documentation than seems appropriate for a readme, add a `docs` directory somewhere that makes sense, and create `.md` files with names describing what you're documenting.
+
+### 5. Commit your code
+
+Write a commit message that might be useful for people who come to the code to find out why you've made the change. This might be helpful: [How to write a git commit message](https://chris.beams.io/posts/git-commit/).
 
 Here's an example:
 
 ```
-Added contributing instructions
+Add contributing instructions
 
 I added some instructions to the repo in a README file so that
 other members of the team would know how to add code to the repo.
@@ -47,12 +53,14 @@ wanted to make sure that people left good context for the contributions
 that they were making, so I added quite a lot about commit messages.
 ```
 
-### 5. Raise a pull request
+The first (subject) line should be written so that it completes the sentence "If applied, this commit will…", and not end with a full stop.
+
+### 6. Raise a pull request
 
 Raise a pull request by pushing your branch to the GitHub:
 
 ```
-git push origin master spike/monitoring-investigation
+git push origin spike/monitoring-investigation
 ```
 
 and then navigating to the repo in GitHub and using the create a new pull request button.
@@ -60,10 +68,6 @@ and then navigating to the repo in GitHub and using the create a new pull reques
 When you do this you have the option of adding a reviewer. It's good to share your pull request for review so add a reviewer. Let the reviewer know that you are adding them so they have a chance to plan some time to do the review.
 
 If you can't find anyone add Kerin or Kalbir.
-
-### 6. *Optional* Add some information to the confluence docs
-
-If there is more information that you think would be useful add it into confluence in our Kubernetes section (sorry for those of you reading this outside of our team).
 
 ## Sandbox Cluster
 
