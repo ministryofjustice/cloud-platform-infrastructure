@@ -5,10 +5,6 @@ data "aws_route53_zone" "integration" {
 
 
 # parent DNS zone for all clusters
-locals {
-  k8s_domain_name = "${var.k8s_domain_prefix}.${var.base_domain_name}"
-}
-
 resource "aws_route53_zone" "k8s" {
   name = "${local.k8s_domain_name}."
 }
@@ -26,10 +22,6 @@ resource "aws_route53_record" "k8s_ns" {
 
 
 # DNS zone for sandbox cluster
-locals {
-  sandbox_domain_name = "${var.sandbox_domain_prefix}.${local.k8s_domain_name}"
-}
-
 resource "aws_route53_zone" "sandbox" {
   name = "${local.sandbox_domain_name}."
 }
