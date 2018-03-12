@@ -9,3 +9,7 @@ variable "k8s_domain_prefix" {
 variable "sandbox_domain_prefix" {
   default = "cloud-platforms-sandbox"
 }
+
+variable "non-prod_domain_prefix" {
+  default = "non-production"
+}
