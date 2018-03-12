@@ -10,6 +10,6 @@ variable "sandbox_domain_prefix" {
   default = "cloud-platforms-sandbox"
 }
 
-variable "non-prod_domain_prefix" {
+variable "non_prod_domain_prefix" {
   default = "non-production"
 }

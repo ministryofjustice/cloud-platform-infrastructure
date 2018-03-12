@@ -39,12 +39,12 @@ resource "aws_route53_record" "sandbox_ns" {
 
 # DNS zone for non-prod laa calculator
 resource "aws_route53_zone" "non-prod" {
-  name = "${local.non-prod_domain_name}."
+  name = "${local.non_prod_domain_name}."
 }
 
 resource "aws_route53_record" "non-prod_ns" {
   zone_id = "${aws_route53_zone.k8s.zone_id}"
-  name    = "${local.non-prod_domain_name}"
+  name    = "${local.non_prod_domain_name}"
   type    = "NS"
   ttl     = "30"
 

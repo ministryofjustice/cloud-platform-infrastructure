@@ -4,7 +4,7 @@ resource "aws_acm_certificate" "apps" {
 }
 
 resource "aws_acm_certificate" "non-prod" {
-  domain_name = "*.apps.${local.non-prod_domain_name}"
+  domain_name = "*.apps.${local.non_prod_domain_prefix}"
   validation_method = "DNS"
 }
 
@@ -16,7 +16,7 @@ resource "aws_route53_record" "apps_cert_validation" {
   ttl = 60
 }
 
-resource "aws_route53_record" "non-prod_cert_validation" {
+resource "aws_route53_record" "non_prod_cert_validation" {
   name = "${aws_acm_certificate.non-prod.domain_validation_options.0.resource_record_name}"
   type = "${aws_acm_certificate.non-prod.domain_validation_options.0.resource_record_type}"
   zone_id = "${aws_route53_zone.non-prod.id}"
