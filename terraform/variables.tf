@@ -11,5 +11,5 @@ variable "sandbox_domain_prefix" {
 }
 
 variable "nonprod_domain_prefix" {
-  default = "non-production-cluster"
+  default = "non-production"
 }
