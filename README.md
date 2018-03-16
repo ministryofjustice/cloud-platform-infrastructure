@@ -103,43 +103,61 @@ $ kops cluster rolling-update --yes
 
 ## How to create a new cluster
 
-### 1. To create a new cluster, you must add additional resources in the following terraform files:
+1. To create a new cluster, you must add additional resources in the following terraform files:
 ```
 terraform/acm.tf
 terraform/dns.tf
 terraform/main.tf
 terraform/variables.tf
+terraform/s3.tf
 ```
-### 2. Apply the terraform using:
+2. Apply the terraform using:
 ```
 $ cd terraform
 $ terraform init
 $ terraform plan
 $ terraform apply
 ```
-### 3. Set environment variables.
+3. Set environment variables.
 ``` 
 $ export AWS_PROFILE=mojds-platforms-integration
 $ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
 $ export CLUSTER_NAME=<clusterName>
 ```
-### 4. Create a cluster configuration file in the kops directory `kops/CLUSTER_NAME.yaml`, ensuring you define your cluster name, new hosted zone and state store in the file. (I recommend copying an existing file in this folder and amending specifics)
+4. Create a cluster configuration file in the kops directory `kops/CLUSTER_NAME.yaml`, ensuring you define your cluster name, new hosted zone and state store in the file. (I recommend copying an existing file in this folder and amending specifics)
 
-### 5. Create cluster specification in kops state store.
+5. Create cluster specification in kops state store.
 ```
 $ kops create -f ${CLUSTER_NAME}.yaml
 ```
-### 6. Create SSH public key in kops state store.
+6. Create SSH public key in kops state store.
 ```
 $ kops create secret --name ${CLUSTER_NAME}.integration.dsd.io sshpublickey admin -i ssh/${CLUSTER_NAME}_kops_id_rsa.pub
 ```
-### 7. Create cluster resources in AWS.
+7. Create cluster resources in AWS.
 aka update cluster in AWS according to the yaml specification:
 ```
 $ kops update cluster ${CLUSTER_NAME}.integration.dsd.io --yes
 ```
 When complete (takes a few minutes), you can check the progress with:
-'''
+```
 $ kops validate cluster
-'''
+```
 Once it reports Your cluster `${CLUSTER_NAME}.integration.dsd.io is ready` you can proceed to use kubectl to interact with the cluster.
+
+### How to delete a cluster
+
+1. To delete a cluster you must first export the following:
+```
+$ export AWS_PROFILE=mojds-platforms-integration
+$ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
+```
+2. Then run the following command (this will not delete the cluster).
+```
+$ kops delete cluster --name <clusterName>
+```
+3. Confirm you would like to delete the cluster with a --yes.
+```
+$ kops delete cluster --name <clusterName>
+```
+This takes a while but will eventually delete.
