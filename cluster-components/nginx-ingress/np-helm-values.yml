@@ -17,7 +17,7 @@ controller:
       external-dns.alpha.kubernetes.io/hostname: "*.apps.non-production.k8s.integration.dsd.io"
 
       # Attach pre-existing ACM cert
-      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:926803513772:certificate/5fd9476b-5070-4899-a287-81db9cccbba7"
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:926803513772:certificate/3363ffa3-18ee-439c-9592-698c5702404b"
 
       # Enable ELB SSL protocol on port 443 only (default is all ports)
       service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
