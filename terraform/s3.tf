@@ -6,3 +6,12 @@ resource "aws_s3_bucket" "kops_state_store" {
     enabled = true
   }
 }
+# To allow us to store kubeconfig data for pipeline
+resource "aws_s3_bucket" "cluster_keystore" {
+  bucket = "non-production-cluster-keystore"
+  acl    = "private"
+
+  versioning {
+    enabled = true
+  }
+}

@@ -14,4 +14,5 @@ provider "aws" {
 locals {
   k8s_domain_name = "${var.k8s_domain_prefix}.${var.base_domain_name}"
   sandbox_domain_name = "${var.sandbox_domain_prefix}.${local.k8s_domain_name}"
+  nonprod_domain_name = "${var.nonprod_domain_prefix}.${local.k8s_domain_name}"
 }

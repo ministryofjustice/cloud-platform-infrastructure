@@ -36,3 +36,19 @@ resource "aws_route53_record" "sandbox_ns" {
     "${aws_route53_zone.sandbox.name_servers}"
   ]
 }
+
+# DNS zone for nonprod cluster
+resource "aws_route53_zone" "nonprod" {
+  name = "${local.nonprod_domain_name}."
+}
+
+resource "aws_route53_record" "nonprod_ns" {
+  zone_id = "${aws_route53_zone.k8s.zone_id}"
+  name    = "${local.nonprod_domain_name}"
+  type    = "NS"
+  ttl     = "30"
+
+  records = [
+    "${aws_route53_zone.nonprod.name_servers}"
+  ]
+}
