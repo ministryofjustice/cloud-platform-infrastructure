@@ -1,5 +1,5 @@
 jobs:
-- name: hello-raz
+- name: say-hello
   plan:
   - task: say-hello
     config:
@@ -9,4 +9,4 @@ jobs:
         source: {repository: ubuntu}
       run:
         path: echo
-        args: ["Hello, world!"]
+        args: ["Hello"]
