@@ -191,8 +191,8 @@ web:
   ##
   resources:
     requests:
-      cpu: "100m"
-      memory: "128Mi"
+      cpu: "1024m"
+      memory: "1024Mi"
 
   ## Additional affinities to add to the web pods.
   ##
@@ -300,8 +300,8 @@ worker:
   ##
   resources:
     requests:
-      cpu: "1024m"
-      memory: "1024Mi"
+      cpu: "2048m"
+      memory: "2048Mi"
 
   ## Configure additional environment variables for the
   ## worker container(s)
@@ -644,8 +644,8 @@ secrets:
 
   ## Secrets for GitHub OAuth.
   ##
-  githubAuthClientId: 
-  githubAuthClientSecret: 
+  githubAuthClientId: 9d4...
+  githubAuthClientSecret: 936...
 
   ## Secrets for GitLab OAuth.
   ##
