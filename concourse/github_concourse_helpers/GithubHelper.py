@@ -29,17 +29,17 @@ class GithubHelper(object):
         f = r.get_file_contents('/Concoursefile.yaml', ref=branch)
       except:
         return responseHelper.create_response('you need a Concoursefile.yaml', 400)
-      c = self.post_to_concourse(f.decoded_content, repo, responseHelper)
+      c = self.post_to_concourse(f.decoded_content, repo, branch, responseHelper)
       if(c):
         return c
       return responseHelper.create_response('this was a push to {} in {}'.format(branch,repo), 200)
     return responseHelper.create_response("we don't do event {} yet".format(event), 501)
 
-  def post_to_concourse(self, yaml, repo, responseHelper):
+  def post_to_concourse(self, yaml, repo, branch, responseHelper):
     with tempfile.NamedTemporaryFile() as temp:
       temp.write(yaml)
       temp.flush()
-      out = subprocess.getoutput("echo y | fly -t hello set-pipeline -p {} -c {}".format(repo, temp.name))
+      out = subprocess.getoutput("echo y | fly -t hello set-pipeline -p {}-{} -c {} --var \"the-private-key=$(cat concourse)\"".format(repo, branch, temp.name))
       print(out)
       temp.close()
     return responseHelper.create_response('posted to Concourse', 200)
