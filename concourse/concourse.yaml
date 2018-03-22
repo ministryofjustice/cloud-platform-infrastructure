@@ -191,7 +191,7 @@ web:
   ##
   resources:
     requests:
-      cpu: "1024m"
+      cpu: "512m"
       memory: "1024Mi"
 
   ## Additional affinities to add to the web pods.
@@ -300,7 +300,7 @@ worker:
   ##
   resources:
     requests:
-      cpu: "2048m"
+      cpu: "512m"
       memory: "2048Mi"
 
   ## Configure additional environment variables for the
