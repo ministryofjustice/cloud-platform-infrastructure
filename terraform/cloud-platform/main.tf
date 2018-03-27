@@ -40,9 +40,3 @@ module "cluster_ssl" {
     cluster_base_domain_name = "${local.cluster_base_domain_name}"
     dns_zone_id = "${module.cluster_dns.cluster_dns_zone_id}"
 }
-
-module "kops_state" {
-    source = "../modules/kops_state"
-
-    cluster_name = "${local.cluster_name}"
-}
