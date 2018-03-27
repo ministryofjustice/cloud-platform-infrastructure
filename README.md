@@ -167,38 +167,31 @@ $ kops cluster rolling-update --yes
 
 ## How to create a new cluster
 
-1. To create a new cluster, you must add additional resources in the following terraform files:
+1. To create a new cluster, you must create a new terraform workspace and apply the `cloud-platform` resources:
 ```
-terraform/acm.tf
-terraform/dns.tf
-terraform/main.tf
-terraform/variables.tf
-terraform/s3.tf
-```
-2. Apply the terraform using:
-```
-$ cd terraform
+$ cd terraform/cloud-platform
 $ terraform init
+$ terraform workspace new my-new-env-name
 $ terraform plan
 $ terraform apply
 ```
-3. Set environment variables.
+2. Set environment variables.
 ``` 
 $ export AWS_PROFILE=mojds-platforms-integration
 $ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
 $ export CLUSTER_NAME=<clusterName>
 ```
-4. Create a cluster configuration file in the kops directory `kops/CLUSTER_NAME.yaml`, ensuring you define your cluster name, new hosted zone and state store in the file. (I recommend copying an existing file in this folder and amending specifics)
+3. Create a cluster configuration file in the kops directory `kops/CLUSTER_NAME.yaml`, ensuring you define your cluster name, new hosted zone and state store in the file. (I recommend copying an existing file in this folder and amending specifics)
 
-5. Create cluster specification in kops state store.
+4. Create cluster specification in kops state store.
 ```
 $ kops create -f ${CLUSTER_NAME}.yaml
 ```
-6. Create SSH public key in kops state store.
+5. Create SSH public key in kops state store.
 ```
 $ kops create secret --name ${CLUSTER_NAME}.integration.dsd.io sshpublickey admin -i ssh/${CLUSTER_NAME}_kops_id_rsa.pub
 ```
-7. Create cluster resources in AWS.
+6. Create cluster resources in AWS.
 aka update cluster in AWS according to the yaml specification:
 ```
 $ kops update cluster ${CLUSTER_NAME}.integration.dsd.io --yes
