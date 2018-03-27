@@ -6,6 +6,80 @@ As we complete spikes or investigations into how we want to run Kubernetes we ca
 
 We will also document some of the thinking behind how the code is written so that it is available to people who are new to the team or ourselves when we forget why we are doing it.
 
+## Terraform and Cloud Platform environment management
+
+Terraform is used to manage all AWS resources, except those managed by [Kops](https://github.com/kubernetes/kops/), with Terraform resources stored in the `terraform/` directory.
+
+Terraform resources are split into two directories with matching state objects in S3, `terraform/global-resources` and `terraform/cloud-platform`:
+
+- `global-resources` contains 'global' AWS resources that are not part of specific clusters or platform environments - e.g. parent DNS zone, S3 buckets for Kops and Terraform state storage for `cloud-platform` environments
+- `cloud-platform` contains resources for the Cloud Platform environments - cluster DNS, and ACM certificates with DNS validation, and soon VPC, subnets etc
+
+As 'global' and 'platform' resources are defined with separate state backends, `terraform plan` and `apply` must be run separately:
+
+```
+$ cd terraform/global-resources
+$ terraform plan
+Refreshing Terraform state in-memory prior to plan...
+...
+$ cd ../cloud-platform
+$ terraform plan
+Refreshing Terraform state in-memory prior to plan...
+...
+```
+
+`cloud-platform` resources can refer to output values of `global-resources` by using the [Terraform remote state data resource](https://www.terraform.io/docs/providers/terraform/d/remote_state.html):
+
+```
+data "terraform_remote_state" "global" {
+    backend = "s3"
+    config {
+        bucket = "moj-cp-k8s-investigation-global-terraform"
+        region = "eu-west-1"
+        key = "terraform.tfstate"
+    }
+}
+
+module "cluster_dns" {
+    source = "../modules/cluster_dns"
+
+    parent_zone_id = "${data.terraform_remote_state.global.k8s_zone_id}"
+}
+```
+
+This structure allows us to reduce the blast radius of errors when compared to  a single state store, and also allows us to separate infrastructure into multiple logical areas, with different access controls for each.
+
+### Cloud Platform environments
+
+[Terraform workspaces](https://www.terraform.io/docs/state/workspaces.html) are used to manage multiple instance of the `cloud-platform` resources. To see the workspaces/environments that currently exist:
+
+```
+$ terraform workspace list                                                                                                       
+* default
+  cloud-platforms-sandbox
+  non-production
+```
+
+**Note:** the default workspace is not used.
+
+To select a workspace/environment:
+
+```
+$ terraform workspace select cloud-platforms-sandbox
+```
+
+The selected Terraform workspace is [interpolated](https://www.terraform.io/docs/state/workspaces.html#current-workspace-interpolation) in Terraform resource declarations to create per-environment AWS resources, e.g.:
+
+```
+locals {
+    cluster_name = "${terraform.workspace}"
+}
+```
+
+## Terraform modules
+
+All `cloud-platform` resources are defined as Terraform modules, stored in `terraform/modules`, and any new resources should also be managed as modules, and imported into `terraform/cloud-platforms/main.tf`. This model allows us to encapsulate multiple resources as logical blocks, and will (later) allow us to manage and version modules separately from the main repository.
+
 ## How to add your examples
 
 Generally speaking, follow the Ministry of Justice's [Using git](https://ministryofjustice.github.io/technical-guidance/guides/using-git/#commit-locally-regularly) guide.
@@ -72,16 +146,6 @@ If you can't find anyone add Kerin or Kalbir.
 ## Sandbox Cluster
 
 A sandbox cluster for experimentation has been created - `cloud-platforms-sandbox.k8s.integration.dsd.io` - using Terraform and Kops.
-
-### Terraform
-
-The `terraform/` directory contains Terraform resources to create DNS zones for the sandbox cluster, and an S3 bucket for Kops state store. To make changes:
-
-```
-$ cd terraform
-$ terraform init
-$ terraform apply
-```
 
 ### Kops
 
