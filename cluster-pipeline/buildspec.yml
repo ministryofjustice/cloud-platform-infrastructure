@@ -36,20 +36,11 @@ phases:
       - terraform remote config -backend=s3 -backend-config="region=$region" -backend-config="bucket=$(bin/get_state_store_name.py)" -backend-config="key=$(bin/get_fabric_name.py).tfstate"
       - terraform get -update=true
       - terraform plan -var-file=config.json -out plan.out
+      - terraform apply plan.out
 
-terraform apply plan.out
-
-
-#      - "kubectl config get-contexts"
-#      - "kubectl config use-context non-production.k8s.integration.dsd.io"
-#      - "kubectl cluster-info"
-#      - "kubectl get namespaces"
-#      - "kubectl get pods --all-namespaces"
-#      - "which python3"
-#      - "python3 namespace.py"
 #  post_build:
 #    commands:
-#       - "ls namespaces/ | while read file; do helm init --service-account $file-tiller --tiller-namespace $file; done"
+#       - ""
 
 #artifacts:
   #files:
