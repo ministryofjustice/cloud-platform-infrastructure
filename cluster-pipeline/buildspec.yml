@@ -1,16 +1,18 @@
 version: 0.2
 
-#env:
-  #variables:
-     # key: "value"
-  #parameter-store:
-     # key: "value"
+env:
+  variables:
+     region: "eu-west-1"
+     domain: "k8s.kops.integration.dsd.io"
+
+#  parameter-store:
+#     key: "value"
 
 phases:
   install:
     commands:
        - apt update
-       - apt install -y awscli git python3 python3-pip unzip
+       - apt install -y awscli git python3 unzip
        - easy_install boto3
        - wget https://github.com/kubernetes/kops/releases/download/1.8.0/kops-linux-amd64
        - chmod +x kops-linux-amd64 && mv kops-linux-amd64 /usr/local/bin/kops
@@ -23,19 +25,19 @@ phases:
   pre_build:
     commands:
       - alias python=python3
-      - aws --version
-      - python --version
-      - terraform --version
-      - "chmod +x cluster-pipeline/bin/*"
-#      - "kubectl version"
-#      - "kops version"
-
+      - cd cluster-pipeline/
   build:
     commands:
-      - cd cluster-pipeline/
-      - bin/generate_json.sh test-cluster k8s.kops.integration.dsd.io eu-west-1 
-      - bin/configure_availability_zones.py eu-west-1
+# todo for each
+      - bin/generate_json.sh test-cluster $domain $region
+      - bin/configure_availability_zones.py $region
       - cat config.json
+      - bin/setup_state_store.py
+      - terraform remote config -backend=s3 -backend-config="region=$region" -backend-config="bucket=$(bin/get_state_store_name.py)" -backend-config="key=$(bin/get_fabric_name.py).tfstate"
+      - terraform get -update=true
+      - terraform plan -var-file=config.json -out plan.out
+
+terraform apply plan.out
 
 
 #      - "kubectl config get-contexts"
