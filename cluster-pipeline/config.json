@@ -1,0 +1,10 @@
+{
+    "domain_name": "k8s.kops.integration.dsd.io",
+    "fabric_availability_zones": [
+        "eu-west-1a",
+        "eu-west-1b",
+        "eu-west-1c"
+    ],
+    "fabric_name": "test-cluster",
+    "fabric_region": "eu-west-1"
+}
