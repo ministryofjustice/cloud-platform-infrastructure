@@ -25,6 +25,7 @@ phases:
   pre_build:
     commands:
       - alias python=python3
+      - chmod +x cluster-pipeline/bin/*
       - cd cluster-pipeline/
   build:
     commands:
