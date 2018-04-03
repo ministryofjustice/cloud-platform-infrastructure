@@ -14,6 +14,9 @@ phases:
        - apt update
        - apt install -y awscli git python3 unzip
        - easy_install boto3
+       - whereis easy_install
+       - whereis python
+       - whereis python3
        - wget https://github.com/kubernetes/kops/releases/download/1.8.0/kops-linux-amd64
        - chmod +x kops-linux-amd64 && mv kops-linux-amd64 /usr/local/bin/kops
        - curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl
@@ -24,8 +27,6 @@ phases:
 
   pre_build:
     commands:
-      - whereis python
-      - whereis python3
       - alias python=python3
       - chmod +x cluster-pipeline/bin/*
       - cd cluster-pipeline/
