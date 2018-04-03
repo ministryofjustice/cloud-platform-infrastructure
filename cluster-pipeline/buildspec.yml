@@ -38,6 +38,13 @@ phases:
       - terraform get -update=true
       - terraform plan -var-file=config.json -out plan.out
       - terraform apply plan.out
+      - ssh-keygen -t rsa -b 4096 -N '' -C "kubernetes-admin" -f "keys/kubernetes-admin"
+      - mv keys/kubernetes-admin ~/.ssh/kubernetes-admin
+      - chmod 600 ~/.ssh/kubernetes-admin
+      - kops create cluster --zones="$(terraform output main_network_availability_zones_csv | tr -d '\n')" --vpc="$(terraform output main_network_id | tr -d '\n')" --network-cidr="$(terraform output main_network_cidr_block | tr -d '\n')" --networking="kubenet" --ssh-public-key='keys/kubernetes-admin.pub' --target="terraform" --name="$(bin/get_fabric_fqdn.py)” —state="s3://$(bin/get_state_store_name.py)" --out=kubernetes
+      - cd terraform
+      - terraform remote config -backend=s3 -backend-config="region=us-east-2" -backend-config="bucket=$(cd .. && bin/get_state_store_name.py)" -backend-config="key=$(cd .. && bin/get_fabric_name.py)-kubernetes.tfstate"
+
 
 #  post_build:
 #    commands:

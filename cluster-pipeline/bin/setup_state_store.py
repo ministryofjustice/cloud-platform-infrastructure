@@ -17,13 +17,16 @@ if not config.get('domain_name'):
 bucket_name = "{0}-state".format(re.sub("[\W\d]+", "-", config.get('domain_name').lower().strip()))
 
 s3 = boto3.client('s3')
-bucket = s3.create_bucket(Bucket=bucket_name, ACL='private',
-                          CreateBucketConfiguration=dict(LocationConstraint=config["fabric_region"]))
-s3.put_bucket_versioning(
+try:
+  bucket = s3.create_bucket(Bucket=bucket_name, ACL='private', CreateBucketConfiguration=dict(LocationConstraint=config["fabric_region"]))
+
+  s3.put_bucket_versioning(
     Bucket=bucket_name,
     VersioningConfiguration={
         'Status': 'Enabled'
-    }
-)
+      }
+  )
+except:
+  print("Bucket already exists")
 
 print("Bucket: {}".format(bucket_name))

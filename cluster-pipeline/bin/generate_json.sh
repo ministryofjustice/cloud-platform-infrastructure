@@ -1,7 +1,7 @@
 #!/bin/bash
 
-FABRIC_NAME=$2
-DOMAIN_NAME=$1
+FABRIC_NAME=$1
+DOMAIN_NAME=$2
 FABRIC_REGION=$3
 
 if [ $# -ne 3 ]
