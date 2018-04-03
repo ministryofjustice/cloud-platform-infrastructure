@@ -28,19 +28,8 @@ resource "aws_iam_policy" "codebuild_policy" {
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": "s3:*",
+      "Action": "*",
       "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Resource": [
-        "*"
-      ],
-      "Action": [
-        "logs:CreateLogGroup",
-        "logs:CreateLogStream",
-        "logs:PutLogEvents"
-      ]
     }
   ]
 }
