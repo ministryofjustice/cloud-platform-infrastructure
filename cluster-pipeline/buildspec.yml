@@ -26,6 +26,7 @@ phases:
       - aws --version
       - python --version
       - terraform --version
+      - "chmod +x cluster-pipeline/bin/*"
 #      - "kubectl version"
 #      - "kops version"
 
