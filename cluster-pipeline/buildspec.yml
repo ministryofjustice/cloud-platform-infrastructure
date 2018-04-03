@@ -32,7 +32,10 @@ phases:
 
   build:
     commands:
-      - cluster-pipeline/bin/configure_availability_zones.py eu-west-1
+      - cd cluster-pipeline/
+      - bin/generate_json.sh test-cluster k8s.kops.integration.dsd.io eu-west-1 
+      - bin/configure_availability_zones.py eu-west-1
+      - cat config.json
 
 
 #      - "kubectl config get-contexts"
