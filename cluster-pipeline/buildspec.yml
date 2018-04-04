@@ -58,11 +58,11 @@ phases:
 #       - ""
 
 #artifacts:
-  #files:
-    # - location
-  #discard-paths: yes
-  #base-directory: location
+#  files:
+#     - location
+#  discard-paths: yes
+#  base-directory: location
 
 #cache:
-  #paths:
-    # - paths
+#  paths:
+#     - paths
