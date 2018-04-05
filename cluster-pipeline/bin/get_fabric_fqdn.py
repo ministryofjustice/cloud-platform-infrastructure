@@ -21,6 +21,9 @@ if not config.get('domain_name'):
 
     exit(1)
 
-fabric_name = re.sub("[\W\d]+", "-", config.get('fabric_name').lower().strip())
+#fabric_name = re.sub("[\W\d]+", "-", config.get('fabric_name').lower().strip())
+fabric_name = config.get('fabric_name').lower().strip()
+
+
 fqdn = fabric_name + "." + config["domain_name"]
 print(fqdn, end='')
