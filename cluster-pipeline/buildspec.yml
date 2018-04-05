@@ -30,7 +30,7 @@ phases:
   build:
     commands:
 # todo for each
-      - bin/generate_json.sh test-cluster-2 $domain $region
+      - bin/generate_json.sh test-cluster2 $domain $region
       - bin/configure_availability_zones.py $region
       - cat config.json
       - bin/setup_state_store.py
@@ -42,9 +42,18 @@ phases:
       - mkdir ~/.ssh/ && chmod 700 ~/.ssh/
       - mv keys/kubernetes-admin ~/.ssh/kubernetes-admin
       - chmod 600 ~/.ssh/kubernetes-admin
-      - if ! kops create cluster --zones="$(terraform output main_network_availability_zones_csv | tr -d '\n')" --vpc="$(terraform output main_network_id | tr -d '\n')" --network-cidr="$(terraform output main_network_cidr_block | tr -d '\n')" --networking="kubenet" --ssh-public-key='keys/kubernetes-admin.pub' --target="terraform" --name="$(bin/get_fabric_fqdn.py)" --state="s3://$(bin/get_state_store_name.py)" --out=kubernetes; then echo 'last command failed'; fi
-      - cd terraform
-      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$(cd .. && bin/get_state_store_name.py)" -backend-config="key=$(cd .. && bin/get_fabric_name.py)-kubernetes.tfstate"
+#
+      - zones="$(terraform output main_network_availability_zones_csv | tr -d '\n')"; echo $zones
+      - vpc="$(terraform output main_network_id | tr -d '\n')"; echo $vpc
+      - cidr="$(terraform output main_network_cidr_block | tr -d '\n')"; echo $cidr
+      - fabric-fqdn="$(bin/get_fabric_fqdn.py)"; echo $fabric-fqdn
+      - fabric-name="$(bin/get_fabric_name.py)"; echo $fabric-name
+      - store-name="$(bin/get_state_store_name.py)"; echo $store-name
+#
+      - kops create cluster --zones="$zones" --vpc="$vpc" --network-cidr="$cidr" --networking='kubenet' --ssh-public-key='keys/kubernetes-admin.pub' --target='terraform' --name="$fabric-fqdn" --state="s3://$store-name" --out=kubernetes
+#
+      - cd kubernetes/
+      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store-name" -backend-config='key="$fabric-name"-kubernetes.tfstate'
       - terraform get -update=true
       - terraform plan -out plan.out
       - terraform apply plan.out
