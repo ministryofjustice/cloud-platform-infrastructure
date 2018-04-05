@@ -42,6 +42,7 @@ phases:
       - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config="key=$fabric_name.tfstate"
       - terraform get -update=true
       - terraform plan -var-file=config.json -out plan.out
+      - terraform show plan.out
       - terraform apply plan.out
       - zones="$(terraform output main_network_availability_zones_csv | tr -d '\n')" && echo $zones
       - vpc="$(terraform output main_network_id | tr -d '\n')" && echo $vpc
@@ -55,6 +56,7 @@ phases:
       - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config="key=$fabric_name-kubernetes.tfstate"
       - terraform get -update=true
       - terraform plan -out plan.out
+      - terraform show plan.out
       - terraform apply plan.out
       - kubectl cluster-info
       - echo 'Done.'
