@@ -18,16 +18,17 @@ module "main_network" {
   availability_zones      = ["${var.fabric_availability_zones}"]
 }
 
+
 module "cluster_dns" {
   source = "../terraform/modules/cluster_dns"
 
-  cluster_base_domain_name = "${var.fabric_region}"
+  cluster_base_domain_name = "${var.fabric_name}.${var.domain_name}"
   parent_zone_id = "Z1QX7XOKFA0VGE"
 }
 
 module "cluster_ssl" {
   source = "../terraform/modules/cluster_ssl"
 
-  cluster_base_domain_name = "${var.fabric_region}"
+  cluster_base_domain_name = "${var.fabric_name}.${var.domain_name}"
   dns_zone_id = "${module.cluster_dns.cluster_dns_zone_id}"
 }
