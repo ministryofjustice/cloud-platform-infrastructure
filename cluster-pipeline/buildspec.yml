@@ -30,7 +30,7 @@ phases:
   build:
     commands:
 # todo for each
-      - bin/generate_json.sh test-cluster $domain $region
+      - bin/generate_json.sh test-cluster-2 $domain $region
       - bin/configure_availability_zones.py $region
       - cat config.json
       - bin/setup_state_store.py
