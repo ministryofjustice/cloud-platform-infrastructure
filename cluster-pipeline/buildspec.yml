@@ -46,14 +46,14 @@ phases:
       - zones="$(terraform output main_network_availability_zones_csv | tr -d '\n')"; echo $zones
       - vpc="$(terraform output main_network_id | tr -d '\n')"; echo $vpc
       - cidr="$(terraform output main_network_cidr_block | tr -d '\n')"; echo $cidr
-      - fabric-fqdn="$(bin/get_fabric_fqdn.py)"; echo $fabric-fqdn
-      - fabric-name="$(bin/get_fabric_name.py)"; echo $fabric-name
-      - store-name="$(bin/get_state_store_name.py)"; echo $store-name
+      - fabric_fqdn="$(bin/get_fabric_fqdn.py)"; echo $fabric_fqdn
+      - fabric_name="$(bin/get_fabric_name.py)"; echo $fabric_name
+      - store_name="$(bin/get_state_store_name.py)"; echo $store_name
 #
-      - kops create cluster --zones="$zones" --vpc="$vpc" --network-cidr="$cidr" --networking='kubenet' --ssh-public-key='keys/kubernetes-admin.pub' --target='terraform' --name="$fabric-fqdn" --state="s3://$store-name" --out=kubernetes
+      - kops create cluster --zones="$zones" --vpc="$vpc" --network-cidr="$cidr" --networking='kubenet' --ssh-public-key='keys/kubernetes-admin.pub' --target='terraform' --name="$fabric_fqdn" --state="s3://$store_name" --out=kubernetes
 #
       - cd kubernetes/
-      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store-name" -backend-config='key="$fabric-name"-kubernetes.tfstate'
+      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config='key="$fabric_name"-kubernetes.tfstate'
       - terraform get -update=true
       - terraform plan -out plan.out
       - terraform apply plan.out
