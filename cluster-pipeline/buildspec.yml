@@ -30,11 +30,18 @@ phases:
   build:
     commands:
 # todo for each
-      - bin/generate_json.sh test-cluster2 $domain $region
+      - bin/generate_json.sh test-cluster3 $domain $region
       - bin/configure_availability_zones.py $region
       - cat config.json
       - bin/setup_state_store.py
-      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$(bin/get_state_store_name.py)" -backend-config="key=$(bin/get_fabric_name.py).tfstate"
+      - zones="$(terraform output main_network_availability_zones_csv | tr -d '\n')"; echo $zones
+      - vpc="$(terraform output main_network_id | tr -d '\n')"; echo $vpc
+      - cidr="$(terraform output main_network_cidr_block | tr -d '\n')"; echo $cidr
+      - fabric_fqdn="$(bin/get_fabric_fqdn.py)"; echo $fabric_fqdn
+      - fabric_name="$(bin/get_fabric_name.py)"; echo $fabric_name
+      - store_name="$(bin/get_state_store_name.py)"; echo $store_name
+#
+      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config="key=$fabric_name.tfstate"
       - terraform get -update=true
       - terraform plan -var-file=config.json -out plan.out
       - terraform apply plan.out
@@ -43,17 +50,10 @@ phases:
       - mv keys/kubernetes-admin ~/.ssh/kubernetes-admin
       - chmod 600 ~/.ssh/kubernetes-admin
 #
-      - zones="$(terraform output main_network_availability_zones_csv | tr -d '\n')"; echo $zones
-      - vpc="$(terraform output main_network_id | tr -d '\n')"; echo $vpc
-      - cidr="$(terraform output main_network_cidr_block | tr -d '\n')"; echo $cidr
-      - fabric_fqdn="$(bin/get_fabric_fqdn.py)"; echo $fabric_fqdn
-      - fabric_name="$(bin/get_fabric_name.py)"; echo $fabric_name
-      - store_name="$(bin/get_state_store_name.py)"; echo $store_name
-#
       - kops create cluster --zones="$zones" --vpc="$vpc" --network-cidr="$cidr" --networking='kubenet' --ssh-public-key='keys/kubernetes-admin.pub' --target='terraform' --name="$fabric_fqdn" --state="s3://$store_name" --out=kubernetes
 #
       - cd kubernetes/
-      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config='key="$fabric_name"-kubernetes.tfstate'
+      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config="key=$fabric_name-kubernetes.tfstate"
       - terraform get -update=true
       - terraform plan -out plan.out
       - terraform apply plan.out
