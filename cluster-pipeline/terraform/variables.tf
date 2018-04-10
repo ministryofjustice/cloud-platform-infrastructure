@@ -1,5 +1,9 @@
+variable "region" {
+  default = "eu-west-1"
+}
+
 variable "project_name" {
-  default = "cluster-creation-pipeline"
+  default = "cluster-creation"
 }
 
 variable "git_repo" {

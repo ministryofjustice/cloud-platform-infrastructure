@@ -1,5 +1,5 @@
 variable "region" {
-    default = "eu-west-1"
+  default = "eu-west-1"
 }
 
 variable "vpc_cidr" {

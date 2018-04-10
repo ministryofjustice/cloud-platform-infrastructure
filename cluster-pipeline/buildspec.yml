@@ -5,9 +5,6 @@ env:
      region: "eu-west-1"
      domain: "k8s.kops.integration.dsd.io"
 
-#  parameter-store:
-#     key: "value"
-
 phases:
   install:
     commands:
@@ -32,38 +29,38 @@ phases:
   build:
     commands:
 # todo for each
-      - bin/generate_json.sh ale-cluster10 $domain $region
-      - bin/configure_availability_zones.py $region
-      - cat config.json
-      - bin/setup_state_store.py
-      - fabric_fqdn="$(bin/get_fabric_fqdn.py)" && echo $fabric_fqdn
-      - fabric_name="$(bin/get_fabric_name.py)" && echo $fabric_name
-      - store_name="$(bin/get_state_store_name.py)" && echo $store_name
-      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config="key=$fabric_name.tfstate"
-      - terraform get -update=true
-      - terraform plan -var-file=config.json -out plan.out
-      - terraform show plan.out
-      - terraform apply plan.out
-      - zones="$(terraform output main_network_availability_zones_csv | tr -d '\n')" && echo $zones
-      - vpc="$(terraform output main_network_id | tr -d '\n')" && echo $vpc
-      - cidr="$(terraform output main_network_cidr_block | tr -d '\n')" && echo $cidr
-      - ssh-keygen -t rsa -b 4096 -N '' -C "kubernetes-admin" -f "keys/kubernetes-admin"
-      - mkdir ~/.ssh/ && chmod 700 ~/.ssh/
-      - mv keys/kubernetes-admin ~/.ssh/kubernetes-admin
-      - chmod 600 ~/.ssh/kubernetes-admin
+#      - bin/generate_json.sh ale-cluster10 $domain $region
+#      - bin/configure_availability_zones.py $region
+#      - cat config.json
+#      - bin/setup_state_store.py
+#      - fabric_fqdn="$(bin/get_fabric_fqdn.py)" && echo $fabric_fqdn
+#      - fabric_name="$(bin/get_fabric_name.py)" && echo $fabric_name
+#      - store_name="$(bin/get_state_store_name.py)" && echo $store_name
+#      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config="key=$fabric_name.tfstate"
+#      - terraform get -update=true
+#      - terraform plan -var-file=config.json -out plan.out
+#      - terraform show plan.out
+#      - terraform apply plan.out
+#      - zones="$(terraform output main_network_availability_zones_csv | tr -d '\n')" && echo $zones
+#      - vpc="$(terraform output main_network_id | tr -d '\n')" && echo $vpc
+#      - cidr="$(terraform output main_network_cidr_block | tr -d '\n')" && echo $cidr
+#      - ssh-keygen -t rsa -b 4096 -N '' -C "kubernetes-admin" -f "keys/kubernetes-admin"
+#      - mkdir ~/.ssh/ && chmod 700 ~/.ssh/
+#      - mv keys/kubernetes-admin ~/.ssh/kubernetes-admin
+#      - chmod 600 ~/.ssh/kubernetes-admin
 
 # I think a cleaner approach is having a cluster spec YAML file in git, minus VPC/subnet/route table etc info, and then we interpolate values taken from `terraform output` into that, and call `kops cluster create|replace -f clusterspec.yml`
 
-      - kops create cluster --zones="$zones" --vpc="$vpc" --network-cidr="$cidr" --networking='kubenet' --ssh-public-key='keys/kubernetes-admin.pub' --target='terraform' --name="$fabric_fqdn" --state="s3://$store_name" --out=kubernetes
-      - cd kubernetes/
-      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config="key=$fabric_name-kubernetes.tfstate"
-      - terraform get -update=true
-      - terraform plan -out plan.out
-      - terraform show plan.out
-      - terraform apply plan.out
-      - sleep 60
-      - kubectl cluster-info
-      - echo 'Done.'
+#      - kops create cluster --zones="$zones" --vpc="$vpc" --network-cidr="$cidr" --networking='kubenet' --ssh-public-key='keys/kubernetes-admin.pub' --target='terraform' --name="$fabric_fqdn" --state="s3://$store_name" --out=kubernetes
+#      - cd kubernetes/
+#      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config="key=$fabric_name-kubernetes.tfstate"
+#      - terraform get -update=true
+#      - terraform plan -out plan.out
+#      - terraform show plan.out
+#      - terraform apply plan.out
+#      - sleep 60
+#      - kubectl cluster-info
+#      - echo 'Done.'
 
 #  post_build:
 #    commands:
