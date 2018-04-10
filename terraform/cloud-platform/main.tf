@@ -40,15 +40,16 @@ module "cluster_ssl" {
 }
 
 module "cluster_vpc" {
-  source             = "terraform-aws-modules/vpc/aws"
-  version            = "1.9.1"
-  name               = "${local.cluster_name}"
-  cidr               = "${var.vpc_cidr}"
-  azs                = "${var.availability_zones}"
-  private_subnets    = "${var.internal_subnets}"
-  public_subnets     = "${var.external_subnets}"
-  enable_nat_gateway = true
-  enable_vpn_gateway = true
+  source               = "terraform-aws-modules/vpc/aws"
+  version              = "1.9.1"
+  name                 = "${local.cluster_name}"
+  cidr                 = "${var.vpc_cidr}"
+  azs                  = "${var.availability_zones}"
+  private_subnets      = "${var.internal_subnets}"
+  public_subnets       = "${var.external_subnets}"
+  enable_nat_gateway   = true
+  enable_vpn_gateway   = true
+  enable_dns_hostnames = true
 
   tags = {
     Terraform   = "true"
