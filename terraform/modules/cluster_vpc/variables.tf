@@ -1,5 +1,3 @@
-// file: vpc/variables.tf
-
 variable "cidr_block" {
   description = "CIDR block range for the VPC"
 }

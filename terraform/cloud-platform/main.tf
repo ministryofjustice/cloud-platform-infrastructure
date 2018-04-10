@@ -9,14 +9,14 @@ terraform {
 
 provider "aws" {
   version = "~> 1.9.0"
-  region = "eu-west-1"
+  region = "${var.region}"
 }
 
 data "terraform_remote_state" "global" {
     backend = "s3"
     config {
         bucket = "moj-cp-k8s-investigation-global-terraform"
-        region = "eu-west-1"
+        region = "${var.region}"
         key = "terraform.tfstate"
     }
 }
@@ -39,4 +39,14 @@ module "cluster_ssl" {
 
     cluster_base_domain_name = "${local.cluster_base_domain_name}"
     dns_zone_id = "${module.cluster_dns.cluster_dns_zone_id}"
+}
+
+module "cluster_vpc" {
+    source = "../modules/cluster_vpc"
+
+    cidr_block         = "${var.vpc_cidr}"
+    name               = "${local.cluster_name}"
+    internal_subnets   = ["${var.internal_subnets}"]
+    external_subnets   = ["${var.external_subnets}"]
+    availability_zones = ["${var.availability_zones}"]
 }

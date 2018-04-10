@@ -51,6 +51,9 @@ phases:
       - mkdir ~/.ssh/ && chmod 700 ~/.ssh/
       - mv keys/kubernetes-admin ~/.ssh/kubernetes-admin
       - chmod 600 ~/.ssh/kubernetes-admin
+
+# I think a cleaner approach is having a cluster spec YAML file in git, minus VPC/subnet/route table etc info, and then we interpolate values taken from `terraform output` into that, and call `kops cluster create|replace -f clusterspec.yml`
+
       - kops create cluster --zones="$zones" --vpc="$vpc" --network-cidr="$cidr" --networking='kubenet' --ssh-public-key='keys/kubernetes-admin.pub' --target='terraform' --name="$fabric_fqdn" --state="s3://$store_name" --out=kubernetes
       - cd kubernetes/
       - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config="key=$fabric_name-kubernetes.tfstate"
