@@ -1,22 +1,18 @@
-variable "region" {
-  default = "eu-west-1"
-}
-
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
-  default     = "10.10.0.0/16"
+  default     = "172.20.0.0/16"
 }
 
 variable "internal_subnets" {
   type        = "list"
   description = "list of subnet CIDR blocks that are not publicly acceessibly"
-  default     = ["10.10.160.0/20", "10.10.176.0/20", "10.10.192.0/20", "10.10.208.0/20"]
+  default     = ["172.20.0.0/22", "172.20.4.0/22", "172.20.8.0/22"]
 }
 
 variable "external_subnets" {
   type        = "list"
   description = "list of subnet CIDR blocks that are publicly acceessibly"
-  default     = []
+  default     = ["172.20.32.0/19", "172.20.64.0/19", "172.20.96.0/19"]
 }
 
 variable "availability_zones" {
