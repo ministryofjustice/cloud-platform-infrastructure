@@ -2,7 +2,6 @@ apiVersion: kops/v1alpha2
 kind: Cluster
 metadata:
   creationTimestamp: null
-  name:
 spec:
   api:
     loadBalancer:
@@ -16,7 +15,7 @@ spec:
             "route53:ChangeResourceRecordSets"
           ],
           "Resource": [
-            "arn:aws:route53:::hostedzone/Z178U6OM3IG0YL"
+            "arn:aws:route53:::hostedzone/Z1N3S2UZYKP74S"
           ]
         },
         {
@@ -34,71 +33,71 @@ spec:
     rbac: {}
   channel: stable
   cloudProvider: aws
-  configBase: 
-  dnsZone: 
+  configBase: s3://moj-cp-k8s-investigation-kops/cloud-platforms-test.k8s.integration.dsd.io
+  dnsZone: cloud-platforms-test.k8s.integration.dsd.io
   etcdClusters:
   - etcdMembers:
-    - instanceGroup: 
-      name:
-    - instanceGroup:
-      name:
-    - instanceGroup:
-      name:
+    - instanceGroup: master-eu-west-1a
+      name: a
+    - instanceGroup: master-eu-west-1b
+      name: b
+    - instanceGroup: master-eu-west-1c
+      name: c
     name: main
   - etcdMembers:
-    - instanceGroup:
-      name:
-    - instanceGroup:
-      name:
-    - instanceGroup:
-      name:
+    - instanceGroup: master-eu-west-1a
+      name: a
+    - instanceGroup: master-eu-west-1b
+      name: b
+    - instanceGroup: master-eu-west-1c
+      name: c
     name: events
   iam:
     allowContainerRegistry: true
     legacy: false
   kubeAPIServer:
-    oidcClientID: 0NKzhJ2SRKydz3XKRseVpvO7gA1D7VxY
+    oidcClientID: 7ix4YkYwQe8n7j9qTrdAKeMz26eJTB2x
     oidcIssuerURL: https://moj-cloud-platforms-dev.eu.auth0.com/
     oidcUsernameClaim: nickname
     oidcGroupsClaim: https://k8s.integration.dsd.io/groups
   kubernetesApiAccess:
   - 0.0.0.0/0
   kubernetesVersion: 1.8.6
-  masterPublicName:
-  networkCIDR:
+  masterPublicName: api.cloud-platforms-test.k8s.integration.dsd.io
+  networkCIDR: 172.20.0.0/16
   networking:
     calico: {}
-  nonMasqueradeCIDR:
+  nonMasqueradeCIDR: 100.64.0.0/10
   sshAccess:
   - 0.0.0.0/0
   subnets:
-  - cidr: 
-    name: 
-    type: 
-    zone: 
-  - cidr: 
-    name: 
-    type: 
-    zone: 
-  - cidr: 
-    name: 
-    type: 
-    zone: 
-  - cidr: 
-    name: 
-    type: 
-    zone: 
-  - cidr: 
-    name: 
-    type: 
-    zone: 
-  - cidr: 
-    name: 
-    type: 
-    zone: 
+  - cidr: 172.20.32.0/19
+    name: eu-west-1a
+    type: Private
+    zone: eu-west-1a
+  - cidr: 172.20.64.0/19
+    name: eu-west-1b
+    type: Private
+    zone: eu-west-1b
+  - cidr: 172.20.96.0/19
+    name: eu-west-1c
+    type: Private
+    zone: eu-west-1c
+  - cidr: 172.20.0.0/22
+    name: utility-eu-west-1a
+    type: Utility
+    zone: eu-west-1a
+  - cidr: 172.20.4.0/22
+    name: utility-eu-west-1b
+    type: Utility
+    zone: eu-west-1b
+  - cidr: 172.20.8.0/22
+    name: utility-eu-west-1c
+    type: Utility
+    zone: eu-west-1c
   topology:
     bastion:
-      bastionPublicName: 
+      bastionPublicName: bastion.cloud-platforms-test.k8s.integration.dsd.io
     dns:
       type: Public
     masters: private
@@ -111,19 +110,57 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: 
-  name:
+    kops.k8s.io/cluster: cloud-platforms-test.k8s.integration.dsd.io
+  name: master-eu-west-1a
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
   machineType: t2.medium
-  maxSize: 3
-  minSize: 3
+  maxSize: 1
+  minSize: 1
   nodeLabels:
-    kops.k8s.io/instancegroup: master
+    kops.k8s.io/instancegroup: master-eu-west-1a
   role: Master
   subnets:
   - eu-west-1a
+
+---
+
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: cloud-platforms-test.k8s.integration.dsd.io
+  name: master-eu-west-1b
+spec:
+  image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
+  machineType: t2.medium
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-eu-west-1b
+  role: Master
+  subnets:
   - eu-west-1b
+
+---
+
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: cloud-platforms-test.k8s.integration.dsd.io
+  name: master-eu-west-1c
+spec:
+  image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
+  machineType: t2.medium
+  maxSize: 1
+  minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-eu-west-1c
+  role: Master
+  subnets:
   - eu-west-1c
 
 ---
@@ -133,7 +170,7 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster:
+    kops.k8s.io/cluster: cloud-platforms-test.k8s.integration.dsd.io
   name: nodes
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
@@ -155,7 +192,7 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: 
+    kops.k8s.io/cluster: cloud-platforms-test.k8s.integration.dsd.io
   name: bastions
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
