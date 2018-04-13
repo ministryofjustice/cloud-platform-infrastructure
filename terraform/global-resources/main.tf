@@ -1,12 +1,12 @@
 terraform {
   backend "s3" {
-    bucket = "${var.project_name}-global-terraform"
-    region = "${var.region}"
+    bucket = "moj-cp-k8s-investigation-global-terraform"
+    region = "eu-west-1"
     key    = "terraform.tfstate"
   }
 }
 
 provider "aws" {
   version = "~> 1.9.0"
-  region  = "${var.region}"
+  region  = "eu-west-1"
 }

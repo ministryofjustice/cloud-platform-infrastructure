@@ -1,7 +1,3 @@
-variable "region" {
-  default = "eu-west-1"
-}
-
 variable "project_name" {
   default = "moj-cp-k8s-investigation"
 }
