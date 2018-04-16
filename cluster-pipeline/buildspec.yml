@@ -4,74 +4,52 @@ env:
   variables:
      region: "eu-west-1"
      domain: "k8s.kops.integration.dsd.io"
+     kops_version: "1.8.0"
+     helm_version: "2.8.2"
+     terraform_version: "0.11.5"
+     workspace: "test-cluster"
 
 phases:
   install:
     commands:
        - apt update
-       - apt install -y awscli git python3 python3-setuptools unzip openssh-client
-       - easy_install3 boto3
-       - wget https://github.com/kubernetes/kops/releases/download/1.8.0/kops-linux-amd64
+       - apt install -y awscli git unzip openssh-client
+       - wget https://github.com/kubernetes/kops/releases/download/"$kops_version"/kops-linux-amd64
        - chmod +x kops-linux-amd64 && mv kops-linux-amd64 /usr/local/bin/kops
        - url="$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)"
        - curl -LO https://storage.googleapis.com/kubernetes-release/release/$url/bin/linux/amd64/kubectl
        - chmod +x kubectl && mv ./kubectl /usr/local/bin/kubectl
-       - wget https://storage.googleapis.com/kubernetes-helm/helm-v2.8.2-linux-amd64.tar.gz -O helm.tar.gz; tar -xzf helm.tar.gz
+       - wget https://storage.googleapis.com/kubernetes-helm/helm-v"$helm_version"-linux-amd64.tar.gz -O helm.tar.gz; tar -xzf helm.tar.gz
        - chmod +x ./linux-amd64/helm && mv ./linux-amd64/helm /usr/local/bin/helm
-       - wget https://releases.hashicorp.com/terraform/0.11.5/terraform_0.11.5_linux_amd64.zip -O terraform.zip
+       - wget https://releases.hashicorp.com/terraform/$terraform_version/terraform_"$terraform_version"_linux_amd64.zip -O terraform.zip
        - unzip terraform.zip -d /usr/local/bin/; chmod +x /usr/local/bin/terraform
 
   pre_build:
     commands:
-      - alias python=python3
-      - chmod +x cluster-pipeline/bin/*
-      - cd cluster-pipeline/
+      - chmod +x bin/*
+      - cd /terraform/cloud-platform
+
   build:
     commands:
 # todo for each
-#      - bin/generate_json.sh ale-cluster10 $domain $region
-#      - bin/configure_availability_zones.py $region
-#      - cat config.json
-#      - bin/setup_state_store.py
-#      - fabric_fqdn="$(bin/get_fabric_fqdn.py)" && echo $fabric_fqdn
-#      - fabric_name="$(bin/get_fabric_name.py)" && echo $fabric_name
-#      - store_name="$(bin/get_state_store_name.py)" && echo $store_name
-#      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config="key=$fabric_name.tfstate"
-#      - terraform get -update=true
-#      - terraform plan -var-file=config.json -out plan.out
-#      - terraform show plan.out
-#      - terraform apply plan.out
-#      - zones="$(terraform output main_network_availability_zones_csv | tr -d '\n')" && echo $zones
-#      - vpc="$(terraform output main_network_id | tr -d '\n')" && echo $vpc
-#      - cidr="$(terraform output main_network_cidr_block | tr -d '\n')" && echo $cidr
-#      - ssh-keygen -t rsa -b 4096 -N '' -C "kubernetes-admin" -f "keys/kubernetes-admin"
-#      - mkdir ~/.ssh/ && chmod 700 ~/.ssh/
-#      - mv keys/kubernetes-admin ~/.ssh/kubernetes-admin
-#      - chmod 600 ~/.ssh/kubernetes-admin
+      - terraform init
+      - terraform workspace new "$workspace"
+      - terraform plan -out plan.out
+      - terraform show plan.out
+      - terraform apply plan.out
 
-# I think a cleaner approach is having a cluster spec YAML file in git, minus VPC/subnet/route table etc info, and then we interpolate values taken from `terraform output` into that, and call `kops cluster create|replace -f clusterspec.yml`
+      - mkdir "~/keys"
+      - mkdir "~/.ssh/" && chmod 700 "~/.ssh/"
+      - ssh-keygen -t rsa -b 4096 -N '' -C "kubernetes-admin" -f "~/keys/kubernetes-admin"
+      - mv "~/keys/kubernetes-admin" "~/.ssh/kubernetes-admin" && chmod 600 "~/.ssh/kubernetes-admin"
 
-#      - kops create cluster --zones="$zones" --vpc="$vpc" --network-cidr="$cidr" --networking='kubenet' --ssh-public-key='keys/kubernetes-admin.pub' --target='terraform' --name="$fabric_fqdn" --state="s3://$store_name" --out=kubernetes
-#      - cd kubernetes/
-#      - terraform init -backend=true -backend-config="region=$region" -backend-config="bucket=$store_name" -backend-config="key=$fabric_name-kubernetes.tfstate"
-#      - terraform get -update=true
-#      - terraform plan -out plan.out
-#      - terraform show plan.out
-#      - terraform apply plan.out
-#      - sleep 60
-#      - kubectl cluster-info
-#      - echo 'Done.'
+      - python ../../bin/create_cluster.py ../../kops/"$workspace".yaml > clusterspec.yaml
+      - kops cluster create -f clusterspec.yaml
+      - aws s3 cp clusterspec.yaml s3://`terraform output kops_state_store`/`terraform output cluster_domain_name`
+
+      - kubectl cluster-info
+      - echo 'Done.'
 
 #  post_build:
 #    commands:
 #       - ""
-
-#artifacts:
-#  files:
-#     - location
-#  discard-paths: yes
-#  base-directory: location
-
-#cache:
-#  paths:
-#     - paths
