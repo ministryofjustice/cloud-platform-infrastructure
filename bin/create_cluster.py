@@ -1,13 +1,31 @@
  #!/usr/bin/python
 
-import subprocess, json, argparse, yaml, pprint
+import sys, subprocess, json, argparse, yaml, pprint, os.path
 from ast import literal_eval
 
-# Dumper config
+# Init lists
+templates = []
+clusters=[]
+instances=[]
+bastions=[]
+nodes=[]
+masters=[]
+output=[]
+
+# Json output configuration                                                                                                                                          
 class literal(str):
     pass
 def literal_presenter(dumper, data):
     return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+
+# Function to fetch a value from the terraform dictionary
+def tf(key):
+  if terraform[key]['value']:
+    return terraform[key]['value']
+  else:
+    sys.exit(key + ' not found, exit.')
+
+# Dumper config
 yaml.SafeDumper.add_representer(literal, literal_presenter)
 yaml.SafeDumper.ignore_aliases = lambda *args: True
 
@@ -19,31 +37,20 @@ parser.add_argument('clusterconfig', help='the base yaml file to create the clus
 args = parser.parse_args()
 #print( 'loading file ' + args.clusterconfig)
 
-# Init lists
-templates = []
-clusters=[]
-instances=[]
-bastions=[]
-nodes=[]
-masters=[]
-output=[]
-
-# Function to fetch a value from the terraform dictionary
-def tf(key):
-  if terraform[key]['value']:
-    return terraform[key]['value']
-
 # Load the base kops yaml file located in the repo
-stream = open(args.clusterconfig)
-for template in yaml.load_all(stream):
-  templates.append(template)
-stream.close()
+if os.path.isfile(args.clusterconfig): 
+  stream = open(args.clusterconfig)
+  for template in yaml.load_all(stream):
+    templates.append(template)
+  stream.close()
+else:
+  sys.exit( args.clusterconfig + ' file not found, exit.')
 
 # Load the terraform outputs from the terraform command
 try:
   terraform = json.loads(str(subprocess.check_output(['terraform', 'output', '-json']).decode('utf-8')))
 except subprocess.CalledProcessError as e:
-  print('error executing terraform command')
+  print('error executing terraform command, exit.')
 
 # Populate variables from terraform output
 cluster_name = tf('cluster_domain_name')
@@ -71,10 +78,9 @@ for template in templates:
 
 # Update all Cluster kind
 for template in clusters:
+  template['metadata'].update({'name': cluster_name })
   policies = template['spec']['additionalPolicies']['node']                                                                                             
   template['spec'].update({'additionalPolicies': { 'node': literal(policies) } } )
-
-  template['metadata'].update({'name': cluster_name })
   template['spec'].update({'configBase': kops_state_store })
   template['spec'].update({'dnsZone': dns_zone })
 
