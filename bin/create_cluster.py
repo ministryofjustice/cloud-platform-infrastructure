@@ -3,22 +3,23 @@
 import subprocess, json, argparse, yaml, pprint
 from ast import literal_eval
 
-# parser and dumper config
+# Dumper config
+class literal(str):
+    pass
+def literal_presenter(dumper, data):
+    return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
+yaml.SafeDumper.add_representer(literal, literal_presenter)
+yaml.SafeDumper.ignore_aliases = lambda *args: True
+
+# Parser config
 p = pprint.PrettyPrinter(indent=4)
-noalias_dumper = yaml.dumper.SafeDumper
-noalias_dumper.ignore_aliases = lambda self, data: True
-
-#noalias_dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
-#yaml.add_representer(literal, literal_presenter)
-
 parser = argparse.ArgumentParser(description='Create Kubernetes clusters.')
 parser.add_argument('clusterconfig', help='the base yaml file to create the cluster from')
 
 args = parser.parse_args()
-#print('template deploy v2')
 #print( 'loading file ' + args.clusterconfig)
 
-# init lists
+# Init lists
 templates = []
 clusters=[]
 instances=[]
@@ -27,24 +28,24 @@ nodes=[]
 masters=[]
 output=[]
 
-# function to fetch a value from the terraform dictionary
+# Function to fetch a value from the terraform dictionary
 def tf(key):
-  if terraform[key]:
+  if terraform[key]['value']:
     return terraform[key]['value']
 
-# load the base kops yaml file located in the repo
+# Load the base kops yaml file located in the repo
 stream = open(args.clusterconfig)
 for template in yaml.load_all(stream):
   templates.append(template)
 stream.close()
 
-# load the terraform outputs from the terraform command
+# Load the terraform outputs from the terraform command
 try:
   terraform = json.loads(str(subprocess.check_output(['terraform', 'output', '-json']).decode('utf-8')))
 except subprocess.CalledProcessError as e:
   print('error executing terraform command')
 
-# populate variables from terraform output
+# Populate variables from terraform output
 cluster_name = tf('cluster_domain_name')
 dns_zone = cluster_name
 kops_state_store = 's3://' + tf('kops_state_store') + '/' + cluster_name
@@ -55,7 +56,7 @@ topology = 'bastion.' + cluster_name
 internal_subnets = tf('internal_subnets')
 external_subnets = tf('external_subnets')
 
-# organize in lists by kind and role
+# Organize in lists by kind and role
 for template in templates:
   if template['kind'] == 'Cluster':
     clusters.append(template)
@@ -68,16 +69,10 @@ for template in templates:
     if template['spec']['role'] == 'Master':
       masters.append(template)
 
-# update all Cluster kind
+# Update all Cluster kind
 for template in clusters:
-
-#  policies = str(eval(template['spec']['additionalPolicies']['node']))
   policies = template['spec']['additionalPolicies']['node']                                                                                             
-  
-#  print(type(policies))
-#  p.pprint(policies)
-
-  template['spec'].update({'additionalPolicies': policies  })
+  template['spec'].update({'additionalPolicies': { 'node': literal(policies) } } )
 
   template['metadata'].update({'name': cluster_name })
   template['spec'].update({'configBase': kops_state_store })
@@ -104,24 +99,24 @@ for template in clusters:
   template['spec'].update({ 'subnets': subnets })
   output.append(template)
 
-# update all instanceGroup kind
+# Update all instanceGroup kind
 for template in instances:
   template['metadata'].update({'labels': { 'kops.k8s.io/cluster': cluster_name } } ) 
 
-# update masters
+# Update masters
 if len(masters) == len(availability_zones):
   for i in range(len(masters)):
     masters[i]['spec'].update({'subnets': [ availability_zones[i] ] } )
     masters[i]['spec'].update({'nodeLabels': { 'kops.k8s.io/instancegroup': 'master-' + availability_zones[i] } } )
     output.append(masters[i])
 
-# update nodes
+# Update nodes
 for template in nodes:
   template['spec'].update({'subnets': availability_zones })
   template['spec'].update({'nodeLabels': { 'kops.k8s.io/instancegroup' : 'nodes' } } )
   output.append(template)
 
-# update bastions
+# Update bastions
 for template in bastions:
   azs = []
   for az in availability_zones:
@@ -130,8 +125,7 @@ for template in bastions:
   template['spec'].update({'nodeLabels': { 'kops.k8s.io/instancegroup' : 'bastions' } } )
   output.append(template)
 
-# print outputs 
+# Print outputs 
 for item in output:
   print('---')
-  print(yaml.dump(item, default_flow_style = False , Dumper=noalias_dumper))
-
+  print(yaml.safe_dump(item,  default_flow_style = False ))
