@@ -28,7 +28,9 @@ phases:
 
   build:
     commands:
-      - python ../../bin/create_clusters.py 
+      - terraform init
+      - terraform workspace list
+#      - python ../../bin/create_clusters.py 
       - echo 'Done.'
 
 #  post_build:
