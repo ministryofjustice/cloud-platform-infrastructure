@@ -24,7 +24,7 @@ phases:
   pre_build:
     commands:
       - chmod +x bin/*
-      - cd /terraform/cloud-platform
+      - cd terraform/cloud-platform
 
   build:
     commands:
