@@ -1,11 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import sys
 import subprocess
 import json
 import argparse
 import yaml
-import pprint
 import os.path
 from ast import literal_eval
 
@@ -19,38 +18,30 @@ masters = []
 output = []
 
 # Json output configuration
-
-
 class literal(str):
     pass
-
 
 def literal_presenter(dumper, data):
     return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='|')
 
 # Function to fetch a value from the terraform dictionary
-
-
 def tf(key):
     if terraform[key]['value']:
         return terraform[key]['value']
     else:
         sys.exit(key + ' not found, exit.')
 
-
 # Dumper config
 yaml.SafeDumper.add_representer(literal, literal_presenter)
 yaml.SafeDumper.ignore_aliases = lambda *args: True
 
 # Parser config
-p = pprint.PrettyPrinter(indent=4)
 parser = argparse.ArgumentParser(description='Create Kubernetes clusters.')
 parser.add_argument(
     'clusterconfig',
     help='the base yaml file to create the cluster from')
 
 args = parser.parse_args()
-#print( 'loading file ' + args.clusterconfig)
 
 # Load the base kops yaml file located in the repo
 if os.path.isfile(args.clusterconfig):
@@ -94,12 +85,12 @@ for template in templates:
 
 # Update all Cluster kind
 for template in clusters:
-    template['metadata'].update({'name': cluster_name})
+    template['metadata']['name'] = cluster_name
+
     policies = template['spec']['additionalPolicies']['node']
-    template['spec'].update(
-        {'additionalPolicies': {'node': literal(policies)}})
-    template['spec'].update({'configBase': kops_state_store})
-    template['spec'].update({'dnsZone': dns_zone})
+    template['spec']['additionalPolicies']['node'] = literal(policies)
+    template['spec']['configBase'] = kops_state_store
+    template['spec']['dnsZone'] = dns_zone
 
     etcdclusters = []
     etcdmembers = []
@@ -107,10 +98,9 @@ for template in clusters:
         etcdmembers.append({'instanceGroup': 'master-' + az, 'name': az[-1:]})
     for name in ['main', 'events']:
         etcdclusters.append({'name': name, 'etcdMembers': etcdmembers})
-    template['spec'].update({'etcdClusters': etcdclusters})
-
-    template['spec'].update({'masterPublicName': master_public_name})
-    template['spec'].update({'networkCIDR': network_cidr})
+    template['spec']['etcdClusters'] = etcdclusters
+    template['spec']['masterPublicName'] = master_public_name
+    template['spec']['networkCIDR'] = network_cidr
     template['spec'].update({
         'topology': {
             'bastion': {
@@ -141,7 +131,7 @@ for template in clusters:
                     'name': 'utility-' + availability_zones[i],
                     'type': 'Utility',
                     'zone': availability_zones[i]})
-    template['spec'].update({'subnets': subnets})
+    template['spec']['subnets'] = subnets
     output.append(template)
 
 # Update all instanceGroup kind
