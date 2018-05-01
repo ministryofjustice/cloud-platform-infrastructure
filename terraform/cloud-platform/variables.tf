@@ -20,3 +20,8 @@ variable "availability_zones" {
   description = "a list of EC2 availability zones"
   default = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
 }
+
+variable "aws_federation_saml_x509_cert" {}
+variable "aws_federation_saml_idp_domain" {}
+variable "aws_federation_saml_login_url" {} 
+variable "aws_federation_saml_logout_url" {}

@@ -1,2 +1,0 @@
-script:
-  - gem install ministryofjustice-danger --version '~> 0.1' && danger
