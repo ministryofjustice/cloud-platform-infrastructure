@@ -24,7 +24,7 @@ function (user, context, callback) {
 
       // IAM resource constants
       // `idp_arn` - reference to the SAML provider that has a trust relationship with AWS
-      var idp_arn = "arn:aws:iam::926803513772:saml-provider/cloud-platforms-sandbox-auth0";
+      var idp_arn = "arn:aws:iam::926803513772:saml-provider/shared-auth0";
       var role_base_arn = "arn:aws:iam::926803513772:role/";
 
       // Add list of IAM roles that the user can assume, one role per Github team
