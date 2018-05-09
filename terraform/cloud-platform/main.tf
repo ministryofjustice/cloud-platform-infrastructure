@@ -40,13 +40,3 @@ module "cluster_ssl" {
     cluster_base_domain_name = "${local.cluster_base_domain_name}"
     dns_zone_id = "${module.cluster_dns.cluster_dns_zone_id}"
 }
-
-module "aws_federation" {
-    source = "../modules/aws_federation"
-
-    env = "${terraform.workspace}"
-    saml_x509_cert = "${var.aws_federation_saml_x509_cert}"
-    saml_idp_domain = "${var.aws_federation_saml_idp_domain}"
-    saml_login_url = "${var.aws_federation_saml_login_url}"
-    saml_logout_url = "${var.aws_federation_saml_logout_url}"
-}
