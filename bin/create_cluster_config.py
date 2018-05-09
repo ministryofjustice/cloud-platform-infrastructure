@@ -69,6 +69,7 @@ network_cidr = tf('network_cidr_block')
 topology = 'bastion.' + cluster_name
 internal_subnets = tf('internal_subnets')
 external_subnets = tf('external_subnets')
+hosted_zone_id = tf('hosted_zone_id') 
 
 # Organize in lists by kind and role
 for template in templates:
@@ -87,7 +88,12 @@ for template in templates:
 for template in clusters:
     template['metadata']['name'] = cluster_name
 
-    policies = template['spec']['additionalPolicies']['node']
+    policies = []
+    for item in json.loads(template['spec']['additionalPolicies']['node']):
+        if item['Resource'] == ['arn:aws:route53:::hostedzone/']:
+          item['Resource'] = ['arn:aws:route53:::hostedzone/' + hosted_zone_id]
+        policies.append(item) 
+
     template['spec']['additionalPolicies']['node'] = literal(policies)
     template['spec']['configBase'] = kops_state_store
     template['spec']['dnsZone'] = dns_zone

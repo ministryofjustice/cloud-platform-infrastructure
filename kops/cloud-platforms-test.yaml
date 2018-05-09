@@ -15,7 +15,7 @@ spec:
             "route53:ChangeResourceRecordSets"
           ],
           "Resource": [
-            "arn:aws:route53:::hostedzone/Z1N3S2UZYKP74S"
+            "arn:aws:route53:::hostedzone/"
           ]
         },
         {

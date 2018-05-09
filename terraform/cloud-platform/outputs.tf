@@ -6,4 +6,4 @@ output "kops_state_store"               { value = "${data.terraform_remote_state
 output "availability_zones"             { value = "${var.availability_zones}" }
 output "internal_subnets"               { value = "${var.internal_subnets}" }
 output "external_subnets"               { value = "${var.external_subnets}" }
-
+output "hosted_zone_id"                 { value = "${module.cluster_dns.cluster_dns_zone_id}" }
