@@ -28,9 +28,5 @@ phases:
 
   build:
     commands:
-      - python ../../bin/create_clusters.py 
+      - python ../../bin/99-multiple_clusters.py
       - echo 'Done.'
-
-#  post_build:
-#    commands:
-#       - ""

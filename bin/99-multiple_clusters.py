@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3                                                                                                                                
 
 import subprocess
 import json
@@ -7,7 +7,6 @@ import shlex
 statestore = 'moj-cp-k8s-investigation-kops'
 domain = '.k8s.integration.dsd.io'
 
-
 def run(command):
     process = subprocess.Popen(shlex.split(command), stdout=subprocess.PIPE)
     while True:
@@ -15,10 +14,9 @@ def run(command):
         if output == '' and process.poll() is not None:
             break
         if output:
-            print output.strip()
+            print(output.strip())
     rc = process.poll()
     return rc
-
 
 # terraform init
 try:
@@ -59,6 +57,6 @@ for item in yaml:
         print('cluster ' + item + ' already exists, skipping')
     else:
         print('creating cluster ' + item)
-        run('../../bin/create_cluster.sh ' + item)
+        run('../../bin/00-cluster_pipeline.sh' + ' ' + item)
 
 print('Done.')
