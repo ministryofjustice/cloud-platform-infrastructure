@@ -1,3 +1,7 @@
+variable "project_name" {
+  default = "moj-cp-k8s-investigation"
+}
+
 variable "base_domain_name" {
   default = "integration.dsd.io"
 }

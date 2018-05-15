@@ -218,3 +218,23 @@ $ kops delete cluster --name <clusterName>
 $ kops delete cluster --name <clusterName>
 ```
 This takes a while but will eventually delete.
+
+### Cluster creation pipeline
+
+As part of the MVE project we developed an automated way of creating new clusters. The flow used is the following:
+
+1. A user creates a subset yaml file for the cluster definition in this repo, under the kops/ directory. The name of the yaml file will be the clusters resulting name.
+
+2. Once this change is merged to master, an automated pipeline is triggered. This pipeline lives in AWS CodePipeline/CodeBuild. This pipeline will create the terraform workspace (if it does not exist), create the underlying terraform elements, such as the vpc and networking parts, apply those, and then based on the outputs of those terraform resources, run kops to create the cluster. The end result of this process will be a cluster, and its properties will be defined in the initial yaml file.
+
+3. A notification for Success of Failure will be automatically pushed to the slack channel 'cp-build-notification'. The pipeline will notify Success once the cluster is ready and all its resources are healthy.
+
+#### Parts that compose this project
+
+1. The pipeline: The pipeline is based on AWS CodePipeline/Codebuild. It is triggered automatically after a change is promoted to master. The pipeline can be managed with the terraform templates that live in the ```cluster-pipeline/terraform``` directory. The pipeline will execute what ever is defined in ```cluster-pipeline/buildspec.yaml```
+
+2. The scripts: The pipeline uses the scripts that live in ```bin/```. The initial script that is triggered is ```bin/create_clusters.py```. This script will determine what clusters need to be created, based on the yaml files located in ```kops/```, the terraform workspaces, and the live clusters, getting that list via kops. It will create as many clusters you define that are not properly alive.
+For each cluster that needs to be created it will trigger the ```bin/create_cluster.sh``` script. This script will create the terraform workspace if it does not exist, create the networking parts based on the terraform templates for that workspace, create the ssh keys, and then run the ```bin/create_cluster_config.py``` script. This script will expand the subset yaml configuration defined in ```kops/``` with terraform outputs to create the full cluster spec. Back with ```bin/create_cluster.sh```, once the full yaml spec has been obtained, it will run kops against that yaml file to create the actual cluster, and wait for completion.
+Any issue in this process will result in a broken build but the partially created resources will not be destroyed.
+
+3. This is a work in progress, works for now but requires extensive testing and improvement before it is production ready. Hope you find this wonderful.
