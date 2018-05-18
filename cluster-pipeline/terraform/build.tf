@@ -43,10 +43,10 @@ resource "aws_iam_policy_attachment" "codebuild_policy_attachment" {
 }
 
 resource "aws_codebuild_project" "codebuild_project" {
-  name         = "${var.project_name}"
-  description  = "codebuild project"
-  build_timeout      = "60"
-  service_role = "${aws_iam_role.codebuild_role.arn}"
+  name          = "${var.project_name}"
+  description   = "codebuild project"
+  build_timeout = "60"
+  service_role  = "${aws_iam_role.codebuild_role.arn}"
 
   artifacts {
     type = "CODEPIPELINE"
@@ -59,7 +59,7 @@ resource "aws_codebuild_project" "codebuild_project" {
   }
 
   source {
-    type     = "CODEPIPELINE"
+    type      = "CODEPIPELINE"
     buildspec = "cluster-pipeline/buildspec.yml"
   }
 }

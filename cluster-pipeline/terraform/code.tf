@@ -25,6 +25,7 @@ EOF
 resource "aws_iam_role_policy" "codepipeline_policy" {
   name = "${var.project_name}-pipeline-policy"
   role = "${aws_iam_role.codepipeline_role.id}"
+
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -75,6 +76,7 @@ resource "aws_codepipeline" "code_pipeline" {
   artifact_store {
     location = "${aws_s3_bucket.codepipeline_bucket.bucket}"
     type     = "S3"
+
     encryption_key {
       id   = "${data.aws_kms_alias.s3kmskey.arn}"
       type = "KMS"
@@ -83,6 +85,7 @@ resource "aws_codepipeline" "code_pipeline" {
 
   stage {
     name = "Source"
+
     action {
       name             = "Source"
       category         = "Source"
@@ -90,18 +93,20 @@ resource "aws_codepipeline" "code_pipeline" {
       provider         = "GitHub"
       version          = "1"
       output_artifacts = ["test"]
+
       configuration {
-        Owner      = "ministryofjustice"
-        Repo       = "${var.git_repo}"
-        PollForSourceChanges = "true" 
-        Branch     = "${var.git_branch}"
-        OAuthToken = "${var.git_token}"
+        Owner                = "ministryofjustice"
+        Repo                 = "${var.git_repo}"
+        PollForSourceChanges = "true"
+        Branch               = "${var.git_branch}"
+        OAuthToken           = "${var.git_token}"
       }
     }
   }
 
   stage {
     name = "Build"
+
     action {
       name            = "Build"
       category        = "Build"
@@ -109,6 +114,7 @@ resource "aws_codepipeline" "code_pipeline" {
       provider        = "CodeBuild"
       version         = "1"
       input_artifacts = ["test"]
+
       configuration {
         ProjectName = "${var.project_name}"
       }
