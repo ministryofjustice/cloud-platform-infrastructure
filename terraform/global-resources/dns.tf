@@ -15,6 +15,6 @@ resource "aws_route53_record" "k8s_ns" {
   ttl     = "30"
 
   records = [
-    "${aws_route53_zone.k8s.name_servers}"
+    "${aws_route53_zone.k8s.name_servers}",
   ]
 }

@@ -9,6 +9,6 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
   ttl     = "30"
 
   records = [
-    "${aws_route53_zone.cluster.name_servers}"
+    "${aws_route53_zone.cluster.name_servers}",
   ]
 }

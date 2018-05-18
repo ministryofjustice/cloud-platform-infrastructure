@@ -13,12 +13,13 @@ provider "aws" {
 }
 
 data "terraform_remote_state" "global" {
-    backend = "s3"
-    config {
-        bucket = "moj-cp-k8s-investigation-global-terraform"
-        region = "eu-west-1"
-        key    = "terraform.tfstate"
-    }
+  backend = "s3"
+
+  config {
+    bucket = "moj-cp-k8s-investigation-global-terraform"
+    region = "eu-west-1"
+    key    = "terraform.tfstate"
+  }
 }
 
 locals {
@@ -52,8 +53,8 @@ module "cluster_vpc" {
   enable_dns_hostnames = true
 
   tags = {
-    Terraform   = "true"
-    Cluster     = "${local.cluster_name}"
-    Domain      = "${local.cluster_base_domain_name}"
+    Terraform = "true"
+    Cluster   = "${local.cluster_name}"
+    Domain    = "${local.cluster_base_domain_name}"
   }
 }
