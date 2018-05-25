@@ -18,13 +18,18 @@ Within Global Resources you can find:
 
 ### ecr_credentials.tf
 
-This Terraform file uses the following Terraform module which creates ECR credentials and repository on AWS. This Module is used to create the user, ECR repository and credentials for our example app. The team name is `webops` and the repository name is `cloud-platform-reference-app` and these are the parameters used by the module in this case
+This Terraform file uses the following Terraform module which creates ECR credentials and repository on AWS.
+This Module is used to create the user, ECR repository and credentials for our example app. The team name is `webops` and the repository name is `cloud-platform-reference-app` and these are the parameters used by the module in this case
 
 * [AWS ECR Cloud Platform Terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials)
 
 ### How to use the Module
 
-This module can be used by cloud platforms to create an ECR repository, credentials, and a user for other teams upon request. The way to use it, similarly than the ecr_credentials.tf, a new Terraform TF file needs to be created with:
+#### Context
+
+This module can be used by cloud platforms to create an ECR repository, credentials, and a user for other teams upon request. An ERC repository and credentials are required by any team to build and application on AWS. They would need to upload the image into ECR to use it within AWS.
+
+The way to use this module, similarly than the ecr_credentials.tf, a new Terraform TF file needs to be created with:
 
 ```hcl
 module "team_ECR_credentials" {
@@ -53,7 +58,7 @@ In the same directory where the newly created Terraform file lives.
 | repository_name | name of the repository to be created | string | - | yes |
 | team_name | name of the team creating the credentials | string | - | yes |
 
-Note that this example may create resources which can cost money. Run `Terraform destroy` when you don't need these resources.
+**Note that this example may create resources which can cost money. Run `Terraform destroy` when you don't need these resources.**
 
 ### Module Outputs
 
