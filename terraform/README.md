@@ -51,26 +51,9 @@ $ Terraform apply
 ```
 In the same directory where the newly created Terraform file lives.
 
-### Module Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| repository_name | name of the repository to be created | string | - | yes |
-| team_name | name of the team creating the credentials | string | - | yes |
-
 **Note that this example may create resources which can cost money. Run `Terraform destroy` when you don't need these resources.**
 
-### Module Outputs
-
-| Name | Description |
-|------|-------------|
-| policy_arn | ARN for the new policy |
-| access_key_id | Access key id for the new user |
-| secret_access_key | Secret for the new user |
-| user_name | User name for the new credentials |
-| repository_arn | ECR repository ARN |
-
-The user_name ,secret_access_key and repository_arn will need to be distributed to the Team after this code is run.
+The user_name ,secret_access_key and repository_arn outputs will need to be distributed to the Team after this code is run.
 
 ## Modules
 The modules directory contains Terraform modules within this repository. These modules will need to be migrated to one git repository per module, the same way the AWS ECR module was built.
