@@ -22,12 +22,24 @@ output "availability_zones" {
   value = "${var.availability_zones}"
 }
 
+output "vpc_id" {
+  value = "${module.cluster_vpc.vpc_id}"
+}
+
 output "internal_subnets" {
   value = "${var.internal_subnets}"
 }
 
+output "internal_subnets_ids" {
+  value = "${module.cluster_vpc.private_subnets}"
+}
+
 output "external_subnets" {
   value = "${var.external_subnets}"
+}
+
+output "external_subnets_ids" {
+  value = "${module.cluster_vpc.public_subnets}"
 }
 
 output "hosted_zone_id" {
