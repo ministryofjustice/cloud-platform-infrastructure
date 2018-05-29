@@ -22,6 +22,10 @@ output "availability_zones" {
   value = "${var.availability_zones}"
 }
 
+output "vpc_id" {
+  value = "${module.cluster_vpc.vpc_id}"
+}
+
 output "internal_subnets" {
   value = "${module.cluster_vpc.private_subnets}"
 }
