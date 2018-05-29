@@ -23,11 +23,19 @@ output "availability_zones" {
 }
 
 output "internal_subnets" {
-  value = "${var.internal_subnets}"
+  value = "${module.cluster_vpc.private_subnets}"
+}
+
+output "internal_subnets_cidr_blocks" {
+  value = "${module.cluster_vpc.private_subnets_cidr_blocks}"
 }
 
 output "external_subnets" {
-  value = "${var.external_subnets}"
+  value = "${module.cluster_vpc.public_subnets}"
+}
+
+output "external_subnets_cidr_blocks" {
+  value = "${module.cluster_vpc.public_subnets_cidr_blocks}"
 }
 
 output "hosted_zone_id" {
