@@ -43,7 +43,7 @@ spec:
     oidcGroupsClaim: https://k8s.integration.dsd.io/groups
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.8.6
+  kubernetesVersion: 1.10.3
   networking:
     calico: {}
   nonMasqueradeCIDR: 100.64.0.0/10
