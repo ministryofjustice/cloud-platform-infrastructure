@@ -65,11 +65,14 @@ dns_zone = cluster_name
 kops_state_store = 's3://' + tf('kops_state_store') + '/' + cluster_name
 availability_zones = tf('availability_zones')
 master_public_name = 'api.' + cluster_name
+network_id = tf('vpc_id')
 network_cidr = tf('network_cidr_block')
 topology = 'bastion.' + cluster_name
-internal_subnets = tf('internal_subnets')
-external_subnets = tf('external_subnets')
-hosted_zone_id = tf('hosted_zone_id') 
+internal_subnets_ids = tf('internal_subnets_ids')
+internal_subnets_cidrs = tf('internal_subnets')
+external_subnets_ids = tf('external_subnets_ids')
+external_subnets_cidrs = tf('external_subnets')
+hosted_zone_id = tf('hosted_zone_id')
 
 # Organize in lists by kind and role
 for template in templates:
@@ -92,7 +95,7 @@ for template in clusters:
     for item in json.loads(template['spec']['additionalPolicies']['node']):
         if item['Resource'] == ['arn:aws:route53:::hostedzone/']:
           item['Resource'] = ['arn:aws:route53:::hostedzone/' + hosted_zone_id]
-        policies.append(item) 
+        policies.append(item)
 
     template['spec']['additionalPolicies']['node'] = literal(policies)
     template['spec']['configBase'] = kops_state_store
@@ -107,6 +110,7 @@ for template in clusters:
     template['spec']['etcdClusters'] = etcdclusters
     template['spec']['masterPublicName'] = master_public_name
     template['spec']['networkCIDR'] = network_cidr
+    template['spec']['networkID'] = network_id
     template['spec'].update({
         'topology': {
             'bastion': {
@@ -121,19 +125,21 @@ for template in clusters:
     })
 
     subnets = []
-    if len(internal_subnets) == len(
-            external_subnets) == len(availability_zones):
-        for i in range(len(external_subnets)):
+    if len(internal_subnets_cidrs) == len(
+            external_subnets_cidrs) == len(availability_zones):
+        for i in range(len(external_subnets_cidrs)):
             subnets.append(
                 {
-                    'cidr': external_subnets[i],
+                    'cidr': external_subnets_cidrs[i],
+                    'id': external_subnets_ids[i],
                     'name': availability_zones[i],
                     'type': 'Private',
                     'zone': availability_zones[i]})
-        for i in range(len(internal_subnets)):
+        for i in range(len(internal_subnets_cidrs)):
             subnets.append(
                 {
-                    'cidr': internal_subnets[i],
+                    'cidr': internal_subnets_cidrs[i],
+                    'id': internal_subnets_ids[i],
                     'name': 'utility-' + availability_zones[i],
                     'type': 'Utility',
                     'zone': availability_zones[i]})
