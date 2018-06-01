@@ -97,7 +97,7 @@ for template in clusters:
           item['Resource'] = ['arn:aws:route53:::hostedzone/' + hosted_zone_id]
         policies.append(item)
 
-    template['spec']['additionalPolicies']['node'] = literal(policies)
+    template['spec']['additionalPolicies']['node'] = json.dumps(policies)
     template['spec']['configBase'] = kops_state_store
     template['spec']['dnsZone'] = dns_zone
 
