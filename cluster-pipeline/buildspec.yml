@@ -10,7 +10,7 @@ phases:
   install:
     commands:
        - apt update
-       - apt install -y awscli git unzip openssh-client
+       - apt install -y awscli git unzip openssh-client python3-yaml
        - wget https://github.com/kubernetes/kops/releases/download/"$kops_version"/kops-linux-amd64
        - chmod +x kops-linux-amd64 && mv kops-linux-amd64 /usr/local/bin/kops
        - url="$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)"
