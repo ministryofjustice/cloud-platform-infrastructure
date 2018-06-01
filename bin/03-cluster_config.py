@@ -127,19 +127,19 @@ for template in clusters:
     subnets = []
     if len(internal_subnets_cidrs) == len(
             external_subnets_cidrs) == len(availability_zones):
-        for i in range(len(external_subnets_cidrs)):
-            subnets.append(
-                {
-                    'cidr': external_subnets_cidrs[i],
-                    'id': external_subnets_ids[i],
-                    'name': availability_zones[i],
-                    'type': 'Private',
-                    'zone': availability_zones[i]})
         for i in range(len(internal_subnets_cidrs)):
             subnets.append(
                 {
                     'cidr': internal_subnets_cidrs[i],
                     'id': internal_subnets_ids[i],
+                    'name': availability_zones[i],
+                    'type': 'Private',
+                    'zone': availability_zones[i]})
+        for i in range(len(external_subnets_cidrs)):
+            subnets.append(
+                {
+                    'cidr': external_subnets_cidrs[i],
+                    'id': external_subnets_ids[i],
                     'name': 'utility-' + availability_zones[i],
                     'type': 'Utility',
                     'zone': availability_zones[i]})
