@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: kuberos
-data:
-  OIDC_ISSUER_URL: "https://moj-cloud-platforms-dev.eu.auth0.com/"
-  OIDC_CLIENT_ID: "7ix4YkYwQe8n7j9qTrdAKeMz26eJTB2x"
