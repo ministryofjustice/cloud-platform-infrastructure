@@ -56,7 +56,6 @@ This structure allows us to reduce the blast radius of errors when compared to  
 ```
 $ terraform workspace list                                                                                                       
 * default
-  cloud-platforms-sandbox
   non-production
 ```
 
@@ -65,7 +64,7 @@ $ terraform workspace list
 To select a workspace/environment:
 
 ```
-$ terraform workspace select cloud-platforms-sandbox
+$ terraform workspace select cloud-platforms-test
 ```
 
 The selected Terraform workspace is [interpolated](https://www.terraform.io/docs/state/workspaces.html#current-workspace-interpolation) in Terraform resource declarations to create per-environment AWS resources, e.g.:
@@ -143,17 +142,13 @@ When you do this you have the option of adding a reviewer. It's good to share yo
 
 If you can't find anyone add Kerin or Kalbir.
 
-## Sandbox Cluster
-
-A sandbox cluster for experimentation has been created - `cloud-platforms-sandbox.k8s.integration.dsd.io` - using Terraform and Kops.
-
 ### Kops
 
 The `kops/` directory contains the cluster specification, including an additional IAM policy to allow Route53 management, and config for OIDC authentication and RBAC. To make changes, edit `kops/sandboc_cluster.yaml` and:
 
 ```
 $ cd kops
-$ kops replace -f sandbox_cluster.yaml
+$ kops replace -f test_cluster.yaml
 $ kops cluster update
 $ kops cluster update --yes
 ```
