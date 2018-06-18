@@ -1,0 +1,93 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kuberos-oidc-env
+data:
+  OIDC_ISSUER_URL: "https://moj-cloud-platforms-dev.eu.auth0.com/"
+  OIDC_CLIENT_ID: "lFevjGBPzBGiXUlf76CJnwqEad2JZo0w"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: templates
+data:
+  kubecfg: |
+    apiVersion: v1
+    kind: Config
+    clusters:
+    - cluster:
+        certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMwekNDQWJ1Z0F3SUJBZ0lNRlRYZ1JlOHBoYVZIQVdyN01BMEdDU3FHU0liM0RRRUJDd1VBTUJVeEV6QVIKQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13SGhjTk1UZ3dOakExTVRJeU16VTVXaGNOTWpnd05qQTBNVEl5TXpVNQpXakFWTVJNd0VRWURWUVFERXdwcmRXSmxjbTVsZEdWek1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBCk1JSUJDZ0tDQVFFQW40SGMzNHpoYk5vcnZRQ09VMnRoeTZqV0t5bEpXSjlKaGxpMk1OZ1hIN3REZFhsazF2Q0EKaGxYZUY4bU5UOXA5amxnYlNuNndHS3dMT2JxTk1XZ0xIemkyYnFHQ0hMdUhVL0JkQVZCV0dXcGt2bk4yNU1GUwo1WjZqVGJwdVQyVzg5RExPMS94S3dsYkhNTThzd2FMb1E0L1kxZkdaNlBXQzFpZkZoc0RJWWtTQVJKRWVZeGw2CjVlYkU5UXp6YWZMRDZUbS9lSEFCME5MZXJDeDFneDFTZHczVGMvckhjN1ZrL3hHbGFDNkdLOC9WWm52NDdISFMKem1PSDMxSVhlOWE4eWxSOFQxNmgvSVVtc1lpVDdtWWR6d01DaEljVEN3Z0lHS0NZNUFxcUdvM0Fpa2ZrN20yTApRRFJCS3dMMmpZc01yNE8rcUpjUXpuZ2ZlaUl5YVplSXFRSURBUUFCb3lNd0lUQU9CZ05WSFE4QkFmOEVCQU1DCkFRWXdEd1lEVlIwVEFRSC9CQVV3QXdFQi96QU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FRRUFPYXNOYVNhRkVXbmkKOVNRV2w3U0xUaVc2cStIWHhNcnJ4bWhtdm5TTjZhMTdHY0dMMUVmclVqb0RSRExVbEJHYngvVktsZ1pzTDlBRQo5YnNndlg1MUZOSk1sSU9PVDJJbFo4ckk1TmowejJpZFhKL0N0OGRpMGhwdy85YUJ4NjQ5OUp5NkJBNlQvRjQ1CkVmalZFSWJrM2FMQ3F1T3pGeEdaZy9VbVNJQUZoa1ZZajQwK3hKU1hKNHl3NEowbjI3WFptbFVjZlk2aEZ3UmoKSlordC9vL05KVFhETlE2VTJnYmR4R29rOWFyY1Yya3NiTUFmZEtYTGRrQURYdEVZVUZRcVk0ZVhXSjJJbnVPaApqckczeWdNYXorbjVPUi91b2ZQc25qNUxiUisxbk5oRnkxV2lGWUUzeE8rOWdkYW02VURyYW9DWHdrY0RYZ3F5CnFTWUJMSzNaWVE9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+        server: https://api.cloud-platform-test-1.k8s.integration.dsd.io
+      name: cloud-platform-test-1.k8s.integration.dsd.io
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kuberos
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: login.apps.cloud-platform-test-1.k8s.integration.dsd.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kuberos
+          servicePort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kuberos
+spec:
+  ports:
+  - port: 80
+    name: http
+    targetPort: http
+  selector:
+    app: kuberos
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kuberos
+spec:
+  template:
+    metadata:
+      labels:
+        app: kuberos
+    spec:
+      containers:
+      - name: kuberos
+        image: negz/kuberos:14f4ca7
+        command:
+        - "/kuberos"
+        - "$(OIDC_ISSUER_URL)"
+        - "$(OIDC_CLIENT_ID)"
+        - "/oidc/secret"
+        - "/templates/kubecfg"
+
+        envFrom:
+        - configMapRef:
+            name: kuberos-oidc-env
+
+        ports:
+        - containerPort: 10003
+          name: http
+
+        volumeMounts:
+        - name: oidc
+          mountPath: /oidc
+        - name: templates
+          mountPath: /templates
+
+      volumes:
+      - name: oidc
+        secret:
+          secretName: kuberos-oidc
+
+      - name: templates
+        configMap:
+          name: templates
