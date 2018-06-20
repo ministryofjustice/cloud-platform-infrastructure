@@ -2,13 +2,12 @@
 
 This repository will allow you to create a monitoring namespace in a MoJ Cloud Platform cluster. It will also contain the neseccary values to perform an installation of Prometheus-Operator and Kube-Prometheus. 
 
-  - [Pre-reqs](#prereq)
-  - [Creating a monitoring namespace](#installation)
-  - [Installing Prometheus-Operator](#output-example)
-  - [Installng Kube-Prometheus](#usage)
-  - [Exposing the port](#features-and-advantages-of-this-project)  
-  - [How to tear it all down](#am-i-missing-some-essential-feature)
-  - [Contributing](#contributing)
+  - [Pre-reqs](#pre-reqs)
+  - [Creating a monitoring namespace](#creating-a-monitoring-namespace)
+  - [Installing Prometheus-Operator](#installing-prometheus-operator)
+  - [Installng Kube-Prometheus](#installing-kube-prometheus)
+  - [Exposing the port](#exposing-the-port)
+  - [How to tear it all down](#how-to-tear-it-all-down)
 
 ```
 TL;DR
