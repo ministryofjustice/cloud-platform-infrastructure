@@ -60,3 +60,4 @@ resources: {}
   #   memory: 50Mi
 
 jobLabel: prometheus-operator
+
