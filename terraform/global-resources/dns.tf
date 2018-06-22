@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 # Reference to existing base DNS zone
 data "aws_route53_zone" "base" {
   name = "${var.base_domain_name}."
@@ -16,5 +18,16 @@ resource "aws_route53_record" "k8s_ns" {
 
   records = [
     "${aws_route53_zone.k8s.name_servers}",
+  ]
+}
+
+resource "aws_route53_record" "ecr_registry" {
+  zone_id = "${data.aws_route53_zone.base.zone_id}"
+  name    = "ecr.${var.base_domain_name}"
+  type    = "CNAME"
+  ttl     = "30"
+
+  records = [
+    "${data.aws_caller_identity.current.account_id}.dkr.ecr.eu-west-1.amazonaws.com"
   ]
 }
