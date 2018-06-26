@@ -1,8 +1,8 @@
 # exporter-node configuration
-deployExporterNode: false
+deployExporterNode: true
 
 # Grafana
-deployGrafana: false
+deployGrafana: true
 
 ## If true, create & use RBAC resources resp. Pod Security Policies
 ##
@@ -11,7 +11,7 @@ global:
   pspEnable: true
 
 # AlertManager
-deployAlertManager: false
+deployAlertManager: true
 
 alertmanager:
   ## Alertmanager configuration directives

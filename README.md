@@ -5,7 +5,9 @@ This repository will allow you to create a monitoring namespace in a MoJ Cloud P
   - [Pre-reqs](#pre-reqs)
   - [Creating a monitoring namespace](#creating-a-monitoring-namespace)
   - [Installing Prometheus-Operator](#installing-prometheus-operator)
-  - [Installng Kube-Prometheus](#installing-kube-prometheus)
+  - [Installing Kube-Prometheus](#installing-kube-prometheus)
+  - [Installing Alertmanager](#installing-alertmanager)
+  - [Installing Exporter-Kubelets](#installing-exporter-kubelets)
   - [Exposing the port](#exposing-the-port)
   - [How to tear it all down](#how-to-tear-it-all-down)
 
@@ -24,6 +26,9 @@ $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEn
 
 # Expose the Prometheus port to your localhost
 $ kubectl port-forward -n monitoring prometheus-kube-prometheus-0 9090
+
+# Expose the AlertManager port to your localhost
+$ kubectl port-forward -n monitoring alertmanager-kube-prometheus-0 9093
 ```
 
 ## Pre-reqs
@@ -58,11 +63,43 @@ To install kube-prometheus, run:
 ```
 $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace monitoring -f ./monitoring/helm/kube-prometheus/values.yaml
 ```
+
+## Installing AlertManager
+The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing them to the correct receiver integration such as email or PagerDuty. It also takes care of silencing and inhibition of alerts.
+[https://prometheus.io/docs/alerting/alertmanager/](https://prometheus.io/docs/alerting/alertmanager/)
+AlertManager can be installed (using a sub-chart) as part of the installtion of Kube-Prometheus.
+
+Set the following entry on the Kube-Prometheus values.yaml to true
+```
+# AlertManager
+deployAlertManager: true
+```
+
+## Installing Exporter-Kubelets
+Exporter-Kubelets is a simple service that enables container metrics to be scraped by prometheus (also known as cAdvisor)
+Exporter-Kubelets can be installed [as a service monitor](https://github.com/coreos/prometheus-operator#customresourcedefinitions) as part of the installation of Kube-Prometheus.
+
+Add the exporter-kubelets value under the serviceMonitorsSelector section:
+
+```
+serviceMonitorsSelector:
+    matchExpressions:
+    - key: app
+      operator: In
+      values:
+      - exporter-kubelets
+```
+
 ## Exposing the port
 Due to a lack of auth options, we've decided to use port forwarding to prevent unauthorised access. Forward the Prometheus server to your machine so you can take a better look at the dashboard by opening http://localhost:9090.
 ```
 $ kubectl port-forward -n monitoring prometheus-kube-prometheus-0 9090
 ```
+To Expose the port for AlertManager, run:
+```
+$ kubectl port-forward -n monitoring alertmanager-kube-prometheus-0 9093
+```
+
 ## How to tear it all down
 If you need to uninstall kube-prometheus and the prometheus-operator then you will simple need to run the following:
 ```
