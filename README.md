@@ -65,8 +65,9 @@ $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEn
 ```
 
 ## Installing AlertManager
-The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing them to the correct receiver integration such as email or PagerDuty. It also takes care of silencing and inhibition of alerts.
-[https://prometheus.io/docs/alerting/alertmanager/](https://prometheus.io/docs/alerting/alertmanager/)
+> The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing > them to the correct receiver integration such as email or PagerDuty. It also takes care of silencing and inhibition of alerts
+> [https://prometheus.io/docs/alerting/alertmanager/](https://prometheus.io/docs/alerting/alertmanager/)
+
 AlertManager can be installed (using a sub-chart) as part of the installtion of Kube-Prometheus.
 
 Set the following entry on the Kube-Prometheus values.yaml to true
@@ -77,6 +78,7 @@ deployAlertManager: true
 
 ## Installing Exporter-Kubelets
 Exporter-Kubelets is a simple service that enables container metrics to be scraped by prometheus (also known as cAdvisor)
+
 Exporter-Kubelets can be installed [as a service monitor](https://github.com/coreos/prometheus-operator#customresourcedefinitions) as part of the installation of Kube-Prometheus.
 
 Add the exporter-kubelets value under the serviceMonitorsSelector section:
