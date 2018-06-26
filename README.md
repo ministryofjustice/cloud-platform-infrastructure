@@ -65,7 +65,7 @@ $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEn
 ```
 
 ## Installing AlertManager
-> The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing   them to the correct receiver integration such as email or PagerDuty. It also takes care of silencing and inhibition of alerts
+> The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing   them to the correct receiver integration such as email or PagerDuty. It also takes care of silencing and inhibition of alerts - 
 > [https://prometheus.io/docs/alerting/alertmanager/](https://prometheus.io/docs/alerting/alertmanager/)
 
 AlertManager can be installed (using a sub-chart) as part of the installtion of Kube-Prometheus.
