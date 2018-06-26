@@ -107,3 +107,33 @@ If you need to uninstall kube-prometheus and the prometheus-operator then you wi
 ```
 $ helm del --purge kube-prometheus && helm del --purge prometheus-operator
 ```
+
+## Configuring Prometheus Alertmanager
+
+Now Alertmanager has been installed and running, it now needs to be configured to take Prometheus alerts and output them into a Support Management Tool. In our case, this will be PadgerDuty.
+
+To view the current Secrets in the Namespace, start by running:
+ ```
+ kubectl get secret -n monitoring
+ ``` 
+Make note of the name of the Secret that makes refference to Alertmanager.
+
+Now we can view the current config file that Alertmanager is using.
+
+  *FYI: To display JSON in the Terminal you'll need jq, the command-line JSON processor:* 
+  ```
+  brew install jq
+  ```
+
+Run the command below, making sure to replace SECRET_NAME with the Secret you just made a note of.
+
+```bash
+kubectl -n monitoring get secret SECRET_NAME -ojson | jq -r '.data["alertmanager.yaml"]' | base64 -D
+```
+
+
+
+
+
+
+
