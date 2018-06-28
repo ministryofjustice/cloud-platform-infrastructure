@@ -35,7 +35,7 @@ alertmanager:
         receiver: pager-duty-high-priority
       - match: 
           severity: warning
-        receiver: pager-duty-low-priority
+        receiver: slack-low-priority
     receivers:
     - name: 'null'
     # Add PagerDuty key to allow integration with a PD service. 
@@ -43,10 +43,12 @@ alertmanager:
       pagerduty_configs:
       - service_key: "$KEY"
     # Add Slack webhook API URL and channel for integration with slack.
-    - name: 'pager-duty-low-priority'
+    - name: 'slack-low-priority'
       slack_configs:
       - api_url: "$WEBHOOK_URL"
         channel: "#general"
+        text: "<!channel> \ndescription: {{ .CommonAnnotations.description }}\nsummary: {{ .CommonAnnotations.summary }}"
+        send_resolved: True
 
   ## Alertmanager template files to include
   #
