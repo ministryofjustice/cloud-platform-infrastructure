@@ -75,6 +75,42 @@ Set the following entry on the Kube-Prometheus `values.yaml` to true
 # AlertManager
 deployAlertManager: true
 ```
+### Configuring AlertManager to send alerts to PagerDuty
+
+Make note of the `service_key:` key on the Kube-Prometheus `values.yaml` file. 
+
+```yaml
+# Add PagerDuty key to allow integration with a PD service. 
+    - name: 'pager-duty-high-priority'
+      pagerduty_configs:
+      - service_key: "$KEY"
+```
+The `$KEY` value needs to be generated and copied from PagerDuty.
+
+### PagerDuty Service Key retrieval
+
+This is a quick guide on how to retrive your service key from PagerDuty by following these steps:
+
+1) Login to PaderDuty
+
+2) Go to the **Configuration** menu and select **Services**.
+
+3) On the Services page: 
+
+    * If you are creating a new service for your integration, click **Add New Service**.
+
+    * If you are adding your integration to an existing service, click the name of the service you want to add the integration to. Then click the **Integrations** tab and click the **New Integration** button.
+4) Select your app from the **Integration Type** menu and enter an **Integration Name**.
+
+5) Click the **Add Service** or **Add Integration** button to save your new integration. You will be redirected to the Integrations page for your service.
+
+6) Copy the **Integration Key** for your new integration.
+
+7) Paste the **Integration Key** into the `service_key` placeholder, `$key` in the configuration `values.yaml` file.
+
+### Slack Intergration Placeholder
+
+PLACEHOLD
 
 ## Installing Exporter-Kubelets
 Exporter-Kubelets is a simple service that enables container metrics to be scraped by prometheus (also known as cAdvisor)
@@ -107,121 +143,6 @@ If you need to uninstall kube-prometheus and the prometheus-operator then you wi
 ```bash
 $ helm del --purge kube-prometheus && helm del --purge prometheus-operator
 ```
-
-# Configuring Prometheus Alertmanager
-
-Now Alertmanager has been installed and running, it now needs to be configured to take Prometheus alerts and output them into a Support Management Tool. In our case, this will be PadgerDuty.
-
-To view the current Secrets in the Namespace, start by running:
- ```bash
- kubectl get secret -n monitoring
- ``` 
-Make note of the name of the Secret that makes refference to Alertmanager.
-
-Now we can view the current config file that Alertmanager is using.
-
-  *FYI: To display JSON in the Terminal you'll need jq, the command-line JSON processor:* 
-  ```
-  brew install jq
-  ```
-
-Run the command below, making sure to replace SECRET_NAME with the Secret you just made a note of.
-
-```bash
-kubectl -n monitoring get secret SECRET_NAME -ojson | jq -r '.data["alertmanager.yaml"]' | base64 -D
-```
-After running the command above, you will see the current default configuration of the Alertmanager.
-
-Make local copy of the default config file by running:
-
-```bash
-kubectl -n monitoring get secret SECRET_NAME -ojson | jq -r '.data["alertmanager.yaml"]' | base64 -D > alertmanager.yaml
-```
-Open the `alertmanager.yaml` with your favorite code editor and you will see a default configuration, like below:
-
-```yaml
-global:
-  resolve_timeout: 5m
-route:
-  group_wait: 30s
-  group_interval: 5m
-  repeat_interval: 12h
-  receiver: default
-  routes:
-  - match:
-      alertname: DeadMansSwitch
-    repeat_interval: 5m
-    receiver: deadmansswitch
-receivers:
-- name: default
-- name: deadmansswitch
-```
-
-The example above contains a `Route`, which acts as a Dead Mans Switch.
-
-
-## Sending alerts to PagerDuty
-
-Above we saw a default configuration, but in our case we want this configuration to send alerts to PadgerDuty, as well as retaining the dead mans switch.
-
-Below is an example configuration default for PadgerDuty:
-
-```yaml
-global:
-  resolve_timeout: 5m
-route:
-  group_wait: 30s
-  group_interval: 5m
-  repeat_interval: 12h
-  receiver: default
-  routes:
-  - match:
-      alertname: DeadMansSwitch
-    repeat_interval: 5m
-    receiver: deadmansswitch
-  - match:
-      service: example-app
-    routes:
-    - match:
-        severity: critical
-      receiver: team-frontend-page
-receivers:
-- name: default
-- name: deadmansswitch
-- name: team-frontend-page
-  pagerduty_configs:
-  - service_key: "<key>"
-```
-### PadgerDuty Service Key
-
-In the section above, you'll see a placeholder for `service_key:`.
-
-This can be retrived from PagerDury by following these steps:
-
-1) Login to PaderDuty
-
-2) Go to the **Configuration** menu and select **Services**.
-
-3) On the Services page: 
-
-    * If you are creating a new service for your integration, click **Add New Service**.
-
-    * If you are adding your integration to an existing service, click the name of the service you want to add the integration to. Then click the **Integrations** tab and click the **New Integration** button.
-4) Select your app from the **Integration Type** menu and enter an **Integration Name**.
-
-5) Click the **Add Service** or **Add Integration** button to save your new integration. You will be redirected to the Integrations page for your service.
-
-6) Copy the **Integration Key** for your new integration.
-
-7) Paste the **Integration Key** into the `service_key` placeholder in the configuratio file.
-
-
-
-
-
-
-
-
 
 
 
