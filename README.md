@@ -11,7 +11,7 @@ This repository will allow you to create a monitoring namespace in a MoJ Cloud P
   - [Exposing the port](#exposing-the-port)
   - [How to tear it all down](#how-to-tear-it-all-down)
 
-```
+```bash
 TL;DR
 # Copy ./monitoring dir to the namespace dir in the cloud-platform-environments repository.
 
@@ -46,13 +46,13 @@ To create a monitoring namespace you will need to copy the `./monitoring` direct
 The Prometheus Operator provides easy monitoring for Kubernetes services and deployments besides managing Prometheus, Alertmanager and Grafana configuration.
 
 To install Prometheus Operator, run:
-```
+```bash
 $ helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
 
 $ helm install coreos/prometheus-operator --name prometheus-operator --namespace monitoring -f ./monitoring/helm/prometheus-operator/values.yaml
 ```
 And then confirm the operator is running in the monitoring namspace:
-```
+```bash
 $ kubectl get pods -n monitoring
 ```
 
@@ -60,7 +60,7 @@ $ kubectl get pods -n monitoring
 Prometheus is an open source toolkit to monitor and alert, inspired by Google Borg Monitor. It was previously developed by SoundCloud and afterwards donated to the CNCF.
 
 To install kube-prometheus, run:
-```
+```bash 
 $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace monitoring -f ./monitoring/helm/kube-prometheus/values.yaml
 ```
 
@@ -70,8 +70,8 @@ $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEn
 
 AlertManager can be installed (using a sub-chart) as part of the installtion of Kube-Prometheus.
 
-Set the following entry on the Kube-Prometheus values.yaml to true
-```
+Set the following entry on the Kube-Prometheus `values.yaml` to true
+```yaml
 # AlertManager
 deployAlertManager: true
 ```
@@ -83,7 +83,7 @@ Exporter-Kubelets can be installed [as a service monitor](https://github.com/cor
 
 Add the exporter-kubelets value under the serviceMonitorsSelector section:
 
-```
+```yaml
 serviceMonitorsSelector:
     matchExpressions:
     - key: app
@@ -94,26 +94,26 @@ serviceMonitorsSelector:
 
 ## Exposing the port
 Due to a lack of auth options, we've decided to use port forwarding to prevent unauthorised access. Forward the Prometheus server to your machine so you can take a better look at the dashboard by opening http://localhost:9090.
-```
+```bash
 $ kubectl port-forward -n monitoring prometheus-kube-prometheus-0 9090
 ```
 To Expose the port for AlertManager, run:
-```
+```bash
 $ kubectl port-forward -n monitoring alertmanager-kube-prometheus-0 9093
 ```
 
 ## How to tear it all down
 If you need to uninstall kube-prometheus and the prometheus-operator then you will simple need to run the following:
-```
+```bash
 $ helm del --purge kube-prometheus && helm del --purge prometheus-operator
 ```
 
-## Configuring Prometheus Alertmanager
+# Configuring Prometheus Alertmanager
 
 Now Alertmanager has been installed and running, it now needs to be configured to take Prometheus alerts and output them into a Support Management Tool. In our case, this will be PadgerDuty.
 
 To view the current Secrets in the Namespace, start by running:
- ```
+ ```bash
  kubectl get secret -n monitoring
  ``` 
 Make note of the name of the Secret that makes refference to Alertmanager.
@@ -130,6 +130,95 @@ Run the command below, making sure to replace SECRET_NAME with the Secret you ju
 ```bash
 kubectl -n monitoring get secret SECRET_NAME -ojson | jq -r '.data["alertmanager.yaml"]' | base64 -D
 ```
+After running the command above, you will see the current default configuration of the Alertmanager.
+
+Make local copy of the default config file by running:
+
+```bash
+kubectl -n monitoring get secret SECRET_NAME -ojson | jq -r '.data["alertmanager.yaml"]' | base64 -D > alertmanager.yaml
+```
+Open the `alertmanager.yaml` with your favorite code editor and you will see a default configuration, like below:
+
+```yaml
+global:
+  resolve_timeout: 5m
+route:
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: default
+  routes:
+  - match:
+      alertname: DeadMansSwitch
+    repeat_interval: 5m
+    receiver: deadmansswitch
+receivers:
+- name: default
+- name: deadmansswitch
+```
+
+The example above contains a `Route`, which acts as a Dead Mans Switch.
+
+
+## Sending alerts to PagerDuty
+
+Above we saw a default configuration, but in our case we want this configuration to send alerts to PadgerDuty, as well as retaining the dead mans switch.
+
+Below is an example configuration default for PadgerDuty:
+
+```yaml
+global:
+  resolve_timeout: 5m
+route:
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  receiver: default
+  routes:
+  - match:
+      alertname: DeadMansSwitch
+    repeat_interval: 5m
+    receiver: deadmansswitch
+  - match:
+      service: example-app
+    routes:
+    - match:
+        severity: critical
+      receiver: team-frontend-page
+receivers:
+- name: default
+- name: deadmansswitch
+- name: team-frontend-page
+  pagerduty_configs:
+  - service_key: "<key>"
+```
+### PadgerDuty Service Key
+
+In the section above, you'll see a placeholder for `service_key:`.
+
+This can be retrived from PagerDury by following these steps:
+
+1) Login to PaderDuty
+
+2) Go to the **Configuration** menu and select **Services**.
+
+3) On the Services page: 
+
+    * If you are creating a new service for your integration, click **Add New Service**.
+
+    * If you are adding your integration to an existing service, click the name of the service you want to add the integration to. Then click the **Integrations** tab and click the **New Integration** button.
+4) Select your app from the **Integration Type** menu and enter an **Integration Name**.
+
+5) Click the **Add Service** or **Add Integration** button to save your new integration. You will be redirected to the Integrations page for your service.
+
+6) Copy the **Integration Key** for your new integration.
+
+7) Paste the **Integration Key** into the `service_key` placeholder in the configuratio file.
+
+
+
+
+
 
 
 
