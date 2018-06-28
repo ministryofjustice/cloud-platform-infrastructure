@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  creationTimestamp: null
+  labels:
+    prometheus: kube-prometheus
+    role: alert-rules
+  name: prometheus-example-rules
+spec:
+  groups:
+  - name: example.rules
+    rules:
+    - alert: Test-Alarm-Please-Ignore
+      expr: predict_linear(node_filesystem_free[6h], 3600 * 24) > 0
+      for: 1m
+      labels:
+        severity: warning
