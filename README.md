@@ -9,6 +9,7 @@ This repository will allow you to create a monitoring namespace in a MoJ Cloud P
   - [Installing Alertmanager](#installing-alertmanager)
   - [Installing Exporter-Kubelets](#installing-exporter-kubelets)
   - [Exposing the port](#exposing-the-port)
+  - [How to add an alert to Prometheus](#how-to-add-an-alert-to-prometheus)
   - [How to tear it all down](#how-to-tear-it-all-down)
 
 ```bash
@@ -137,6 +138,45 @@ To Expose the port for AlertManager, run:
 ```bash
 $ kubectl port-forward -n monitoring alertmanager-kube-prometheus-0 9093
 ```
+
+## How to add an alert to Prometheus
+
+As we're using CoreOS Prometheus operater we have to use Prometheus rules. Prometheus rule files are held in PrometheusRule custom resources. It is recommended that you use the label selector field ruleSelector in the Prometheus object to define the rule files that you want to be mounted into Prometheus.
+
+The best practice is to label the PrometheusRules containing rule files with role: alert-rules as well as the name of the Prometheus object, prometheus: example in this case.
+
+```
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  creationTimestamp: null
+  labels:
+    prometheus: example
+    role: alert-rules
+  name: prometheus-example-rules
+spec:
+  groups:
+  - name: ./example.rules
+    rules:
+    - alert: ExampleAlert
+      expr: vector(1)
+```
+
+The example PrometheusRule always immediately triggers an alert, which is only for demonstration purposes. To validate that everything is working properly have a look at each of the Prometheus web UIs.
+
+The directory `./custom-alerts` contains the manifest files for applying rules to your Prometheus alarms. 
+
+To see the current rules applied to your Prometheus instance, run:
+
+`kubectl get prometheusrule -n monitoring`
+
+Once you've crafted your manifest use:
+
+`kubectl create -n monitoring -f <./custom-alerts/manifest.yaml>`
+
+To remove an alarm, grab the prometheusrule name and use:
+
+`kubectl delete -n monitoring <ruleName>`.
 
 ## How to tear it all down
 If you need to uninstall kube-prometheus and the prometheus-operator then you will simple need to run the following:
