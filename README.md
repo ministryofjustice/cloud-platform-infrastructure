@@ -9,6 +9,7 @@ This repository will allow you to create a monitoring namespace in a MoJ Cloud P
   - [Installing Alertmanager](#installing-alertmanager)
   - [Installing Exporter-Kubelets](#installing-exporter-kubelets)
   - [Exposing the port](#exposing-the-port)
+  - [How to add an alert to Prometheus](#how-to-add-an-alert-to-prometheus)
   - [How to tear it all down](#how-to-tear-it-all-down)
 
 ```bash
