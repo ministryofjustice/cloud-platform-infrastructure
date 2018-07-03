@@ -47,7 +47,7 @@ alertmanager:
       slack_configs:
       - api_url: "$WEBHOOK_URL"
         channel: "#general"
-        text: "<!channel> \ndescription: {{ .CommonAnnotations.description }}\nsummary: {{ .CommonAnnotations.summary }}"
+        text: "description: {{ .CommonAnnotations.description }}\nsummary: {{ .CommonAnnotations.summary }}"
         send_resolved: True
 
   ## Alertmanager template files to include
