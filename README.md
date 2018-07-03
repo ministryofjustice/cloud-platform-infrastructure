@@ -78,7 +78,7 @@ Set the following entry on the Kube-Prometheus `values.yaml` to true
 # AlertManager
 deployAlertManager: true
 ```
-### Configuring AlertManager to send alerts to PagerDuty
+## Configuring AlertManager to send alerts to PagerDuty
 
 Make note of the `service_key:` key on the Kube-Prometheus `values.yaml` file. 
 
@@ -111,7 +111,7 @@ This is a quick guide on how to retrive your service key from PagerDuty by follo
 
 7) Paste the **Integration Key** into the `service_key` placeholder, `$key` in the configuration `values.yaml` file.
 
-### Configuring AlertManager to send alerts to Slack
+## Configuring AlertManager to send alerts to Slack
 
 Slack intergration is enabled using the kube-prometheus values.yaml file:
 
