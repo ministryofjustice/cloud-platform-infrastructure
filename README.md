@@ -8,7 +8,7 @@ This repository will allow you to create a monitoring namespace in a MoJ Cloud P
   - [Installing Kube-Prometheus](#installing-kube-prometheus)
   - [Installing Alertmanager](#installing-alertmanager)
   - [Configuring AlertManager to send alerts to PagerDuty](#Configuring-AlertManager-to-send-alerts-to-PagerDuty)
-  - [Configuring AlertManager to send alerts to Slack](#configuring-alertManager-to-send-alerts-to-slack)
+  - [Configuring AlertManager to send alerts to Slack](#configuring-alertmanager-to-send-alerts-to-slack)
   - [Installing Exporter-Kubelets](#installing-exporter-kubelets)
   - [Exposing the port](#exposing-the-port)
   - [How to add an alert to Prometheus](#how-to-add-an-alert-to-prometheus)
