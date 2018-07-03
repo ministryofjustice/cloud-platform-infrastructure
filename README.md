@@ -8,6 +8,7 @@ This repository will allow you to create a monitoring namespace in a MoJ Cloud P
   - [Installing Kube-Prometheus](#installing-kube-prometheus)
   - [Installing Alertmanager](#installing-alertmanager)
   - [Configuring AlertManager to send alerts to PagerDuty](###Configuring-AlertManager-to-send-alerts-to-PagerDuty)
+  - [Configuring AlertManager to send alerts to Slack](#Configuring-AlertManager-to-send-alerts-to-Slack)
   - [Installing Exporter-Kubelets](#installing-exporter-kubelets)
   - [Exposing the port](#exposing-the-port)
   - [How to add an alert to Prometheus](#how-to-add-an-alert-to-prometheus)
@@ -110,16 +111,28 @@ This is a quick guide on how to retrive your service key from PagerDuty by follo
 
 7) Paste the **Integration Key** into the `service_key` placeholder, `$key` in the configuration `values.yaml` file.
 
-### Slack Intergration Placeholder
+### Configuring AlertManager to send alerts to Slack
 
-PLACEHOLD
+Slack intergration is enabled using the kube-prometheus values.yaml file:
+
+```yaml
+# Add Slack webhook API URL and channel for integration with slack.
+    - name: 'slack-low-priority'
+      slack_configs:
+      - api_url: "$WEBHOOK_URL"
+        channel: "#general"
+        text: "description: {{ .CommonAnnotations.description }}\nsummary: {{ .CommonAnnotations.summary }}"
+        send_resolved: True
+```
+
+Follow the [official slack documentation](https://api.slack.com/incoming-webhooks) to create the `api_url:` and fill in the `channel:` with the name of the slack channel that will recieve the notifications. 
 
 ## Installing Exporter-Kubelets
-Exporter-Kubelets is a simple service that enables container metrics to be scraped by prometheus (also known as cAdvisor)
+Exporter-Kubelets is a simple service that enables container metrics to be scraped by prometheus.
 
-Exporter-Kubelets can be installed [as a service monitor](https://github.com/coreos/prometheus-operator#customresourcedefinitions) as part of the installation of Kube-Prometheus.
+Exporter-Kubelets can be installed as a [service monitor,](https://github.com/coreos/prometheus-operator#customresourcedefinitions) part of the installation of Kube-Prometheus.
 
-Add the exporter-kubelets value under the serviceMonitorsSelector section:
+Add the exporter-kubelets value under the `serviceMonitorsSelector:` section:
 
 ```yaml
 serviceMonitorsSelector:
