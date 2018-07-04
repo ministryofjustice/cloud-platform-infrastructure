@@ -204,6 +204,9 @@ There are two files needed to expose a Prometheus instance to the Internet and t
 - **Application description** This is optional.
 - **Authorization callback URL** is the same as the base FQDN plus /oauth2, like https://foo.bar.com/oauth2
 
+**Important**¬
+>You must transfer ownership of the GitHub oauth application to the `ministryofjustice` orginisation. You simply click the "Transfer ownership" button within the app and follow the instructions. Only admins of the orginisation have access to accept ownership.
+
 2. You must configure the `./monitoring/helm/kube-prometheus/oauth2_proxy.yaml` file. It should look like the example below:
 ```bash
 - --provider=github
@@ -217,8 +220,6 @@ There are two files needed to expose a Prometheus instance to the Internet and t
 - --cookie-secret=lskdfhoh3ii35                                       # randomly generated 16 char string
 - --redirect-url=https://prometheus.test-cluster.example.io/oauth2    # the FQDN in your ingress file
 ```
-**Important**
->Now you must transfer ownership of the application to the `ministryofjustice` orginisation. You simply click the "Transfer ownership" button within the app and follow the instructions. Only admins of the orginisation have access to accept ownership. 
 
 3. Now customise the contents of `./monitoring/helm/kube-prometheus/ingress.yaml`. Changing the `host` value only. This will look like:
 `prometheus.apps.cluster.dsd.io`
