@@ -12,7 +12,7 @@ This repository will allow you to create a monitoring namespace in a MoJ Cloud P
   - [Installing Exporter-Kubelets](#installing-exporter-kubelets)
   - [Exposing the port](#exposing-the-port)
   - [How to add an alert to Prometheus](#how-to-add-an-alert-to-prometheus)
-  - [How to expose Prometheus UI and add oauth proxy]
+  - [How to expose Prometheus UI and add oauth proxy](#how-to-expose-prometheus-ui-and-add-oauth-proxy)
   - [How to tear it all down](#how-to-tear-it-all-down)
 
 ```bash
@@ -206,17 +206,19 @@ There are two files needed to expose a Prometheus instance to the Internet and t
 
 2. You must configure the `./monitoring/helm/kube-prometheus/oauth2_proxy.yaml` file. It should look like the example below:
 ```bash
-        - --provider=github
-        - --github-org=mycompanyname                                          # this would be your organisation name in github
-        - --github-team=myteamname                                            # this is the team name with the orgranisation
-        - --email-domain=*
-        - --upstream=file:///dev/null
-        - --http-address=0.0.0.0:4180
-        - --client-id=jdkshgksdhkh33878ifjd                                   # GitHub oauth application client ID
-        - --client-secret=dkhsfkhskjdfk33                                     # Gihub oauth app client secret
-        - --cookie-secret=lskdfhoh3ii35                                       # randomly generated 16 char string
-        - --redirect-url=https://prometheus.test-cluster.example.io/oauth2    # the FQDN in your ingress file
+- --provider=github
+- --github-org=mycompanyname                                          # this would be your organisation name in github
+- --github-team=myteamname                                            # this is the team name with the orgranisation
+- --email-domain=*
+- --upstream=file:///dev/null
+- --http-address=0.0.0.0:4180
+- --client-id=jdkshgksdhkh33878ifjd                                   # GitHub oauth application client ID
+- --client-secret=dkhsfkhskjdfk33                                     # Gihub oauth app client secret
+- --cookie-secret=lskdfhoh3ii35                                       # randomly generated 16 char string
+- --redirect-url=https://prometheus.test-cluster.example.io/oauth2    # the FQDN in your ingress file
 ```
+**Important**
+>Now you must transfer ownership of the application to the `ministryofjustice` orginisation. You simply click the "Transfer ownership" button within the app and follow the instructions. Only admins of the orginisation have access to accept ownership. 
 
 3. Now customise the contents of `./monitoring/helm/kube-prometheus/ingress.yaml`. Changing the `host` value only. This will look like:
 `prometheus.apps.cluster.dsd.io`
