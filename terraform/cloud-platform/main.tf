@@ -49,7 +49,7 @@ module "cluster_vpc" {
   private_subnets      = "${var.internal_subnets}"
   public_subnets       = "${var.external_subnets}"
   enable_nat_gateway   = true
-  enable_vpn_gateway   = true
+  enable_vpn_gateway   = false
   enable_dns_hostnames = true
 
   tags = {
