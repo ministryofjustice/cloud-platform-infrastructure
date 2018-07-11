@@ -18,8 +18,14 @@ resource "auth0_rule" "whitelist-github-teams" {
   enabled = true
 }
 
-resource "auth0_rule" "map-github-user-and-group-to-k8s" {
-  name = "map-github-user-and-group-to-k8s"
-  script = "${file("map-github-user-and-group-to-k8s.js")}"
+resource "auth0_rule" "add-github-teams-to-oidc-group-claim" {
+  name = "add-github-teams-to-oidc-group-claim"
+  script = "${file("add-github-teams-to-oidc-group-claim.js")}"
+  enabled = true
+}
+
+resource "auth0_rule" "add-github-teams-to-saml-mappings" {
+  name = "add-github-teams-to-saml-mappings"
+  script = "${file("add-github-teams-to-saml-mappings.js")}"
   enabled = true
 }
