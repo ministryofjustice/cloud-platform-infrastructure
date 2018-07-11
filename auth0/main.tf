@@ -5,6 +5,9 @@ resource "auth0_client" "kuberos_client" {
   callbacks = ["https://login.apps.${var.tenant}.k8s.integration.dsd.io/ui"]
   custom_login_page_on = true
   is_first_party = true
+  jwt_configuration = {
+    alg = "RS256"
+  }
 }
 
 resource "auth0_rule" "whitelist-github-orgs" {
