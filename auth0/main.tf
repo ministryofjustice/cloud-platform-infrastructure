@@ -1,7 +1,8 @@
 resource "auth0_client" "kuberos_client" {
   name = "Kuberos Auth (Managed by Terraform)"
   description = "Used by k8s cluster"
-  app_type = "native"
+  app_type = "regular_web"
+  callbacks = ["https://login.apps.${var.tenant}.k8s.integration.dsd.io/ui"]
   custom_login_page_on = true
   is_first_party = true
 }
