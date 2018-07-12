@@ -12,6 +12,7 @@ This repository will allow you to create a monitoring namespace in a MoJ Cloud P
   - [Installing Exporter-Kubelets](#installing-exporter-kubelets)
   - [Exposing the port](#exposing-the-port)
   - [How to add an alert to Prometheus](#how-to-add-an-alert-to-prometheus)
+  - [How to expose Prometheus UI and add oauth proxy](#how-to-expose-prometheus-ui-and-add-oauth-proxy)
   - [How to tear it all down](#how-to-tear-it-all-down)
 
 ```bash
@@ -191,6 +192,44 @@ Once you've crafted your manifest use:
 To remove an alarm, grab the prometheusrule name and use:
 
 `kubectl delete -n monitoring <ruleName>`.
+
+## How to expose Prometheus UI and add oauth proxy
+
+There are two files needed to expose a Prometheus instance to the Internet and then (probably most cruicially) force GitHub authentication. 
+
+1. Before you begin, you MUST create a [custom GitHub OAuth application](https://github.com/settings/applications/new).
+#### Fields
+- **Application name** Please name the application sensibly along the lines of `cloud-platform-prometheus-auth-test-1`.
+- **Homepage URL** This is the FQDN in the ingress rule, like https://foo.bar.com
+- **Application description** This is optional.
+- **Authorization callback URL** is the same as the base FQDN plus /oauth2, like https://foo.bar.com/oauth2
+
+**Important**¬
+>You must transfer ownership of the GitHub oauth application to the `ministryofjustice` orginisation. You simply click the "Transfer ownership" button within the app and follow the instructions. Only admins of the orginisation have access to accept ownership.
+
+2. You must configure the `./monitoring/helm/kube-prometheus/oauth2_proxy.yaml` file. It should look like the example below:
+```bash
+- --provider=github
+- --github-org=mycompanyname                                          # this would be your organisation name in github
+- --github-team=myteamname                                            # this is the team name with the orgranisation
+- --email-domain=*
+- --upstream=file:///dev/null
+- --http-address=0.0.0.0:4180
+- --client-id=jdkshgksdhkh33878ifjd                                   # GitHub oauth application client ID
+- --client-secret=dkhsfkhskjdfk33                                     # Gihub oauth app client secret
+- --cookie-secret=lskdfhoh3ii35                                       # randomly generated 16 char string
+- --redirect-url=https://prometheus.test-cluster.example.io/oauth2    # the FQDN in your ingress file
+```
+
+3. Now customise the contents of `./monitoring/helm/kube-prometheus/ingress.yaml`. Changing the `host` value only. This will look like:
+`prometheus.apps.cluster.dsd.io`
+
+4. Deploy the `oauth2-proxy.yaml` and `ingress.yaml` manifests:
+```bash
+$ kubectl create -f ./monitoring/helm/kube-prometheus/ingress.yaml,./monitoring/helm/kube-prometheus/oauth2_proxy.yaml
+```
+
+5. Test the auth integration by accessing the configured URL.
 
 ## How to tear it all down
 If you need to uninstall kube-prometheus and the prometheus-operator then you will simple need to run the following:
