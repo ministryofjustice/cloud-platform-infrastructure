@@ -38,7 +38,7 @@ Steps:
       NAME                            READY     STATUS    RESTARTS   AGE
       external-dns-798cc84bdc-h4zst   1/1       Running   0          24s
     ```
-1. Install ingress, see [../cluster-components/nginx-ingress](../cluster-components/nginx-ingress) for existing ones, copy live-0, edit hostname
+1. Install ingress, see [../cluster-components/nginx-ingress](../cluster-components/nginx-ingress) for existing ones, copy live-0, edit hostname and aws-load-balancer-ssl-cert (this was generated earlier by Terraform in the pipeline triggered by the commit to master, see [../terraform/modules/cluster_ssl/](../terraform/modules/cluster_ssl/))
     ```
       $ helm install -n nginx-ingress --namespace ingress-controller stable/nginx-ingress -f ../../../cluster-components/nginx-ingress/
       $ kubectl --namespace ingress-controller get services -o wide -w nginx-ingress-controller
