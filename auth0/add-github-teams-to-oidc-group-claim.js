@@ -1,5 +1,6 @@
 function (user, context, callback) {
   var request = require('request');
+  var claim_domain = "https://k8s.integration.dsd.io/groups";
 
   // Apply to 'github' connections only
   if(context.connection === 'github'){
@@ -31,7 +32,7 @@ function (user, context, callback) {
       // Custom OIDC claims should be prefixed with a unique value
       // to prevent clashes with claims from other sources.
       // Common practice is to use a URL
-      context.idToken["https://k8s.integration.dsd.io/groups"] = git_teams;
+      context.idToken[claim_domain] = git_teams;
 
       return callback(null, user, context);
     });
