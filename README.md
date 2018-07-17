@@ -1,6 +1,6 @@
 # Cloud Platform Prometheus
 
-This repository will allow you to create a monitoring namespace in a MoJ Cloud Platform cluster. It will also contain the neseccary values to perform an installation of Prometheus-Operator and Kube-Prometheus. 
+This repository will allow you to create a monitoring namespace in a MoJ Cloud Platform cluster. It will also contain the necessary values to perform an installation of Prometheus-Operator and Kube-Prometheus. 
 
   - [Pre-reqs](#pre-reqs)
   - [Creating a monitoring namespace](#creating-a-monitoring-namespace)
