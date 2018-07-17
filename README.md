@@ -13,6 +13,7 @@ This repository will allow you to create a monitoring namespace in a MoJ Cloud P
   - [Exposing the port](#exposing-the-port)
   - [How to add an alert to Prometheus](#how-to-add-an-alert-to-prometheus)
   - [How to expose Prometheus UI and add oauth proxy](#how-to-expose-prometheus-ui-and-add-oauth-proxy)
+  - [Adding Pingdom Alerts to monitor Prometheus and Alermanager Externally](#adding-pingdom-alerts-to-monitor-prometheus-and-alermanager-externally)
   - [How to tear it all down](#how-to-tear-it-all-down)
 
 ```bash
@@ -230,6 +231,47 @@ $ kubectl create -f ./monitoring/helm/kube-prometheus/ingress.yaml,./monitoring/
 ```
 
 5. Test the auth integration by accessing the configured URL.
+
+## Adding Pingdom Alerts to monitor Prometheus and Alermanager Externally
+
+Prometheus and AlertManager will be behind an oAuth proxy with GitHub credentials required to view the GUI. However, the /healthy endpoint for each applcation will be exposed directly to the internet.
+```
+https://$PROMETHEUS_URL$/-/healthy
+https://$ALERTMANAGER_URL$/-/healthy
+```
+
+To expose the /healthy endpoint, an additional path entry is required in the oidc-proxy.yaml under the ingress section:
+```yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: oidc-proxy
+  namespace: monitoring
+spec:
+  rules:
+  - host: $PROMETHEUS_URL$
+    http:
+      paths:
+      - backend:
+          serviceName: oidc-proxy
+          servicePort: 80
+      - path: /-/healthy
+        backend:
+          serviceName: kube-prometheus
+          servicePort: 9090
+  - host: $ALERTMANAGER_URL$
+    http:
+      paths:
+      - backend:
+          serviceName: oidc-proxy
+          servicePort: 80
+      - path: /-/healthy
+        backend:
+          serviceName: kube-prometheus-alertmanager
+          servicePort: 9093
+```
+
+A pingdom alert should be setup (with appropiate alert recipients) to the /healthy endpoints for each application described above.
 
 ## How to tear it all down
 If you need to uninstall kube-prometheus and the prometheus-operator then you will simple need to run the following:
