@@ -1,6 +1,6 @@
 # Cloud Platform Prometheus
 
-This repository will allow you to create a monitoring namespace in a MoJ Cloud Platform cluster. It will also contain the necessary values to perform an installation of Prometheus-Operator and Kube-Prometheus. 
+This repository will allow you to create a monitoring namespace in a MoJ Cloud Platform cluster. It will also contain the necessary values to perform an installation of Prometheus-Operator and Kube-Prometheus.
 
   - [Pre-reqs](#pre-reqs)
   - [Creating a monitoring namespace](#creating-a-monitoring-namespace)
@@ -12,7 +12,7 @@ This repository will allow you to create a monitoring namespace in a MoJ Cloud P
   - [Installing Exporter-Kubelets](#installing-exporter-kubelets)
   - [Exposing the port](#exposing-the-port)
   - [How to add an alert to Prometheus](#how-to-add-an-alert-to-prometheus)
-  - [How to expose Prometheus UI and add oauth proxy](#how-to-expose-prometheus-ui-and-add-oauth-proxy)
+  - [How to expose the web interfaces behind an OIDC proxy](#how-to-expose-the-web-interfaces-behind-an-oidc-proxy)
   - [Adding Pingdom Alerts to monitor Prometheus and Alermanager Externally](#adding-pingdom-alerts-to-monitor-prometheus-and-alermanager-externally)
   - [How to tear it all down](#how-to-tear-it-all-down)
 
@@ -40,7 +40,7 @@ $ kubectl port-forward -n monitoring alertmanager-kube-prometheus-0 9093
 It is assumed that you have authenticated to an MoJ Cloud-Platform Cluster and you have Helm installed and configured.
 
 ## Creating a monitoring namespace
-To create a monitoring namespace you will need to copy the `./monitoring` directory in this repository to a branch in the [Cloud-Plarform-Environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces). Once this branch has been reviewed and merged to `master` a pipeline is kicked off, creating a namespace called `monitoring`. 
+To create a monitoring namespace you will need to copy the `./monitoring` directory in this repository to a branch in the [Cloud-Plarform-Environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces). Once this branch has been reviewed and merged to `master` a pipeline is kicked off, creating a namespace called `monitoring`.
 
 ## Installing Prometheus-Operator
 > The mission of the Prometheus Operator is to make running Prometheus
@@ -65,12 +65,12 @@ $ kubectl get pods -n monitoring
 Prometheus is an open source toolkit to monitor and alert, inspired by Google Borg Monitor. It was previously developed by SoundCloud and afterwards donated to the CNCF.
 
 To install kube-prometheus, run:
-```bash 
+```bash
 $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace monitoring -f ./monitoring/helm/kube-prometheus/values.yaml
 ```
 
 ## Installing AlertManager
-> The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing   them to the correct receiver integration such as email or PagerDuty. It also takes care of silencing and inhibition of alerts - 
+> The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing   them to the correct receiver integration such as email or PagerDuty. It also takes care of silencing and inhibition of alerts -
 > [https://prometheus.io/docs/alerting/alertmanager/](https://prometheus.io/docs/alerting/alertmanager/)
 
 AlertManager can be installed (using a sub-chart) as part of the installtion of Kube-Prometheus.
@@ -82,10 +82,10 @@ deployAlertManager: true
 ```
 ## Configuring AlertManager to send alerts to PagerDuty
 
-Make note of the `service_key:` key on the Kube-Prometheus `values.yaml` file. 
+Make note of the `service_key:` key on the Kube-Prometheus `values.yaml` file.
 
 ```yaml
-# Add PagerDuty key to allow integration with a PD service. 
+# Add PagerDuty key to allow integration with a PD service.
     - name: 'pager-duty-high-priority'
       pagerduty_configs:
       - service_key: "$KEY"
@@ -100,7 +100,7 @@ This is a quick guide on how to retrive your service key from PagerDuty by follo
 
 2) Go to the **Configuration** menu and select **Services**.
 
-3) On the Services page: 
+3) On the Services page:
 
     * If you are creating a new service for your integration, click **Add New Service**.
 
@@ -127,7 +127,7 @@ Slack intergration is enabled using the kube-prometheus values.yaml file:
         send_resolved: True
 ```
 
-Follow the [official slack documentation](https://api.slack.com/incoming-webhooks) to create the `api_url:` and fill in the `channel:` with the name of the slack channel that will recieve the notifications. 
+Follow the [official slack documentation](https://api.slack.com/incoming-webhooks) to create the `api_url:` and fill in the `channel:` with the name of the slack channel that will recieve the notifications.
 
 ## Installing Exporter-Kubelets
 Exporter-Kubelets is a simple service that enables container metrics to be scraped by prometheus.
@@ -180,7 +180,7 @@ spec:
 
 The example PrometheusRule always immediately triggers an alert, which is only for demonstration purposes. To validate that everything is working properly have a look at each of the Prometheus web UIs.
 
-The directory `./custom-alerts` contains the manifest files for applying rules to your Prometheus alarms. 
+The directory `./custom-alerts` contains the manifest files for applying rules to your Prometheus alarms.
 
 To see the current rules applied to your Prometheus instance, run:
 
@@ -278,7 +278,3 @@ If you need to uninstall kube-prometheus and the prometheus-operator then you wi
 ```bash
 $ helm del --purge kube-prometheus && helm del --purge prometheus-operator
 ```
-
-
-
-
