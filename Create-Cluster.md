@@ -2,6 +2,17 @@
 
 ## Prerequisites
 
+'''
+
+$ brew install kubernetes-cli
+$ brew install kubernetes-helm
+$ brew install terraform
+
+'''
+
+
+## 
+
 1. A Tenant created on https://manage.auth0.com, EU region (use Github credentials to login)
    ![tenant](auth0/tenant.png)
    No Applications (aka Clients) / Connections / Rules are needed initially, delete any defaults (Terraform cannot handle this yet)
