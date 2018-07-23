@@ -13,16 +13,16 @@ $ brew install terraform
 
 ## 
 
-1. Use your Github credentials to log into https://manage.auth0.com, Once you have done that, create a new tenant. 
+1. Use your Github credentials to log into https://manage.auth0.com. Once you have logged in create a new tenant.
 
    ![create-tenant](auth0/create-tenant.png)
 
 
-1. No Applications (aka Clients) / Connections / Rules are needed initially, delete any defaults (Terraform cannot handle this yet) 
+1. Enter a tenant domain name and select the EU Region.
 
    ![tenant](auth0/tenant.png)
 
-1. A single ["Machine to Machine"](https://auth0.com/docs/applications/machine-to-machine) Application, granting it access to the Management API, all scopes. Ensure this app's "Client Secret" is kept safe as it allows the editing of authentication rules for the target app; a "rotate" option is available.
+1. Create a single ["Machine to Machine"](https://auth0.com/docs/applications/machine-to-machine) Application. This application will allow terraform API access to create resources in Auth0. Select Management API with all scopes. Take note of the app's "Client ID & Secret" for use with terraform later.
   ![m2m app](auth0/tf.png)
 
 1. An **org-owned** [Github Oauth app](https://auth0.com/docs/connections/social/github), callback URL pointing to https://tenant-name.eu.auth0.com/login/callback
