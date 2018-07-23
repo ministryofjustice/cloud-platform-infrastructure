@@ -13,13 +13,18 @@ $ brew install terraform
 
 ## 
 
-1. A Tenant created on https://manage.auth0.com, EU region (use Github credentials to login)
-   ![tenant](auth0/tenant.png)
+1. You will need to create a Tenant on https://manage.auth0.com, use your Github credentials to login and select EU region.
    No Applications (aka Clients) / Connections / Rules are needed initially, delete any defaults (Terraform cannot handle this yet)
+   ![tenant](auth0/tenant2.png)
+   ![create-tenant](auth/create-tenant.png)
+
 1. A single ["Machine to Machine"](https://auth0.com/docs/applications/machine-to-machine) Application, granting it access to the Management API, all scopes. Ensure this app's "Client Secret" is kept safe as it allows the editing of authentication rules for the target app; a "rotate" option is available.
   ![m2m app](auth0/tf.png)
+
 1. An **org-owned** [Github Oauth app](https://auth0.com/docs/connections/social/github), callback URL pointing to https://tenant-name.eu.auth0.com/login/callback
+
 1. A "Social Connection" of type Github, using the credentials above and with read:org and read:user privs. The app can only have one instance named "github", any additional ones of the same type created via terraform or curl will not show up in the web interface.
+
 1. Terraform and the [Yieldr Auth0 provider](https://github.com/yieldr/terraform-provider-auth0)
 
 Steps:
