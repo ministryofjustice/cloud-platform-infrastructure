@@ -15,7 +15,7 @@ $ brew install terraform
 
 1. Use your Github credentials to log into https://manage.auth0.com, Once you have done that, create a new tenant. 
 
-   ![create-tenant](auth0/create-tenant.png =250x)
+   ![create-tenant](auth0/create-tenant.png | width=100)
 
 
 1. No Applications (aka Clients) / Connections / Rules are needed initially, delete any defaults (Terraform cannot handle this yet) 
