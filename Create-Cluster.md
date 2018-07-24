@@ -40,13 +40,11 @@ Steps:
    1. Export Kops state store
    ```
    export KOPS_STATE_STORE=s3://moj-cloud-platforms-kops-state-store
-
    ```
    1. Download Cluster Spec from S3 and configure kubectl for use
    
    ```
    kops export kubecfg <clustername>
-   
    ```
 
    ### Install Cluster Components
@@ -103,7 +101,7 @@ Steps:
 
    ### Recovering Environments
 
-1. Cloud-Platform Environments directory has all the current environments/ namespaces. If you make a merge into master, the pipeline should apply in within the namespaces directory / manual apply.
+1. All the environments created within a cluster is on github, so any trigger of the pipeline will create all environments under namespaces/$cluster_name. You can recover the namespaces and service account via triggering the pipeline.
 
 
 
