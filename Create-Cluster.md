@@ -11,7 +11,7 @@ $ brew install terraform
 ```
 
 
-## 
+### Create Auth0 for new cluster.
 
 1. Use your Github credentials to log into https://manage.auth0.com. Once you have logged in create a new tenant.
 
@@ -49,7 +49,7 @@ Steps:
    
    ```
 
-   ## Install Cluster Components
+   ### Install Cluster Components
 
    Using the kubernetes investigations repo, we will install all the cluster components.
 
@@ -94,11 +94,14 @@ Steps:
           kuberos-b7d5f755d-l8jb5   1/1       Running   0          1m
         ```
 1. Add WebOps group as admins
+
     ```
      $ kubectl apply -f ../../../cluster-config/rbac/webops-cluster-admin.yml
      clusterrolebinding.rbac.authorization.k8s.io "webops-cluster-admin" created
 
     ```
+
+   ### Recovering Environments
 
 1. Cloud-Platform Environments directory has all the current environments/ namespaces. If you make a merge into master, the pipeline should apply in within the namespaces directory / manual apply.
 
