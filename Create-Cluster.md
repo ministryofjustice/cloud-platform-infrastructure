@@ -31,7 +31,8 @@ $ brew install terraform
 
 1. Terraform and the [Yieldr Auth0 provider](https://github.com/yieldr/terraform-provider-auth0) create kuberos, Edit terraform.tfvars, add tenant domain, id and secret from the M2M App created above, these will be used by `provider "auth0" {}` in main.tf  `terraform plan && terraform apply`
 
-Steps:
+### Create Cluster using kops
+
 1. Create a k8s cluster, see [../kops/](../kops/) folder for existing ones
    1. Copy the live-0 yaml, replace the oidcClientID and oidcIssueURL with the Kuberos application oidcClientID, oidcIssueURL with the tenant domain.
    1. Unprotect the master branch by going to settings > branches > ??
