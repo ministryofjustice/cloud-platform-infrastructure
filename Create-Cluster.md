@@ -34,10 +34,15 @@ $ brew install terraform
 ### Create Cluster using kops
 
 1. Create a k8s cluster, see [../kops/](../kops/) folder for existing ones
-   1. Copy the live-0 yaml, replace the oidcClientID and oidcIssueURL with the Kuberos application oidcClientID, oidcIssueURL with the tenant domain.
-   1. Unprotect the master branch by going to settings > branches > ??
-   1. Commit to master and check pipeline output in [CodePipeline](https://eu-west-1.console.aws.amazon.com/codepipeline/home?region=eu-west-1#/view/cluster-creation-pipeline)
-   1. Once the cluster been built. you will need to configure your aws profile to use Platform Integrations account.
+
+1. Copy the live-0 yaml, replace the oidcClientID and oidcIssueURL with the Kuberos application oidcClientID, oidcIssueURL with the tenant domain.
+
+1. Unprotect the master branch by going to settings so you can make changes
+
+1. Commit to master and check pipeline output in [CodePipeline](https://eu-west-1.console.aws.amazon.com/codepipeline/home?region=eu-west-1#/view/cluster-creation-pipeline)
+
+1. Once the cluster been built. you will need to configure your aws profile to use Platform Integrations account.
+   
    1. Export Kops state store
       
       ```
@@ -49,7 +54,7 @@ $ brew install terraform
        $ kops export kubecfg <clustername>
       ```
 
-   ### Install Cluster Components
+### Install Cluster Components
 
 1. Install Helm
     ```
