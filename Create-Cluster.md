@@ -29,23 +29,23 @@ $ brew install terraform
 
 1. Create a "Social Connection" of type Github, using the Github oauth credentials and put permissions read:org and read:user privs.
 
-1. [terraform steps.] [terraform creates kuberos app- callback] Terraform and the [Yieldr Auth0 provider](https://github.com/yieldr/terraform-provider-auth0) create kuberos, Edit terraform.tfvars, add tenant domain, id and secret from the M2M App created above, these will be used by `provider "auth0" {}` in main.tf  `terraform plan && terraform apply`
+1. Terraform and the [Yieldr Auth0 provider](https://github.com/yieldr/terraform-provider-auth0) create kuberos, Edit terraform.tfvars, add tenant domain, id and secret from the M2M App created above, these will be used by `provider "auth0" {}` in main.tf  `terraform plan && terraform apply`
 
 Steps:
 1. Create a k8s cluster, see [../kops/](../kops/) folder for existing ones
    1. Copy the live-0 yaml, replace the oidcClientID and oidcIssueURL with the Kuberos application oidcClientID, oidcIssueURL with the tenant domain.
    1. Unprotect the master branch by going to settings > branches > ??
    1. Commit to master and check pipeline output in [CodePipeline](https://eu-west-1.console.aws.amazon.com/codepipeline/home?region=eu-west-1#/view/cluster-creation-pipeline)
-   1. Once the cluster been built. you will need to configure your aws profile to use Platform-Integrations account.
+   1. Once the cluster been built. you will need to configure your aws profile to use Platform Integrations account.
    1. Export Kops state store
       
       ```
-        export KOPS_STATE_STORE=s3://moj-cloud-platforms-kops-state-store
+       $ export KOPS_STATE_STORE=s3://moj-cloud-platforms-kops-state-store
       ```
    1. Download Cluster Spec from S3 and configure kubectl for use
    
       ```
-        kops export kubecfg <clustername>
+       $ kops export kubecfg <clustername>
       ```
 
    ### Install Cluster Components
