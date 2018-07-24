@@ -50,8 +50,6 @@ Steps:
 
    ### Install Cluster Components
 
-   Using the kubernetes investigations repo, we will install all the cluster components.
-
 1. Install Helm
     ```
       $ kubectl apply -f /cluster-components/helm/rbac-config.yml
