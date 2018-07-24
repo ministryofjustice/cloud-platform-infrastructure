@@ -38,14 +38,15 @@ Steps:
    1. Commit to master and check pipeline output in [CodePipeline](https://eu-west-1.console.aws.amazon.com/codepipeline/home?region=eu-west-1#/view/cluster-creation-pipeline)
    1. Once the cluster been built. you will need to configure your aws profile to use Platform-Integrations account.
    1. Export Kops state store
-   ```
-   export KOPS_STATE_STORE=s3://moj-cloud-platforms-kops-state-store
-   ```
+      
+      ```
+        export KOPS_STATE_STORE=s3://moj-cloud-platforms-kops-state-store
+      ```
    1. Download Cluster Spec from S3 and configure kubectl for use
    
-   ```
-   kops export kubecfg <clustername>
-   ```
+      ```
+        kops export kubecfg <clustername>
+      ```
 
    ### Install Cluster Components
 
