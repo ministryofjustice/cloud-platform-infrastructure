@@ -59,7 +59,7 @@ metadata:
   name: master-eu-west-1a
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: c4.xlarge
+  machineType: t2.micro
   maxSize: 1
   minSize: 1
   role: Master
@@ -73,7 +73,7 @@ metadata:
   name: master-eu-west-1b
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: c4.xlarge
+  machineType: t2.micro
   maxSize: 1
   minSize: 1
   role: Master
@@ -87,7 +87,7 @@ metadata:
   name: master-eu-west-1c
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: c4.xlarge
+  machineType: t2.micro
   maxSize: 1
   minSize: 1
   role: Master
@@ -101,7 +101,7 @@ metadata:
   name: nodes
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: c4.2xlarge
+  machineType: t2.micro
   maxSize: 3
   minSize: 3
   role: Node
