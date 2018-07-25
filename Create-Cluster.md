@@ -125,15 +125,3 @@ $ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
     1. Check the laa-fee-calculator ECR for the [latest image](https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories/claim-for-crown-court-defence:laa-fee-calculator#images;tagStatus=ALL)tag.
     1. Change the deployment.yaml container image tag with the latest tag found in ECR.
     1. Change the ingress.yaml host to laa-fee-calculator.apps.your-cluster-name.k8s.integration.dsd.io
-
-
-
-
-
-
-
-
-
-
-
-
