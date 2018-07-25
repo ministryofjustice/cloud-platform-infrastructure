@@ -20,7 +20,7 @@ Have access to the moj-cloud-platforms-dev Auth0 tenant
 
 1. Under `Applications`, create a new single ["Regular Web App"](https://auth0.com/docs/applications/webapps). Name the application `<your-cluster-name>-kuberos`. 
 
-1. Under `Settings`, take note of the app's "Client ID & Secret" and add https://login.apps.your-cluster-name.k8s.integration.dsd.io/ui to the `Allowed Callback URLs`.
+1. Under `Settings`, take note of the app's "Client ID & Secret" and add `https://login.apps.<your-cluster-name>.k8s.integration.dsd.io/ui` to the `Allowed Callback URLs`.
 
 1. On Github, create an **org-owned** [Github Oauth app](https://auth0.com/docs/connections/social/github). Set the callback URL pointing to https://tenant-name.eu.auth0.com/login/callback and the Homepage URL to https://login.apps.your-cluster-name.k8s.integration.dsd.io. Take note of the Github "Client ID & Secret". This will be used in the next step.
 
@@ -121,8 +121,8 @@ Have access to the moj-cloud-platforms-dev Auth0 tenant
     role.rbac.authorization.k8s.io "circleci" created
     rolebinding.rbac.authorization.k8s.io "circleci" created
     ```
-1. In the [laa-fee-calculator](https://github.com/ministryofjustice/laa-fee-calculator) repo, recover the laa-fee-calculator application.
+1. In the [laa-fee-calculator](https://github.com/ministryofjustice/laa-fee-calculator) repo, deploy the laa-fee-calculator application.
     1. Switch branch to `dd_dd_sqlite_and_k8s`
     1. Check the laa-fee-calculator ECR for the [latest image](https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories/claim-for-crown-court-defence:laa-fee-calculator#images;tagStatus=ALL) tag.
     1. Change the deployment.yaml container image tag with the latest tag found in ECR.
-    1. Change the ingress.yaml host to `laa-fee-calculator.apps.your-cluster-name.k8s.integration.dsd.io`.
+    1. Change the ingress.yaml host to `laa-fee-calculator.apps.<your-cluster-name>.k8s.integration.dsd.io`.
