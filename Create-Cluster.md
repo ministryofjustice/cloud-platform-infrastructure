@@ -9,15 +9,17 @@ $ brew install kubernetes-helm
 $ brew install terraform
 $ git clone git@github.com:ministryofjustice/kubernetes-investigations.git
 $ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
-
-- Have access to the `moj-cloud-platforms-dev` Auth0 tenant - https://manage.auth0.com
+$ git clone git@github.com:ministryofjustice/laa-fee-calculator.git
+Have access to the moj-cloud-platforms-dev Auth0 tenant 
 ```
 
 ### Create a Kuberos application on Auth0
 
-1. Use your Github credentials to log into https://manage.auth0.com. Switch tenant to `moj-cloud-platforms-dev`.
+1. Use your Github credentials to log into https://manage.auth0.com. Switch the tenant to `moj-cloud-platforms-dev`.
 
-1. Under `Applications`, create a new single ["Regular Web App"](https://auth0.com/docs/applications/webapps). This application will be used to allow Kuberos to authenticate using Auth0. Name the application `your-cluster-name-kuberos`. Under `Settings`, take note of the app's "Client ID & Secret" and add https://login.apps.your-cluster-name.k8s.integration.dsd.io/ui to the `Allowed Callback URLs`.
+1. Under `Applications`, create a new single ["Regular Web App"](https://auth0.com/docs/applications/webapps). Name the application `your-cluster-name-kuberos`. 
+
+1. Under `Settings`, take note of the app's "Client ID & Secret" and add https://login.apps.your-cluster-name.k8s.integration.dsd.io/ui to the `Allowed Callback URLs`.
 
 1. On Github, create an **org-owned** [Github Oauth app](https://auth0.com/docs/connections/social/github). Set the callback URL pointing to https://tenant-name.eu.auth0.com/login/callback and the Homepage URL to https://login.apps.your-cluster-name.k8s.integration.dsd.io. Take note of the "Client ID & Secret". This will be used in the next step.
 
@@ -104,12 +106,11 @@ $ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
     ```
      $ kubectl apply -f ../../../cluster-config/rbac/webops-cluster-admin.yml
      clusterrolebinding.rbac.authorization.k8s.io "webops-cluster-admin" created
-
     ```
 
-   ### Recover laa-fee-calculator application
+### Recover the laa-fee-calculator application
 
-1. In the [cloud-platform-environments repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io) apply the laa-fee-calculator directories
+1. In the [cloud-platform-environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io) repo, apply the laa-fee-calculator directories
 
     ```
     $ kubectl apply -f laa-fee-calculator-staging
@@ -120,8 +121,8 @@ $ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
     rolebinding.rbac.authorization.k8s.io "circleci" created
     ```
 1. Recover the laa-fee-calculator application
-    1. Git clone the [application repository](https://github.com/ministryofjustice/laa-fee-calculator)
+    1. Clone [laa-fee-calculator repo](https://github.com/ministryofjustice/laa-fee-calculator)
     1. Change branch to `dd_dd_sqlite_and_k8s`
-    1. Check the laa-fee-calculator ECR for the [latest image](https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories/claim-for-crown-court-defence:laa-fee-calculator#images;tagStatus=ALL)tag.
+    1. Check the laa-fee-calculator ECR for the [latest image](https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories/claim-for-crown-court-defence:laa-fee-calculator#images;tagStatus=ALL) tag.
     1. Change the deployment.yaml container image tag with the latest tag found in ECR.
-    1. Change the ingress.yaml host to laa-fee-calculator.apps.your-cluster-name.k8s.integration.dsd.io
+    1. Change the ingress.yaml host to `laa-fee-calculator.apps.your-cluster-name.k8s.integration.dsd.io`.
