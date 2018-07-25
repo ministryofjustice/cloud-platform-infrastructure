@@ -3,56 +3,59 @@
 ## Prerequisites
 
 ```
-
+$ brew install kops
 $ brew install kubernetes-cli
 $ brew install kubernetes-helm
 $ brew install terraform
+$ git clone git@github.com:ministryofjustice/kubernetes-investigations.git
+$ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
 
+- Have access to the `moj-cloud-platforms-dev` Auth0 tenant - https://manage.auth0.com
 ```
 
+### Create a Kuberos application on Auth0
 
-### Create Auth0 for new cluster.
+1. Use your Github credentials to log into https://manage.auth0.com. Switch tenant to `moj-cloud-platforms-dev`.
 
-1. Use your Github credentials to log into https://manage.auth0.com. Once you have logged in create a new tenant.
+1. Under `Applications`, create a new single ["Regular Web App"](https://auth0.com/docs/applications/webapps). This application will be used to allow Kuberos to authenticate using Auth0. Name the application `your-cluster-name-kuberos`. Under `Settings`, take note of the app's "Client ID & Secret" and add https://login.apps.your-cluster-name.k8s.integration.dsd.io/ui to the `Allowed Callback URLs`.
 
-   ![create-tenant](auth0/create-tenant.png)
+1. On Github, create an **org-owned** [Github Oauth app](https://auth0.com/docs/connections/social/github). Set the callback URL pointing to https://tenant-name.eu.auth0.com/login/callback and the Homepage URL to https://login.apps.your-cluster-name.k8s.integration.dsd.io. Take note of the "Client ID & Secret". This will be used in the next step.
 
+1. On Auth0, create a "Social Connection" of type Github, using the Github oauth credentials and put permissions read:org and read:user privs.
 
-1. Enter a tenant domain name and select the EU Region.
-
-   ![tenant](auth0/tenant.png)
-
-1. Create a single ["Machine to Machine"](https://auth0.com/docs/applications/machine-to-machine) Application. This application will allow terraform API access to create resources in Auth0. Select Management API with all scopes. Take note of the app's "Client ID & Secret" for use with terraform later.
-  ![m2m app](auth0/tf.png)
-
-1. Create An **org-owned** [Github Oauth app](https://auth0.com/docs/connections/social/github), callback URL pointing to https://tenant-name.eu.auth0.com/login/callback
-
-1. Create a "Social Connection" of type Github, using the Github oauth credentials and put permissions read:org and read:user privs.
-
-1. Terraform and the [Yieldr Auth0 provider](https://github.com/yieldr/terraform-provider-auth0) create kuberos, Edit terraform.tfvars, add tenant domain, id and secret from the M2M App created above, these will be used by `provider "auth0" {}` in main.tf  `terraform plan && terraform apply`
+![social-connection](auth0/social_connection.png)
 
 ### Create Cluster using kops
 
-1. Create a k8s cluster, see [../kops/](../kops/) folder for existing ones
+1. Create a k8s cluster, see [/kops/](/kops/) folder for existing ones
 
-1. Copy the live-0 yaml, replace the oidcClientID and oidcIssueURL with the Kuberos application oidcClientID, oidcIssueURL with the tenant domain.
+1. Copy the live-0 yaml, replace the oidcClientID with the Kuberos application ClientID and oidcIssueURL with the tenant domain.
 
-1. Unprotect the master branch by going to settings so you can make changes
+1. Remove the `Pull Request Approval` on the kubernetes-investigations repo. Create a PR and merge to master so the cluster creation pipeline is triggered. 
 
-1. Commit to master and check pipeline output in [CodePipeline](https://eu-west-1.console.aws.amazon.com/codepipeline/home?region=eu-west-1#/view/cluster-creation-pipeline)
+![master-protection](auth0/master_protection.png)
 
-1. Once the cluster been built. you will need to configure your aws profile to use Platform Integrations account.
-   
-   1. Export Kops state store
+1. Output shown in [CodePipeline](https://eu-west-1.console.aws.amazon.com/codepipeline/home?region=eu-west-1#/view/cluster-creation-pipeline) 
+    - Note: The process takes between 10-15 minutes
+
+1. Once the cluster been built according to CodePipeline, ensure the master branch `Pull Request Approval` is put back to it's original state.
+
+1. You will need to configure your aws profile to use Platform Integrations account.
+
+    ```
+    $ export AWS_PROFILE=platforms-integration
+    ```  
+1. Export Kops state store
       
-      ```
-       $ export KOPS_STATE_STORE=s3://moj-cloud-platforms-kops-state-store
-      ```
-   1. Download Cluster Spec from S3 and configure kubectl for use
+    ```
+    $ export KOPS_STATE_STORE=s3://moj-cloud-platforms-kops-state-store
+    ```
+
+1. Download Cluster Spec from S3 and configure kubectl for use
    
-      ```
-       $ kops export kubecfg <clustername>
-      ```
+    ```
+    $ kops export kubecfg <clustername>
+    ```
 
 ### Install Cluster Components
 
@@ -80,7 +83,7 @@ $ brew install terraform
 1. Edit config for Kuberos, see [/cluster-components/kuberos](/cluster-components/kuberos) for existing ones
     1. Copy the live-0 folder with the new name, `cd` to it
     1. Change OIDC_ISSUER_URL, OIDC_CLIENT_ID, certificate-authority-data, server, name, host in kuberos.yaml
-    1. Change secret in secret.yaml (this one needs to be base64 encoded)
+    1. Change secret in secret.yaml (this one needs to be base64 encoded) to the `ClientSecret` created in the Auth0 application. 
     1. `kubectl config current-context` - be sure you're in the one just created
     1. Install Kuberos
         ```
@@ -104,9 +107,31 @@ $ brew install terraform
 
     ```
 
-   ### Recovering Environments
+   ### Recover laa-fee-calculator application
 
-1. All the environments created within a cluster is on github, so any trigger of the pipeline will create all environments under namespaces/$cluster_name. You can recover the namespaces and service account via triggering the pipeline.
+1. In the [cloud-platform-environments repository](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io) apply the laa-fee-calculator directories
+
+    ```
+    $ kubectl apply -f laa-fee-calculator-staging
+    namespace "laa-fee-calculator-staging" created
+    rolebinding.rbac.authorization.k8s.io "laa-fee-calculator-staging-admin" created
+    serviceaccount "circleci" created
+    role.rbac.authorization.k8s.io "circleci" created
+    rolebinding.rbac.authorization.k8s.io "circleci" created
+    ```
+1. Recover the laa-fee-calculator application
+    1. Git clone the [application repository](https://github.com/ministryofjustice/laa-fee-calculator)
+    1. Change branch to `dd_dd_sqlite_and_k8s`
+    1. Check the laa-fee-calculator ECR for the [latest image](https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories/claim-for-crown-court-defence:laa-fee-calculator#images;tagStatus=ALL)tag.
+    1. Change the deployment.yaml container image tag with the latest tag found in ECR.
+    1. Change the ingress.yaml host to laa-fee-calculator.apps.your-cluster-name.k8s.integration.dsd.io
+
+
+
+
+
+
+
 
 
 
