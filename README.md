@@ -1,6 +1,6 @@
 # Cloud Platform Prometheus
 
-This repository will allow you to create a monitoring namespace in a MoJ Cloud Platform cluster. It will also contain the necessary values to perform an installation of Prometheus-Operator and Kube-Prometheus. 
+This repository will allow you to create a monitoring namespace in a MoJ Cloud Platform cluster. It will also contain the necessary values to perform an installation of Prometheus-Operator and Kube-Prometheus.
 
   - [Pre-reqs](#pre-reqs)
   - [Creating a monitoring namespace](#creating-a-monitoring-namespace)
@@ -12,7 +12,7 @@ This repository will allow you to create a monitoring namespace in a MoJ Cloud P
   - [Installing Exporter-Kubelets](#installing-exporter-kubelets)
   - [Exposing the port](#exposing-the-port)
   - [How to add an alert to Prometheus](#how-to-add-an-alert-to-prometheus)
-  - [How to expose Prometheus UI and add oauth proxy](#how-to-expose-prometheus-ui-and-add-oauth-proxy)
+  - [How to expose the web interfaces behind an OIDC proxy](#how-to-expose-the-web-interfaces-behind-an-oidc-proxy)
   - [Adding Pingdom Alerts to monitor Prometheus and Alermanager Externally](#adding-pingdom-alerts-to-monitor-prometheus-and-alermanager-externally)
   - [How to tear it all down](#how-to-tear-it-all-down)
 
@@ -40,7 +40,7 @@ $ kubectl port-forward -n monitoring alertmanager-kube-prometheus-0 9093
 It is assumed that you have authenticated to an MoJ Cloud-Platform Cluster and you have Helm installed and configured.
 
 ## Creating a monitoring namespace
-To create a monitoring namespace you will need to copy the `./monitoring` directory in this repository to a branch in the [Cloud-Plarform-Environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces). Once this branch has been reviewed and merged to `master` a pipeline is kicked off, creating a namespace called `monitoring`. 
+To create a monitoring namespace you will need to copy the `./monitoring` directory in this repository to a branch in the [Cloud-Plarform-Environments](https://github.com/ministryofjustice/cloud-platform-environments/tree/master/namespaces). Once this branch has been reviewed and merged to `master` a pipeline is kicked off, creating a namespace called `monitoring`.
 
 ## Installing Prometheus-Operator
 > The mission of the Prometheus Operator is to make running Prometheus
@@ -65,12 +65,12 @@ $ kubectl get pods -n monitoring
 Prometheus is an open source toolkit to monitor and alert, inspired by Google Borg Monitor. It was previously developed by SoundCloud and afterwards donated to the CNCF.
 
 To install kube-prometheus, run:
-```bash 
+```bash
 $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace monitoring -f ./monitoring/helm/kube-prometheus/values.yaml
 ```
 
 ## Installing AlertManager
-> The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing   them to the correct receiver integration such as email or PagerDuty. It also takes care of silencing and inhibition of alerts - 
+> The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing   them to the correct receiver integration such as email or PagerDuty. It also takes care of silencing and inhibition of alerts -
 > [https://prometheus.io/docs/alerting/alertmanager/](https://prometheus.io/docs/alerting/alertmanager/)
 
 AlertManager can be installed (using a sub-chart) as part of the installtion of Kube-Prometheus.
@@ -82,10 +82,10 @@ deployAlertManager: true
 ```
 ## Configuring AlertManager to send alerts to PagerDuty
 
-Make note of the `service_key:` key on the Kube-Prometheus `values.yaml` file. 
+Make note of the `service_key:` key on the Kube-Prometheus `values.yaml` file.
 
 ```yaml
-# Add PagerDuty key to allow integration with a PD service. 
+# Add PagerDuty key to allow integration with a PD service.
     - name: 'pager-duty-high-priority'
       pagerduty_configs:
       - service_key: "$KEY"
@@ -100,7 +100,7 @@ This is a quick guide on how to retrive your service key from PagerDuty by follo
 
 2) Go to the **Configuration** menu and select **Services**.
 
-3) On the Services page: 
+3) On the Services page:
 
     * If you are creating a new service for your integration, click **Add New Service**.
 
@@ -127,7 +127,7 @@ Slack intergration is enabled using the kube-prometheus values.yaml file:
         send_resolved: True
 ```
 
-Follow the [official slack documentation](https://api.slack.com/incoming-webhooks) to create the `api_url:` and fill in the `channel:` with the name of the slack channel that will recieve the notifications. 
+Follow the [official slack documentation](https://api.slack.com/incoming-webhooks) to create the `api_url:` and fill in the `channel:` with the name of the slack channel that will recieve the notifications.
 
 ## Installing Exporter-Kubelets
 Exporter-Kubelets is a simple service that enables container metrics to be scraped by prometheus.
@@ -180,7 +180,7 @@ spec:
 
 The example PrometheusRule always immediately triggers an alert, which is only for demonstration purposes. To validate that everything is working properly have a look at each of the Prometheus web UIs.
 
-The directory `./custom-alerts` contains the manifest files for applying rules to your Prometheus alarms. 
+The directory `./custom-alerts` contains the manifest files for applying rules to your Prometheus alarms.
 
 To see the current rules applied to your Prometheus instance, run:
 
@@ -194,82 +194,54 @@ To remove an alarm, grab the prometheusrule name and use:
 
 `kubectl delete -n monitoring <ruleName>`.
 
-## How to expose Prometheus UI and add oauth proxy
+## How to expose the web interfaces behind an OIDC proxy
 
-There are two files needed to expose a Prometheus instance to the Internet and then (probably most cruicially) force GitHub authentication. 
+To expose the web interface for prometheus, alertmanager or other monitoring services using OIDC authentication, we use the `evry/oidc-proxy` image with a few modifications for the nginx configuration. It's all managed in kubernetes and there are two files needed: `monitoring/oidc-proxy.yaml` and `monitoring/oidc-proxy-sercret.yaml`.
 
-1. Before you begin, you MUST create a [custom GitHub OAuth application](https://github.com/settings/applications/new).
-#### Fields
-- **Application name** Please name the application sensibly along the lines of `cloud-platform-prometheus-auth-test-1`.
-- **Homepage URL** This is the FQDN in the ingress rule, like https://foo.bar.com
-- **Application description** This is optional.
-- **Authorization callback URL** is the same as the base FQDN plus /oauth2, like https://foo.bar.com/oauth2
+### New installation
+1. Before you begin, you need to create an Auth0 application. We only need one for all the services we want to expose in the `monitoring` namespace. Please name the application sensibly along the lines of `cloud-platform-test-1: monitoring proxy`.
+1. Edit `oidc-proxy-sercret.yaml` filling in the OIDC application credentials and a new randomly generated cookie secret.
+1. Edit `oidc-proxy.yaml` and replace the following three placeholders: `[[PROMETHEUS_HOSTNAME]]`, `[[ALERTMANAGER_HOSTNAME]]` and `[[AUTH0_TENANT_NAME]]`. Refer to the environments repository for deployed examples.
+1. Update the Auth0 application with the callback URLs: `https://[[PROMETHEUS_HOSTNAME]]/redirect_uri` and `https://[[ALERTMANAGER_HOSTNAME]]/redirect_uri`
+1. `kubectl apply`
 
-**Important**¬
->You must transfer ownership of the GitHub oauth application to the `ministryofjustice` orginisation. You simply click the "Transfer ownership" button within the app and follow the instructions. Only admins of the orginisation have access to accept ownership.
-
-2. You must configure the `./monitoring/helm/kube-prometheus/oauth2_proxy.yaml` file. It should look like the example below:
-```bash
-- --provider=github
-- --github-org=mycompanyname                                          # this would be your organisation name in github
-- --github-team=myteamname                                            # this is the team name with the orgranisation
-- --email-domain=*
-- --upstream=file:///dev/null
-- --http-address=0.0.0.0:4180
-- --client-id=jdkshgksdhkh33878ifjd                                   # GitHub oauth application client ID
-- --client-secret=dkhsfkhskjdfk33                                     # Gihub oauth app client secret
-- --cookie-secret=lskdfhoh3ii35                                       # randomly generated 16 char string
-- --redirect-url=https://prometheus.test-cluster.example.io/oauth2    # the FQDN in your ingress file
-```
-
-3. Now customise the contents of `./monitoring/helm/kube-prometheus/ingress.yaml`. Changing the `host` value only. This will look like:
-`prometheus.apps.cluster.dsd.io`
-
-4. Deploy the `oauth2-proxy.yaml` and `ingress.yaml` manifests:
-```bash
-$ kubectl create -f ./monitoring/helm/kube-prometheus/ingress.yaml,./monitoring/helm/kube-prometheus/oauth2_proxy.yaml
-```
-
-5. Test the auth integration by accessing the configured URL.
+### Exposing more services
+To expose another service through the proxy,
+1. Create a new attribute in the `oidc-proxy-config` `ConfigMap`:
+  ```
+  10-proxy_newservice.conf: |
+    upstream newservice {
+        # This should point to the kubernetes Service
+        server newservice:8080;
+    }
+    server {
+        # The external hostname, should match what's defined in the Ingress object.
+        server_name newservice.apps.cluster.dsd.io;
+        set $upstream newservice;
+        include sites/.common.conf;
+    }
+  ```
+1. Create a new rule for the `oidc-proxy` `Ingress`:
+  ```
+  - host:
+    http: newservice.apps.cluster.dsd.io
+      paths:
+      - backend:
+          serviceName: oidc-proxy
+          servicePort: 80
+  ```
+1. Update the Auth0 application with the new callback URL, `https://newservice.apps.cluster.dsd.io/redirect_uri`
+1. `kubectl apply`
 
 ## Adding Pingdom Alerts to monitor Prometheus and Alermanager Externally
 
-Prometheus and AlertManager will be behind an oAuth proxy with GitHub credentials required to view the GUI. However, the /healthy endpoint for each applcation will be exposed directly to the internet.
+Prometheus and AlertManager will be behind an OIDC proxy with GitHub credentials required to view the GUI. However, the `/-/healthy` endpoint for each applcation will be exposed directly to the internet.
 ```
 https://$PROMETHEUS_URL$/-/healthy
 https://$ALERTMANAGER_URL$/-/healthy
 ```
 
-To expose the /healthy endpoint, an additional path entry is required in the oidc-proxy.yaml under the ingress section:
-```yaml
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: oidc-proxy
-  namespace: monitoring
-spec:
-  rules:
-  - host: $PROMETHEUS_URL$
-    http:
-      paths:
-      - backend:
-          serviceName: oidc-proxy
-          servicePort: 80
-      - path: /-/healthy
-        backend:
-          serviceName: kube-prometheus
-          servicePort: 9090
-  - host: $ALERTMANAGER_URL$
-    http:
-      paths:
-      - backend:
-          serviceName: oidc-proxy
-          servicePort: 80
-      - path: /-/healthy
-        backend:
-          serviceName: kube-prometheus-alertmanager
-          servicePort: 9093
-```
+To expose the `/-/healthy` endpoint, an additional path entry is required in the `Ingress` object. Please see (oidc-proxy.yaml)[monitoring/oidc-proxy.yaml] for details.
 
 A pingdom alert should be setup (with appropiate alert recipients) to the /healthy endpoints for each application described above.
 
@@ -278,7 +250,3 @@ If you need to uninstall kube-prometheus and the prometheus-operator then you wi
 ```bash
 $ helm del --purge kube-prometheus && helm del --purge prometheus-operator
 ```
-
-
-
-
