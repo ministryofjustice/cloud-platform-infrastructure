@@ -1,0 +1,52 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  creationTimestamp: null
+  labels:
+    prometheus: kube-prometheus
+    role: alert-rules
+  name: kube-prometheus-custom-alerts
+spec:
+  groups:
+  - name: node.rules
+    rules:
+    - alert: Node-Disk-Space-Low
+      expr: predict_linear(node_filesystem_free[6h], 3600 * 24) < 0
+      for: 30m
+      labels:
+        severity: warning
+      annotations:
+        description: A node is reporting low disk space. 
+        summary: Action is required on a node.
+    - alert: CPU-High
+      expr: 100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100) > 80
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        description: This device's CPU usage has exceeded the threshold with a value of {{ $value }}.
+        summary: Instance {{ $labels.instance }} CPU usage is dangerously high
+    - alert: CPU-Critical
+      expr: 100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100) > 95
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        description: This device's CPU usage has exceeded the threshold with a value of {{ $value }}.
+        summary: Instance {{ $labels.instance }} CPU usage is critically high
+    - alert: Memory-High
+      expr: (node_memory_MemTotal - node_memory_MemAvailable) / (node_memory_MemTotal) * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        description: '{{ $labels.instance }} has high memory usage for than 5 minutes.'
+        summary: Instance {{ $labels.instance }} memory has high usage
+    - alert: Memory-Critical
+      expr: (node_memory_MemTotal - node_memory_MemAvailable) / (node_memory_MemTotal) * 100 > 95
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        description: '{{ $labels.instance }} has high memory usage for than 5 minutes.'
+        summary: Instance {{ $labels.instance }} memory has critically high usage
