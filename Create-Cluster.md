@@ -22,10 +22,6 @@ Have access to the moj-cloud-platforms-dev Auth0 tenant
 
 1. Under `Settings`, take note of the app's "Client ID & Secret" and add `https://login.apps.<your-cluster-name>.k8s.integration.dsd.io/ui` to the `Allowed Callback URLs`.
 
-1. On Github, create an **org-owned** [Github Oauth app](https://auth0.com/docs/connections/social/github). Set the callback URL pointing to https://tenant-name.eu.auth0.com/login/callback and the Homepage URL to https://login.apps.your-cluster-name.k8s.integration.dsd.io. Take note of the Github "Client ID & Secret". This will be used in the next step.
-
-1. On Auth0, create a "Social Connection" of type Github, using the Github oauth credentials created in the previous step and put permissions read:org and read:user privs.
-
 ![social-connection](auth0/social_connection.png)
 
 ### Create Cluster using kops
@@ -51,7 +47,7 @@ Have access to the moj-cloud-platforms-dev Auth0 tenant
 1. Export Kops state store
       
     ```
-    $ export KOPS_STATE_STORE=s3://moj-cloud-platforms-kops-state-store
+    $ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
     ```
 
 1. Download Cluster Spec from S3 and configure kubectl for use
