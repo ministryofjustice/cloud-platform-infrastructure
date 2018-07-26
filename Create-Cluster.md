@@ -53,7 +53,7 @@ Have access to the moj-cloud-platforms-dev Auth0 tenant
 1. Download Cluster Spec from S3 and configure kubectl for use
    
     ```
-    $ kops export kubecfg <clustername>
+    $ kops export kubecfg <clustername>.k8s.integration.dsd.io/
     ```
 
 ### Install Cluster Components
