@@ -22,8 +22,6 @@ Have access to the moj-cloud-platforms-dev Auth0 tenant
 
 1. Under `Settings`, take note of the app's "Client ID & Secret" and add `https://login.apps.<your-cluster-name>.k8s.integration.dsd.io/ui` to the `Allowed Callback URLs`.
 
-![social-connection](auth0/social_connection.png)
-
 ### Create Cluster using kops
 
 1. Create a k8s cluster, see [/kops/](/kops/) folder for existing ones
@@ -65,21 +63,21 @@ Have access to the moj-cloud-platforms-dev Auth0 tenant
       clusterrolebinding.rbac.authorization.k8s.io "tiller" created
       $ helm init --tiller-namespace kube-system --service-account tiller
       ```
-1. Install external-dns, see [/cluster-components/external-dns](/cluster-components/external-dns) for existing ones, copy live-0, edit domainFilters
+1. Install external-dns, see [/cluster-components/external-dns](./cluster-components/external-dns) for existing ones, copy live-0, edit domainFilters
     ```
-      $ helm install -n external-dns --namespace kube-system stable/external-dns -f /cluster-components/external-dns/cloud-platform-test-raz-helm-values.yaml
+      $ helm install -n external-dns --namespace kube-system stable/external-dns -f ./cluster-components/external-dns/cloud-platform-test-raz-helm-values.yaml
       $ kubectl --namespace=kube-system get pods -l "app=external-dns,release=external-dns"
       NAME                            READY     STATUS    RESTARTS   AGE
       external-dns-798cc84bdc-h4zst   1/1       Running   0          24s
     ```
-1. Install ingress, see [/cluster-components/nginx-ingress](/cluster-components/nginx-ingress) for existing ones, copy live-0, edit hostname and aws-load-balancer-ssl-cert (this was generated earlier by Terraform in the pipeline triggered by the commit to master, see [/terraform/modules/cluster_ssl/](../terraform/modules/cluster_ssl/))
+1. Install ingress, see [/cluster-components/nginx-ingress](./cluster-components/nginx-ingress) for existing ones, copy live-0, edit hostname and aws-load-balancer-ssl-cert (this was generated earlier by Terraform in the pipeline triggered by the commit to master, see [./terraform/modules/cluster_ssl/](./terraform/modules/cluster_ssl/))
     ```
-      $ helm install -n nginx-ingress --namespace ingress-controller stable/nginx-ingress -f /cluster-components/nginx-ingress/
+      $ helm install -n nginx-ingress --namespace ingress-controller stable/nginx-ingress -f ./cluster-components/nginx-ingress/
       $ kubectl --namespace ingress-controller get services -o wide -w nginx-ingress-controller
       NAME                       TYPE           CLUSTER-IP      EXTERNAL-IP                                                               PORT(S)                      AGE       SELECTOR
       nginx-ingress-controller   LoadBalancer   100.68.102.11   a968b3bdf851c11e886e00a458ee6675-1910441520.eu-west-1.elb.amazonaws.com   80:30967/TCP,443:31280/TCP   33s       app=nginx-ingress,component=controller,release=nginx-ingress
     ```
-1. Edit config for Kuberos, see [/cluster-components/kuberos](/cluster-components/kuberos) for existing ones
+1. Edit config for Kuberos, see [/cluster-components/kuberos](./cluster-components/kuberos) for existing ones
     1. Copy the live-0 folder with the new name, `cd` to it
     1. Change OIDC_ISSUER_URL, OIDC_CLIENT_ID, certificate-authority-data, server, name, host in kuberos.yaml
     1. Change secret in secret.yaml (this one needs to be base64 encoded) to the `ClientSecret` created in the Auth0 application. 
