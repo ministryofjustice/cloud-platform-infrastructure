@@ -117,6 +117,16 @@ Have access to the moj-cloud-platforms-dev Auth0 tenant
     ```
 1. In the [laa-fee-calculator](https://github.com/ministryofjustice/laa-fee-calculator) repo, deploy the laa-fee-calculator application.
     1. Switch branch to `dd_dd_sqlite_and_k8s`
+
+1. In the [kubernetes_deploy repo](https://github.com/ministryofjustice/laa-fee-calculator/tree/dd_dk_sqlite_and_k8s/kubernetes_deploy), you will find the Kubernetes manifest files. You will need to work within this directory to make changes to manifest files.
     1. Check the laa-fee-calculator ECR for the [latest image](https://eu-west-1.console.aws.amazon.com/ecs/home?region=eu-west-1#/repositories/claim-for-crown-court-defence:laa-fee-calculator#images;tagStatus=ALL) tag.
     1. Change the deployment.yaml container image tag with the latest tag found in ECR.
     1. Change the ingress.yaml host to `laa-fee-calculator.apps.<your-cluster-name>.k8s.integration.dsd.io`.
+    1. Apply the manifest files.
+
+       ```
+       $ kubectl apply -f .
+       deployment "laa-fee-calculator" created
+       ingress "laa-fee-calculator" created
+       service "laa-fee-calculator" created
+       ```
