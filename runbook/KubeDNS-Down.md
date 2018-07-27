@@ -2,12 +2,14 @@
 
 ## Alarm
 ```
-KubeDNS-Down
+KubeDNS-Down 
 ```
 
 ## Observation
 Run the following command to confirm kube-dns is in the cluster:
+
 `$ kubectl get deployments -n kube-system`
+
 `$ kubectl get pods -n kube-system`
 
 You are looking for the `kube-dns` deployment and pod. 
@@ -15,6 +17,7 @@ You are looking for the `kube-dns` deployment and pod.
 ## Action
 
 If `kube-dns` pod(s) are present but failing, check the logs:
+
 `$ kubectl exec -it kube-dns -n kube-system sh` 
 
 If the `kube-dns` pod(s) are missing, check to see if the `kube-dns` deployment is present. If the deployment is missing, apply the `kube-dns` [deployment template](https://github.com/kubernetes/kops/blob/release-1.9/upup/models/cloudup/resources/addons/kube-dns.addons.k8s.io/k8s-1.6.yaml.template) to the kube-system namespace.
