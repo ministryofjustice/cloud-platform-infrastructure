@@ -167,7 +167,7 @@ Before applying, replace all templated syntax from the file with the cluster inf
 External-DNSDown 
 Severity: warning
 ```
-This alert is triggered when 0 external-dns pods are running for longer than 5 minutes
+This alert is triggered when '0' external-dns pods are running for longer than 5 minutes.
 
 Expression:
 ```
