@@ -50,3 +50,11 @@ spec:
       annotations:
         description: '{{ $labels.instance }} has high memory usage for than 5 minutes.'
         summary: Instance {{ $labels.instance }} memory has critically high usage
+    - alert: KubeDNSDown
+      expr: absent(up{job="kube-dns"} == 1)
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        description: Prometheus could not scrape kube-dns
+        summary: kube-dns is down
