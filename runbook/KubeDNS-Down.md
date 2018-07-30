@@ -21,7 +21,7 @@ If `kube-dns` pod(s) are present but failing, describe the pod to check events a
 ```
 $ kubectl get pods -n kube-system
 $ kubectl describe pod <kube-dns-container> -n kube-system 
-$ kubectl logs <kube-dns-container> -n kube-system sh` 
+$ kubectl logs <kube-dns-container> -n kube-system` 
 ```
 If the `kube-dns` pod(s) are missing, check to see if the `kube-dns` deployment is present. If the deployment is missing, apply the `kube-dns` [deployment template](https://github.com/kubernetes/kops/blob/release-1.9/upup/models/cloudup/resources/addons/kube-dns.addons.k8s.io/k8s-1.6.yaml.template) to the kube-system namespace.
 
