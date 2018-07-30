@@ -159,3 +159,52 @@ Before applying, replace all templated syntax from the file with the cluster inf
 `$ kubectl apply -f k8s-1.6.yaml.template -n kube-system`
 
 **Note**: The template is for Kops 1.9.
+
+## External-DNSDown
+
+## Alarm
+```
+External-DNSDown 
+Severity: warning
+```
+This alert is triggered when '0' external-dns pods are running for longer than 5 minutes.
+
+Expression:
+```
+kube_deployment_status_replicas_available{deployment="external-dns"} == 0
+for: 5m
+```
+## Action
+
+Check if the external-dns pod is running. If so, describe the pod to check events and check the logs:
+
+```
+$ kubectl get pods -n kube-system
+$ kubectl describe pod <external-dns-container> -n kube-system
+$ kubectl logs <external-dns-container> -n kube-system
+```
+
+If the external-dns is not present, check the helm deployment status to see if all of the resources are running:
+
+`$ helm status external-dns`
+
+If a resource is not running, either upgrade the helm deployment with the external-dns helm chart or delete the current helm deployment and reinstall:
+
+```
+$ git clone git@github.com:ministryofjustice/kubernetes-investigations.git
+$ cd kubernetes-investigations
+$ helm upgrade external-dns ./cluster-components/external-dns/<cluster-name>-helm-values.yaml --namespace kube-system
+```
+
+or
+
+```
+$ git clone git@github.com:ministryofjustice/kubernetes-investigations.git
+$ cd kubernetes-investigations
+$ helm delete --purge external-dns
+$ helm install -n external-dns --namespace kube-system stable/external-dns -f ./cluster-components/external-dns/<cluster-name>-raz-helm-values.yaml
+```
+
+Check to see if the external-dns pod is running in the `kube-system` namespace:
+
+`$ kubectl get pods -n kube-system`
