@@ -60,7 +60,7 @@ spec:
         summary: kube-dns is down
     - alert: External-DNSDown
       expr: kube_deployment_status_replicas_available{deployment="external-dns"} == 0
-      for: 10s
+      for: 5m
       labels:
         severity: warning
       annotations:
