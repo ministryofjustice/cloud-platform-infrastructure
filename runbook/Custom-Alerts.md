@@ -120,11 +120,11 @@ You can [set CPU limits](https://kubernetes.io/docs/tasks/configure-pod-containe
 
 Limits can also be set on a [Namespace](https://kubernetes.io/docs/tasks/administer-cluster/manage-resources/cpu-default-namespace/)
 
-## KubeDNS-Down
+## KubeDNSDown
 
 ## Alarm
 ```
-KubeDNS-Down 
+KubeDNSDown 
 Severity: critical
 ```
 This alert is triggered when KubeDNS is not present on the cluster for 5 minutes
