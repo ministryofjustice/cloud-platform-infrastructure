@@ -208,6 +208,3 @@ $ helm install -n external-dns --namespace kube-system stable/external-dns -f ./
 Check to see if the external-dns pod is running in the `kube-system` namespace:
 
 `$ kubectl get pods -n kube-system`
-
-
-
