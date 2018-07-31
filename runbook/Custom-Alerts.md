@@ -243,3 +243,83 @@ $ journalctl -u kubelet
 If all else fails, you can terminte the node from the AWS console and let autoscaling group bring up a new one. However, this will most likely cause any information of why the node failed to be deleted with the node.
 
 Related Alert: ``K8SManyNodesNotReady``
+
+## NginxIngressPodDown
+
+## Alarm
+```
+NginxIngressPodDown
+Severity: warning
+```
+This alert is triggered when less than 3 nginx-ingress pods are running for 5 minutes.
+
+Expression:
+```
+kube_deployment_status_replicas_available{deployment="pouring-ibex-nginx-ingress-controller"} <3
+for: 5m
+```
+
+## Action
+
+Check how many nginx-ingress pods are running. There should be at least 3 with the status `Running`.
+
+`$ kubectl get pods -n nginx-controllers`
+
+If a container is failing, describe the pod to check if there are any failures. If nothing is obvious, check the logs:
+
+```
+$ kubectl describe pod <nginx-ingress-container> -n nginx-controllers
+$ kubectl logs <nginx-ingress-container> -n nginx-controllers
+```
+
+If the pod is missing or you think it's possible to scale up, do the following:
+
+`$ kubectl scale --current-replicas=2 --replicas=3 deployment/pouring-ibex-nginx-ingress-controller -n nginx-controllers`
+
+The above example shows that 2 nginx-ingress pods are running and we need 3. The command will increase the amount of pods.
+
+If none of the above work, delete the current nginx-ingress and reinstall:
+
+```
+$ helm list
+$ helm delete --purge pouring-ibex(nginx-ingress)
+$ git clone git@github.com:ministryofjustice/cloud-platform-prometheus.git
+$ vi cloud-platform-prometheus/monitoring/helm/kube-promethus/values.yaml
+
+Copy the Prometheus-Alertmanager 'Integration Key' https://moj-digital-tools.pagerduty.com/services/PASVKLJ/integrations and replace the $KEY value in values.yaml
+
+$ helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+$ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace monitoring -f ./monitoring/helm/kube-prometheus/values.yaml
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Run the following command to confirm which node has been set to NotReady:
+
+`$ kubectl get nodes`
+
+`$ kubectl describe node <node_name>`
+
+Look at the 'Conditions' Section for possible more info on 'NotReady' Status
+
+If everything looks ok, you will need to SSH into the node and look at ``kubelet`` logs and look out for errors such as certificate, authentication, connection etc
+
+You can run the following to see kubelet logs
+```
+$ journalctl -u kubelet
+```
+If all else fails, you can terminte the node from the AWS console and let autoscaling group bring up a new one. However, this will most likely cause any information of why the node failed to be deleted with the node.
+
+Related Alert: ``K8SManyNodesNotReady``
