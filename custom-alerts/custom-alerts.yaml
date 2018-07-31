@@ -67,16 +67,16 @@ spec:
         description: external-dns container has not been running in the namespace 'kube-system' for 5 minutes.
         summary: external-dns is down
     - alert: NginxIngressPodDown
-      expr: kube_deployment_status_replicas_available{deployment="dns-controller"} <3
-      for: 5s
+      expr: kube_deployment_status_replicas_available{deployment="pouring-ibex-nginx-ingress-controller"} <3
+      for: 5m
       labels:
         severity: warning
       annotations:
         description: '{{ $labels.pod}} pod unavailable in the {{ $labels.namespace}} namespace.'
         summary: 1 or more nginx-ingress pods have been unavailable for 5 minutes
     - alert: NginxIngressDown
-      expr: kube_deployment_status_replicas_available{deployment="dns-controller"} == 0
-      for: 5s
+      expr: kube_deployment_status_replicas_available{deployment="pouring-ibex-nginx-ingress-controller"} == 0
+      for: 5m
       labels:
         severity: critical
       annotations:
