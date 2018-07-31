@@ -209,7 +209,7 @@ Check to see if the external-dns pod is running in the `kube-system` namespace:
 
 `$ kubectl get pods -n kube-system`
 
-## Node Not Ready Status
+## Node 'Not Ready' Status
 
 ## Alarm
 ```
@@ -241,3 +241,5 @@ You can run the following to see kubelet logs
 $ journalctl -u kubelet
 ```
 If all else fails, you can terminte the node from the AWS console and let autoscaling group bring up a new one. However, this will most likely cause any information of why the node failed to be deleted with the node.
+
+Related Alerts: ``K8SNodeNotReady`` and ``K8SManyNodesNotReady``
