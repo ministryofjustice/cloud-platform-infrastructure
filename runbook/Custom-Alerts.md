@@ -208,3 +208,36 @@ $ helm install -n external-dns --namespace kube-system stable/external-dns -f ./
 Check to see if the external-dns pod is running in the `kube-system` namespace:
 
 `$ kubectl get pods -n kube-system`
+
+## Node Not Ready Status
+
+## Alarm
+```
+K8SNodeNotReady5mins 
+Severity: warning
+```
+This alert is triggered when kubelet has not checked in with the API or has set itself to NotReady for more then 5 mins
+
+Expression:
+```
+expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+for: 5m
+```
+
+## Action
+
+Run the following command to confirm which node has been set to NotReady:
+
+`$ kubectl get nodes`
+
+`$ kubectl describe node <node_name>`
+
+Look at the 'Conditions' Section for possible more info on 'NotReady' Status
+
+If everything looks ok, you will need to SSH into the node and look at ``kubelet`` logs and look out for errors such as certificate, authentication, connection etc
+
+You can run the following to see kubelet logs
+```
+$ journalctl -u kubelet
+```
+If all else fails, you can terminte the node from the AWS console and let autoscaling group bring up a new one. However, this will most likely cause any information of why the node failed to be deleted with the node.
