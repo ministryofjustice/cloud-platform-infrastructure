@@ -291,35 +291,3 @@ Copy the Prometheus-Alertmanager 'Integration Key' https://moj-digital-tools.pag
 $ helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
 $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace monitoring -f ./monitoring/helm/kube-prometheus/values.yaml
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Run the following command to confirm which node has been set to NotReady:
-
-`$ kubectl get nodes`
-
-`$ kubectl describe node <node_name>`
-
-Look at the 'Conditions' Section for possible more info on 'NotReady' Status
-
-If everything looks ok, you will need to SSH into the node and look at ``kubelet`` logs and look out for errors such as certificate, authentication, connection etc
-
-You can run the following to see kubelet logs
-```
-$ journalctl -u kubelet
-```
-If all else fails, you can terminte the node from the AWS console and let autoscaling group bring up a new one. However, this will most likely cause any information of why the node failed to be deleted with the node.
-
-Related Alert: ``K8SManyNodesNotReady``
