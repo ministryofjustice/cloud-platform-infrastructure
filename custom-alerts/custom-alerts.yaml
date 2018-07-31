@@ -66,11 +66,3 @@ spec:
       annotations:
         description: external-dns container has not been running in the namespace 'kube-system' for 5 minutes.
         summary: external-dns is down
-    - alert: K8SNodeNotReady5mins
-      expr: kube_node_status_condition{condition="Ready",status="true"} == 0
-      for: 5m
-      labels:
-        severity: warning
-      annotations:
-        description: The Kubelet on {{ $labels.node }} has not checked in with the API, or has set itself to NotReady, for more than 5 mins
-        summary: Node status is NotReady
