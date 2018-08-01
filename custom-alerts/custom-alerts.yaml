@@ -16,7 +16,7 @@ spec:
       labels:
         severity: warning
       annotations:
-        description: A node is reporting low disk space. 
+        description: A node is reporting low disk space.
         summary: Action is required on a node.
     - alert: CPU-High
       expr: 100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100) > 80
@@ -66,3 +66,19 @@ spec:
       annotations:
         description: external-dns container has not been running in the namespace 'kube-system' for 5 minutes.
         summary: external-dns is down
+    - alert: NginxIngressPodDown
+      expr: kube_deployment_status_replicas_available{deployment="pouring-ibex-nginx-ingress-controller"} <3
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        description: '{{ $labels.pod}} pod unavailable in the {{ $labels.namespace}} namespace.'
+        summary: 1 or more nginx-ingress pods have been unavailable for 5 minutes
+    - alert: NginxIngressDown
+      expr: kube_deployment_status_replicas_available{deployment="pouring-ibex-nginx-ingress-controller"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        descrition: '{{ $labels.pod}} pod unavailable in the {{ $labels.namespace}} namespace.'
+        summary: nginx-ingress has been down for 5 minutes

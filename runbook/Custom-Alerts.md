@@ -114,7 +114,7 @@ Run the following to get a breakdown of CPU usage:
 kubectl describe node <node_name>
 ```
 
-Please read the Kubernetes documentaion of the [Meaning of CPU](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu) 
+Please read the Kubernetes documentaion of the [Meaning of CPU](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu)
 
 You can [set CPU limits](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/) to pods and containers, as by default - pods run with unbounded CPU limits.
 
@@ -124,7 +124,7 @@ Limits can also be set on a [Namespace](https://kubernetes.io/docs/tasks/adminis
 
 ## Alarm
 ```
-KubeDNSDown 
+KubeDNSDown
 Severity: critical
 ```
 This alert is triggered when KubeDNS is not present on the cluster for 5 minutes
@@ -143,14 +143,14 @@ Run the following command to confirm kube-dns is in the cluster:
 
 `$ kubectl get pods -n kube-system`
 
-You are looking for the `kube-dns` deployment and pod. 
+You are looking for the `kube-dns` deployment and pod.
 
 If `kube-dns` pod(s) are present but failing, describe the pod to check events and check the logs:
 
 ```
 $ kubectl get pods -n kube-system
-$ kubectl describe pod <kube-dns-container> -n kube-system 
-$ kubectl logs <kube-dns-container> -n kube-system` 
+$ kubectl describe pod <kube-dns-container> -n kube-system
+$ kubectl logs <kube-dns-container> -n kube-system`
 ```
 If the `kube-dns` pod(s) are missing, check to see if the `kube-dns` deployment is present. If the deployment is missing, apply the `kube-dns` [deployment template](https://github.com/kubernetes/kops/blob/release-1.9/upup/models/cloudup/resources/addons/kube-dns.addons.k8s.io/k8s-1.6.yaml.template) to the kube-system namespace.
 
@@ -164,7 +164,7 @@ Before applying, replace all templated syntax from the file with the cluster inf
 
 ## Alarm
 ```
-External-DNSDown 
+External-DNSDown
 Severity: warning
 ```
 This alert is triggered when '0' external-dns pods are running for longer than 5 minutes.
@@ -202,7 +202,7 @@ or
 $ git clone git@github.com:ministryofjustice/kubernetes-investigations.git
 $ cd kubernetes-investigations
 $ helm delete --purge external-dns
-$ helm install -n external-dns --namespace kube-system stable/external-dns -f ./cluster-components/external-dns/<cluster-name>-raz-helm-values.yaml
+$ helm install -n external-dns --namespace kube-system stable/external-dns -f ./cluster-components/external-dns/<cluster-name>-helm-values.yaml
 ```
 
 Check to see if the external-dns pod is running in the `kube-system` namespace:
@@ -213,7 +213,7 @@ Check to see if the external-dns pod is running in the `kube-system` namespace:
 
 ## Alarm
 ```
-K8SNodeNotReady 
+K8SNodeNotReady
 Severity: warning
 ```
 This alert is triggered when kubelet has not checked in with the API or has set itself to ``NotReady`` for more then 1 hour
@@ -243,3 +243,91 @@ $ journalctl -u kubelet
 If all else fails, you can terminte the node from the AWS console and let autoscaling group bring up a new one. However, this will most likely cause any information of why the node failed to be deleted with the node.
 
 Related Alert: ``K8SManyNodesNotReady``
+
+## NginxIngressPodDown
+
+## Alarm
+```
+NginxIngressPodDown
+Severity: warning
+```
+This alert is triggered when less than 3 nginx-ingress pods are running for 5 minutes.
+
+Expression:
+```
+kube_deployment_status_replicas_available{deployment="pouring-ibex-nginx-ingress-controller"} <3
+for: 5m
+```
+
+## Action
+
+Check how many nginx-ingress pods are running. There should be at least 3 with the status `Running`.
+
+`$ kubectl get pods -n nginx-controllers`
+
+If a container is failing, describe the pod to check if there are any failures. If nothing is obvious, check the logs:
+
+```
+$ kubectl describe pod <nginx-ingress-container> -n nginx-controllers
+$ kubectl logs <nginx-ingress-container> -n nginx-controllers
+```
+
+If the pod is missing or you think it's possible to scale up, do the following:
+
+`$ kubectl scale --current-replicas=2 --replicas=3 deployment/pouring-ibex-nginx-ingress-controller -n nginx-controllers`
+
+The above example shows that 2 nginx-ingress pods are running and we need 3. The command will increase the amount of pods.
+
+If none of the above work, delete the current nginx-ingress and reinstall:
+
+```
+$ helm list
+$ helm delete --purge pouring-ibex(nginx-ingress)
+$ git clone git@github.com:ministryofjustice/cloud-platform-prometheus.git
+$ vi cloud-platform-prometheus/monitoring/helm/kube-promethus/values.yaml
+
+Copy the Prometheus-Alertmanager 'Integration Key' https://moj-digital-tools.pagerduty.com/services/PASVKLJ/integrations and replace the $KEY value in values.yaml
+
+$ helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+$ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace nginx-controllers -f ./monitoring/helm/kube-prometheus/values.yaml
+```
+
+## NginxIngressDown
+
+## Alarm
+```
+NginxIngressDown
+Severity: critical
+```
+
+This alert is triggered when no nginx-ingress pods have been running for 5 minutes.
+
+Expression:
+```
+kube_deployment_status_replicas_available{deployment="pouring-ibex-nginx-ingress-controller"} == 0
+for: 5m
+```
+
+## Action
+
+Check why the nginx-ingress pods are failing:
+
+```
+$ kubectl get pods -n nginx-controllers
+$ kubectl describe pod <nginx-ingress-container> -n nginx-controllers
+$ kubectl logs <nginx-ingress-container> -n nginx-controllers
+```
+
+If the error is not obvious, reinstall nginx-ingress via Helm:
+
+```
+$ helm list
+$ helm delete --purge pouring-ibex(nginx-ingress)
+$ git clone git@github.com:ministryofjustice/cloud-platform-prometheus.git
+$ vi cloud-platform-prometheus/monitoring/helm/kube-promethus/values.yaml
+
+Copy the Prometheus-Alertmanager 'Integration Key' https://moj-digital-tools.pagerduty.com/services/PASVKLJ/integrations and replace the $KEY value in values.yaml
+
+$ helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+$ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace nginx-controllers -f ./monitoring/helm/kube-prometheus/values.yaml
+```
