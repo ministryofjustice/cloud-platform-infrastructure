@@ -45,3 +45,7 @@ output "external_subnets_ids" {
 output "hosted_zone_id" {
   value = "${module.cluster_dns.cluster_dns_zone_id}"
 }
+
+output "instance_key_public" {
+  value = "${tls_private_key.cluster_instance.public_key_openssh}"
+}

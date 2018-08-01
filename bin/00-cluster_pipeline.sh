@@ -5,8 +5,6 @@ then
   workspace="$1"
   echo 'creating terraform resources'
   ../../bin/01-terraform_resources.sh "$workspace" || exit 1
-  echo 'generating rsa key'
-  ../../bin/02-rsa_key.sh || exit 1
   echo 'creating cluster config from terraform outputs'
   ../../bin/03-cluster_config.py ../../kops/"$workspace".yaml > ~/clusterspec.yaml || exit 1
   echo 'creating cluster'

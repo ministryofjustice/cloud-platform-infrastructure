@@ -58,3 +58,8 @@ module "cluster_vpc" {
     Domain    = "${local.cluster_base_domain_name}"
   }
 }
+
+resource "tls_private_key" "cluster_instance" {
+  algorithm = "RSA"
+  rsa_bits  = "2048"
+}
