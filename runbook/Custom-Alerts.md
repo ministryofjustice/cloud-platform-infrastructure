@@ -300,7 +300,7 @@ NginxIngressDown
 Severity: critical
 ```
 
-This alert is triggered no nginx-ingress pods are runnning for 5 minutes.
+This alert is triggered when no nginx-ingress pods have been running for 5 minutes.
 
 Expression:
 ```
