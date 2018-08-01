@@ -289,5 +289,45 @@ $ vi cloud-platform-prometheus/monitoring/helm/kube-promethus/values.yaml
 Copy the Prometheus-Alertmanager 'Integration Key' https://moj-digital-tools.pagerduty.com/services/PASVKLJ/integrations and replace the $KEY value in values.yaml
 
 $ helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
-$ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace monitoring -f ./monitoring/helm/kube-prometheus/values.yaml
+$ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace nginx-controllers -f ./monitoring/helm/kube-prometheus/values.yaml
+```
+
+## NginxIngressDown
+
+## Alarm
+```
+NginxIngressDown
+Severity: critical
+```
+
+This alert is triggered no nginx-ingress pods are runnning for 5 minutes.
+
+Expression:
+```
+kube_deployment_status_replicas_available{deployment="pouring-ibex-nginx-ingress-controller"} == 0
+for: 5m
+```
+
+## Action
+
+Check why the nginx-ingress pods are failing:
+
+```
+$ kubectl get pods -n nginx-controllers
+$ kubectl describe pod <nginx-ingress-container> -n nginx-controllers
+$ kubectl logs <nginx-ingress-container> -n nginx-controllers
+```
+
+If the error is not obvious, reinstall nginx-ingress via Helm:
+
+```
+$ helm list
+$ helm delete --purge pouring-ibex(nginx-ingress)
+$ git clone git@github.com:ministryofjustice/cloud-platform-prometheus.git
+$ vi cloud-platform-prometheus/monitoring/helm/kube-promethus/values.yaml
+
+Copy the Prometheus-Alertmanager 'Integration Key' https://moj-digital-tools.pagerduty.com/services/PASVKLJ/integrations and replace the $KEY value in values.yaml
+
+$ helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+$ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace nginx-controllers -f ./monitoring/helm/kube-prometheus/values.yaml
 ```
