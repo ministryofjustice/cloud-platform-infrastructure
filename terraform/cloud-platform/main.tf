@@ -50,6 +50,18 @@ module "cluster_vpc" {
   enable_vpn_gateway   = false
   enable_dns_hostnames = true
 
+  public_subnet_tags = {
+    SubnetType                                                = "Utility"
+    "kubernetes.io/cluster/${local.cluster_base_domain_name}" = "shared"
+    "kubernetes.io/role/elb"                                  = "1"
+  }
+
+  private_subnet_tags = {
+    SubnetType                                                = "Private"
+    "kubernetes.io/cluster/${local.cluster_base_domain_name}" = "shared"
+    "kubernetes.io/role/internal-elb"                         = "1"
+  }
+
   tags = {
     Terraform = "true"
     Cluster   = "${local.cluster_name}"
