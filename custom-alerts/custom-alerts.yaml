@@ -82,3 +82,19 @@ spec:
       annotations:
         descrition: '{{ $labels.pod}} pod unavailable in the {{ $labels.namespace}} namespace.'
         summary: nginx-ingress has been down for 5 minutes
+    - alert: RootVolUtilisation-High
+      expr: (node_filesystem_size {mountpoint="/"} - node_filesystem_avail {mountpoint="/"} ) / (node_filesystem_size {mountpoint="/"} ) * 100 >85
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        description: '{{ $labels.instance }} has exceeded the threshold of root volume utilisation with a value of {{ $value }}'
+        summary: Instance {{ $labels.instance }} root volume utilisation usage is high
+    - alert: RootVolUtilisation-Critical
+      expr: (node_filesystem_size {mountpoint="/"} - node_filesystem_avail {mountpoint="/"} ) / (node_filesystem_size {mountpoint="/"} ) * 100 >95
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        description: '{{ $labels.instance }} has exceeded the threshold of root volume utilisation with a value of {{ $value }}'
+        summary: Instance {{ $labels.instance }} root volume utilisation usage is critically high
