@@ -8,8 +8,7 @@ terraform {
 }
 
 provider "aws" {
-  version = "~> 1.9.0"
-  region  = "eu-west-1"
+  region = "eu-west-1"
 }
 
 data "terraform_remote_state" "global" {
@@ -42,7 +41,6 @@ module "cluster_ssl" {
 
 module "cluster_vpc" {
   source               = "terraform-aws-modules/vpc/aws"
-  version              = "1.9.1"
   name                 = "${local.cluster_name}"
   cidr                 = "${var.vpc_cidr}"
   azs                  = "${var.availability_zones}"
