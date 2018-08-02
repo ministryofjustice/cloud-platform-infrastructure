@@ -240,7 +240,7 @@ You can run the following to see kubelet logs
 ```
 $ journalctl -u kubelet
 ```
-If all else fails, you can terminte the node from the AWS console and let autoscaling group bring up a new one. However, this will most likely cause any information of why the node failed to be deleted with the node.
+If all else fails, you can terminate the node from the AWS console and let autoscaling group bring up a new one. However, this will most likely cause any information of why the node failed to be deleted with the node.
 
 Related Alert: ``K8SManyNodesNotReady``
 
@@ -331,3 +331,75 @@ Copy the Prometheus-Alertmanager 'Integration Key' https://moj-digital-tools.pag
 $ helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
 $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace nginx-controllers -f ./monitoring/helm/kube-prometheus/values.yaml
 ```
+
+## Root Volume Utilisation - High
+
+## Alarm
+```
+RootVolUtilisation-High
+Severity: warning
+```
+This alert is triggered when the root volume has 85% of the capicity used
+
+Expression:
+```
+expr: (node_filesystem_size {mountpoint="/"} - node_filesystem_avail {mountpoint="/"} ) / (node_filesystem_size {mountpoint="/"} ) * 100 >85
+for: 5m
+```
+
+## Action
+
+Run the following command to get a list of nodes and confirm the node with the issue is in the expected cluster:
+
+`$ kubectl get nodes`
+
+`$ kubectl describe node <node_name>`
+
+Look at the 'Conditions' Section for possible more info such as a disk space issue on the node is general and not just root.
+
+SSH into the node and run `lsblk` and `df -h` to list the block devices attached to the instance and disk usage.
+
+The following command can be used to search files by size to help identify/delete/backup files that may be causing the disk to fill up:
+
+```bash
+sudo find / -type f -size +100M -exec ls -lh {} \;
+```
+
+If the file system needs resizing, please follow the [offical AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/recognize-expanded-volume-linux.html) to expand the volume
+
+## Root Volume Utilisation - Critical
+
+## Alarm
+```
+RootVolUtilisation-Critical
+Severity: critical
+```
+This alert is triggered when the root volume has 95% of the capicity used
+
+Expression:
+```
+expr: (node_filesystem_size {mountpoint="/"} - node_filesystem_avail {mountpoint="/"} ) / (node_filesystem_size {mountpoint="/"} ) * 100 >95
+for: 1m
+```
+
+## Action
+
+Run the following command to get a list of nodes and confirm the node with the issue is in the expected cluster:
+
+`$ kubectl get nodes`
+
+`$ kubectl describe node <node_name>`
+
+Look at the 'Conditions' Section for possible more info such as a disk space issue on the node is general and not just root.
+
+SSH into the node and run `lsblk` and `df -h` to list the block devices attached to the instance and disk usage.
+
+The following command can be used to search files by size to help identify/delete/backup files that may be causing the disk to fill up:
+
+```bash
+sudo find / -type f -size +100M -exec ls -lh {} \;
+```
+
+If the file system needs resizing, please follow the [offical AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/recognize-expanded-volume-linux.html) to expand the volume
+
+
