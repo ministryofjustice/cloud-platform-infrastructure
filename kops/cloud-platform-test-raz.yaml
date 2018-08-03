@@ -33,6 +33,7 @@ spec:
     rbac: {}
   channel: stable
   cloudProvider: aws
+  sshKeyName: cloud-platform-test-raz.k8s.integration.dsd.io
   iam:
     allowContainerRegistry: true
     legacy: false

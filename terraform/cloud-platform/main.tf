@@ -69,7 +69,12 @@ module "cluster_vpc" {
   }
 }
 
-resource "tls_private_key" "cluster_instance" {
+resource "tls_private_key" "cluster" {
   algorithm = "RSA"
   rsa_bits  = "2048"
+}
+
+resource "aws_key_pair" "cluster" {
+  key_name   = "${local.cluster_base_domain_name}"
+  public_key = "${tls_private_key.cluster.public_key_openssh}"
 }

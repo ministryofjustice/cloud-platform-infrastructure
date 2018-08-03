@@ -47,5 +47,5 @@ output "hosted_zone_id" {
 }
 
 output "instance_key_public" {
-  value = "${tls_private_key.cluster_instance.public_key_openssh}"
+  value = "${tls_private_key.cluster.public_key_openssh}"
 }
