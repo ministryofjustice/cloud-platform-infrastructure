@@ -49,3 +49,7 @@ output "hosted_zone_id" {
 output "instance_key_public" {
   value = "${tls_private_key.cluster.public_key_openssh}"
 }
+
+output "authorized_keys_manager_systemd_unit" {
+  value = "${data.template_file.authorized_keys_manager.rendered}"
+}

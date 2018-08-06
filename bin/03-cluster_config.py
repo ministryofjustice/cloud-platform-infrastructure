@@ -114,7 +114,14 @@ for template in clusters:
             },
             'masters': 'private',
             'nodes': 'private'
-        }
+        },
+        'hooks': [
+            {
+                'name': 'authorized-keys-manager.service',
+                'roles': [ 'Master', 'Node'],
+                'manifest': tf('authorized_keys_manager_systemd_unit'),
+            }
+        ],
     })
 
     subnets = []
