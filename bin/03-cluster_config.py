@@ -123,6 +123,7 @@ for template in clusters:
             }
         ],
     })
+    template['spec']['sshKeyName'] = tf('instance_key_name')
 
     subnets = []
     if len(internal_subnets_cidrs) == len(
