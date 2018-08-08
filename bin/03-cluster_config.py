@@ -12,7 +12,6 @@ from ast import literal_eval
 templates = []
 clusters = []
 instances = []
-bastions = []
 nodes = []
 masters = []
 output = []
@@ -67,7 +66,6 @@ availability_zones = tf('availability_zones')
 master_public_name = 'api.' + cluster_name
 network_id = tf('vpc_id')
 network_cidr = tf('network_cidr_block')
-topology = 'bastion.' + cluster_name
 internal_subnets_ids = tf('internal_subnets_ids')
 internal_subnets_cidrs = tf('internal_subnets')
 external_subnets_ids = tf('external_subnets_ids')
@@ -80,8 +78,6 @@ for template in templates:
         clusters.append(template)
     if template['kind'] == 'InstanceGroup':
         instances.append(template)
-        if template['spec']['role'] == 'Bastion':
-            bastions.append(template)
         if template['spec']['role'] == 'Node':
             nodes.append(template)
         if template['spec']['role'] == 'Master':
@@ -113,16 +109,21 @@ for template in clusters:
     template['spec']['networkID'] = network_id
     template['spec'].update({
         'topology': {
-            'bastion': {
-                'bastionPublicName': topology
-            },
             'dns': {
                 'type': 'Public'
             },
             'masters': 'private',
             'nodes': 'private'
-        }
+        },
+        'hooks': [
+            {
+                'name': 'authorized-keys-manager.service',
+                'roles': [ 'Master', 'Node'],
+                'manifest': tf('authorized_keys_manager_systemd_unit'),
+            }
+        ],
     })
+    template['spec']['sshKeyName'] = tf('instance_key_name')
 
     subnets = []
     if len(internal_subnets_cidrs) == len(
@@ -167,16 +168,6 @@ for template in nodes:
     template['spec'].update({'subnets': availability_zones})
     template['spec'].update(
         {'nodeLabels': {'kops.k8s.io/instancegroup': 'nodes'}})
-    output.append(template)
-
-# Update bastions
-for template in bastions:
-    azs = []
-    for az in availability_zones:
-        azs.append('utility-' + az)
-    template['spec'].update({'subnets': azs})
-    template['spec'].update(
-        {'nodeLabels': {'kops.k8s.io/instancegroup': 'bastions'}})
     output.append(template)
 
 # Print outputs

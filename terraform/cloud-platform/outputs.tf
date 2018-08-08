@@ -45,3 +45,11 @@ output "external_subnets_ids" {
 output "hosted_zone_id" {
   value = "${module.cluster_dns.cluster_dns_zone_id}"
 }
+
+output "instance_key_name" {
+  value = "${aws_key_pair.cluster.key_name}"
+}
+
+output "authorized_keys_manager_systemd_unit" {
+  value = "${data.template_file.authorized_keys_manager.rendered}"
+}
