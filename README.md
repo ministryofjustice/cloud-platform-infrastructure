@@ -8,7 +8,7 @@
   - [How to create a new cluster](#how-to-create-a-new-cluster)
   - [How to delete a cluster](#how-to-delete-a-cluster)
   - [Cluster creation pipeline](#cluster-creation-pipeline)
-  - [Disaster recovery]()
+  - [Disaster recovery](docs/disaster-recovery/README.md)
   - [Prometheus config and install](https://github.com/ministryofjustice/cloud-platform-prometheus#cloud-platform-prometheus)
   - [Logging]()
 
