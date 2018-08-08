@@ -1,5 +1,17 @@
 # Kubernetes Investigations
 
+  - [Overview](#kubernetes-investigations)
+  - [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
+  - [Cloud Platform environments](#cloud-platform-environments)
+  - [Terraform modules](#terraform-modules)
+  - [How to add your examples](#how-to-add-your-examples)
+  - [How to create a new cluster](#how-to-create-a-new-cluster)
+  - [How to delete a cluster](#how-to-delete-a-cluster)
+  - [Cluster creation pipeline](#cluster-creation-pipeline)
+  - [Disaster recovery](docs/disaster-recovery/README.md)
+  - [Prometheus config and install](https://github.com/ministryofjustice/cloud-platform-prometheus#cloud-platform-prometheus)
+  - [Logging]()
+
 A space to collect code related to the cloud platform team's Kubernetes investigations.
 
 As we complete spikes or investigations into how we want to run Kubernetes we can collect useful code that we have written here so that it is available to the team.
