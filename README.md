@@ -10,7 +10,7 @@
   - [Cluster creation pipeline](#cluster-creation-pipeline)
   - [Disaster recovery](docs/disaster-recovery/README.md)
   - [Prometheus config and install](https://github.com/ministryofjustice/cloud-platform-prometheus#cloud-platform-prometheus)
-  - [Logging]()
+  - [Logging](docs/logging/README.md)
 
 A space to collect code related to the cloud platform team's Kubernetes investigations.
 
