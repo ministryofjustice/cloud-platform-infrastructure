@@ -1,7 +1,7 @@
 # Kubernetes Investigations
 
   - [Overview](#kubernetes-investigations)
-  - [Terraform and Cloud Platform environment management](##terraform-and-cloud-platform-environment-management)
+  - [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
   - [Cloud Platform environments](#cloud-platform-environments)
   - [Terraform modules](#terraform-modules)
   - [How to add your examples](#how-to-add-your-examples)

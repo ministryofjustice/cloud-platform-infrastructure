@@ -129,10 +129,3 @@ Have access to the moj-cloud-platforms-dev Auth0 tenant
        ingress "laa-fee-calculator" created
        service "laa-fee-calculator" created
        ```
-
-### DNS Disaster recovery
-
-In the event of a complete cluster failure we must failover our DNS entry to a new cluster. Perform the following steps to failover:
-1. Access Route53 in the desired AWS account. 
-
-2. 
