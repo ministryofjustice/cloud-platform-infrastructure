@@ -69,6 +69,13 @@ To install kube-prometheus, run:
 $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace monitoring -f ./monitoring/helm/kube-prometheus/values.yaml
 ```
 
+### Persistent Volumes with Kube-Prometheus
+To maintain data across deployments and version upgrades, the data must be persisted to a volume (AWS EBS) other than emptyDir, allowing it to be reused by pods after upgrade. 
+Please see the following documentation by CoreOS on how to do this. 
+https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md
+
+This has previously been achieved by applying an individual storage class manifest and referencing it in the values.yaml kube-prometheus Helm chart. 
+
 ## Installing AlertManager
 > The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing   them to the correct receiver integration such as email or PagerDuty. It also takes care of silencing and inhibition of alerts -
 > [https://prometheus.io/docs/alerting/alertmanager/](https://prometheus.io/docs/alerting/alertmanager/)
