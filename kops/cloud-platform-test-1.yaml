@@ -41,9 +41,11 @@ spec:
     oidcIssuerURL: https://moj-cloud-platforms-dev.eu.auth0.com/
     oidcUsernameClaim: nickname
     oidcGroupsClaim: https://k8s.integration.dsd.io/groups
+    runtimeConfig:
+      audit.k8s.io/v1beta1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.10.3
+  kubernetesVersion: 1.11.2
   networking:
     calico: {}
   nonMasqueradeCIDR: 100.64.0.0/10
