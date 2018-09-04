@@ -9,6 +9,12 @@ controller:
         return 308 https://$host$request_uri;
       }
 
+  stats:
+    enabled: true
+
+  metrics:
+    enabled: true
+
   # nginx-ingress's ServiceType=LoadBalancer by default, so we're mainly
   # configuring an ELB here
   service:
