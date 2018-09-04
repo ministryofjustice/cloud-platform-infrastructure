@@ -30,15 +30,15 @@ alertmanager:
       - match:
           alertname: DeadMansSwitch
         receiver: 'null'
-      - match: 
+      - match:
           severity: critical
         receiver: pager-duty-high-priority
-      - match: 
+      - match:
           severity: warning
         receiver: slack-low-priority
     receivers:
     - name: 'null'
-    # Add PagerDuty key to allow integration with a PD service. 
+    # Add PagerDuty key to allow integration with a PD service.
     - name: 'pager-duty-high-priority'
       pagerduty_configs:
       - service_key: "$KEY"
@@ -337,23 +337,10 @@ prometheus:
   ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/design.md
   ##
   serviceMonitorsSelector:
-    matchExpressions:
-    - key: app
-      operator: In
-      values:
-      - alertmanager
-      - exporter-coredns
-      - exporter-kube-controller-manager
-      - exporter-kube-dns
-      - exporter-kube-etcd
-      - exporter-kube-scheduler
-      - exporter-kube-state
-      - exporter-kubelets
-      - exporter-kubernetes
-      - exporter-node
-      - grafana
-      - prometheus
-      - prometheus-operator
+    any: true
+
+  serviceMonitorNamespaceSelector:
+    any: true
 
   ## ServiceMonitor CRDs to create & be scraped by the Prometheus instance.
   ## Ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/service-monitor.md
@@ -454,4 +441,3 @@ prometheus:
 deployCoreDNS: false
 deployKubeDNS: true
 deployKubeEtcd: true
-
