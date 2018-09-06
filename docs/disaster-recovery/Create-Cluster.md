@@ -22,6 +22,8 @@ Have access to the moj-cloud-platforms-dev Auth0 tenant
 
 1. Under `Settings`, take note of the app's "Client ID & Secret" and add `https://login.apps.<your-cluster-name>.k8s.integration.dsd.io/ui` to the `Allowed Callback URLs`.
 
+1. Under `Connections` ensure the Github option is selected and nothing else.
+
 ### Create Cluster using kops
 
 1. Create a k8s cluster, see [/kops/](/kops/) folder for existing ones
