@@ -264,7 +264,7 @@ prometheus:
 
   ## How long to retain metrics
   ##
-  retention: 24h
+  retention: 30d
 
   ## Prefix used to register routes, overriding externalUrl route.
   ## Useful for proxies that rewrite URLs.
@@ -431,7 +431,7 @@ prometheus:
         accessModes: ["ReadWriteOnce"]
         resources:
           requests:
-            storage: 20Gi
+            storage: 100Gi
       selector: {}
 
 # default rules are in templates/general.rules.yaml
