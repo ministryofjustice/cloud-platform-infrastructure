@@ -3,7 +3,13 @@ controller:
 
   # Add a snippet to each nginx server{} block, forcing HTTP->HTTPS
   # redirection regardless of Ingress rule config
-  config:
+  config: 
+    # Increase proxy_buffer_size from the default of 4k
+    proxy-buffer-size: "16k"
+
+    # Increase client_max_body_size from the default of 1m
+    proxy-body-size: "16m"
+
     server-snippet: |
       if ($http_x_forwarded_proto != 'https') {
         return 308 https://$host$request_uri;
@@ -30,6 +36,8 @@ controller:
 
       # Use HTTP protocol for instance traffic, as we're terminating on the ELB
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+
+
 
     # Direct ELB HTTPS traffic to instance HTTP port, as we're terminating on
     # the ELB
