@@ -43,7 +43,7 @@ metadata:
   name: kuberos
 spec:
   ports:
-  - port: 80
+  - port: 443
     name: http
     targetPort: http
   selector:
@@ -61,7 +61,7 @@ spec:
     spec:
       containers:
       - name: kuberos
-        image: negz/kuberos:14f4ca7
+        image: 926803513772.dkr.ecr.eu-west-1.amazonaws.com/cloud-platform/kuberos:1888d946522dd4770accd3f47ba4023b1d0b0f88
         command:
         - "/kuberos"
         - "$(OIDC_ISSUER_URL)"
