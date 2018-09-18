@@ -462,7 +462,7 @@ The following links have more information on [Kubernetes Cronjobs](https://kuber
 
 ## Alarm
 ```
-CuratorjobCompletion
+CuratorJobCompletion
 Severity: warning
 ```
 
