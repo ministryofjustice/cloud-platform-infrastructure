@@ -105,7 +105,7 @@ spec:
         severity: warning
       annotations:
         description: Job {{$labels.namespaces}}/{{$labels.job}} failed to complete
-        summary: Curtaor cronjob failed
+        summary: Curator cronjob failed
     - alert: CuratorCronJobRunning
       expr: time() - kube_cronjob_next_schedule_time {cronjob="elasticsearch-curator-cronjob"} > 3600
       for: 1h
@@ -113,9 +113,9 @@ spec:
         severity: warning
       annotations:
         description: Curator CronJob {{$labels.namespaces}}/{{$labels.cronjob}} is taking more than 1h to complete
-        summary: Curtaor cronjob did not complete after 1h
+        summary: Curator cronjob did not complete after 1h
     - alert: CuratorJobCompletion
-      expr: kube_job_spec_completions - kube_job_status_succeeded {job=~"elasticsearch-curator-cronjob.+"} > 0
+      expr: kube_job_spec_completions {job=~"elasticsearch-curator-cronjob.+"} - kube_job_status_succeeded {job=~"elasticsearch-curator-cronjob.+"} > 0
       for: 1h
       labels:
         severity: warning
