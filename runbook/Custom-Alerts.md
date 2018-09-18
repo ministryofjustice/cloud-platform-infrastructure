@@ -402,4 +402,88 @@ sudo find / -type f -size +100M -exec ls -lh {} \;
 
 If the file system needs resizing, please follow the [offical AWS documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/recognize-expanded-volume-linux.html) to expand the volume
 
+## Curator Cronjob Failure
+
+## Alarm
+```
+CuratorCronjobFailure
+Severity: warning
+```
+
+This alert is triggered when the curator cronjob fails.
+
+Expression:
+```
+kube_job_status_failed{job=~"elasticsearch-curator-cronjob.+"} > 0
+for: 1h
+```
+
+## Action
+
+Check why the curator cronjob is failing:
+
+```
+$ kubectl get cronjobs -n logging
+$ kubectl describe cronjob <cronjob-name> -n logging
+$ kubectl logs <cronjob-name> -n logging
+```
+
+The following links have more information on [Kubernetes Cronjobs](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/) and [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/)
+
+## Curator Cronjob Running
+
+## Alarm
+```
+CuratorCronJobRunning
+Severity: warning
+```
+
+This alert is triggered when the curator cronjob is running longer then 1 hour
+
+Expression:
+```
+time() - kube_cronjob_next_schedule_time {cronjob="elasticsearch-curator-cronjob"} > 3600
+for: 1h
+```
+
+## Action
+
+Check why the curator cronjob is running for over 1 hour:
+
+```
+$ kubectl get cronjobs -n logging
+$ kubectl describe cronjob <cronjob-name> -n logging
+$ kubectl logs <cronjob-name> -n logging
+```
+
+The following links have more information on [Kubernetes Cronjobs](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/) and [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/)
+
+## Curator Job Completion
+
+## Alarm
+```
+CuratorjobCompletion
+Severity: warning
+```
+
+This alert is triggered when job completion is taking longer then 1 hour to complete curator cronjob
+
+Expression:
+```
+kube_job_spec_completions - kube_job_status_succeeded {job=~"elasticsearch-curator-cronjob.+"} > 0      
+for: 1h
+```
+
+## Action
+
+Check why the job completion for curator cronjob is running for over 1 hour:
+
+```
+$ kubectl get cronjobs -n logging
+$ kubectl describe cronjob <cronjob-name> -n logging
+$ kubectl logs <cronjob-name> -n logging
+```
+
+The following links have more information on [Kubernetes Cronjobs](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/) and [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/)
+
 
