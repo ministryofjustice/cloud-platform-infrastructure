@@ -1,9 +1,9 @@
 # Setup
 terraform {
   backend "s3" {
-    bucket = "moj-cp-k8s-investigation-platform-terraform"
+    bucket = "cp-test-2-terraform"
     region = "eu-west-1"
-    key    = "terraform.tfstate"
+    key    = "terraform-test-2.tfstate"
   }
 }
 
@@ -15,7 +15,7 @@ data "terraform_remote_state" "global" {
   backend = "s3"
 
   config {
-    bucket = "moj-cp-k8s-investigation-global-terraform"
+    bucket = "cp-test-2-terraform"
     region = "eu-west-1"
     key    = "terraform.tfstate"
   }
@@ -23,7 +23,7 @@ data "terraform_remote_state" "global" {
 
 locals {
   cluster_name             = "${terraform.workspace}"
-  cluster_base_domain_name = "${local.cluster_name}.k8s.integration.dsd.io"
+  cluster_base_domain_name = "${local.cluster_name}.k8s.cloud-platform"
 }
 
 # Modules

@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "moj-cp-k8s-investigation-global-terraform"
+    bucket = "cp-test-2-terraform"
     region = "eu-west-1"
     key    = "terraform.tfstate"
   }
