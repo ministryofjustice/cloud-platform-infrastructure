@@ -1,9 +1,9 @@
 variable "project_name" {
-  default = "moj-cp-k8s-investigation"
+  default = "cp-test-2"
 }
 
 variable "base_domain_name" {
-  default = "integration.dsd.io"
+  default = "cloud-platform.dsd.io"
 }
 
 variable "k8s_domain_prefix" {

@@ -1,0 +1,93 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kuberos-oidc-env
+data:
+  OIDC_ISSUER_URL: "https://moj-cloud-platform-test-2.eu.auth0.com/"
+  OIDC_CLIENT_ID: "S3ykNd90g8L7rJScPuI2yRbjXHI71uTK"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: templates
+data:
+  kubecfg: |
+    apiVersion: v1
+    kind: Config
+    clusters:
+    - cluster:
+        certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUMwekNDQWJ1Z0F3SUJBZ0lNRlZmMVNtNURtM3NQa2V4bE1BMEdDU3FHU0liM0RRRUJDd1VBTUJVeEV6QVIKQmdOVkJBTVRDbXQxWW1WeWJtVjBaWE13SGhjTk1UZ3dPVEkwTVRNeE1UTTNXaGNOTWpnd09USXpNVE14TVRNMwpXakFWTVJNd0VRWURWUVFERXdwcmRXSmxjbTVsZEdWek1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBCk1JSUJDZ0tDQVFFQTBrYXo0ZEIwWmozTzBubjN2MXVZdDJ6aktGVjJYWG1EVFBTdzhmTUpCOXZMblI2NU5NM0kKVE1vL0VsRXdBQmkzT3JJMmtGdzNZWXB0VW55VkVuSWNNeXE4U3U4YzhYQXRSeXpvMi9PYTZVQVAwQnJjS3F2QgpTUWdJc00xRUc2SkZHUk5DU0NSZDBGSW45RWRaa1BiTkNDdnNBU0s3VkMwczFiUi90clZMY1RrUlU4QVp0RC9FCmtmMFZHWVpXQk5kYlhKQlR3R0IzUnFrSW0zNWl3bzZvdVFvbmVXaDVDVHJyNzNFMkdWRDlhNXB0NWJtdmVCWmkKTDRVVEVZeDVFeFVtSXF0SkwvSDRWOTZzYWs0RzBtRTJlMTRGQWJHUmF3R3VFZ21lSWNSTXdYNG53NnluU3JVdwo5Nk82QmlmMDdvS0I4QTRPbVAxSWExVWk5UWZYMUF0TnlRSURBUUFCb3lNd0lUQU9CZ05WSFE4QkFmOEVCQU1DCkFRWXdEd1lEVlIwVEFRSC9CQVV3QXdFQi96QU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FRRUFqeFFCMzUzWlRGVVMKZVo4MngxM3FTRlAxUm1CeGxQRG9FL2FNNjk4VktBTEI2QlFyUEE3Yk80NHNORERReWVrRU9uY05ZNi8zdEt1MQp1KzFTNjZ3WjgvZnk5SVhiYlJ2aUQ1ampKK1FkQkJiSEl0ZyttQk5MMHlKemVGRDFVZVB0UytsUS95S0lZdUxhCkJFQnJBaGlTQW5YdlNWS2QrZWJzNVdENllVUzBJL08xcEdDRjJiTE5zREFYMHhhUVRNdVRNaGZUVnMrSThGTzEKWnlqenhKNlllVEU4TlNoR00rcHdYWnhwRE1ubUJsMkl5VjgyVGc3ODdzT3MwaVE1QTVhYktVdGlDTnNTZWR6OQowaGxIQ1BJRDJYYXhoNEx4SzJoakZYUzc1WXVjOU41Vlh2Z1VJNmt1a2RicDdoL1doc0R3NENFdEhXeFdUZGF3CnpEWjJReENLUWc9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+        server: https://api.test-2.k8s.cloud-platform.dsd.io
+      name: test-2.k8s.cloud-platform.dsd.io
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kuberos
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: login.apps.test-2.k8s.cloud-platform.dsd.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kuberos
+          servicePort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kuberos
+spec:
+  ports:
+  - port: 80
+    name: http
+    targetPort: http
+  selector:
+    app: kuberos
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kuberos
+spec:
+  template:
+    metadata:
+      labels:
+        app: kuberos
+    spec:
+      containers:
+      - name: kuberos
+        image: negz/kuberos:14f4ca7
+        command:
+        - "/kuberos"
+        - "$(OIDC_ISSUER_URL)"
+        - "$(OIDC_CLIENT_ID)"
+        - "/oidc/secret"
+        - "/templates/kubecfg"
+
+        envFrom:
+        - configMapRef:
+            name: kuberos-oidc-env
+
+        ports:
+        - containerPort: 10003
+          name: http
+
+        volumeMounts:
+        - name: oidc
+          mountPath: /oidc
+        - name: templates
+          mountPath: /templates
+
+      volumes:
+      - name: oidc
+        secret:
+          secretName: kuberos-oidc
+
+      - name: templates
+        configMap:
+          name: templates

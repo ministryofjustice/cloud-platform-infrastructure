@@ -1,0 +1,32 @@
+## This controls which types of resource external-dns should 'watch' for new
+## DNS entries.
+sources:
+  - service
+  - ingress
+
+## The DNS provider where the DNS records will be created (options: aws, google, inmemory, azure )
+provider: aws
+
+# AWS Access keys to inject as environment variables
+aws:
+  region: "eu-west-1"
+  # Filter for zones of this type (optional, options: public, private)
+  zoneType: "public"
+
+## Limit possible target zones by domain suffixes (optional)
+domainFilters:
+  - test-2.k8s.integration.dsd.io
+
+rbac:
+  ## If true, create & use RBAC resources
+  ##
+  create: true
+  # Beginning with Kubernetes 1.8, the api is stable and v1 can be used.
+  apiVersion: v1
+
+  ## Ignored if rbac.create is true
+  ##
+  serviceAccountName: default
+
+logLevel: debug
+

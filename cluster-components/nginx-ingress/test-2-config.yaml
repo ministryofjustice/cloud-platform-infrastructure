@@ -1,0 +1,52 @@
+controller:
+  replicaCount: 3
+
+  # Add a snippet to each nginx server{} block, forcing HTTP->HTTPS
+  # redirection regardless of Ingress rule config
+  config:
+    # Increase proxy_buffer_size from the default of 4k
+    proxy-buffer-size: "16k"
+
+    # Increase client_max_body_size from the default of 1m
+    proxy-body-size: "16m"
+
+    server-snippet: |
+      if ($http_x_forwarded_proto != 'https') {
+        return 308 https://$host$request_uri;
+      }
+
+  stats:
+    enabled: true
+
+  metrics:
+    enabled: true
+
+  # nginx-ingress's ServiceType=LoadBalancer by default, so we're mainly
+  # configuring an ELB here
+  service:
+    annotations:
+      # Have `external-dns` create a Route53 record pointing to this ELB
+      external-dns.alpha.kubernetes.io/hostname: "*.apps.test-2.k8s.cloud-platform.dsd.io"
+
+      # Attach pre-existing ACM cert
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "arn:aws:acm:eu-west-1:754256621582:certificate/ba001e3c-0aa1-4afa-b9d5-6e50f654acbc"
+
+      # Enable ELB SSL protocol on port 443 only (default is all ports)
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
+
+      # Use HTTP protocol for instance traffic, as we're terminating on the ELB
+      service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+
+    # Direct ELB HTTPS traffic to instance HTTP port, as we're terminating on
+    # the ELB
+    targetPorts:
+      https: 80
+
+    # Preserve source IP address
+    externalTrafficPolicy: "Local"
+
+# Create RBAC role with required perms for nginx-ingress's ServiceAccount
+rbac:
+  create: true
+  serviceAccountName: default
+
