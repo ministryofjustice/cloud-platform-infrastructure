@@ -27,7 +27,14 @@ $ helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
 $ helm install coreos/prometheus-operator --name prometheus-operator --namespace monitoring -f ./helm/prometheus-operator/values.yaml
 
 # Install kube-prometheus
-$ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=true --namespace monitoring -f ./helm/kube-prometheus/values.yaml
+$ helm install \
+  coreos/kube-prometheus \
+  -f ./helm/kube-prometheus/values.yaml \
+  --name kube-prometheus \
+  --set global.rbacEnable=true \
+  --namespace monitoring \
+  --set-string grafana.adminUser=$(head -c 16 /dev/urandom | xxd -p) \
+  --set-string grafana.adminPassword=$(head -c 16 /dev/urandom | xxd -p)
 
 # Expose the Prometheus port to your localhost
 $ kubectl port-forward -n monitoring prometheus-kube-prometheus-0 9090
@@ -70,11 +77,11 @@ $ helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEn
 ```
 
 ### Persistent Volumes with Kube-Prometheus
-To maintain data across deployments and version upgrades, the data must be persisted to a volume (AWS EBS) other than emptyDir, allowing it to be reused by pods after upgrade. 
-Please see the following documentation by CoreOS on how to do this. 
+To maintain data across deployments and version upgrades, the data must be persisted to a volume (AWS EBS) other than emptyDir, allowing it to be reused by pods after upgrade.
+Please see the following documentation by CoreOS on how to do this.
 https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md
 
-This has previously been achieved by applying an individual storage class manifest and referencing it in the values.yaml kube-prometheus Helm chart. 
+This has previously been achieved by applying an individual storage class manifest and referencing it in the values.yaml kube-prometheus Helm chart.
 
 ## Installing AlertManager
 > The Alertmanager handles alerts sent by client applications such as the Prometheus server. It takes care of deduplicating, grouping, and routing   them to the correct receiver integration such as email or PagerDuty. It also takes care of silencing and inhibition of alerts -
