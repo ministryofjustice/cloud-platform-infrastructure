@@ -16,7 +16,6 @@ controller:
         return 308 https://$host$request_uri;
       }
     
-  
   stats:
     enabled: true
 
