@@ -4,6 +4,7 @@ controller:
   # Add a snippet to each nginx server{} block, forcing HTTP->HTTPS
   # redirection regardless of Ingress rule config
   config: 
+    generate-request-id: "true"
     # Increase proxy_buffer_size from the default of 4k
     proxy-buffer-size: "16k"
 
@@ -14,7 +15,7 @@ controller:
       if ($http_x_forwarded_proto != 'https') {
         return 308 https://$host$request_uri;
       }
-
+    
   stats:
     enabled: true
 
