@@ -60,6 +60,7 @@ resource "aws_instance" "hapee_node" {
     Name = "hapee_node_${count.index}"
   }
 }
+
 resource "tls_private_key" "hapee_private_key" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -69,5 +70,3 @@ resource "aws_key_pair" "hapee_key_pair" {
   key_name   = "hapee"
   public_key = "${tls_private_key.hapee_private_key.public_key_openssh}"
 }
-
-
