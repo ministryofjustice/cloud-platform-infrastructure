@@ -54,8 +54,20 @@ resource "aws_instance" "hapee_node" {
   vpc_security_group_ids = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.instance_sg2.id}"]
   subnet_id              = "${aws_subnet.tf_test_subnet.id}"
   user_data              = "${data.template_file.hapee-userdata.rendered}"
+  key_name               = "${aws_key_pair.hapee_key_pair.key_name}"
 
   tags {
     Name = "hapee_node_${count.index}"
   }
 }
+resource "tls_private_key" "hapee_private_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "hapee_key_pair" {
+  key_name   = "hapee"
+  public_key = "${tls_private_key.hapee_private_key.public_key_openssh}"
+}
+
+
