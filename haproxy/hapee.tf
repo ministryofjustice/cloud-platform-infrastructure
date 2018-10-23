@@ -40,7 +40,7 @@ data "template_file" "hapee-userdata" {
   template = "${file("hapee-userdata.sh.tpl")}"
 
   vars {
-    serverlist = "\n    server test demo.apps.cloud-platform-test-0.k8s.integration.dsd.io:443 cookie test check \n    server live demo.apps.cloud-platform-live-0.k8s.integration.dsd.io:443 cookie live test"
+    serverlist = "\n    server test demo.apps.cloud-platform-test-0.k8s.integration.dsd.io:443 cookie test check \n    server live demo.apps.cloud-platform-live-0.k8s.integration.dsd.io:443 cookie live check"
   }
 }
 
