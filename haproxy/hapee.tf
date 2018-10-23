@@ -12,6 +12,13 @@ resource "aws_elb" "hapee_elb" {
     lb_protocol       = "tcp"
   }
 
+  listener {
+    instance_port     = 9000
+    instance_protocol = "tcp"
+    lb_port           = 9000
+    lb_protocol       = "tcp"
+  }
+
   health_check {
     healthy_threshold   = 2
     unhealthy_threshold = 2
@@ -33,7 +40,7 @@ resource "aws_elb" "hapee_elb" {
 
 resource "aws_proxy_protocol_policy" "proxy_http" {
   load_balancer  = "${aws_elb.hapee_elb.name}"
-  instance_ports = ["80"]
+  instance_ports = ["80","8080"]
 }
 
 data "template_file" "hapee-userdata" {
@@ -61,7 +68,7 @@ resource "aws_instance" "hapee_node" {
 
 resource "tls_private_key" "hapee_private_key" {
   algorithm = "RSA"
-  rsa_bits  = 4096
+  rsa_bits  = 2048
 }
 
 resource "aws_key_pair" "hapee_key_pair" {

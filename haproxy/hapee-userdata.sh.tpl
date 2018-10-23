@@ -36,5 +36,14 @@ frontend health
     acl backend_dead nbsrv(webapp) lt 1
     monitor-uri /haproxy_status
     monitor fail if backend_dead
+
+listen stats
+  bind *:9000
+  mode http
+  stats enable
+  stats realm Haproxy\ Statistics  # Title text for popup window
+  stats uri /
+  stats auth user:pass
+
 EOF
 systemctl restart hapee-1.7-lb

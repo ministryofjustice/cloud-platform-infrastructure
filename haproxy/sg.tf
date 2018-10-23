@@ -38,6 +38,14 @@ resource "aws_security_group" "instance_sg2" {
     protocol        = "tcp"
     security_groups = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.elb.id}"]
   }
+
+  ingress {
+    from_port   = 9000
+    to_port     = 9000
+    protocol    = "tcp"
+    security_groups = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.elb.id}"]
+  }
+
 }
 
 resource "aws_security_group" "elb" {
@@ -49,6 +57,13 @@ resource "aws_security_group" "elb" {
   ingress {
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 9000
+    to_port     = 9000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
