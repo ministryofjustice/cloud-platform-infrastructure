@@ -27,8 +27,9 @@ defaults
 listen webapp
     bind *:80          accept-proxy
     balance            roundrobin
-    cookie             SERVERID insert indirect nocache
-${serverlist}
+    http-send-name-header Host
+    server demo.apps.cloud-platform-test-0.k8s.integration.dsd.io demo.apps.cloud-platform-test-0.k8s.integration.dsd.io:443 check ssl verify none
+    server demo.apps.cloud-platform-live-0.k8s.integration.dsd.io demo.apps.cloud-platform-live-0.k8s.integration.dsd.io:443 check ssl verify none
 
 frontend health
     bind *:8080

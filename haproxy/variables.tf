@@ -10,7 +10,7 @@ variable "aws_hapee_instance_type" {
 
 variable "hapee_cluster_size" {
   description = "Size of HAPEE nodes cluster"
-  default     = 2
+  default     = 1
 }
 
 # HAPEE 1.7 Ubuntu

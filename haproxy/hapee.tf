@@ -39,9 +39,7 @@ resource "aws_proxy_protocol_policy" "proxy_http" {
 data "template_file" "hapee-userdata" {
   template = "${file("hapee-userdata.sh.tpl")}"
 
-  vars {
-    serverlist = "\n    server test demo.apps.cloud-platform-test-0.k8s.integration.dsd.io:443 cookie test check \n    server live demo.apps.cloud-platform-live-0.k8s.integration.dsd.io:443 cookie live check"
-  }
+  vars {}
 }
 
 resource "aws_instance" "hapee_node" {
