@@ -13,3 +13,7 @@ output "Private Key Pem" {
 output "Key Pair Fingerprint" {
   value = "${aws_key_pair.hapee_key_pair.fingerprint}"
 }
+
+output "HAPEE node public IPs" {
+  value = "${aws_instance.hapee_node.*.public_ip}"
+}
