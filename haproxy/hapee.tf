@@ -40,7 +40,7 @@ resource "aws_elb" "hapee_elb" {
 
 resource "aws_proxy_protocol_policy" "proxy_http" {
   load_balancer  = "${aws_elb.hapee_elb.name}"
-  instance_ports = ["80","8080"]
+  instance_ports = ["80", "8080"]
 }
 
 data "template_file" "hapee-userdata" {

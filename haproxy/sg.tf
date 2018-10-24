@@ -40,12 +40,11 @@ resource "aws_security_group" "instance_sg2" {
   }
 
   ingress {
-    from_port   = 9000
-    to_port     = 9000
-    protocol    = "tcp"
+    from_port       = 9000
+    to_port         = 9000
+    protocol        = "tcp"
     security_groups = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.elb.id}"]
   }
-
 }
 
 resource "aws_security_group" "elb" {
