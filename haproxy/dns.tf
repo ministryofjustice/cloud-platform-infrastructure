@@ -1,11 +1,11 @@
 resource "aws_route53_zone" "haproxy" {
-  name         = "haproxy-test.cloud-platform.dsd.io"
+  name         = "${var.haproxy_domain}"
 }
 
 resource "aws_route53_record" "www" {
   zone_id = "${aws_route53_zone.haproxy.zone_id}"
-  name    = "www.${aws_route53_zone.haproxy.name}"
+  name    = "${var.haproxy_host}.${var.haproxy_domain}"
   type    = "CNAME"
   ttl     = "300"
-  records = ["${aws_elb.hapee_elb.dns_name}"]
+  records = ["${aws_elb.haproxy_elb.dns_name}"]
 }

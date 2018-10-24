@@ -1,6 +1,6 @@
 resource "aws_security_group" "instance_sg1" {
   name        = "instance_sg1"
-  description = "Instance (HAPEE/Web node) SG to pass tcp/22 by default"
+  description = "pass tcp/22 by default"
   vpc_id      = "${aws_vpc.default.id}"
 
   ingress {
@@ -22,7 +22,7 @@ resource "aws_security_group" "instance_sg1" {
 
 resource "aws_security_group" "instance_sg2" {
   name        = "instance_sg2"
-  description = "Instance (HAPEE/Web node) SG to pass ELB traffic  by default"
+  description = "pass ELB traffic  by default"
   vpc_id      = "${aws_vpc.default.id}"
 
   ingress {

@@ -1,0 +1,1 @@
+    server ${name} ${name}:443 check ssl verify none weight ${weight}
