@@ -66,6 +66,23 @@ resource "aws_instance" "hapee_node" {
   }
 }
 
+resource "aws_route53_zone" "haproxy" {
+  name         = "haproxy-test.cloud-platform.dsd.io"
+}
+
+resource "aws_route53_record" "www" {
+  zone_id = "${aws_route53_zone.haproxy.zone_id}"
+  name    = "www.${aws_route53_zone.haproxy.name}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = ["${aws_elb.hapee_elb.dns_name}"]
+}
+
+resource "aws_acm_certificate" "cert" {
+  domain_name       = "www.${aws_route53_zone.haproxy.name}"
+  validation_method = "DNS"
+}
+
 resource "tls_private_key" "hapee_private_key" {
   algorithm = "RSA"
   rsa_bits  = 2048

@@ -28,8 +28,11 @@ listen webapp
     bind *:80          accept-proxy
     balance            roundrobin
     http-send-name-header Host
-    server demo.apps.cloud-platform-test-0.k8s.integration.dsd.io demo.apps.cloud-platform-test-0.k8s.integration.dsd.io:443 check ssl verify none
-    server demo.apps.cloud-platform-live-0.k8s.integration.dsd.io demo.apps.cloud-platform-live-0.k8s.integration.dsd.io:443 check ssl verify none
+    server demo.apps.cloud-platform-test-0.k8s.integration.dsd.io demo.apps.cloud-platform-test-0.k8s.integration.dsd.io:443 check ssl verify none weight 30
+    server demo.apps.cloud-platform-live-0.k8s.integration.dsd.io demo.apps.cloud-platform-live-0.k8s.integration.dsd.io:443 check ssl verify none weight 70
+
+frontend https_frontend
+    bind *:443 ssl crt-list /etc/ssl/mycerts.txt
 
 frontend health
     bind *:8080
