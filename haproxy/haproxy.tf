@@ -46,14 +46,16 @@ resource "aws_proxy_protocol_policy" "proxy_http" {
 data "template_file" "backends_weights" {
   template = "${file("weights.tpl")}"
   count    = "${length(var.backends_weights)}"
+
   vars {
-    name = "${element(keys(var.backends_weights[count.index]), 0)}"
+    name   = "${element(keys(var.backends_weights[count.index]), 0)}"
     weight = "${element(values(var.backends_weights[count.index]), 0)}"
   }
 }
 
 data "template_file" "haproxy_userdata" {
   template = "${file("userdata.sh.tpl")}"
+
   vars {
     serverlist = "${join("\n", data.template_file.backends_weights.*.rendered)}"
   }

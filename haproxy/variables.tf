@@ -15,6 +15,7 @@ variable "haproxy_cluster_size" {
 
 variable "haproxy_aws_amis" {
   description = "Ubuntu Xenial"
+
   default = {
     "eu-west-1" = "ami-0eb66a0c3eb9f5183"
   }
@@ -30,8 +31,13 @@ variable "haproxy_host" {
 
 variable "backends_weights" {
   type = "list"
+
   default = [
-    { "demo.apps.cloud-platform-test-0.k8s.integration.dsd.io" = "2" },
-    { "demo.apps.cloud-platform-live-0.k8s.integration.dsd.io" = "8" }
+    {
+      "demo.apps.cloud-platform-test-0.k8s.integration.dsd.io" = "2"
+    },
+    {
+      "demo.apps.cloud-platform-live-0.k8s.integration.dsd.io" = "8"
+    },
   ]
 }

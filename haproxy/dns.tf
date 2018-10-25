@@ -1,5 +1,5 @@
 resource "aws_route53_zone" "haproxy" {
-  name         = "${var.haproxy_domain}"
+  name = "${var.haproxy_domain}"
 }
 
 resource "aws_route53_record" "www" {
