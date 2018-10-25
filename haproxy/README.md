@@ -1,4 +1,4 @@
-# Weighted load balancer using haproxy and ELB
+# Weighted load balancer using haproxy and ALB
 Edit `variables.tf` and `terraform apply`
 
 ## Debugging

@@ -1,19 +1,23 @@
+data "aws_availability_zones" "all" {}
+
 resource "aws_vpc" "default" {
   cidr_block           = "100.127.0.0/16"
   enable_dns_hostnames = true
 
   tags {
-    Name = "hapee_test_vpc"
+    Name = "haproxy_vpc"
   }
 }
 
-resource "aws_subnet" "tf_test_subnet" {
+resource "aws_subnet" "haproxy_subnet" {
   vpc_id                  = "${aws_vpc.default.id}"
-  cidr_block              = "100.127.0.0/24"
+  count                   = "${var.aws_az_count}"
+  cidr_block              = "${cidrsubnet(aws_vpc.default.cidr_block, 8, count.index)}"
+  availability_zone       = "${data.aws_availability_zones.all.names[count.index]}"
   map_public_ip_on_launch = true
 
   tags {
-    Name = "hapee_test_subnet"
+    Name = "haproxy_subnet"
   }
 }
 
@@ -21,7 +25,7 @@ resource "aws_internet_gateway" "gw" {
   vpc_id = "${aws_vpc.default.id}"
 
   tags {
-    Name = "hapee_test_ig"
+    Name = "haproxy_ig"
   }
 }
 
@@ -39,6 +43,7 @@ resource "aws_route_table" "r" {
 }
 
 resource "aws_route_table_association" "a" {
-  subnet_id      = "${aws_subnet.tf_test_subnet.id}"
+  count          = "${var.aws_az_count}"
+  subnet_id      = "${element(aws_subnet.haproxy_subnet.*.id, count.index)}"
   route_table_id = "${aws_route_table.r.id}"
 }

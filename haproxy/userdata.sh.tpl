@@ -6,7 +6,7 @@ apt-get -y install haproxy
 tee -a /etc/haproxy/haproxy.cfg <<EOF
 
 frontend webapp
-    bind *:80 accept-proxy
+    bind *:80
     mode http
     default_backend webapp
 
@@ -16,9 +16,6 @@ backend webapp
     http-send-name-header Host
     option forwardfor
 ${serverlist}
-
-# frontend https_frontend
-#    bind *:443 ssl crt-list /etc/ssl/mycerts.txt
 
 frontend health
     bind *:8080

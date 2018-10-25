@@ -10,8 +10,8 @@ output "haproxy-nodes-ips" {
   value = "${aws_instance.haproxy_node.*.public_ip}"
 }
 
-output "elb-dns" {
-  value = "${aws_elb.haproxy_elb.dns_name}"
+output "alb-dns" {
+  value = "${aws_lb.haproxy_alb.dns_name}"
 }
 
 output "haproxy-dns" {

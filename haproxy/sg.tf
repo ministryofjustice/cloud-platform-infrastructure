@@ -22,40 +22,40 @@ resource "aws_security_group" "instance_sg1" {
 
 resource "aws_security_group" "instance_sg2" {
   name        = "instance_sg2"
-  description = "pass ELB traffic  by default"
+  description = "pass ALB traffic  by default"
   vpc_id      = "${aws_vpc.default.id}"
 
   ingress {
     from_port       = 80
     to_port         = 80
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.elb.id}"]
+    security_groups = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.alb.id}"]
   }
 
   ingress {
     from_port       = 8080
     to_port         = 8080
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.elb.id}"]
+    security_groups = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.alb.id}"]
   }
 
   ingress {
     from_port       = 9000
     to_port         = 9000
     protocol        = "tcp"
-    security_groups = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.elb.id}"]
+    security_groups = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.alb.id}"]
   }
 }
 
-resource "aws_security_group" "elb" {
-  name        = "elb_sg"
-  description = "Used in the terraform"
+resource "aws_security_group" "alb" {
+  name        = "alb_sg"
+  description = "for haproxy"
 
   vpc_id = "${aws_vpc.default.id}"
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }

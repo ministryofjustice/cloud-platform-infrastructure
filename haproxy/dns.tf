@@ -7,5 +7,5 @@ resource "aws_route53_record" "www" {
   name    = "${var.haproxy_host}.${var.haproxy_domain}"
   type    = "CNAME"
   ttl     = "300"
-  records = ["${aws_elb.haproxy_elb.dns_name}"]
+  records = ["${aws_lb.haproxy_alb.dns_name}"]
 }

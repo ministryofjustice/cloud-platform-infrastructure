@@ -1,15 +1,20 @@
 variable "aws_region" {
-  description = "Home AWS region"
+  description = "Ireland"
   default     = "eu-west-1"
 }
 
+variable "aws_az_count" {
+  description = "Number of AZs"
+  default     = "2"
+}
+
 variable "aws_haproxy_instance_type" {
-  description = "Default AWS instance type for haproxy nodes"
+  description = "instance type for haproxy nodes"
   default     = "t2.micro"
 }
 
 variable "haproxy_cluster_size" {
-  description = "Size of haproxy nodes cluster"
+  description = "number of haproxy nodes"
   default     = 1
 }
 
