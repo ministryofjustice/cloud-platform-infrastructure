@@ -14,7 +14,7 @@ resource "aws_lb_target_group" "haproxy_alb_target" {
   vpc_id   = "${aws_vpc.default.id}"
   protocol = "HTTP"
   port     = 80
-
+  proxy_protocol_v2 = "false"
   health_check {
     interval            = 30
     path                = "/haproxy_status"
