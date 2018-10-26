@@ -34,8 +34,11 @@ resource "aws_launch_template" "haproxy_node" {
   key_name  = "${aws_key_pair.haproxy_key_pair.key_name}"
   user_data = "${base64encode(data.template_file.haproxy_userdata.rendered)}"
   vpc_security_group_ids = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.instance_sg2.id}"]
-  tags {
-    Name = "haproxy_node"
+  tag_specifications {
+    resource_type = "instance"
+    tags {
+      Name = "haproxy-${var.haproxy_host}.${var.haproxy_domain}"
+    }
   }
 }
 
