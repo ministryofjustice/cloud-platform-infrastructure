@@ -9,3 +9,7 @@ output "alb-dns" {
 output "haproxy-dns" {
   value = "${aws_route53_record.www.name}"
 }
+
+output "public-ips" {
+  value = "${data.aws_instances.workers.public_ips}"
+}
