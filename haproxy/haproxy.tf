@@ -16,30 +16,37 @@ data "template_file" "haproxy_userdata" {
   }
 }
 
-resource "aws_instance" "haproxy_node" {
-  count = "${var.haproxy_cluster_size * var.aws_az_count}"
-
-  instance_type = "${var.aws_haproxy_instance_type}"
-
-  ami = "${lookup(var.haproxy_aws_amis, var.aws_region)}"
-
-  vpc_security_group_ids = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.instance_sg2.id}"]
-  subnet_id              = "${element(aws_subnet.haproxy_subnet.*.id, count.index / var.haproxy_cluster_size)}"
-
-  user_data = "${data.template_file.haproxy_userdata.rendered}"
-  key_name  = "${aws_key_pair.haproxy_key_pair.key_name}"
-
-  tags {
-    Name = "haproxy_node_${count.index}"
-  }
-}
-
 resource "tls_private_key" "haproxy_private_key" {
   algorithm = "RSA"
   rsa_bits  = 2048
 }
 
 resource "aws_key_pair" "haproxy_key_pair" {
-  key_name   = "haproxy"
+  key_name   = "haproxy-${var.haproxy_host}.${var.haproxy_domain}"
   public_key = "${tls_private_key.haproxy_private_key.public_key_openssh}"
+}
+
+resource "aws_launch_template" "haproxy_node" {
+  name = "haproxy-${var.haproxy_host}.${var.haproxy_domain}"
+  image_id = "${lookup(var.haproxy_aws_amis, var.aws_region)}"
+  instance_initiated_shutdown_behavior = "terminate"
+  instance_type = "${var.aws_haproxy_instance_type}"
+  key_name  = "${aws_key_pair.haproxy_key_pair.key_name}"
+  user_data = "${base64encode(data.template_file.haproxy_userdata.rendered)}"
+  vpc_security_group_ids = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.instance_sg2.id}"]
+  tags {
+    Name = "haproxy_node"
+  }
+}
+
+resource "aws_autoscaling_group" "haproxy" {
+  name = "haproxy-${var.haproxy_host}.${var.haproxy_domain}"
+  max_size = 4
+  min_size = 2
+  vpc_zone_identifier = ["${aws_subnet.haproxy_subnet.*.id}"]
+  target_group_arns = ["${aws_lb_target_group.haproxy_alb_target.arn}"]
+  launch_template = {
+    id = "${aws_launch_template.haproxy_node.id}"
+    version = "$$Latest"
+  }
 }

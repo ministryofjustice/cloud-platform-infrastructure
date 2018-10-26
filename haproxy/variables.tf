@@ -27,11 +27,15 @@ variable "haproxy_aws_amis" {
 }
 
 variable "haproxy_domain" {
-  default = "haproxy-test.cloud-platform.dsd.io"
+  default = "haproxy.cloud-platform.dsd.io"
+}
+
+variable "parent_zone" {
+  default = "Z2ICAAX9I27W2Q"
 }
 
 variable "haproxy_host" {
-  default = "www"
+  default = "test"
 }
 
 variable "backends_weights" {
