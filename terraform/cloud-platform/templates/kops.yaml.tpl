@@ -166,7 +166,7 @@ spec:
         - level: Metadata
           omitStages:
             - "RequestReceived"
-            
+
   api:
     loadBalancer:
       type: Public
@@ -197,6 +197,25 @@ spec:
     rbac: {}
   channel: stable
   cloudProvider: aws
+  configBase: s3://${kops_state_store}/${cluster_dns_zone_id}
+  dnsZone: ${cluster_dns_zone_id}
+  etcdClusters:
+  - etcdMembers:
+    - instanceGroup: master-eu-west-1a
+      name: a
+    - instanceGroup: master-eu-west-1b
+      name: b
+    - instanceGroup: master-eu-west-1c
+      name: c
+    name: main
+  - etcdMembers:
+    - instanceGroup: master-eu-west-1a
+      name: a
+    - instanceGroup: master-eu-west-1b
+      name: b
+    - instanceGroup: master-eu-west-1c
+      name: c
+    name: events
   iam:
     allowContainerRegistry: true
     legacy: false
@@ -226,11 +245,49 @@ spec:
   kubernetesApiAccess:
   - 0.0.0.0/0
   kubernetesVersion: 1.10.3
+  masterPublicName: api.${cluster_dns_zone_id}
+  networkCIDR: ${network_cidr_block}
   networking:
     calico: {}
   nonMasqueradeCIDR: 100.64.0.0/10
   sshAccess:
   - 0.0.0.0/0
+  subnets:
+  - cidr: 172.20.32.0/19
+    id: ${internal_subnets_id_a}
+    name: eu-west-1a
+    type: Private
+    zone: eu-west-1a
+  - cidr: 172.20.64.0/19
+    id: ${internal_subnets_id_b}
+    name: eu-west-1b
+    type: Private
+    zone: eu-west-1b
+  - cidr: 172.20.96.0/19
+    id: ${internal_subnets_id_c}
+    name: eu-west-1c
+    type: Private
+    zone: eu-west-1c
+  - cidr: 172.20.0.0/22
+    id: ${external_subnets_id_a}
+    name: utility-eu-west-1a
+    type: Utility
+    zone: eu-west-1a
+  - cidr: 172.20.4.0/22
+    id: ${external_subnets_id_b}
+    name: utility-eu-west-1b
+    type: Utility
+    zone: eu-west-1b
+  - cidr: 172.20.8.0/22
+    id: ${external_subnets_id_c}
+    name: utility-eu-west-1c
+    type: Utility
+    zone: eu-west-1c
+  topology:
+    dns:
+      type: Public
+    masters: private
+    nodes: private
 
 ---
 
@@ -238,6 +295,8 @@ apiVersion: kops/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: ${cluster_dns_zone_id}
   name: master-eu-west-1a
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
@@ -252,6 +311,8 @@ apiVersion: kops/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: ${cluster_dns_zone_id}
   name: master-eu-west-1b
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
@@ -266,6 +327,8 @@ apiVersion: kops/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: ${cluster_dns_zone_id}
   name: master-eu-west-1c
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
@@ -280,6 +343,8 @@ apiVersion: kops/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: ${cluster_dns_zone_id}
   name: nodes
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
