@@ -23,12 +23,14 @@ resource "kubernetes_cluster_role_binding" "tiller" {
     api_group = ""
   }
 }
+
 resource "null_resource" "deploy" {
-    provisioner "local-exec" {
-        command = "helm init --service-account tiller"
-    }
-    provisioner "local-exec" {
-        when = "destroy"
-        command= "kubectl -n kube-system delete deployment.apps/tiller-deploy service/tiller-deploy "
-    }
+  provisioner "local-exec" {
+    command = "helm init --service-account tiller"
+  }
+
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl -n kube-system delete deployment.apps/tiller-deploy service/tiller-deploy "
+  }
 }
