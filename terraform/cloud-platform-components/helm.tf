@@ -23,105 +23,12 @@ resource "kubernetes_cluster_role_binding" "tiller" {
     api_group = ""
   }
 }
-
-resource "kubernetes_deployment" "helm" {
-  metadata {
-    name      = "tiller-deploy"
-    namespace = "kube-system"
-
-    labels {
-      app  = "helm"
-      name = "tiller"
+resource "null_resource" "deploy" {
+    provisioner "local-exec" {
+        command = "helm init --service-account tiller"
     }
-  }
-
-  spec {
-    replicas = 1
-
-    selector {
-      match_labels {
-        app  = "helm"
-        name = "tiller"
-      }
+    provisioner "local-exec" {
+        when = "destroy"
+        command= "kubectl -n kube-system delete deployment.apps/tiller-deploy service/tiller-deploy "
     }
-
-    strategy {
-      type = "RollingUpdate"
-
-      rolling_update {
-        max_surge       = "1"
-        max_unavailable = "1"
-      }
-    }
-
-    template {
-      metadata {
-        labels {
-          app  = "helm"
-          name = "tiller"
-        }
-      }
-
-      spec {
-        restart_policy                   = "Always"
-        service_account_name             = "tiller"
-        termination_grace_period_seconds = "30"
-
-        container {
-          image             = "gcr.io/kubernetes-helm/tiller:v2.11.0"
-          name              = "tiller"
-          image_pull_policy = "IfNotPresent"
-
-          env {
-            name  = "TILLER_NAMESPACE"
-            value = "kube-system"
-          }
-
-          env {
-            name  = "TILLER_HISTORY_MAX"
-            value = "0"
-          }
-
-          port {
-            name           = "tiller"
-            protocol       = "TCP"
-            container_port = 44134
-          }
-
-          port {
-            name           = "http"
-            protocol       = "TCP"
-            container_port = 44135
-          }
-        }
-      }
-    }
-  }
-}
-
-resource "kubernetes_service" "helm" {
-  metadata {
-    name      = "tiller-deploy"
-    namespace = "kube-system"
-    labels {
-        app = "helm"
-        name = "tiller"
-    }
-  }
-
-  spec {
-    selector {
-      app  = "helm"
-      name = "tiller"
-    }
-
-    port {
-      name        = "tiller"
-      port        = 44134
-      target_port = "tiller"
-      protocol    = "TCP"
-    }
-
-    type = "ClusterIP"
-  }
 }
