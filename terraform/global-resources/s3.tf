@@ -65,3 +65,20 @@ resource "aws_s3_bucket" "environments_terraform" {
     }
   }
 }
+
+resource "aws_s3_bucket" "cluster_components" {
+  bucket = "cloud-platform-components-terraform"
+  acl    = "private"
+
+  versioning {
+    enabled = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
