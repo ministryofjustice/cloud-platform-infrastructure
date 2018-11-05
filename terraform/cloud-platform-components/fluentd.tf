@@ -1,6 +1,6 @@
 resource "helm_release" "fluentd_es" {
     name      = "fluentd-es"
-    chart     = "./fluentd-es"
+    chart     = "resources/fluentd-es"
 
     set {
         name  = "namespace"
@@ -14,7 +14,7 @@ resource "helm_release" "fluentd_es" {
 
     set {
         name = "FLUENT_ELASTICSEARCH_HOST"
-        value = "search-cloud-platform-test-o2m2taivvjpovbcl63mlytnpua.eu-west-1.es.amazonaws.com"
+        value = "https://search-cloud-platform-live-7qrzc26xexgxtkt5qz72gt6cxa.eu-west-1.es.amazonaws.com"
     }
 
     set {
@@ -24,6 +24,6 @@ resource "helm_release" "fluentd_es" {
 
     set {
         name = "FLUENT_KUBERNETES_CLUSTER_NAME"
-        value = "cloud-platform-test-1"
+        value = "${terraform.workspace}"
     }
 }
