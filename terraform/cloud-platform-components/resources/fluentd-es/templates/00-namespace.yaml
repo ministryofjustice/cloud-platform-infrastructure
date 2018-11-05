@@ -5,10 +5,10 @@ kind: Namespace
 metadata:
   name: {{ .Values.namespace }}
 labels:
-    cloud-platform.justice.gov.uk/is-production: {{ .Values.is-production }}
-    cloud-platform.justice.gov.uk/environment-name: {{ .Values.environment-name }}
+    cloud-platform.justice.gov.uk/is-production: {{ .Values.is_production }}
+    cloud-platform.justice.gov.uk/environment-name: {{ .Values.environment_name }}
   annotations:
-    cloud-platform.justice.gov.uk/business-unit: {{ .Values.business-unit }}
+    cloud-platform.justice.gov.uk/business-unit: {{ .Values.business_unit }}
     cloud-platform.justice.gov.uk/application: {{ .Values.application }}
     cloud-platform.justice.gov.uk/owner: {{ .Values.owner }}
-    cloud-platform.justice.gov.uk/source-code: {{ .Values.source-code }}
+    cloud-platform.justice.gov.uk/source-code: {{ .Values.source_code }}
