@@ -1,0 +1,15 @@
+namespace: logging
+
+version: v2.2.0
+
+FLUENT_ELASTICSEARCH_HOST: "https://search-cloud-platform-live-7qrzc26xexgxtkt5qz72gt6cxa.eu-west-1.es.amazonaws.com"
+FLUENT_ELASTICSEARCH_AUDIT_HOST: "search-cloud-platform-audit-effm3qdiau42obkarrpvdxioxm.eu-west-1.es.amazonaws.com"
+FLUENT_KUBERNETES_CLUSTER_NAME:
+
+#Labels and Annotations
+is-production: "true"
+environment-name: "production"
+business-unit: "cloud-platform"
+application: "fluentd-es"
+owner: "Cloud Platform: platforms@digital.justice.gov.uk"
+source-code: "https://github.com/ministryofjustice/cloud-platform-environments"

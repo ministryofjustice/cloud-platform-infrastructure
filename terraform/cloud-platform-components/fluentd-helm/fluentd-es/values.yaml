@@ -1,7 +1,0 @@
-namespace: logging
-
-version: v2.2.0
-
-FLUENT_ELASTICSEARCH_HOST: "search-cloud-platform-test-o2m2taivvjpovbcl63mlytnpua.eu-west-1.es.amazonaws.com"
-FLUENT_ELASTICSEARCH_AUDIT_HOST: "search-cloud-platform-audit-effm3qdiau42obkarrpvdxioxm.eu-west-1.es.amazonaws.com"
-FLUENT_KUBERNETES_CLUSTER_NAME: cloud-platform-test-1
