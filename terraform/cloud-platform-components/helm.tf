@@ -13,7 +13,7 @@ resource "kubernetes_cluster_role_binding" "tiller" {
   role_ref {
     kind      = "ClusterRole"
     name      = "cluster-admin"
-    api_group = ""
+    api_group = "rbac.authorization.k8s.io"
   }
 
   subject {
@@ -26,11 +26,11 @@ resource "kubernetes_cluster_role_binding" "tiller" {
 
 resource "null_resource" "deploy" {
   provisioner "local-exec" {
-    command = "helm init --service-account tiller"
+    command = "helm init --wait --service-account tiller"
   }
 
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl -n kube-system delete deployment.apps/tiller-deploy service/tiller-deploy "
+    command = "kubectl -n kube-system delete deployment.apps/tiller-deploy service/tiller-deploy"
   }
 }
