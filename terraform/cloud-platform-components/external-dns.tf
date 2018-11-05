@@ -1,16 +1,19 @@
-# # data "terraform_remote_state" "cloud-platform" {
-# #   backend   = "s3://moj-cp-k8s-investigation-platform-terraform"
-# #   workspace = "${terraform.workspace}"
+data "terraform_remote_state" "cloud-platform" {
+  backend   = "s3"
+  workspace = "${terraform.workspace}"
 
-# #   config {
-# #     name = "terraform.tfstate"
-# #   }
-# # }
+  config {
+    region = "eu-west-1"
+    bucket = "moj-cp-k8s-investigation-platform-terraform"
+    key    = "terraform.tfstate"
+  }
+}
 
 resource "helm_release" "external_dns" {
-  name  = "dns"
-  chart = "stable/external-dns"
-  namespace = "default"
+  name      = "external-dns"
+  chart     = "stable/external-dns"
+  namespace = "kube-system"
+
   values = [<<EOF
 sources:
   - service
@@ -20,7 +23,7 @@ aws:
   region: eu-west-1
   zoneType: public
 domainFilters: 
-  - cloud-platform-live-0.k8s.integration.dsd.io
+  - "${data.terraform_remote_state.cloud-platform.cluster_domain_name}"
 rbac:
   create: true
   apiVersion: v1
@@ -28,10 +31,10 @@ rbac:
 logLevel: debug
 EOF
   ]
+
   depends_on = [
     "kubernetes_service_account.tiller",
     "kubernetes_cluster_role_binding.tiller",
     "null_resource.deploy",
-]
+  ]
 }
-
