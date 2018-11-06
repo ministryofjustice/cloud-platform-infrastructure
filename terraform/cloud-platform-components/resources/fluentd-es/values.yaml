@@ -6,10 +6,3 @@ FLUENT_ELASTICSEARCH_HOST: "https://search-cloud-platform-live-7qrzc26xexgxtkt5q
 FLUENT_ELASTICSEARCH_AUDIT_HOST: "search-cloud-platform-audit-effm3qdiau42obkarrpvdxioxm.eu-west-1.es.amazonaws.com"
 FLUENT_KUBERNETES_CLUSTER_NAME:
 
-#Labels and Annotations
-is_production: "true"
-environment_name: "production"
-business_unit: "cloud-platform"
-application: "fluentd-es"
-owner: "Cloud Platform: platforms@digital.justice.gov.uk"
-source_code: "https://github.com/ministryofjustice/cloud-platform-environments"
