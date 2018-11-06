@@ -6,7 +6,7 @@ apiVersion: kops/v1alpha2
 kind: Cluster
 metadata:
   creationTimestamp: null
-  name: ${cluster_domain_name}
+  name: ${cluster_name}
 spec:
   fileAssets:
   - name: kubernetes-audit
@@ -197,8 +197,8 @@ spec:
     rbac: {}
   channel: stable
   cloudProvider: aws
-  configBase: s3://${kops_state_store}/${cluster_dns_zone_id}
-  dnsZone: ${cluster_dns_zone_id}
+  configBase: s3://${kops_state_store}/${cluster_domain_name}
+  dnsZone: ${cluster_domain_name}
   etcdClusters:
   - etcdMembers:
     - instanceGroup: master-eu-west-1a
@@ -245,7 +245,7 @@ spec:
   kubernetesApiAccess:
   - 0.0.0.0/0
   kubernetesVersion: 1.10.3
-  masterPublicName: api.${cluster_dns_zone_id}
+  masterPublicName: api.${cluster_domain_name}
   networkCIDR: ${network_cidr_block}
   networking:
     calico: {}
@@ -296,7 +296,7 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: ${cluster_dns_zone_id}
+    kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-1a
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
@@ -312,7 +312,7 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: ${cluster_dns_zone_id}
+    kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-1b
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
@@ -328,7 +328,7 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: ${cluster_dns_zone_id}
+    kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-1c
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
@@ -344,7 +344,7 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: ${cluster_dns_zone_id}
+    kops.k8s.io/cluster: ${cluster_domain_name}
   name: nodes
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
