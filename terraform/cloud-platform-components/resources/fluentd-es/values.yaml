@@ -1,8 +1,8 @@
-namespace: logging
+namespace: 
 
-version: v2.2.0
+version: 
 
-FLUENT_ELASTICSEARCH_HOST: "https://search-cloud-platform-live-7qrzc26xexgxtkt5qz72gt6cxa.eu-west-1.es.amazonaws.com"
-FLUENT_ELASTICSEARCH_AUDIT_HOST: "search-cloud-platform-audit-effm3qdiau42obkarrpvdxioxm.eu-west-1.es.amazonaws.com"
+FLUENT_ELASTICSEARCH_HOST: 
+FLUENT_ELASTICSEARCH_AUDIT_HOST: 
 FLUENT_KUBERNETES_CLUSTER_NAME: 
 
