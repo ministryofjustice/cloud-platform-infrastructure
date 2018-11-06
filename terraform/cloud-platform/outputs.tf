@@ -53,3 +53,7 @@ output "instance_key_name" {
 output "authorized_keys_manager_systemd_unit" {
   value = "${data.template_file.authorized_keys_manager.rendered}"
 }
+
+output "certificate_arn" {
+  value = "${module.cluster_ssl.apps_acm_arn}"
+}
