@@ -53,3 +53,15 @@ output "instance_key_name" {
 output "authorized_keys_manager_systemd_unit" {
   value = "${data.template_file.authorized_keys_manager.rendered}"
 }
+
+output "oidc_issuer_url" {
+  value = "https://${local.auth0_tenant_domain}/"
+}
+
+output "oidc_client_id" {
+  value = "${auth0_client.kubernetes.client_id}"
+}
+
+output "oidc_client_secret" {
+  value = "${auth0_client.kubernetes.client_secret}"
+}
