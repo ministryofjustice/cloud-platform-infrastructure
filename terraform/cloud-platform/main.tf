@@ -37,6 +37,7 @@ locals {
   cluster_name             = "${terraform.workspace}"
   cluster_base_domain_name = "${local.cluster_name}.k8s.integration.dsd.io"
   auth0_tenant_domain      = "moj-cloud-platforms-dev.eu.auth0.com"
+  oidc_issuer_url          = "https://${local.auth0_tenant_domain}/"
 }
 
 # Modules

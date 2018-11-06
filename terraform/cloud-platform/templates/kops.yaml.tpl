@@ -220,8 +220,8 @@ spec:
     allowContainerRegistry: true
     legacy: false
   kubeAPIServer:
-    oidcClientID: uVp00zncGYUyqr5IMkLH3zNpvLbwzzyX
-    oidcIssuerURL: https://moj-cloud-platforms-dev.eu.auth0.com/
+    oidcClientID: ${oidc_client_id}
+    oidcIssuerURL: ${oidc_issuer_url}
     oidcUsernameClaim: nickname
     oidcGroupsClaim: https://k8s.integration.dsd.io/groups
     auditLogPath: /var/log/kube-apiserver-audit.log

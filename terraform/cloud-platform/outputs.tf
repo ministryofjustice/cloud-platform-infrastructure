@@ -55,7 +55,7 @@ output "authorized_keys_manager_systemd_unit" {
 }
 
 output "oidc_issuer_url" {
-  value = "https://${local.auth0_tenant_domain}/"
+  value = "${local.oidc_issuer_url}"
 }
 
 output "oidc_client_id" {
