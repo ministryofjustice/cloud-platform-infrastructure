@@ -104,6 +104,7 @@ resource "auth0_client" "kubernetes" {
   sso                  = true
 
   jwt_configuration = {
-    alg = "RS256"
+    alg                 = "RS256"
+    lifetime_in_seconds = "36000"
   }
 }
