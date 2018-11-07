@@ -1,0 +1,70 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "kuberos.fullname" . }}
+  labels:
+    app: {{ include "kuberos.name" . }}
+    chart: {{ include "kuberos.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "kuberos.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "kuberos.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+          - "/kuberos"
+          - "$(OIDC_ISSUER_URL)"
+          - "$(OIDC_CLIENT_ID)"
+          - "/oidc/secret"
+          - "/templates/kubecfg"
+          ports:
+            - name: http
+              containerPort: 10003
+              protocol: TCP
+          envFrom:
+          - configMapRef:
+              name: {{ include "kuberos.configmapNameEnv" . }}
+          volumeMounts:
+          - name: oidc
+            mountPath: /oidc
+          - name: templates
+            mountPath: /templates
+          livenessProbe:
+            tcpSocket:
+              port: http
+          readinessProbe:
+            tcpSocket:
+              port: http
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      volumes:
+      - name: oidc
+        secret:
+          secretName: {{ include "kuberos.secretName" . }}
+      - name: templates
+        configMap:
+          name: {{ include "kuberos.configmapNameTemplates" . }}

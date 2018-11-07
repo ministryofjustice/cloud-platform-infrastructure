@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kuberos.fullname" . }}
+  labels:
+    app: {{ include "kuberos.name" . }}
+    chart: {{ include "kuberos.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ include "kuberos.name" . }}
+    release: {{ .Release.Name }}
