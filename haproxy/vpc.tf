@@ -5,7 +5,7 @@ resource "aws_vpc" "default" {
   enable_dns_hostnames = true
 
   tags {
-    Name = "haproxy_vpc"
+    Name = "haproxy_vpc_${random_id.id.hex}"
   }
 }
 
@@ -17,7 +17,7 @@ resource "aws_subnet" "haproxy_subnet" {
   map_public_ip_on_launch = true
 
   tags {
-    Name = "haproxy_subnet"
+    Name = "haproxy_subnet_${random_id.id.hex}"
   }
 }
 
@@ -25,7 +25,7 @@ resource "aws_internet_gateway" "gw" {
   vpc_id = "${aws_vpc.default.id}"
 
   tags {
-    Name = "haproxy_ig"
+    Name = "haproxy_ig_${random_id.id.hex}"
   }
 }
 
@@ -38,7 +38,7 @@ resource "aws_route_table" "r" {
   }
 
   tags {
-    Name = "aws_route_table"
+    Name = "aws_route_table_${random_id.id.hex}"
   }
 }
 
