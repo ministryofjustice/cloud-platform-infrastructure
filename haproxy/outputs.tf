@@ -11,5 +11,5 @@ output "haproxy-dns" {
 }
 
 output "public-ips" {
-  value = "${aws_instances.workers.public_ips}"
+  value = ["${aws_instance.haproxy_node.*.public_ip}"]
 }
