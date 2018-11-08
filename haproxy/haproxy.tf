@@ -1,5 +1,5 @@
 data "template_file" "backends_weights" {
-  template = "${file("weights.tpl")}"
+  template = "${file("${path.module}/weights.tpl")}"
   count    = "${length(var.backends_weights)}"
 
   vars {
@@ -9,7 +9,7 @@ data "template_file" "backends_weights" {
 }
 
 data "template_file" "haproxy_userdata" {
-  template = "${file("userdata.sh.tpl")}"
+  template = "${file("${path.module}/userdata.sh.tpl")}"
 
   vars {
     serverlist = "${join("\n", data.template_file.backends_weights.*.rendered)}"
