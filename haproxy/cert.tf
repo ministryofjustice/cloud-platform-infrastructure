@@ -1,5 +1,5 @@
 resource "aws_acm_certificate" "cert" {
-  domain_name       = "${var.haproxy_host}.${var.haproxy_domain}"
+  domain_name       = "${var.haproxy_domain}"
   validation_method = "DNS"
 }
 
