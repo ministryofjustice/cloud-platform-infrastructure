@@ -26,26 +26,20 @@ resource "aws_key_pair" "haproxy_key_pair" {
   public_key = "${tls_private_key.haproxy_private_key.public_key_openssh}"
 }
 
-resource "aws_launch_template" "haproxy_node" {
-  name                                 = "haproxy-${var.haproxy_host}.${var.haproxy_domain}"
-  image_id                             = "${lookup(var.haproxy_aws_amis, var.aws_region)}"
-  instance_initiated_shutdown_behavior = "terminate"
-  instance_type                        = "${var.aws_haproxy_instance_type}"
-  key_name                             = "${aws_key_pair.haproxy_key_pair.key_name}"
-  user_data                            = "${base64encode(data.template_file.haproxy_userdata.rendered)}"
-  vpc_security_group_ids               = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.instance_sg2.id}"]
+resource "aws_instance" "haproxy_node" {
+  count = "${var.haproxy_cluster_size * var.aws_az_count}"
 
-  tag_specifications {
-    resource_type = "instance"
+  instance_type = "${var.aws_haproxy_instance_type}"
 
-    tags {
-      Name = "haproxy-${var.haproxy_host}.${var.haproxy_domain}"
-    }
-  }
-}
+  ami = "${lookup(var.haproxy_aws_amis, var.aws_region)}"
 
-data "aws_instances" "workers" {
-  instance_tags {
+  vpc_security_group_ids = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.instance_sg2.id}"]
+  subnet_id              = "${element(aws_subnet.haproxy_subnet.*.id, count.index / var.haproxy_cluster_size)}"
+
+  user_data = "${data.template_file.haproxy_userdata.rendered}"
+  key_name  = "${aws_key_pair.haproxy_key_pair.key_name}"
+
+  tags {
     Name = "haproxy-${var.haproxy_host}.${var.haproxy_domain}"
   }
 }
