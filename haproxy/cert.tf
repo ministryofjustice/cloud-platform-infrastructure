@@ -6,7 +6,7 @@ resource "aws_acm_certificate" "cert" {
 resource "aws_route53_record" "cert_validation" {
   name    = "${lookup(aws_acm_certificate.cert.domain_validation_options[0], "resource_record_name")}"
   type    = "${lookup(aws_acm_certificate.cert.domain_validation_options[0], "resource_record_type")}"
-  zone_id = "${aws_route53_zone.haproxy.zone_id}"
+  zone_id = "${var.parent_zone}"
   records = ["${lookup(aws_acm_certificate.cert.domain_validation_options[0], "resource_record_value")}"]
   ttl     = 60
 }
