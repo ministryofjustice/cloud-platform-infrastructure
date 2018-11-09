@@ -1,5 +1,4 @@
 resource "helm_release" "kuberos" {
-  depends_on    = ["null_resource.deploy"]
   name          = "kuberos"
   namespace     = "kuberos"
   chart         = "../../helm-charts/kuberos"
@@ -33,5 +32,11 @@ resource "helm_release" "kuberos" {
   set {
     name  = "oidc.clientSecret"
     value = "${data.terraform_remote_state.cluster.oidc_client_secret}"
+  }
+
+  depends_on = ["null_resource.deploy"]
+
+  lifecycle {
+    ignore_changes = ["keyring"]
   }
 }
