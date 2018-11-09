@@ -15,7 +15,7 @@ backend webapp
     balance roundrobin
     http-send-name-header Host
     option forwardfor
-${haproxydomain}
+    http-request set-header X-Forwarded-Host ${haproxydomain}
 ${serverlist}
 
 frontend health
