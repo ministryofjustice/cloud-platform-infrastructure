@@ -43,10 +43,9 @@ serviceAccountName: default
 EOF
   ]
 
-  depends_on = [
-    "kubernetes_service_account.tiller",
-    "kubernetes_cluster_role_binding.tiller",
-    "null_resource.deploy",
-    "helm_release.external_dns",
-  ]
+  depends_on = ["null_resource.deploy"]
+
+  lifecycle {
+    ignore_changes = ["keyring"]
+  }
 }
