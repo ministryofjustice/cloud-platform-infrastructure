@@ -17,11 +17,12 @@ provider "helm" {
 }
 
 data "terraform_remote_state" "cluster" {
-  backend = "s3"
+  backend   = "s3"
+  workspace = "${terraform.workspace}"
 
   config {
     bucket = "moj-cp-k8s-investigation-platform-terraform"
     region = "eu-west-1"
-    key    = "env:/${terraform.workspace}/terraform.tfstate"
+    key    = "terraform.tfstate"
   }
 }
