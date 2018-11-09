@@ -1,6 +1,6 @@
 provider "aws" {
   region  = "${var.aws_region}"
-  version = "~>1.39.0"
+  version = ">=1.34"
 }
 
 resource "random_id" "id" {
