@@ -2,7 +2,7 @@ namespace:
 
 version:
 
-FLUENT_ELASTICSEARCH_HOST:
-FLUENT_ELASTICSEARCH_AUDIT_HOST:
-FLUENT_KUBERNETES_CLUSTER_NAME:
+fluent_elasticsearch_host:
+fluent_elasticsearch_audit_host:
+fluent_kubernetes_cluster_name:
 

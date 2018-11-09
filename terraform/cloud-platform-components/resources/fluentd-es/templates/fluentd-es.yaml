@@ -86,11 +86,11 @@ spec:
         - name: FLUENTD_ARGS
           value: --no-supervisor -q
         - name:  FLUENT_ELASTICSEARCH_HOST
-          value: {{ .Values.FLUENT_ELASTICSEARCH_HOST }}
+          value: {{ .Values.fluent_elasticsearch_host }}
         - name:  FLUENT_ELASTICSEARCH_AUDIT_HOST
-          value: {{ .Values.FLUENT_ELASTICSEARCH_AUDIT_HOST }}
+          value: {{ .Values.fluent_elasticsearch_audit_host }}
         - name: FLUENT_KUBERNETES_CLUSTER_NAME
-          value: {{ .Values.FLUENT_KUBERNETES_CLUSTER_NAME }}
+          value: {{ .Values.fluent_kubernetes_cluster_name }}
         resources:
           limits:
             memory: 500Mi
