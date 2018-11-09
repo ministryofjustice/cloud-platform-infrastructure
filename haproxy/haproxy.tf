@@ -12,7 +12,7 @@ data "template_file" "haproxy_userdata" {
   template = "${file("${path.module}/userdata.sh.tpl")}"
 
   vars {
-    serverlist    = "${join("\n", data.template_file.backends_weights.*.rendered)}"
+    serverlist = "${join("\n", data.template_file.backends_weights.*.rendered)}"
   }
 }
 
