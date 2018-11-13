@@ -65,7 +65,7 @@ spec:
       labels:
         k8s-app: fluentd-es
         kubernetes.io/cluster-service: "true"
-        version: {{ .Values.version }}
+        version: {{ .Values.image.tag}}
       # This annotation ensures that fluentd does not get evicted if the node
       # supports critical pod annotation based priority scheme.
       # Note that this does not guarantee admission on the nodes (#40573).
@@ -81,7 +81,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: {{ .Release.Name }}
-        image: k8s.gcr.io/fluentd-elasticsearch:{{ .Values.version }}
+        image: k8s.gcr.io/fluentd-elasticsearch:{{ .Values.image.tag }}
         env:
         - name: FLUENTD_ARGS
           value: --no-supervisor -q
