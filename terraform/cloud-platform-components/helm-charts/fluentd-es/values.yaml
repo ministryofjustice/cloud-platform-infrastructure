@@ -1,6 +1,8 @@
 namespace: 
 
-version: 
+image:
+  repository:
+  tag: v2.2.0
 
 fluent_elasticsearch_host: 
 fluent_elasticsearch_audit_host: 

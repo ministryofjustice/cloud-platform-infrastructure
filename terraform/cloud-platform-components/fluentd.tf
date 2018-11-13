@@ -1,6 +1,6 @@
 resource "helm_release" "fluentd_es" {
   name  = "fluentd-es"
-  chart = "resources/fluentd-es"
+  chart = "helm-charts/fluentd-es"
 
   set {
     name  = "namespace"
@@ -8,7 +8,7 @@ resource "helm_release" "fluentd_es" {
   }
 
   set {
-    name  = "version"
+    name  = "image.tag"
     value = "v2.2.0"
   }
 
