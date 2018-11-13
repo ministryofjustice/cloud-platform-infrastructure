@@ -2,11 +2,11 @@ resource "helm_release" "nginx_ingress" {
   name      = "nginx-ingress"
   chart     = "stable/nginx-ingress"
   namespace = "ingress-controllers"
+  version   = "v0.29.0"
 
   values = [<<EOF
 controller:
   replicaCount: 3
-
 
   config:
     generate-request-id: "true"
@@ -23,10 +23,8 @@ controller:
   metrics:
     enabled: true
 
-
   service:
     annotations:
-
       external-dns.alpha.kubernetes.io/hostname: "*.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
       service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "${data.terraform_remote_state.cluster.certificate_arn}"
       service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
@@ -39,7 +37,6 @@ controller:
 
 rbac:
   create: true
-serviceAccountName: default
 EOF
   ]
 
