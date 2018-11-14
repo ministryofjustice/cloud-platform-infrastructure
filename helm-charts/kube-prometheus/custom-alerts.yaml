@@ -1,0 +1,124 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  creationTimestamp: null
+  labels:
+    prometheus: kube-prometheus
+    role: alert-rules
+  name: kube-prometheus-custom-alerts
+spec:
+  groups:
+  - name: node.rules
+    rules:
+    - alert: Node-Disk-Space-Low
+      expr: predict_linear(node_filesystem_free[6h], 3600 * 24) < 0
+      for: 30m
+      labels:
+        severity: warning
+      annotations:
+        description: A node is reporting low disk space.
+        summary: Action is required on a node.
+    - alert: CPU-High
+      expr: 100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100) > 80
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        description: This device's CPU usage has exceeded the threshold with a value of {{ $value }}.
+        summary: Instance {{ $labels.instance }} CPU usage is dangerously high
+    - alert: CPU-Critical
+      expr: 100 - (avg by (instance) (irate(node_cpu{mode="idle"}[5m])) * 100) > 95
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        description: This device's CPU usage has exceeded the threshold with a value of {{ $value }}.
+        summary: Instance {{ $labels.instance }} CPU usage is critically high
+    - alert: Memory-High
+      expr: (node_memory_MemTotal - node_memory_MemAvailable) / (node_memory_MemTotal) * 100 > 80
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        description: '{{ $labels.instance }} has high memory usage for than 5 minutes.'
+        summary: Instance {{ $labels.instance }} memory has high usage
+    - alert: Memory-Critical
+      expr: (node_memory_MemTotal - node_memory_MemAvailable) / (node_memory_MemTotal) * 100 > 95
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        description: '{{ $labels.instance }} has high memory usage for than 5 minutes.'
+        summary: Instance {{ $labels.instance }} memory has critically high usage
+    - alert: KubeDNSDown
+      expr: absent(up{job="kube-dns"} == 1)
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        description: Prometheus could not scrape kube-dns
+        summary: kube-dns is down
+    - alert: External-DNSDown
+      expr: kube_deployment_status_replicas_available{deployment="external-dns"} == 0
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        description: external-dns container has not been running in the namespace 'kube-system' for 5 minutes.
+        summary: external-dns is down
+    - alert: NginxIngressPodDown
+      expr: kube_deployment_status_replicas_available{deployment="pouring-ibex-nginx-ingress-controller"} <3
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        description: '{{ $labels.pod}} pod unavailable in the {{ $labels.namespace}} namespace.'
+        summary: 1 or more nginx-ingress pods have been unavailable for 5 minutes
+    - alert: NginxIngressDown
+      expr: kube_deployment_status_replicas_available{deployment="pouring-ibex-nginx-ingress-controller"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        descrition: '{{ $labels.pod}} pod unavailable in the {{ $labels.namespace}} namespace.'
+        summary: nginx-ingress has been down for 5 minutes
+    - alert: RootVolUtilisation-High
+      expr: (node_filesystem_size {mountpoint="/"} - node_filesystem_avail {mountpoint="/"} ) / (node_filesystem_size {mountpoint="/"} ) * 100 >85
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        description: '{{ $labels.instance }} has exceeded the threshold of root volume utilisation with a value of {{ $value }}'
+        summary: Instance {{ $labels.instance }} root volume utilisation usage is high
+    - alert: RootVolUtilisation-Critical
+      expr: (node_filesystem_size {mountpoint="/"} - node_filesystem_avail {mountpoint="/"} ) / (node_filesystem_size {mountpoint="/"} ) * 100 >95
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        description: '{{ $labels.instance }} has exceeded the threshold of root volume utilisation with a value of {{ $value }}'
+        summary: Instance {{ $labels.instance }} root volume utilisation usage is critically high
+    - alert: CuratorCronJobFailure
+      expr: kube_job_status_failed{job=~"elasticsearch-curator-cronjob.+"} > 0
+      for: 1h
+      labels:
+        severity: warning
+      annotations:
+        description: Job {{$labels.namespaces}}/{{$labels.job}} failed to complete
+        summary: Curator cronjob failed
+    - alert: CuratorCronJobRunning
+      expr: time() - kube_cronjob_next_schedule_time {cronjob="elasticsearch-curator-cronjob"} > 3600
+      for: 1h
+      labels:
+        severity: warning
+      annotations:
+        description: Curator CronJob {{$labels.namespaces}}/{{$labels.cronjob}} is taking more than 1h to complete
+        summary: Curator cronjob did not complete after 1h
+    - alert: CuratorJobCompletion
+      expr: kube_job_spec_completions {job=~"elasticsearch-curator-cronjob.+"} - kube_job_status_succeeded {job=~"elasticsearch-curator-cronjob.+"} > 0
+      for: 1h
+      labels:
+        severity: warning
+      annotations:
+        description: Job completion is taking more than 1h to complete cronjob {{$labels.namespaces}}/{{$labels.job}}
+        summary: Job {{$labels.job}} didn't finish to complete after 1h
