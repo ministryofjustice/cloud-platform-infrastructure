@@ -18,7 +18,7 @@ resource "kubernetes_storage_class" "prometheus" {
 resource "helm_release" "prometheus_operator" {
   name          = "prometheus-operator"
   chart         = "coreos/prometheus-operator"
-  namespace     = "monitoring-terraform"
+  namespace     = "monitoring"
   recreate_pods = "true"
 
   depends_on = [
@@ -30,7 +30,7 @@ resource "helm_release" "prometheus_operator" {
 resource "helm_release" "kube_prometheus" {
   name          = "kube-prometheus"
   chart         = "coreos/kube-prometheus"
-  namespace     = "monitoring-terraform"
+  namespace     = "monitoring"
   recreate_pods = "true"
 
   values = [
