@@ -6,6 +6,7 @@ apt-get -y install haproxy
 tee -a /etc/haproxy/haproxy.cfg <<EOF
 
 resolvers awsdns
+  nameserver aws 100.127.0.2:53
   resolve_retries       3
   timeout resolve       1s
   timeout retry         1s
