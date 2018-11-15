@@ -9,8 +9,8 @@ grafana:
     anonymous:
       enabled: "false"
 
-  # adminUser: ""
-  # adminPassword: ""
+   adminUser: "${random_id}"
+   adminPassword: "${random_id}"
 
   ingress:
     enabled: true

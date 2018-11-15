@@ -37,11 +37,12 @@ data "template_file" "kube_prometheus" {
     pagerduty_config     = "${var.pagerduty_config}"
     slack_config         = "${var.slack_config}"
     promtheus_ingress    = "https://prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    random_id            = "${random_id.id.hex}"
   }
 }
 
 resource "local_file" "kube_prometheus" {
-  filename = "../../helm-charts/kube-prometheus/values.yml"
+  filename = "../../helm-charts/kube-prometheus/values.yaml"
   content  = "${data.template_file.kube_prometheus.rendered}"
 }
 
@@ -52,7 +53,7 @@ resource "helm_release" "kube_prometheus" {
   recreate_pods = "true"
 
   values = [
-    "${file("../../helm-charts/kube-prometheus/values.yml")}",
+    "${file("../../helm-charts/kube-prometheus/values.yaml")}",
   ]
 
   depends_on = [
