@@ -6,7 +6,6 @@ apt-get -y install haproxy
 tee -a /etc/haproxy/haproxy.cfg <<EOF
 
 resolvers awsdns
-  parse-resolv-conf
   resolve_retries       3
   timeout resolve       1s
   timeout retry         1s
