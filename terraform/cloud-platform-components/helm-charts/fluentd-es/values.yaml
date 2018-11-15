@@ -8,3 +8,4 @@ fluent_elasticsearch_host:
 fluent_elasticsearch_audit_host: 
 fluent_kubernetes_cluster_name:
 
+component: 
