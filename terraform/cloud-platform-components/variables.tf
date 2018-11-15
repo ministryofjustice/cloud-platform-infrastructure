@@ -1,4 +1,4 @@
-variable "pager_duty_config" {
+variable "pagerduty_config" {
   description = "Add PagerDuty key to allow integration with a PD service."
 }
 

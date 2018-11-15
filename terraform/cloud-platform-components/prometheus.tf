@@ -3,7 +3,7 @@ resource "helm_repository" "coreos" {
   url  = "https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/"
 }
 
-resource "kubernetes_storage_class" "prometheus" {
+resource "kubernetes_storage_class" "prometheus_storage" {
   metadata {
     name = "prometheus-storage"
   }
@@ -27,6 +27,24 @@ resource "helm_release" "prometheus_operator" {
   ]
 }
 
+data "template_file" "kube_prometheus" {
+  template = "${file("../../helm-charts/kube-prometheus/values.yaml.tpl")}"
+
+  vars {
+    alertmanager_ingress = "https://alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    grafana_ingress      = "grafana.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    grafana_root         = "https://grafana.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    pagerduty_config     = "${var.pagerduty_config}"
+    slack_config         = "${var.slack_config}"
+    promtheus_ingress    = "https://prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+  }
+}
+
+resource "local_file" "kube_prometheus" {
+  filename = "../../helm-charts/kube-prometheus/values.yml"
+  content  = "${data.template_file.kube_prometheus.rendered}"
+}
+
 resource "helm_release" "kube_prometheus" {
   name          = "kube-prometheus"
   chart         = "coreos/kube-prometheus"
@@ -34,38 +52,8 @@ resource "helm_release" "kube_prometheus" {
   recreate_pods = "true"
 
   values = [
-    "${file("../../helm-charts/prometheus-operator/kube-prometheus/values.yaml")}",
+    "${file("../../helm-charts/kube-prometheus/values.yml")}",
   ]
-
-  set {
-    name  = "grafana.extraVars[0].value"
-    value = "https://grafana.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-  }
-
-  set {
-    name  = "grafana.ingress.host"
-    value = "https://grafana.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-  }
-
-  set {
-    name  = "alertmanager.externalUrl"
-    value = "https://alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-  }
-
-  set {
-    name  = "prometheus.externalUrl"
-    value = "https://prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-  }
-
-  set {
-    name  = "alertmanager.config.receivers[1].pagerduty_configs[0].service_key"
-    value = "${var.pager_duty_config}"
-  }
-
-  set {
-    name  = "alertmanager.config.receivers[2].slack_configs[0].api_url"
-    value = "${var.slack_config}"
-  }
 
   depends_on = [
     "null_resource.deploy",
