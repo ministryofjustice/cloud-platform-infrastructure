@@ -1,7 +1,7 @@
 data "aws_availability_zones" "all" {}
 
 resource "aws_vpc" "default" {
-  cidr_block           = "100.127.0.0/16"
+  cidr_block           = "${var.cidr_block}"
   enable_dns_hostnames = true
 
   tags {
