@@ -6,6 +6,11 @@ metadata:
   name: fluentd-es-config-v0.1.4
   namespace: {{ .Values.namespace }}
   labels:
+    app: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    component: {{ .Values.component }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
     addonmanager.kubernetes.io/mode: Reconcile
 data:
 {{ (.Files.Glob "config/**").AsConfig | indent 4 }}
