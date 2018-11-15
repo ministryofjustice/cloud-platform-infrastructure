@@ -1,1 +1,1 @@
-    server ${name} ${name}:443 check ssl verify none weight ${weight} resolvers awsdns
+    server ${name} ${name}:443 check ssl verify none resolvers awsdns weight ${weight}
