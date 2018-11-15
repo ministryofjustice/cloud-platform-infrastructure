@@ -50,3 +50,11 @@ variable "backends_weights" {
     },
   ]
 }
+
+variable "cidr_block" {
+  default = "100.127.0.0/16"
+}
+
+variable "dns_ip" {
+  default = "100.127.0.2"
+}
