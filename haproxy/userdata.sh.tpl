@@ -10,12 +10,6 @@ resolvers awsdns
   resolve_retries       10
   timeout resolve       2s
   timeout retry         1s
-  hold other           30s
-  hold refused         30s
-  hold nx              30s
-  hold timeout         30s
-  hold valid           30s
-  hold obsolete        30s
 
 frontend webapp
     bind *:80

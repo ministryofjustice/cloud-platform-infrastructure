@@ -13,7 +13,7 @@ data "template_file" "haproxy_userdata" {
 
   vars {
     serverlist = "${join("\n", data.template_file.backends_weights.*.rendered)}"
-    dns_ip = "${var.dns_ip}"
+    dns_ip     = "${var.dns_ip}"
   }
 }
 
