@@ -4,7 +4,7 @@ resource "helm_release" "metrics_server" {
   namespace = "kube-system"
   keyring   = ""
   version   = "2.0.4"
-  
+
   values = [<<EOF
 rbac:
   create: true
@@ -26,5 +26,4 @@ args:
 
 EOF
   ]
-
 }
