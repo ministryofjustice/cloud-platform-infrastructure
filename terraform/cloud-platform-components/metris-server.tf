@@ -5,7 +5,6 @@ resource "helm_release" "metrics_server" {
   keyring   = ""
   version   = "2.0.4"
 
-  
   set {
     name  = "args[0]"
     value = "--kubelet-insecure-tls"
