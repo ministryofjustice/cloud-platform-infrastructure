@@ -15,3 +15,14 @@ provider "helm" {
     config_path = "~/.kube/config"
   }
 }
+
+data "terraform_remote_state" "cluster" {
+  backend   = "s3"
+  workspace = "${terraform.workspace}"
+
+  config {
+    bucket = "moj-cp-k8s-investigation-platform-terraform"
+    region = "eu-west-1"
+    key    = "terraform.tfstate"
+  }
+}

@@ -1,0 +1,48 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  namespace: heptio-ark
+  name: ark
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: ark
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8085"
+        prometheus.io/path: "/metrics"
+    spec:
+      restartPolicy: Always
+      serviceAccountName: ark
+      containers:
+        - name: ark
+          image: gcr.io/heptio-images/ark:latest
+          command:
+            - /ark
+          args:
+            - server
+          volumeMounts:
+            - name: cloud-credentials
+              mountPath: /credentials
+            - name: plugins
+              mountPath: /plugins
+            - name: scratch
+              mountPath: /scratch
+          env:
+            - name: AWS_SHARED_CREDENTIALS_FILE
+              value: /credentials/cloud
+            - name: ARK_SCRATCH_DIR
+              value: /scratch
+            #- name: AWS_CLUSTER_NAME
+            #  value: <YOUR_CLUSTER_NAME>
+      volumes:
+        - name: cloud-credentials
+          secret:
+            secretName: cloud-credentials
+        - name: plugins
+          emptyDir: {}
+        - name: scratch
+          emptyDir: {}

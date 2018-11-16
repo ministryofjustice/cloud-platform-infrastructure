@@ -11,6 +11,18 @@ provider "aws" {
   region = "eu-west-1"
 }
 
+#
+# See instructions here: https://github.com/ministryofjustice/kubernetes-investigations/tree/master/auth0
+#              and here: https://github.com/yieldr/terraform-provider-auth0
+#
+# The empty configuration assumes that you have the appropriate environment
+# variables exported as explained in the upstream repo and is similar to the way
+# the AWS providr credentials are handled.
+#
+provider "auth0" {
+  domain = "${local.auth0_tenant_domain}"
+}
+
 data "terraform_remote_state" "global" {
   backend = "s3"
 
@@ -24,6 +36,8 @@ data "terraform_remote_state" "global" {
 locals {
   cluster_name             = "${terraform.workspace}"
   cluster_base_domain_name = "${local.cluster_name}.k8s.integration.dsd.io"
+  auth0_tenant_domain      = "moj-cloud-platforms-dev.eu.auth0.com"
+  oidc_issuer_url          = "https://${local.auth0_tenant_domain}/"
 }
 
 # Modules
@@ -77,4 +91,20 @@ resource "tls_private_key" "cluster" {
 resource "aws_key_pair" "cluster" {
   key_name   = "${local.cluster_base_domain_name}"
   public_key = "${tls_private_key.cluster.public_key_openssh}"
+}
+
+resource "auth0_client" "kubernetes" {
+  name                 = "${local.cluster_name}"
+  description          = "kubernetes authentication"
+  app_type             = "regular_web"
+  callbacks            = ["https://login.apps.${local.cluster_base_domain_name}/ui"]
+  custom_login_page_on = true
+  is_first_party       = true
+  oidc_conformant      = true
+  sso                  = true
+
+  jwt_configuration = {
+    alg                 = "RS256"
+    lifetime_in_seconds = "36000"
+  }
 }

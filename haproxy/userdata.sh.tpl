@@ -5,6 +5,12 @@ apt-get -y install haproxy
 
 tee -a /etc/haproxy/haproxy.cfg <<EOF
 
+resolvers awsdns
+  nameserver aws ${dns_ip}:53
+  resolve_retries       10
+  timeout resolve       2s
+  timeout retry         1s
+
 frontend webapp
     bind *:80
     mode http
@@ -15,6 +21,7 @@ backend webapp
     balance roundrobin
     http-send-name-header Host
     option forwardfor
+    http-request set-header X-Forwarded-Host %[req.hdr(Host)]
 ${serverlist}
 
 frontend health

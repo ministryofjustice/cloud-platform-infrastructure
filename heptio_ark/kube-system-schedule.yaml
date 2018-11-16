@@ -1,0 +1,19 @@
+apiVersion: ark.heptio.com/v1
+kind: Schedule
+metadata:
+  name: kube-system-backup
+  namespace: heptio-ark
+spec:
+  schedule: 0 * * * *
+  template:
+    excludedNamespaces: null
+    excludedResources: null
+    hooks:
+      resources: null
+    includeClusterResources: null
+    includedNamespaces:
+    - 'kube-system'
+    includedResources: true
+    labelSelector: 
+    snapshotVolumes: true
+    ttl: 168h0m0s

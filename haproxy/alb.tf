@@ -58,3 +58,10 @@ resource "aws_lb_listener" "redirect_http_to_https" {
     }
   }
 }
+
+resource "aws_lb_target_group_attachment" "haproxy_nodes" {
+  count            = "${var.haproxy_cluster_size * var.aws_az_count}"
+  target_group_arn = "${aws_lb_target_group.haproxy_alb_target.arn}"
+  target_id        = "${element(aws_instance.haproxy_node.*.id, count.index)}"
+  port             = 80
+}

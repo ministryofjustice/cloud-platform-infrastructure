@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kuberos.configmapNameEnv" . }}
+  labels:
+    app: {{ include "kuberos.name" . }}
+    chart: {{ include "kuberos.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  OIDC_ISSUER_URL: {{ .Values.oidc.issuerUrl }}
+  OIDC_CLIENT_ID: {{ .Values.oidc.clientId }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "kuberos.configmapNameTemplates" . }}
+  labels:
+    app: {{ include "kuberos.name" . }}
+    chart: {{ include "kuberos.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  kubecfg: |
+    apiVersion: v1
+    kind: Config
+    clusters:
+    - cluster:
+        certificate-authority-data: {{ .Values.cluster.ca }}
+        server: {{ .Values.cluster.address }}
+      name: {{ .Values.cluster.name }}

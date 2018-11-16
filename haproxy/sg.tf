@@ -1,5 +1,5 @@
 resource "aws_security_group" "instance_sg1" {
-  name        = "instance_sg1"
+  name        = "instance_sg1_${random_id.id.hex}"
   description = "pass tcp/22 by default"
   vpc_id      = "${aws_vpc.default.id}"
 
@@ -21,7 +21,7 @@ resource "aws_security_group" "instance_sg1" {
 }
 
 resource "aws_security_group" "instance_sg2" {
-  name        = "instance_sg2"
+  name        = "instance_sg2_${random_id.id.hex}"
   description = "pass ALB traffic  by default"
   vpc_id      = "${aws_vpc.default.id}"
 
@@ -48,7 +48,7 @@ resource "aws_security_group" "instance_sg2" {
 }
 
 resource "aws_security_group" "alb" {
-  name        = "alb_sg"
+  name        = "alb_sg_${random_id.id.hex}"
   description = "for haproxy"
 
   vpc_id = "${aws_vpc.default.id}"

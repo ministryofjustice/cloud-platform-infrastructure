@@ -25,6 +25,11 @@ resource "kubernetes_cluster_role_binding" "tiller" {
 }
 
 resource "null_resource" "deploy" {
+  depends_on = [
+    "kubernetes_service_account.tiller",
+    "kubernetes_cluster_role_binding.tiller",
+  ]
+
   provisioner "local-exec" {
     command = "helm init --wait --service-account tiller"
   }
