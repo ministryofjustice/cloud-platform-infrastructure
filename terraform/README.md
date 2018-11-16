@@ -5,10 +5,14 @@ The following directory is structured into:
 
 ```
 ├── README.md
+├── cloud-platform-components
 ├── cloud-platform
 ├── global-resources
 └── modules
 ```
+## Cloud Platform Components
+The cloud-platform-components directory contains applicatoins that enable a "cluster ready" status. You'll need to rely on Terraform workspaces to amend different clusters.
+
 ## Cloud Platform
 The cloud-platform directory is were the cluster specific code lives and relies on Terraform workspaces as the starting point.
 
