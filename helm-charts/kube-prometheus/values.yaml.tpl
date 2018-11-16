@@ -490,8 +490,7 @@ prometheus:
 
 
 # default rules are in templates/general.rules.yaml
-prometheusRules: 
-  - ../../helm-charts/kube-prometheus/custom-alerts.yaml
+prometheusRules: {}
 
 # Select Deployed DNS Solution
 deployCoreDNS: false
