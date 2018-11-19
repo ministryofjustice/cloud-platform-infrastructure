@@ -13,7 +13,7 @@ metadata:
     release: {{ .Release.Name }}
     addonmanager.kubernetes.io/mode: Reconcile
 data:
-{{ (.Files.Glob "config/**").AsConfig | indent 4 }}
+{{ (.Files.Glob "config/**").AsConfig | indent 2 }}
   index-template.json: |-
     {
       "template": "logstash-*",
