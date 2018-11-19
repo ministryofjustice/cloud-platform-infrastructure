@@ -197,6 +197,7 @@ spec:
     rbac: {}
   channel: stable
   cloudProvider: aws
+  sshKeyName: ${cluster_domain_name}
   configBase: s3://${kops_state_store}/${cluster_domain_name}
   dnsZone: ${cluster_domain_name}
   etcdClusters:
