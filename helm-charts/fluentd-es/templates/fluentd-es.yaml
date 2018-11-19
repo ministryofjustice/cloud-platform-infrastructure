@@ -63,7 +63,7 @@ roleRef:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: fluentd-es-{{ .Values.version }}
+  name: {{ .Release.Name }}
   namespace: {{ .Values.namespace }}
   labels:
     k8s-app: fluentd-es
@@ -85,7 +85,7 @@ spec:
       labels:
         k8s-app: fluentd-es
         kubernetes.io/cluster-service: "true"
-        version: {{ .Values.image.tag}}
+        version: {{ .Values.version }}
         app: {{ .Release.Name }}
         chart: {{ .Chart.Name }}-{{ .Chart.Version }}
         component: {{ .Values.component }}
