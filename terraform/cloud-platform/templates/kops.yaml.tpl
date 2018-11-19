@@ -6,7 +6,7 @@ apiVersion: kops/v1alpha2
 kind: Cluster
 metadata:
   creationTimestamp: null
-  name: ${cluster_name}
+  name: ${cluster_domain_name}
 spec:
   fileAssets:
   - name: kubernetes-audit
