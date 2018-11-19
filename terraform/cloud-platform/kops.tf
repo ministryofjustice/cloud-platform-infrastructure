@@ -13,6 +13,7 @@ data "template_file" "kops" {
     oidc_issuer_url       = "${local.oidc_issuer_url}"
     oidc_client_id        = "${auth0_client.kubernetes.client_id}"
     network_cidr_block    = "${module.cluster_vpc.vpc_cidr_block}"
+    network_id            = "${module.cluster_vpc.vpc_id}"
     internal_subnets_id_a = "${module.cluster_vpc.private_subnets[0]}"
     internal_subnets_id_b = "${module.cluster_vpc.private_subnets[1]}"
     internal_subnets_id_c = "${module.cluster_vpc.private_subnets[2]}"

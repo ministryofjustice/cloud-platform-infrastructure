@@ -248,6 +248,7 @@ spec:
   kubernetesVersion: 1.10.3
   masterPublicName: api.${cluster_domain_name}
   networkCIDR: ${network_cidr_block}
+  networkID: ${network_id}
   networking:
     calico: {}
   nonMasqueradeCIDR: 100.64.0.0/10
