@@ -303,7 +303,11 @@ spec:
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-eu-west-1a
   role: Master
+  subnets:
+  - eu-west-1a
 
 ---
 
@@ -319,7 +323,11 @@ spec:
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-eu-west-1b
   role: Master
+  subnets:
+  - eu-west-1b
 
 ---
 
@@ -335,7 +343,11 @@ spec:
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-eu-west-1c
   role: Master
+  subnets:
+  - eu-west-1c
 
 ---
 
@@ -351,4 +363,10 @@ spec:
   machineType: c4.xlarge
   maxSize: 6
   minSize: 6
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes
   role: Node
+  subnets:
+  - eu-west-1a
+  - eu-west-1b
+  - eu-west-1c
