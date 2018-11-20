@@ -63,5 +63,6 @@ resource "helm_release" "kube_prometheus" {
 
   depends_on = [
     "null_resource.deploy",
+    "helm_release.prometheus_operator",
   ]
 }
