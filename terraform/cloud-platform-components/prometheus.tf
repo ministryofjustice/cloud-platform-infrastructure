@@ -27,6 +27,14 @@ resource "helm_release" "prometheus_operator" {
   ]
 }
 
+resource "random_id" "username" {
+  byte_length = 8
+}
+
+resource "random_id" "password" {
+  byte_length = 8
+}
+
 data "template_file" "kube_prometheus" {
   template = "${file("${path.module}/templates/kube-prometheus.yaml.tpl")}"
 
@@ -37,7 +45,8 @@ data "template_file" "kube_prometheus" {
     pagerduty_config     = "${var.pagerduty_config}"
     slack_config         = "${var.slack_config}"
     promtheus_ingress    = "https://prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-    random_id            = "${random_id.id.hex}"
+    random_username      = "${random_id.username.hex}"
+    random_password      = "${random_id.password.hex}"
   }
 }
 
