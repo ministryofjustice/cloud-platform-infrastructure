@@ -66,7 +66,7 @@ This structure allows us to reduce the blast radius of errors when compared to  
 [Terraform workspaces](https://www.terraform.io/docs/state/workspaces.html) are used to manage multiple instance of the `cloud-platform` resources. To see the workspaces/environments that currently exist:
 
 ```
-$ terraform workspace list                                                                                                       
+$ terraform workspace list
 * default
   non-production
 ```
@@ -174,40 +174,52 @@ $ kops cluster rolling-update --yes
 
 ## How to create a new cluster
 
-1. To create a new cluster, you must create a new terraform workspace and apply the `cloud-platform` resources:
-```
+0. Before you begin, the Auth0 Terraform provider isn't listed in the official Terraform repository. You must download the provider using the instructions here:
+https://github.com/yieldr/terraform-provider-auth0#using-the-provider
+
+1. To create a new cluster, you must create a new terraform workspace and apply the `cloud-platform` resources.
+```bash
 $ cd terraform/cloud-platform
 $ terraform init
-$ terraform workspace new my-new-env-name
+$ terraform workspace new <clusterName e.g. cloud-platform-test-3>
 $ terraform plan
 $ terraform apply
 ```
 2. Set environment variables.
-``` 
+```bash
 $ export AWS_PROFILE=mojds-platforms-integration
 $ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
 $ export CLUSTER_NAME=<clusterName>
 ```
-3. Create a cluster configuration file in the kops directory `kops/CLUSTER_NAME.yaml`, ensuring you define your cluster name, new hosted zone and state store in the file. (I recommend copying an existing file in this folder and amending specifics)
-
-4. Create cluster specification in kops state store.
-```
+3. Terraform creates a `kops/<clusterName>.yaml` file in your local directory. Use `kops` to create your cluster.
+```bash
 $ kops create -f ${CLUSTER_NAME}.yaml
 ```
-5. Create SSH public key in kops state store.
+4. Create SSH public key in kops state store.
+```bash
+$ kops create secret --name ${CLUSTER_NAME}.k8s.integration.dsd.io sshpublickey admin -i ~/.ssh/id_rsa.pub
 ```
-$ kops create secret --name ${CLUSTER_NAME}.integration.dsd.io sshpublickey admin -i ssh/${CLUSTER_NAME}_kops_id_rsa.pub
-```
-6. Create cluster resources in AWS.
+5. Create cluster resources in AWS.
 aka update cluster in AWS according to the yaml specification:
-```
+```bash
 $ kops update cluster ${CLUSTER_NAME}.integration.dsd.io --yes
 ```
 When complete (takes a few minutes), you can check the progress with:
-```
+```bash
 $ kops validate cluster
 ```
-Once it reports Your cluster `${CLUSTER_NAME}.integration.dsd.io is ready` you can proceed to use kubectl to interact with the cluster.
+Once it reports Your cluster `${CLUSTER_NAME}.k8s.integration.dsd.io is ready` you can proceed to use kubectl to interact with the cluster.
+6. Now you need to install the `cloud-platform-components`.
+```bash
+$ cd ../cloud-platform-components
+$ terraform init
+$ terraform workspace new <clusterName e.g. cloud-platform-test-3>
+$ terraform plan
+$ terraform apply
+```
+7. We haven't yet fully automated the proxies for Grafana and Prometheus so you'll need to apply the following in the `monitoring` namespace:
+- Apply the [grafana-dashboard-aggregator](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/grafana-dashboard-aggregator.yaml) and the [grafana-auth-secret](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/grafana-auth-secret.yaml).
+- Apply the [oidc-proxy](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/oidc-proxy.yamland) and [secret](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/oidc-proxy-secret.yaml) for Prometheus and AlertManager.
 
 ### How to delete a cluster
 
