@@ -174,7 +174,11 @@ $ kops cluster rolling-update --yes
 
 ## How to create a new cluster
 
-0. Before you begin, the Auth0 Terraform provider isn't listed in the official Terraform repository. You must download the provider using the instructions here:
+0. Before you begin, there are a few pre-reqs:
+
+- You must ensure your local `helm` version is => `2.11`.
+
+- The Auth0 Terraform provider isn't listed in the official Terraform repository. You must download the provider using the instructions here:
 https://github.com/yieldr/terraform-provider-auth0#using-the-provider
 
 1. To create a new cluster, you must create a new terraform workspace and apply the `cloud-platform` resources.
@@ -188,12 +192,12 @@ $ terraform apply
 2. Set environment variables.
 ```bash
 $ export AWS_PROFILE=mojds-platforms-integration
-$ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
-$ export CLUSTER_NAME=<clusterName>
+$ export KOPS_STATE_STORE="s3://$(terraform output kops_state_store)"
+$ export CLUSTER_NAME=$(terraform output cluster_name)
 ```
-3. Terraform creates a `kops/<clusterName>.yaml` file in your local directory. Use `kops` to create your cluster.
+3. Terraform creates a `kops/${CLUSTER_NAME}.yaml` file in your local directory. Use `kops` to create your cluster.
 ```bash
-$ kops create -f ${CLUSTER_NAME}.yaml
+$ kops create -f ../../kops/${CLUSTER_NAME}.yaml
 ```
 4. Create SSH public key in kops state store.
 ```bash
@@ -202,7 +206,7 @@ $ kops create secret --name ${CLUSTER_NAME}.k8s.integration.dsd.io sshpublickey 
 5. Create cluster resources in AWS.
 aka update cluster in AWS according to the yaml specification:
 ```bash
-$ kops update cluster ${CLUSTER_NAME}.integration.dsd.io --yes
+kops update cluster ${CLUSTER_NAME}.k8s.integration.dsd.io --yes
 ```
 When complete (takes a few minutes), you can check the progress with:
 ```bash
@@ -220,7 +224,7 @@ $ terraform apply
 ```
 7. We haven't yet fully automated the proxies for Grafana and Prometheus so you'll need to apply the following in the `monitoring` namespace:
 - Apply the [grafana-dashboard-aggregator](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/grafana-dashboard-aggregator.yaml) and the [grafana-auth-secret](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/grafana-auth-secret.yaml).
-- Apply the [oidc-proxy](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/oidc-proxy.yamland) and [secret](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/oidc-proxy-secret.yaml) for Prometheus and AlertManager.
+- Follow the instructions [here](https://github.com/ministryofjustice/cloud-platform-prometheus#how-to-expose-the-web-interfaces-behind-an-oidc-proxy) and apply the [oidc-proxy](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/oidc-proxy.yaml) and [secret](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/oidc-proxy-secret.yaml) for Prometheus/AlertManager.
 
 ### How to delete a cluster
 
