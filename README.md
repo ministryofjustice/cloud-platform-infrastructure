@@ -209,6 +209,7 @@ When complete (takes a few minutes), you can check the progress with:
 $ kops validate cluster
 ```
 Once it reports Your cluster `${CLUSTER_NAME}.k8s.integration.dsd.io is ready` you can proceed to use kubectl to interact with the cluster.
+
 6. Now you need to install the `cloud-platform-components`.
 ```bash
 $ cd ../cloud-platform-components
@@ -228,15 +229,24 @@ $ terraform apply
 $ export AWS_PROFILE=mojds-platforms-integration
 $ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
 ```
-2. Then run the following command (this will not delete the cluster).
+2. After changing directory, run the following command which will destroy all cluster components.
+```bash
+$ cd terraform/cloud-platform-components
+$ terraform init
+$ terraform workspace select <clusterName e.g. cloud-platform-test-3>
+$ terraform destroy
+```
+3. Then run the following `kops` command (this will not delete the cluster). Append it with `--yes` to confirm deletion.
 ```
 $ kops delete cluster --name <clusterName>
+``` 
+4. Change directories and perform the following, destroying the cluster essentials.
+```bash
+$ cd ../cloud-platform
+$ terraform init
+$ terraform workspace select <clusterName e.g. cloud-platform-test-3>
+$ terraform destroy
 ```
-3. Confirm you would like to delete the cluster with a --yes.
-```
-$ kops delete cluster --name <clusterName>
-```
-This takes a while but will eventually delete.
 
 ### Cluster creation pipeline
 
