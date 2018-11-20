@@ -30,10 +30,6 @@ data "aws_ami" "debian_stretch_latest" {
 resource "aws_eip" "bastion" {
   vpc = true
 
-  lifecycle {
-    prevent_destroy = true
-  }
-
   tags {
     "Name" = "${local.bastion_fqdn}"
   }

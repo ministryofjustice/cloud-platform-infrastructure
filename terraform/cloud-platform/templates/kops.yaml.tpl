@@ -6,7 +6,7 @@ apiVersion: kops/v1alpha2
 kind: Cluster
 metadata:
   creationTimestamp: null
-  name: ${cluster_name}
+  name: ${cluster_domain_name}
 spec:
   fileAssets:
   - name: kubernetes-audit
@@ -197,6 +197,7 @@ spec:
     rbac: {}
   channel: stable
   cloudProvider: aws
+  sshKeyName: ${cluster_domain_name}
   configBase: s3://${kops_state_store}/${cluster_domain_name}
   dnsZone: ${cluster_domain_name}
   etcdClusters:
@@ -247,6 +248,7 @@ spec:
   kubernetesVersion: 1.10.3
   masterPublicName: api.${cluster_domain_name}
   networkCIDR: ${network_cidr_block}
+  networkID: ${network_id}
   networking:
     calico: {}
   nonMasqueradeCIDR: 100.64.0.0/10
@@ -288,6 +290,13 @@ spec:
       type: Public
     masters: private
     nodes: private
+  hooks:
+  - name: authorized-keys-manager.service
+    roles:
+    - Master
+    - Node
+    manifest: |
+      ${authorized_keys_manager_systemd_unit}
 
 ---
 
@@ -303,7 +312,11 @@ spec:
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-eu-west-1a
   role: Master
+  subnets:
+  - eu-west-1a
 
 ---
 
@@ -319,7 +332,11 @@ spec:
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-eu-west-1b
   role: Master
+  subnets:
+  - eu-west-1b
 
 ---
 
@@ -335,7 +352,11 @@ spec:
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-eu-west-1c
   role: Master
+  subnets:
+  - eu-west-1c
 
 ---
 
@@ -351,4 +372,10 @@ spec:
   machineType: c4.xlarge
   maxSize: 6
   minSize: 6
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes
   role: Node
+  subnets:
+  - eu-west-1a
+  - eu-west-1b
+  - eu-west-1c

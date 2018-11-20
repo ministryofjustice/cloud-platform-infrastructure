@@ -9,12 +9,12 @@ grafana:
     anonymous:
       enabled: "false"
 
-    adminUser: "${random_id}"
-    adminPassword: "${random_id}"
+    adminUser: "${random_username}"
+    adminPassword: "${random_password}"
 
   ingress:
     enabled: true
-    hosts: 
+    hosts:
     - "${grafana_ingress}"
 
   serverDashboardConfigmaps:

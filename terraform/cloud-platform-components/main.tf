@@ -26,7 +26,3 @@ data "terraform_remote_state" "cluster" {
     key    = "terraform.tfstate"
   }
 }
-
-resource "random_id" "id" {
-  byte_length = 8
-}

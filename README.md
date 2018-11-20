@@ -66,7 +66,7 @@ This structure allows us to reduce the blast radius of errors when compared to  
 [Terraform workspaces](https://www.terraform.io/docs/state/workspaces.html) are used to manage multiple instance of the `cloud-platform` resources. To see the workspaces/environments that currently exist:
 
 ```
-$ terraform workspace list                                                                                                       
+$ terraform workspace list
 * default
   non-production
 ```
@@ -174,40 +174,57 @@ $ kops cluster rolling-update --yes
 
 ## How to create a new cluster
 
-1. To create a new cluster, you must create a new terraform workspace and apply the `cloud-platform` resources:
-```
+0. Before you begin, there are a few pre-reqs:
+
+- You must ensure your local `helm` version is => `2.11`.
+
+- The Auth0 Terraform provider isn't listed in the official Terraform repository. You must download the provider using the instructions here:
+https://github.com/yieldr/terraform-provider-auth0#using-the-provider
+
+1. To create a new cluster, you must create a new terraform workspace and apply the `cloud-platform` resources.
+```bash
 $ cd terraform/cloud-platform
 $ terraform init
-$ terraform workspace new my-new-env-name
+$ terraform workspace new <clusterName e.g. cloud-platform-test-3>
 $ terraform plan
 $ terraform apply
 ```
 2. Set environment variables.
-``` 
+```bash
 $ export AWS_PROFILE=mojds-platforms-integration
-$ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
-$ export CLUSTER_NAME=<clusterName>
+$ export KOPS_STATE_STORE="s3://$(terraform output kops_state_store)"
+$ export CLUSTER_NAME=$(terraform output cluster_name)
 ```
-3. Create a cluster configuration file in the kops directory `kops/CLUSTER_NAME.yaml`, ensuring you define your cluster name, new hosted zone and state store in the file. (I recommend copying an existing file in this folder and amending specifics)
-
-4. Create cluster specification in kops state store.
+3. Terraform creates a `kops/${CLUSTER_NAME}.yaml` file in your local directory. Use `kops` to create your cluster.
+```bash
+$ kops create -f ../../kops/${CLUSTER_NAME}.yaml
 ```
-$ kops create -f ${CLUSTER_NAME}.yaml
+4. Create SSH public key in kops state store.
+```bash
+$ kops create secret --name ${CLUSTER_NAME}.k8s.integration.dsd.io sshpublickey admin -i ~/.ssh/id_rsa.pub
 ```
-5. Create SSH public key in kops state store.
-```
-$ kops create secret --name ${CLUSTER_NAME}.integration.dsd.io sshpublickey admin -i ssh/${CLUSTER_NAME}_kops_id_rsa.pub
-```
-6. Create cluster resources in AWS.
+5. Create cluster resources in AWS.
 aka update cluster in AWS according to the yaml specification:
-```
-$ kops update cluster ${CLUSTER_NAME}.integration.dsd.io --yes
+```bash
+kops update cluster ${CLUSTER_NAME}.k8s.integration.dsd.io --yes
 ```
 When complete (takes a few minutes), you can check the progress with:
-```
+```bash
 $ kops validate cluster
 ```
-Once it reports Your cluster `${CLUSTER_NAME}.integration.dsd.io is ready` you can proceed to use kubectl to interact with the cluster.
+Once it reports Your cluster `${CLUSTER_NAME}.k8s.integration.dsd.io is ready` you can proceed to use kubectl to interact with the cluster.
+
+6. Now you need to install the `cloud-platform-components`.
+```bash
+$ cd ../cloud-platform-components
+$ terraform init
+$ terraform workspace new <clusterName e.g. cloud-platform-test-3>
+$ terraform plan
+$ terraform apply
+```
+7. We haven't yet fully automated the proxies for Grafana and Prometheus so you'll need to apply the following in the `monitoring` namespace:
+- Apply the [grafana-dashboard-aggregator](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/grafana-dashboard-aggregator.yaml) and the [grafana-auth-secret](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/grafana-auth-secret.yaml).
+- Follow the instructions [here](https://github.com/ministryofjustice/cloud-platform-prometheus#how-to-expose-the-web-interfaces-behind-an-oidc-proxy) and apply the [oidc-proxy](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/oidc-proxy.yaml) and [secret](https://github.com/ministryofjustice/cloud-platform-environments/blob/master/namespaces/cloud-platform-live-0.k8s.integration.dsd.io/monitoring/oidc-proxy-secret.yaml) for Prometheus/AlertManager.
 
 ### How to delete a cluster
 
@@ -216,32 +233,21 @@ Once it reports Your cluster `${CLUSTER_NAME}.integration.dsd.io is ready` you c
 $ export AWS_PROFILE=mojds-platforms-integration
 $ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
 ```
-2. Then run the following command (this will not delete the cluster).
+2. After changing directory, run the following command which will destroy all cluster components.
+```bash
+$ cd terraform/cloud-platform-components
+$ terraform init
+$ terraform workspace select <clusterName e.g. cloud-platform-test-3>
+$ terraform destroy
+```
+3. Then run the following `kops` command (this will not delete the cluster). Append it with `--yes` to confirm deletion.
 ```
 $ kops delete cluster --name <clusterName>
+``` 
+4. Change directories and perform the following, destroying the cluster essentials.
+```bash
+$ cd ../cloud-platform
+$ terraform init
+$ terraform workspace select <clusterName e.g. cloud-platform-test-3>
+$ terraform destroy
 ```
-3. Confirm you would like to delete the cluster with a --yes.
-```
-$ kops delete cluster --name <clusterName>
-```
-This takes a while but will eventually delete.
-
-### Cluster creation pipeline
-
-As part of the MVE project we developed an automated way of creating new clusters. The flow used is the following:
-
-1. A user creates a subset yaml file for the cluster definition in this repo, under the kops/ directory. The name of the yaml file will be the clusters resulting name.
-
-2. Once this change is merged to master, an automated pipeline is triggered. This pipeline lives in AWS CodePipeline/CodeBuild. This pipeline will create the terraform workspace (if it does not exist), create the underlying terraform elements, such as the vpc and networking parts, apply those, and then based on the outputs of those terraform resources, run kops to create the cluster. The end result of this process will be a cluster, and its properties will be defined in the initial yaml file.
-
-3. A notification for Success of Failure will be automatically pushed to the slack channel 'cp-build-notification'. The pipeline will notify Success once the cluster is ready and all its resources are healthy.
-
-#### Parts that compose this project
-
-1. The pipeline: The pipeline is based on AWS CodePipeline/Codebuild. It is triggered automatically after a change is promoted to master. The pipeline can be managed with the terraform templates that live in the ```cluster-pipeline/terraform``` directory. The pipeline will execute what ever is defined in ```cluster-pipeline/buildspec.yaml```
-
-2. The scripts: The pipeline uses the scripts that live in ```bin/```. The initial script that is triggered is ```bin/create_clusters.py```. This script will determine what clusters need to be created, based on the yaml files located in ```kops/```, the terraform workspaces, and the live clusters, getting that list via kops. It will create as many clusters you define that are not properly alive.
-For each cluster that needs to be created it will trigger the ```bin/create_cluster.sh``` script. This script will create the terraform workspace if it does not exist, create the networking parts based on the terraform templates for that workspace, create the ssh keys, and then run the ```bin/create_cluster_config.py``` script. This script will expand the subset yaml configuration defined in ```kops/``` with terraform outputs to create the full cluster spec. Back with ```bin/create_cluster.sh```, once the full yaml spec has been obtained, it will run kops against that yaml file to create the actual cluster, and wait for completion.
-Any issue in this process will result in a broken build but the partially created resources will not be destroyed.
-
-3. This is a work in progress, works for now but requires extensive testing and improvement before it is production ready. Hope you find this wonderful.

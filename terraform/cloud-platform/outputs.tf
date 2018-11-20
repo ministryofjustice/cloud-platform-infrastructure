@@ -50,10 +50,6 @@ output "instance_key_name" {
   value = "${aws_key_pair.cluster.key_name}"
 }
 
-output "authorized_keys_manager_systemd_unit" {
-  value = "${data.template_file.authorized_keys_manager.rendered}"
-}
-
 output "oidc_issuer_url" {
   value = "${local.oidc_issuer_url}"
 }
