@@ -17,13 +17,13 @@ resource "kubernetes_storage_class" "prometheus_storage" {
 
 resource "helm_release" "prometheus_operator" {
   name          = "prometheus-operator"
-  chart         = "coreos/prometheus-operator"
+  chart         = "prometheus-operator"
+  repository    = "${helm_repository.coreos.metadata.0.name}"
   namespace     = "monitoring"
   recreate_pods = "true"
 
   depends_on = [
     "null_resource.deploy",
-    "helm_repository.coreos",
   ]
 }
 
@@ -41,23 +41,18 @@ data "template_file" "kube_prometheus" {
   }
 }
 
-resource "local_file" "kube_prometheus" {
-  filename = "../../helm-charts/kube-prometheus/values.yaml"
-  content  = "${data.template_file.kube_prometheus.rendered}"
-}
-
 resource "helm_release" "kube_prometheus" {
   name          = "kube-prometheus"
-  chart         = "coreos/kube-prometheus"
+  chart         = "kube-prometheus"
+  repository    = "${helm_repository.coreos.metadata.0.name}"
   namespace     = "monitoring"
   recreate_pods = "true"
 
   values = [
-    "${file("../../helm-charts/kube-prometheus/values.yaml")}",
+    "${data.template_file.kube_prometheus.rendered}",
   ]
 
   depends_on = [
     "null_resource.deploy",
-    "helm_repository.coreos",
   ]
 }
