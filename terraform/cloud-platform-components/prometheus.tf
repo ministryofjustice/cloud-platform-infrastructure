@@ -28,7 +28,7 @@ resource "helm_release" "prometheus_operator" {
 }
 
 data "template_file" "kube_prometheus" {
-  template = "${file("../../helm-charts/kube-prometheus/values.yaml.tpl")}"
+  template = "${file("${path.module}/templates/kube-prometheus.yaml.tpl")}"
 
   vars {
     alertmanager_ingress = "https://alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
