@@ -290,6 +290,13 @@ spec:
       type: Public
     masters: private
     nodes: private
+  hooks:
+  - name: authorized-keys-manager.service
+    roles:
+    - Master
+    - Node
+    manifest: |
+      ${authorized_keys_manager_systemd_unit}
 
 ---
 
