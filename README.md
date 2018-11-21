@@ -176,7 +176,7 @@ $ kops cluster rolling-update --yes
 
 0. Before you begin, there are a few pre-reqs:
 
-- You must ensure your local `helm` version is => `2.11`.
+- You must ensure your local `helm` version is => `2.11`. Also, `helm repo update` or you might see some failures at step 6.
 
 - The Auth0 Terraform provider isn't listed in the official Terraform repository. You must download the provider using the instructions here:
 https://github.com/yieldr/terraform-provider-auth0#using-the-provider
