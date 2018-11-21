@@ -180,22 +180,29 @@ $ kops cluster rolling-update --yes
 
 - The Auth0 Terraform provider isn't listed in the official Terraform repository. You must download the provider using the instructions here:
 https://github.com/yieldr/terraform-provider-auth0#using-the-provider
+For the auth0 provider, setup the following environment variables locally:
+```
+	AUTH0_DOMAIN="moj-cloud-platforms-dev.eu.auth0.com"
+  AUTH0_CLIENT_ID="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  AUTH0_CLIENT_SECRET="yyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+```
+The values are from the `terraform-provider-auth0` app
 
-1. To create a new cluster, you must create a new terraform workspace and apply the `cloud-platform` resources.
+1. To create a new cluster, you must create a new terraform workspace and apply the `cloud-platform` resources. Ensure at all times that you are in the correct workspace with `$ terraform workspace list`.
 ```bash
+$ export AWS_PROFILE=mojds-platforms-integration
 $ cd terraform/cloud-platform
 $ terraform init
 $ terraform workspace new <clusterName e.g. cloud-platform-test-3>
 $ terraform plan
 $ terraform apply
 ```
-2. Set environment variables.
+2. Set more environment variables.
 ```bash
-$ export AWS_PROFILE=mojds-platforms-integration
 $ export KOPS_STATE_STORE="s3://$(terraform output kops_state_store)"
 $ export CLUSTER_NAME=$(terraform output cluster_name)
 ```
-3. Terraform creates a `kops/${CLUSTER_NAME}.yaml` file in your local directory. Use `kops` to create your cluster.
+3. Terraform creates a `kops/${CLUSTER_NAME}.yaml` file in your local directory. K8s release should track the version supported by Kops, check https://github.com/kubernetes/kops/releases. Use `kops` to create your cluster.
 ```bash
 $ kops create -f ../../kops/${CLUSTER_NAME}.yaml
 ```
