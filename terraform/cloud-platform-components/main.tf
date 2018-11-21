@@ -7,6 +7,7 @@ terraform {
 }
 
 provider "kubernetes" {
+  version = "~> 1.3"
   config_path = "~/.kube/config"
 }
 
