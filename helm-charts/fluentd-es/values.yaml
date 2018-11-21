@@ -1,11 +1,7 @@
-namespace: logging
-
 image:
-  repository:
+  repository: "k8s.gcr.io/fluentd-elasticsearch:"
   tag: v2.2.0
 
 fluent_elasticsearch_host:
 fluent_elasticsearch_audit_host:
 fluent_kubernetes_cluster_name:
-
-component:

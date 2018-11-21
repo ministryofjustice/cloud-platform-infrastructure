@@ -1,16 +1,7 @@
 resource "helm_release" "fluentd_es" {
   name  = "fluentd-es"
   chart = "../../helm-charts/fluentd-es"
-
-  set {
-    name  = "namespace"
-    value = "logging"
-  }
-
-  set {
-    name  = "image.tag"
-    value = "v2.2.0"
-  }
+  namespace = "logging"
 
   set {
     name  = "fluent_elasticsearch_host"

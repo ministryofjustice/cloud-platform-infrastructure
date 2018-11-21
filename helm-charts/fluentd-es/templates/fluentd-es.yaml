@@ -1,29 +1,26 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ .Release.Name }}
-  namespace: {{ .Values.namespace }}
+  name: {{  template "fluentd.controller.fullname" . }}
   labels:
     k8s-app: fluentd-es
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
     app: {{ .Release.Name }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    component: {{ .Values.component }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}
+  name: {{  template "fluentd.controller.fullname" . }}
   labels:
     k8s-app: fluentd-es
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
     app: {{ .Release.Name }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    component: {{ .Values.component }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 rules:
@@ -40,55 +37,50 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name }}
+  name: {{  template "fluentd.controller.fullname" . }}
   labels:
     k8s-app: fluentd-es
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
     app: {{ .Release.Name }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    component: {{ .Values.component }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 subjects:
 - kind: ServiceAccount
-  name: {{ .Release.Name }}
-  namespace: {{ .Values.namespace }}
+  name: {{  template "fluentd.controller.fullname" . }}
   apiGroup: ""
 roleRef:
   kind: ClusterRole
-  name: {{ .Release.Name }}
+  name: {{  template "fluentd.controller.fullname" . }}
   apiGroup: ""
 ---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{ .Release.Name }}
-  namespace: {{ .Values.namespace }}
+  name: {{  template "fluentd.controller.fullname" . }}
   labels:
     k8s-app: fluentd-es
-    version: {{ .Values.version }}
+    version: {{ .Values.image.tag }}
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile
     app: {{ .Release.Name }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    component: {{ .Values.component }}
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 spec:
   selector:
     matchLabels:
       k8s-app: fluentd-es
-      version: {{ .Values.version }}
+      version: {{ .Values.image.tag }}
   template:
     metadata:
       labels:
         k8s-app: fluentd-es
         kubernetes.io/cluster-service: "true"
-        version: {{ .Values.version }}
+        version: {{ .Values.image.tag }}
         app: {{ .Release.Name }}
         chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-        component: {{ .Values.component }}
         heritage: {{ .Release.Service }}
         release: {{ .Release.Name }}
       # This annotation ensures that fluentd does not get evicted if the node
@@ -105,8 +97,8 @@ spec:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       containers:
-      - name: {{ .Release.Name }}
-        image: k8s.gcr.io/fluentd-elasticsearch:{{ .Values.image.tag }}
+      - name: {{  template "fluentd.controller.fullname" . }}
+        image: {{ .Values.image.repository }}{{ .Values.image.tag }}
         env:
         - name: FLUENTD_ARGS
           value: --no-supervisor -q
