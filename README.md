@@ -1,22 +1,19 @@
-# Kubernetes Investigations
+# cloud-platform-infrastructure
 
-  - [Overview](#kubernetes-investigations)
+This repository will contain all that's required to create a Cloud Platform Kubernetes cluster. The majority of this repo is made up of Terraform scripts that will be actioned by a pipeline.
+
+Here you'll also find instruction on how to operate a Cloud Platform cluster. 
+
+  - [Overview](#cloud-platform-infrastructure)
   - [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
   - [Cloud Platform environments](#cloud-platform-environments)
   - [Terraform modules](#terraform-modules)
   - [How to add your examples](#how-to-add-your-examples)
   - [How to create a new cluster](#how-to-create-a-new-cluster)
   - [How to delete a cluster](#how-to-delete-a-cluster)
-  - [Cluster creation pipeline](#cluster-creation-pipeline)
   - [Disaster recovery](docs/disaster-recovery/README.md)
   - [Prometheus config and install](https://github.com/ministryofjustice/cloud-platform-prometheus#cloud-platform-prometheus)
   - [Logging](docs/logging/README.md)
-
-A space to collect code related to the cloud platform team's Kubernetes investigations.
-
-As we complete spikes or investigations into how we want to run Kubernetes we can collect useful code that we have written here so that it is available to the team.
-
-We will also document some of the thinking behind how the code is written so that it is available to people who are new to the team or ourselves when we forget why we are doing it.
 
 ## Terraform and Cloud Platform environment management
 
@@ -98,7 +95,7 @@ Generally speaking, follow the Ministry of Justice's [Using git](https://ministr
 ### 1. Clone the repo
 
 ```
-git clone git@github.com:ministryofjustice/kubernetes-investigations.git
+git clone git@github.com:ministryofjustice/cloud-platform-infrastructure.git
 ```
 
 ### 2. Create a branch
