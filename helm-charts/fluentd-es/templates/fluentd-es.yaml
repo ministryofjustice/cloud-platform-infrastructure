@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{  template "fluentd.controller.fullname" . }}
+  name: {{  template "fluentd-es.fullname" . }}
   labels:
     k8s-app: fluentd-es
     kubernetes.io/cluster-service: "true"
@@ -14,7 +14,7 @@ metadata:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{  template "fluentd.controller.fullname" . }}
+  name: {{  template "fluentd-es.fullname" . }}
   labels:
     k8s-app: fluentd-es
     kubernetes.io/cluster-service: "true"
@@ -37,7 +37,7 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{  template "fluentd.controller.fullname" . }}
+  name: {{  template "fluentd-es.fullname" . }}
   labels:
     k8s-app: fluentd-es
     kubernetes.io/cluster-service: "true"
@@ -48,17 +48,18 @@ metadata:
     release: {{ .Release.Name }}
 subjects:
 - kind: ServiceAccount
-  name: {{  template "fluentd.controller.fullname" . }}
+  name: {{  template "fluentd-es.fullname" . }}
   apiGroup: ""
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{  template "fluentd.controller.fullname" . }}
+  name: {{  template "fluentd-es.fullname" . }}
   apiGroup: ""
 ---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: {{  template "fluentd.controller.fullname" . }}
+  name: {{  template "fluentd-es.fullname" . }}
   labels:
     k8s-app: fluentd-es
     version: {{ .Values.image.tag }}
@@ -97,7 +98,7 @@ spec:
       - key: node-role.kubernetes.io/master
         effect: NoSchedule
       containers:
-      - name: {{  template "fluentd.controller.fullname" . }}
+      - name: {{  template "fluentd-es.fullname" . }}
         image: {{ .Values.image.repository }}{{ .Values.image.tag }}
         env:
         - name: FLUENTD_ARGS
@@ -132,4 +133,4 @@ spec:
           path: /var/lib/docker/containers
       - name: config-volume
         configMap:
-          name: fluentd-es-config-v0.1.4
+          name: {{  template "fluentd-es.fullname" . }}-config
