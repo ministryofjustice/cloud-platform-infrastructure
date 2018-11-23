@@ -17,4 +17,10 @@ resource "helm_release" "fluentd_es" {
     name  = "fluent_kubernetes_cluster_name"
     value = "${terraform.workspace}"
   }
+
+  depends_on = ["null_resource.deploy"]
+
+  lifecycle {
+    ignore_changes = ["keyring"]
+  }
 }
