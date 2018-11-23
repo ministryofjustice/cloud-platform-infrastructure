@@ -1,6 +1,6 @@
 resource "helm_release" "fluentd_es" {
-  name  = "fluentd-es"
-  chart = "../../helm-charts/fluentd-es"
+  name      = "fluentd-es"
+  chart     = "../../helm-charts/fluentd-es"
   namespace = "logging"
 
   set {
