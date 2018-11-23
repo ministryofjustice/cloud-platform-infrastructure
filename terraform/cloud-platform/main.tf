@@ -27,9 +27,10 @@ data "terraform_remote_state" "global" {
   backend = "s3"
 
   config {
-    bucket = "moj-cp-k8s-investigation-global-terraform"
-    region = "eu-west-1"
-    key    = "terraform.tfstate"
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "global-resources/terraform.tfstate"
+    profile = "moj-cp"
   }
 }
 

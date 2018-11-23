@@ -4,7 +4,7 @@
 
 This repository will contain all that's required to create a Cloud Platform Kubernetes cluster. The majority of this repo is made up of Terraform scripts that will be actioned by a pipeline.
 
-Here you'll also find instruction on how to operate a Cloud Platform cluster. 
+Here you'll also find instruction on how to operate a Cloud Platform cluster.
 
   - [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
   - [Cloud Platform environments](#cloud-platform-environments)
@@ -42,18 +42,19 @@ Refreshing Terraform state in-memory prior to plan...
 
 ```
 data "terraform_remote_state" "global" {
-    backend = "s3"
-    config {
-        bucket = "moj-cp-k8s-investigation-global-terraform"
-        region = "eu-west-1"
-        key = "terraform.tfstate"
-    }
+  backend = "s3"
+  config {
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "global-resources/terraform.tfstate"
+    profile = "moj-cp"
+  }
 }
 
 module "cluster_dns" {
-    source = "../modules/cluster_dns"
+  source = "../modules/cluster_dns"
 
-    parent_zone_id = "${data.terraform_remote_state.global.k8s_zone_id}"
+  parent_zone_id = "${data.terraform_remote_state.global.k8s_zone_id}"
 }
 ```
 
@@ -241,7 +242,7 @@ $ terraform destroy
 3. Then run the following `kops` command (this will not delete the cluster). Append it with `--yes` to confirm deletion.
 ```
 $ kops delete cluster --name <clusterName>
-``` 
+```
 4. Change directories and perform the following, destroying the cluster essentials.
 ```bash
 $ cd ../cloud-platform

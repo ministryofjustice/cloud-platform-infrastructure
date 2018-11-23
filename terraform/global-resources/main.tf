@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket  = "moj-cp-k8s-investigation-global-terraform"
+    bucket  = "cloud-platform-terraform-state"
     region  = "eu-west-1"
-    key     = "terraform.tfstate"
-    profile = "moj-pi"
+    key     = "global-resources/terraform.tfstate"
+    profile = "moj-cp"
   }
 }
 
