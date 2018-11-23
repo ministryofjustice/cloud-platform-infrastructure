@@ -5,7 +5,7 @@ resource "helm_release" "fluentd_es" {
 
   set {
     name  = "fluent_elasticsearch_host"
-    value = "https://search-cloud-platform-live-7qrzc26xexgxtkt5qz72gt6cxa.eu-west-1.es.amazonaws.com"
+    value = "search-cloud-platform-live-7qrzc26xexgxtkt5qz72gt6cxa.eu-west-1.es.amazonaws.com"
   }
 
   set {
