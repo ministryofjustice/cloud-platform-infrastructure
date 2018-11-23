@@ -10,6 +10,10 @@ output "cp_zone_id" {
   value = "${aws_route53_zone.cloud-platform_justice_gov_uk.zone_id}"
 }
 
+output "cp_domain_name" {
+  value = "${aws_route53_zone.cloud-platform_justice_gov_uk.name}"
+}
+
 output "kops_state_store" {
   value = "${aws_s3_bucket.kops_state_store.bucket}"
 }
