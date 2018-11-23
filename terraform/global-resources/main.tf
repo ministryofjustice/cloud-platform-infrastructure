@@ -7,17 +7,21 @@ terraform {
   }
 }
 
+# default provider
+# https://mojds-platforms-integration.signin.aws.amazon.com/console
 provider "aws" {
   region  = "eu-west-1"
   profile = "moj-pi"
 }
 
+# https://cloud-platform-aws.signin.aws.amazon.com/console
 provider "aws" {
   region  = "eu-west-1"
   alias   = "cloud-platform"
   profile = "moj-cp"
 }
 
+# https://mojdsd.signin.aws.amazon.com/console
 provider "aws" {
   region  = "eu-west-1"
   alias   = "dsd"
