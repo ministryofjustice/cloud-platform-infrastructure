@@ -99,7 +99,7 @@ spec:
         effect: NoSchedule
       containers:
       - name: {{  template "fluentd-es.fullname" . }}
-        image: {{ .Values.image.repository }}{{ .Values.image.tag }}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         env:
         - name: FLUENTD_ARGS
           value: --no-supervisor -q
