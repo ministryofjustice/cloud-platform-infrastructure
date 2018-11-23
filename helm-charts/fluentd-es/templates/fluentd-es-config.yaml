@@ -1,0 +1,35 @@
+#This file deploys a configMap that supports the main fluentd-es file. Apart from this comment and the line directly below, the pther comments are there by default from the original template.
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{  template "fluentd-es.fullname" . }}-config
+  labels:
+    app: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    addonmanager.kubernetes.io/mode: Reconcile
+data:
+{{ (.Files.Glob "config/**").AsConfig | indent 2 }}
+  index-template.json: |-
+    {
+      "template": "logstash-*",
+      "mappings": {
+        "fluentd": {
+          "dynamic_templates": [
+            {
+              "default_no_index": {
+                "path_match": "^.*$",
+                "path_unmatch": "^(@timestamp|kubernetes_cluster|auditID|level|stage|requestURI|sourceIPs|metadata|objectRef|user|verb)(\\..+)?$",
+                "match_pattern": "regex",
+                "mapping": {
+                  "index": false,
+                  "enabled": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
