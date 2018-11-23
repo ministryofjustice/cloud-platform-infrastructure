@@ -5,7 +5,7 @@ These are resources that are global in nature and therefore there are no workspa
 ---
 **NOTE**
 
-Since resources in multiple accounts are used here, multiple AWS providers are defined.
+Since resources in multiple accounts are managed here, multiple AWS providers are defined.
 You can see the list of providers in [main.tf](main.tf#L10-L29), as well as the names of the AWS profiles that must be configured for this to run properly.
 
 ---
