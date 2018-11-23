@@ -1,5 +1,5 @@
 image:
-  repository: "k8s.gcr.io/fluentd-elasticsearch:"
+  repository: "k8s.gcr.io/fluentd-elasticsearch"
   tag: v2.2.0
 
 fluent_elasticsearch_host: 
