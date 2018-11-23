@@ -1,10 +1,11 @@
-# cloud-platform-infrastructure
+# Cloud-Platform Infrastructure
+
+[![CircleCI](https://github.com/ministryofjustice/cloud-platform-infrastructure.svg?style=svg)](https://circleci.com/gh/ministryofjustice/cloud-platform-infrastructure)
 
 This repository will contain all that's required to create a Cloud Platform Kubernetes cluster. The majority of this repo is made up of Terraform scripts that will be actioned by a pipeline.
 
 Here you'll also find instruction on how to operate a Cloud Platform cluster. 
 
-  - [Overview](#cloud-platform-infrastructure)
   - [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
   - [Cloud Platform environments](#cloud-platform-environments)
   - [Terraform modules](#terraform-modules)
