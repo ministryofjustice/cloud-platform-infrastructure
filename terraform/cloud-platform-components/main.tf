@@ -20,7 +20,6 @@ provider "helm" {
 
 data "terraform_remote_state" "cluster" {
   backend   = "s3"
-  workspace = "${terraform.workspace}"
 
   config {
     bucket = "cloud-platform-terraform-state"
