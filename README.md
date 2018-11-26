@@ -2,10 +2,12 @@
 
 [![CircleCI](https://circleci.com/gh/ministryofjustice/cloud-platform-infrastructure.svg?style=svg)](https://circleci.com/gh/ministryofjustice/cloud-platform-infrastructure)
 
+## Introduction
 This repository will contain all that's required to create a Cloud Platform Kubernetes cluster. The majority of this repo is made up of Terraform scripts that will be actioned by a pipeline.
 
 Here you'll also find instruction on how to operate a Cloud Platform cluster.
 
+## Table of contents
   - [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
   - [Cloud Platform environments](#cloud-platform-environments)
   - [Terraform modules](#terraform-modules)
@@ -55,15 +57,22 @@ The s3 state store structure appears as follows:
 ```bash
 ├── cloud-platform-terraform-state
     ├── cloud-platform-account/
-    │   ├── cloud-platform/terraform.tfstate
-    │   ├── mojdsd-platform-integration/terraform.tfstate
+    │   ├── cloud-platform/
+    │   │   └── terraform.tfstate
+    │   ├── mojdsd-platform-integration/
+    │   │   └── terraform.tfstate
     ├── cloud-platform-components/
-    │   ├── cloud-platform-live-0/terraform.tfstate
-    │   ├── cloud-platform-test-1/terraform.tfstate
+    │   ├── cloud-platform-live-0/
+    │   │   └── terraform.tfstate
+    │   ├── cloud-platform-test-1/
+    │   │   └── terraform.tfstate
     ├── cloud-platform/
-    │   ├── cloud-platform-live-0/terraform.tfstate
-    │   ├── cloud-platform-test-1/terraform.tfstate
+    │   ├── cloud-platform-live-0/
+    │   │   └── terraform.tfstate
+    │   ├── cloud-platform-test-1/
+    │   │   └── terraform.tfstate
     ├── global-resources/
+    │   └── terraform.tfstate
 ```
 
 `cloud-platform`, and `cloud-platform-components` resources can refer to output values of other Terrform states by using the [Terraform remote state data resource](https://www.terraform.io/docs/providers/terraform/d/remote_state.html):
