@@ -56,6 +56,24 @@ roleRef:
   name: {{  template "fluentd-es.fullname" . }}
   apiGroup: ""
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fluentd-es-metrics
+  namespace: logging
+  labels:
+    app: fluentd-es
+spec:
+  ports:
+  - name: metrics
+    port: 24231
+    protocol: TCP
+    targetPort: 24231
+  selector:
+    app: fluentd-es
+    release: fluentd-es
+  type: ClusterIP
+---
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
