@@ -62,7 +62,14 @@ metadata:
   name: fluentd-es-metrics
   namespace: logging
   labels:
-    app: fluentd-es
+    k8s-app: fluentd-es
+    version: {{ .Values.image.tag }}
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+    app: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
 spec:
   ports:
   - name: metrics
