@@ -23,8 +23,8 @@ data "terraform_remote_state" "cluster" {
   workspace = "${terraform.workspace}"
 
   config {
-    bucket = "moj-cp-k8s-investigation-platform-terraform"
+    bucket = "cloud-platform-terraform-state"
     region = "eu-west-1"
-    key    = "terraform.tfstate"
+    key    = "cloud-platform/${terraform.workspace}/terraform.tfstate"
   }
 }
