@@ -1,8 +1,9 @@
 terraform {
   backend "s3" {
-    bucket = "cloud-platform-components-terraform"
-    region = "eu-west-1"
-    key    = "terraform.tfstate"
+    bucket               = "cloud-platform-terraform-state"
+    region               = "eu-west-1"
+    key                  = "terraform.tfstate"
+    workspace_key_prefix = "cloud-platform-components"
   }
 }
 
