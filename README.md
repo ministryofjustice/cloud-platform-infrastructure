@@ -1,6 +1,6 @@
-# Cloud-Platform Infrastructure
+# Cloud Platform Infrastructure
 
-[![CircleCI](https://github.com/ministryofjustice/cloud-platform-infrastructure.svg?style=svg)](https://circleci.com/gh/ministryofjustice/cloud-platform-infrastructure)
+[![CircleCI](https://circleci.com/gh/ministryofjustice/cloud-platform-infrastructure.svg?style=svg)](https://circleci.com/gh/ministryofjustice/cloud-platform-infrastructure)
 
 This repository will contain all that's required to create a Cloud Platform Kubernetes cluster. The majority of this repo is made up of Terraform scripts that will be actioned by a pipeline.
 
@@ -20,14 +20,16 @@ Here you'll also find instruction on how to operate a Cloud Platform cluster.
 
 Terraform is used to manage all AWS resources, except those managed by [Kops](https://github.com/kubernetes/kops/), with Terraform resources stored in the `terraform/` directory.
 
-Terraform resources are split into two directories with matching state objects in S3, `terraform/global-resources` and `terraform/cloud-platform`:
+Terraform resources are split into four directories with matching state objects in S3, `terraform/global-resources`, `terraform/cloud-platform`, `terraform/cloud-platform-account` and `terraform/cloud-platform-components`:
 
-- `global-resources` contains 'global' AWS resources that are not part of specific clusters or platform environments - e.g. parent DNS zone, S3 buckets for Kops and Terraform state storage for `cloud-platform` environments
-- `cloud-platform` contains resources for the Cloud Platform environments - cluster DNS, and ACM certificates with DNS validation, and soon VPC, subnets etc
+- `global-resources` contains 'global' AWS resources that are not part of specific clusters or platform environments - e.g. elasticsearch and s3.
+- `cloud-platform` contains resources for the Cloud Platform environments - e.g. bastion hosts and kops. 
+- `cloud-platform-account` contains account specifics like cloud-trail. We decided to seperate account level Terraform and global "run once" as we're currently running from multiple AWS accounts.
+- `cloud-platform-components` contains appications required to bootstrap a cluster i.e. getting a Cloud Platform cluster into a functional state.  
 
-As 'global' and 'platform' resources are defined with separate state backends, `terraform plan` and `apply` must be run separately:
+As all four resources are defined with separate state backends, `terraform plan` and `apply` must be run separately:
 
-```
+```bash
 $ cd terraform/global-resources
 $ terraform plan
 Refreshing Terraform state in-memory prior to plan...
@@ -36,11 +38,37 @@ $ cd ../cloud-platform
 $ terraform plan
 Refreshing Terraform state in-memory prior to plan...
 ...
+$ cd terraform/cloud-platform-account
+$ terraform plan
+Refreshing Terraform state in-memory prior to plan...
+...
+$ cd ../cloud-platform-components
+$ terraform plan
+Refreshing Terraform state in-memory prior to plan...
+...
 ```
 
-`cloud-platform` resources can refer to output values of `global-resources` by using the [Terraform remote state data resource](https://www.terraform.io/docs/providers/terraform/d/remote_state.html):
+All resources share a single S3 state bucket called `cloud-platform-terraform-state` located on the [aws-cloud-platform](https://moj-cloud-platform-test-2.eu.auth0.com/samlp/WAgw4FygIHs1Vny6whAjfnem6BiUr4qv) account. `tfstate` files however are seperated by `workspace_key_prefix` defined in each directories `main.tf` and `environment` defined by workspace. 
 
+The s3 state store structure appears as follows:
+
+```bash
+├── cloud-platform-terraform-state
+    ├── cloud-platform-account/
+    │   ├── cloud-platform/terraform.tfstate
+    │   ├── mojdsd-platform-integration/terraform.tfstate
+    ├── cloud-platform-components/
+    │   ├── cloud-platform-live-0/terraform.tfstate
+    │   ├── cloud-platform-test-1/terraform.tfstate
+    ├── cloud-platform/
+    │   ├── cloud-platform-live-0/terraform.tfstate
+    │   ├── cloud-platform-test-1/terraform.tfstate
+    ├── global-resources/
 ```
+
+`cloud-platform`, and `cloud-platform-components` resources can refer to output values of other Terrform states by using the [Terraform remote state data resource](https://www.terraform.io/docs/providers/terraform/d/remote_state.html):
+
+```bash
 data "terraform_remote_state" "global" {
   backend = "s3"
   config {
@@ -62,20 +90,21 @@ This structure allows us to reduce the blast radius of errors when compared to  
 
 ### Cloud Platform environments
 
-[Terraform workspaces](https://www.terraform.io/docs/state/workspaces.html) are used to manage multiple instance of the `cloud-platform` resources. To see the workspaces/environments that currently exist:
+[Terraform workspaces](https://www.terraform.io/docs/state/workspaces.html) are used to manage multiple instances of the `cloud-platform`, `cloud-platform-account` and `cloud-platform-components` resources. To see the workspaces/environments that currently exist:
 
-```
+```bash
 $ terraform workspace list
 * default
-  non-production
+  cloud-platform-live-0
+  cloud-platform-test-1
 ```
 
 **Note:** the default workspace is not used.
 
 To select a workspace/environment:
 
-```
-$ terraform workspace select cloud-platforms-test
+```bash
+$ terraform workspace select cloud-platform-test-1
 ```
 
 The selected Terraform workspace is [interpolated](https://www.terraform.io/docs/state/workspaces.html#current-workspace-interpolation) in Terraform resource declarations to create per-environment AWS resources, e.g.:

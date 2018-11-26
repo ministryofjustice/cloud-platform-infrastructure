@@ -19,7 +19,7 @@ provider "helm" {
 }
 
 data "terraform_remote_state" "cluster" {
-  backend   = "s3"
+  backend = "s3"
 
   config {
     bucket = "cloud-platform-terraform-state"
