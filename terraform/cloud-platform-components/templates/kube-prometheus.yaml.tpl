@@ -308,10 +308,10 @@ prometheus:
   ##
   resources:
     requests:
-      cpu: 0.5
+      cpu: 1
       memory: 4000Mi
     limits:
-      cpu: 0.5
+      cpu: 1
       memory: 4000Mi
 
   ## List of Secrets in the same namespace as the Prometheus
