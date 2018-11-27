@@ -306,9 +306,13 @@ prometheus:
   ## Resource limits & requests
   ## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
   ##
-  resources: {}
-    # requests:
-    #   memory: 400Mi
+  resources:
+    requests:
+      cpu: 0.5
+      memory: 4000Mi
+    limits:
+      cpu: 0.5
+      memory: 4000Mi
 
   ## List of Secrets in the same namespace as the Prometheus
   ## object, which shall be mounted into the Prometheus Pods.
