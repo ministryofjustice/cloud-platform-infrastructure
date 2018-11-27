@@ -25,13 +25,13 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-resources: {}
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
+resources:
+  limits:
+    cpu: 1m
+    memory: 32Mi
+  requests:
+    cpu: 1m
+    memory: 32Mi
 
 nodeSelector: {}
 
