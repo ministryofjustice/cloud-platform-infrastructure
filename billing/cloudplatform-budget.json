@@ -1,0 +1,94 @@
+{
+    "AccountId": "754256621582",
+    "Budget": {
+        "BudgetName": "Monthly AWS Budget (cloud-platform-clusters)",
+        "BudgetLimit": {
+            "Amount": "5000", 
+            "Unit": "USD"
+        },
+        "CostTypes": {
+            "IncludeTax":  true,
+            "IncludeSubscription": true,
+            "UseBlended": false
+        },
+        "TimeUnit": "MONTHLY",
+        "TimePeriod": {
+            "Start": "1970-01-01T00:00:00", 
+            "End": "2040-01-01T00:00:00"
+        },
+        "BudgetType": "COST"
+    },
+    "NotificationsWithSubscribers": [
+        {
+            "Notification": {
+                 "NotificationType": "ACTUAL",
+                "ComparisonOperator": "GREATER_THAN",
+                "Threshold": 25,
+                 "ThresholdType": "PERCENTAGE"
+            },
+            "Subscribers": [
+                {
+                    "SubscriptionType": "EMAIL",
+                     "Address": "platforms@digital.justice.gov.uk"
+                 }
+             ]
+         },
+        { 
+            "Notification": { 
+                "NotificationType": "ACTUAL",
+                "ComparisonOperator": "GREATER_THAN",
+                "Threshold": 50,
+                "ThresholdType": "PERCENTAGE"
+            },
+            "Subscribers": [
+                { 
+                    "SubscriptionType": "EMAIL",
+                     "Address": "platforms@digital.justice.gov.uk"
+                }
+            ]
+        }
+        ,
+        {
+            "Notification": {
+                "NotificationType": "ACTUAL",
+                "ComparisonOperator": "GREATER_THAN",
+                "Threshold": 75,
+                "ThresholdType": "PERCENTAGE"
+            },
+            "Subscribers": [
+                {
+                    "SubscriptionType": "EMAIL",
+                    "Address": "platforms@digital.justice.gov.uk"
+                }
+            ]
+        },
+        {
+            "Notification": {
+                "NotificationType": "ACTUAL",
+                "ComparisonOperator": "GREATER_THAN",
+                "Threshold": 100,
+                "ThresholdType": "PERCENTAGE"
+            },
+            "Subscribers": [
+                {
+                    "SubscriptionType": "EMAIL",
+                    "Address": "platforms@digital.justice.gov.uk"
+                }
+            ]
+        },
+        {
+            "Notification": {
+                "NotificationType": "ACTUAL",
+                "ComparisonOperator": "GREATER_THAN",
+                "Threshold": 125,
+                "ThresholdType": "PERCENTAGE"
+            },
+            "Subscribers": [
+                {
+                    "SubscriptionType": "EMAIL",
+                    "Address": "platforms@digital.justice.gov.uk"
+                }
+            ]
+         }
+    ] 
+}

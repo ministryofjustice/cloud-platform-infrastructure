@@ -1,35 +1,37 @@
-# Kubernetes Investigations
+# Cloud Platform Infrastructure
 
-  - [Overview](#kubernetes-investigations)
+[![CircleCI](https://circleci.com/gh/ministryofjustice/cloud-platform-infrastructure.svg?style=svg)](https://circleci.com/gh/ministryofjustice/cloud-platform-infrastructure)
+
+## Introduction
+This repository will contain all that's required to create a Cloud Platform Kubernetes cluster. The majority of this repo is made up of Terraform scripts that will be actioned by a pipeline.
+
+Here you'll also find instruction on how to operate a Cloud Platform cluster.
+
+## Table of contents
   - [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
   - [Cloud Platform environments](#cloud-platform-environments)
   - [Terraform modules](#terraform-modules)
   - [How to add your examples](#how-to-add-your-examples)
   - [How to create a new cluster](#how-to-create-a-new-cluster)
   - [How to delete a cluster](#how-to-delete-a-cluster)
-  - [Cluster creation pipeline](#cluster-creation-pipeline)
   - [Disaster recovery](docs/disaster-recovery/README.md)
   - [Prometheus config and install](https://github.com/ministryofjustice/cloud-platform-prometheus#cloud-platform-prometheus)
   - [Logging](docs/logging/README.md)
-
-A space to collect code related to the cloud platform team's Kubernetes investigations.
-
-As we complete spikes or investigations into how we want to run Kubernetes we can collect useful code that we have written here so that it is available to the team.
-
-We will also document some of the thinking behind how the code is written so that it is available to people who are new to the team or ourselves when we forget why we are doing it.
 
 ## Terraform and Cloud Platform environment management
 
 Terraform is used to manage all AWS resources, except those managed by [Kops](https://github.com/kubernetes/kops/), with Terraform resources stored in the `terraform/` directory.
 
-Terraform resources are split into two directories with matching state objects in S3, `terraform/global-resources` and `terraform/cloud-platform`:
+Terraform resources are split into four directories with matching state objects in S3, `terraform/global-resources`, `terraform/cloud-platform`, `terraform/cloud-platform-account` and `terraform/cloud-platform-components`:
 
-- `global-resources` contains 'global' AWS resources that are not part of specific clusters or platform environments - e.g. parent DNS zone, S3 buckets for Kops and Terraform state storage for `cloud-platform` environments
-- `cloud-platform` contains resources for the Cloud Platform environments - cluster DNS, and ACM certificates with DNS validation, and soon VPC, subnets etc
+- `global-resources` contains 'global' AWS resources that are not part of specific clusters or platform environments - e.g. elasticsearch and s3.
+- `cloud-platform` contains resources for the Cloud Platform environments - e.g. bastion hosts and kops. 
+- `cloud-platform-account` contains account specifics like cloud-trail. We decided to seperate account level Terraform and global "run once" as we're currently running from multiple AWS accounts.
+- `cloud-platform-components` contains appications required to bootstrap a cluster i.e. getting a Cloud Platform cluster into a functional state.  
 
-As 'global' and 'platform' resources are defined with separate state backends, `terraform plan` and `apply` must be run separately:
+As all four resources are defined with separate state backends, `terraform plan` and `apply` must be run separately:
 
-```
+```bash
 $ cd terraform/global-resources
 $ terraform plan
 Refreshing Terraform state in-memory prior to plan...
@@ -38,24 +40,58 @@ $ cd ../cloud-platform
 $ terraform plan
 Refreshing Terraform state in-memory prior to plan...
 ...
+$ cd terraform/cloud-platform-account
+$ terraform plan
+Refreshing Terraform state in-memory prior to plan...
+...
+$ cd ../cloud-platform-components
+$ terraform plan
+Refreshing Terraform state in-memory prior to plan...
+...
 ```
 
-`cloud-platform` resources can refer to output values of `global-resources` by using the [Terraform remote state data resource](https://www.terraform.io/docs/providers/terraform/d/remote_state.html):
+All resources share a single S3 state bucket called `cloud-platform-terraform-state` located on the [aws-cloud-platform](https://moj-cloud-platform-test-2.eu.auth0.com/samlp/WAgw4FygIHs1Vny6whAjfnem6BiUr4qv) account. `tfstate` files however are seperated by `workspace_key_prefix` defined in each directories `main.tf` and `environment` defined by workspace. 
 
+The s3 state store structure appears as follows:
+
+```bash
+├── cloud-platform-terraform-state
+    ├── cloud-platform-account/
+    │   ├── cloud-platform/
+    │   │   └── terraform.tfstate
+    │   ├── mojdsd-platform-integration/
+    │   │   └── terraform.tfstate
+    ├── cloud-platform-components/
+    │   ├── cloud-platform-live-0/
+    │   │   └── terraform.tfstate
+    │   ├── cloud-platform-test-1/
+    │   │   └── terraform.tfstate
+    ├── cloud-platform/
+    │   ├── cloud-platform-live-0/
+    │   │   └── terraform.tfstate
+    │   ├── cloud-platform-test-1/
+    │   │   └── terraform.tfstate
+    ├── global-resources/
+    │   └── terraform.tfstate
 ```
+
+`cloud-platform`, and `cloud-platform-components` resources can refer to output values of other Terrform states by using the [Terraform remote state data resource](https://www.terraform.io/docs/providers/terraform/d/remote_state.html):
+
+```bash
 data "terraform_remote_state" "global" {
-    backend = "s3"
-    config {
-        bucket = "moj-cp-k8s-investigation-global-terraform"
-        region = "eu-west-1"
-        key = "terraform.tfstate"
-    }
+  backend = "s3"
+  config {
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "global-resources/terraform.tfstate"
+    profile = "moj-cp"
+  }
 }
 
 module "cluster_dns" {
-    source = "../modules/cluster_dns"
+  source = "../modules/cluster_dns"
 
-    parent_zone_id = "${data.terraform_remote_state.global.k8s_zone_id}"
+  parent_zone_id = "${data.terraform_remote_state.global.k8s_zone_id}"
 }
 ```
 
@@ -63,20 +99,21 @@ This structure allows us to reduce the blast radius of errors when compared to  
 
 ### Cloud Platform environments
 
-[Terraform workspaces](https://www.terraform.io/docs/state/workspaces.html) are used to manage multiple instance of the `cloud-platform` resources. To see the workspaces/environments that currently exist:
+[Terraform workspaces](https://www.terraform.io/docs/state/workspaces.html) are used to manage multiple instances of the `cloud-platform`, `cloud-platform-account` and `cloud-platform-components` resources. To see the workspaces/environments that currently exist:
 
-```
+```bash
 $ terraform workspace list
 * default
-  non-production
+  cloud-platform-live-0
+  cloud-platform-test-1
 ```
 
 **Note:** the default workspace is not used.
 
 To select a workspace/environment:
 
-```
-$ terraform workspace select cloud-platforms-test
+```bash
+$ terraform workspace select cloud-platform-test-1
 ```
 
 The selected Terraform workspace is [interpolated](https://www.terraform.io/docs/state/workspaces.html#current-workspace-interpolation) in Terraform resource declarations to create per-environment AWS resources, e.g.:
@@ -98,7 +135,7 @@ Generally speaking, follow the Ministry of Justice's [Using git](https://ministr
 ### 1. Clone the repo
 
 ```
-git clone git@github.com:ministryofjustice/kubernetes-investigations.git
+git clone git@github.com:ministryofjustice/cloud-platform-infrastructure.git
 ```
 
 ### 2. Create a branch
@@ -152,8 +189,6 @@ and then navigating to the repo in GitHub and using the create a new pull reques
 
 When you do this you have the option of adding a reviewer. It's good to share your pull request for review so add a reviewer. Let the reviewer know that you are adding them so they have a chance to plan some time to do the review.
 
-If you can't find anyone add Kerin or Kalbir.
-
 ### Kops
 
 The `kops/` directory contains the cluster specification, including an additional IAM policy to allow Route53 management, and config for OIDC authentication and RBAC. To make changes, edit `kops/sandboc_cluster.yaml` and:
@@ -190,7 +225,7 @@ The values are from the `terraform-provider-auth0` app
 
 1. To create a new cluster, you must create a new terraform workspace and apply the `cloud-platform` resources. Ensure at all times that you are in the correct workspace with `$ terraform workspace list`.
 ```bash
-$ export AWS_PROFILE=mojds-platforms-integration
+$ export AWS_PROFILE=moj-pi
 $ cd terraform/cloud-platform
 $ terraform init
 $ terraform workspace new <clusterName e.g. cloud-platform-test-3>
@@ -247,7 +282,7 @@ fix / destroy / apply again if the values don't match.
 
 1. To delete a cluster you must first export the following:
 ```
-$ export AWS_PROFILE=mojds-platforms-integration
+$ export AWS_PROFILE=moj-pi
 $ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
 ```
 2. After changing directory, run the following command which will destroy all cluster components.
@@ -260,7 +295,7 @@ $ terraform destroy
 3. Then run the following `kops` command (this will not delete the cluster). Append it with `--yes` to confirm deletion.
 ```
 $ kops delete cluster --name <clusterName>
-``` 
+```
 4. Change directories and perform the following, destroying the cluster essentials.
 ```bash
 $ cd ../cloud-platform
@@ -268,3 +303,4 @@ $ terraform init
 $ terraform workspace select <clusterName e.g. cloud-platform-test-3>
 $ terraform destroy
 ```
+5. Additional cleanup (optional): ensure all references to `<clusterName>` are gone from `KOPS_STATE_STORE`, `terraform workspace delete <clusterName>`

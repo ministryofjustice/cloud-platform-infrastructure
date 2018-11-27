@@ -1,8 +1,9 @@
 terraform {
   backend "s3" {
-    bucket = "cloud-platform-components-terraform"
-    region = "eu-west-1"
-    key    = "terraform.tfstate"
+    bucket               = "cloud-platform-terraform-state"
+    region               = "eu-west-1"
+    key                  = "terraform.tfstate"
+    workspace_key_prefix = "cloud-platform-components"
   }
 }
 
@@ -18,12 +19,11 @@ provider "helm" {
 }
 
 data "terraform_remote_state" "cluster" {
-  backend   = "s3"
-  workspace = "${terraform.workspace}"
+  backend = "s3"
 
   config {
-    bucket = "moj-cp-k8s-investigation-platform-terraform"
+    bucket = "cloud-platform-terraform-state"
     region = "eu-west-1"
-    key    = "terraform.tfstate"
+    key    = "cloud-platform/${terraform.workspace}/terraform.tfstate"
   }
 }
