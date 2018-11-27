@@ -225,7 +225,7 @@ The values are from the `terraform-provider-auth0` app
 
 1. To create a new cluster, you must create a new terraform workspace and apply the `cloud-platform` resources. Ensure at all times that you are in the correct workspace with `$ terraform workspace list`.
 ```bash
-$ export AWS_PROFILE=mojds-platforms-integration
+$ export AWS_PROFILE=moj-pi
 $ cd terraform/cloud-platform
 $ terraform init
 $ terraform workspace new <clusterName e.g. cloud-platform-test-3>
@@ -282,7 +282,7 @@ fix / destroy / apply again if the values don't match.
 
 1. To delete a cluster you must first export the following:
 ```
-$ export AWS_PROFILE=mojds-platforms-integration
+$ export AWS_PROFILE=moj-pi
 $ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
 ```
 2. After changing directory, run the following command which will destroy all cluster components.
@@ -303,3 +303,4 @@ $ terraform init
 $ terraform workspace select <clusterName e.g. cloud-platform-test-3>
 $ terraform destroy
 ```
+5. Additional cleanup (optional): ensure all references to `<clusterName>` are gone from `KOPS_STATE_STORE`, `terraform workspace delete <clusterName>`
