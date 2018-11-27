@@ -5,11 +5,13 @@ terraform {
     region               = "eu-west-1"
     key                  = "terraform.tfstate"
     workspace_key_prefix = "cloud-platform"
+    profile              = "moj-cp"
   }
 }
 
 provider "aws" {
-  region = "eu-west-1"
+  region  = "eu-west-1"
+  profile = "moj-pi"
 }
 
 #
