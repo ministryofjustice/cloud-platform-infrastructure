@@ -1,9 +1,3 @@
-provider "auth0" {
-  "domain"        = "${var.tenant}.eu.auth0.com"
-  "client_id"     = "${var.client_id}"
-  "client_secret" = "${var.client_secret}"
-}
-
 resource "auth0_client" "kuberos_client" {
   name                 = "Kuberos Auth (Managed by Terraform)"
   description          = "Used by k8s cluster"
