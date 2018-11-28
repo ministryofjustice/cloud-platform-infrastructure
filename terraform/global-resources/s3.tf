@@ -1,5 +1,9 @@
+locals {
+  project_name = "moj-cp-k8s-investigation"
+}
+
 resource "aws_s3_bucket" "platform_terraform" {
-  bucket = "${var.project_name}-platform-terraform"
+  bucket = "${local.project_name}-platform-terraform"
   acl    = "private"
 
   versioning {
@@ -16,7 +20,7 @@ resource "aws_s3_bucket" "platform_terraform" {
 }
 
 resource "aws_s3_bucket" "kops_state_store" {
-  bucket = "${var.project_name}-kops"
+  bucket = "${local.project_name}-kops"
   acl    = "private"
 
   versioning {
@@ -33,7 +37,7 @@ resource "aws_s3_bucket" "kops_state_store" {
 }
 
 resource "aws_s3_bucket" "concourse_terraform" {
-  bucket = "${var.project_name}-concourse-terraform"
+  bucket = "${local.project_name}-concourse-terraform"
   acl    = "private"
 
   versioning {
@@ -50,7 +54,7 @@ resource "aws_s3_bucket" "concourse_terraform" {
 }
 
 resource "aws_s3_bucket" "environments_terraform" {
-  bucket = "${var.project_name}-environments-terraform"
+  bucket = "${local.project_name}-environments-terraform"
   acl    = "private"
 
   versioning {
