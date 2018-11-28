@@ -38,5 +38,5 @@ resource "auth0_rule_config" "k8s-oidc-group-claim-domain" {
 
 resource "auth0_rule_config" "aws-saml-provider-name" {
   key   = "AWS_SAML_PROVIDER_NAME"
-  value = "auth0"
+  value = "${aws_iam_saml_provider.auth0.name}"
 }
