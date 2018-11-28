@@ -76,8 +76,8 @@ spec:
     protocol: TCP
     targetPort: 24231
   selector:
-      app: {{ .Release.Name }}
-      version: {{ .Values.image.tag }}
+    app: {{ .Release.Name }}
+    version: {{ .Values.image.tag }}
   type: ClusterIP
 ---
 apiVersion: apps/v1
