@@ -59,8 +59,7 @@ roleRef:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fluentd-es-metrics
-  namespace: logging
+  name: {{  template "fluentd-es.fullname" . }}
   labels:
     k8s-app: fluentd-es
     version: {{ .Values.image.tag }}
@@ -77,8 +76,8 @@ spec:
     protocol: TCP
     targetPort: 24231
   selector:
-    app: fluentd-es
-    release: fluentd-es
+      app: {{ .Release.Name }}
+      version: {{ .Values.image.tag }}
   type: ClusterIP
 ---
 apiVersion: apps/v1
