@@ -3,7 +3,6 @@
 
 function (user, context, callback) {
   var request = require('request');
-  var aws_account_id = "926803513772";
 
   // Apply to 'github' connections only
   if(context.connection === 'github'){
@@ -25,14 +24,14 @@ function (user, context, callback) {
 
       // IAM resource constants
       // `idp_arn` - reference to the SAML provider that has a trust relationship with AWS
-      var idp_arn = "arn:aws:iam::" + aws_account_id + ":saml-provider/shared-auth0";
-      var role_base_arn = "arn:aws:iam::" + aws_account_id + ":role/";
+      var idp_arn = "arn:aws:iam::" + configuration.AWS_ACCOUNT_ID + ":saml-provider/" + configuration.AWS_SAML_PROVIDER_NAME;
+      var role_base_arn = "arn:aws:iam::" + configuration.AWS_ACCOUNT_ID + ":role/";
 
       // Add list of IAM roles that the user can assume, one role per Github team
       // SAML spec requires that the IDP identifier is included with each role
       // identifier, separated with a comma
       user.awsRole = JSON.parse(body).map(function (team) {
-        return role_base_arn + "test-github-" + team.slug + "," + idp_arn;
+        return role_base_arn + "saml-github." + team.slug + "," + idp_arn;
       });
 
       // Name for the user's login session, typically their username

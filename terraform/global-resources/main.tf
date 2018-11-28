@@ -7,6 +7,14 @@ terraform {
   }
 }
 
+locals {
+  auth0_tenant_domain = "justice-cloud-platform.eu.auth0.com"
+}
+
+provider "auth0" {
+  domain = "${local.auth0_tenant_domain}"
+}
+
 # default provider
 # https://mojds-platforms-integration.signin.aws.amazon.com/console
 provider "aws" {
@@ -19,6 +27,10 @@ provider "aws" {
   region  = "eu-west-1"
   alias   = "cloud-platform"
   profile = "moj-cp"
+}
+
+data "aws_caller_identity" "cloud-platform" {
+  provider = "aws.cloud-platform"
 }
 
 # https://mojdsd.signin.aws.amazon.com/console
