@@ -40,3 +40,8 @@ resource "auth0_rule_config" "aws-saml-provider-name" {
   key   = "AWS_SAML_PROVIDER_NAME"
   value = "${aws_iam_saml_provider.auth0.name}"
 }
+
+resource "auth0_rule_config" "aws-saml-role-prefix" {
+  key   = "AWS_SAML_ROLE_PREFIX"
+  value = "saml-github."
+}

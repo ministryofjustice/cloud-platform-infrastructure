@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "federated_role_trust_policy" {
 
 resource "aws_iam_role" "github_webops" {
   provider             = "aws.cloud-platform"
-  name                 = "saml-github.webops"
+  name                 = "${auth0_rule_config.aws-saml-role-prefix.value}webops"
   assume_role_policy   = "${data.aws_iam_policy_document.federated_role_trust_policy.json}"
   max_session_duration = "${12 * 3600}"
 }
