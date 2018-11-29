@@ -265,7 +265,7 @@ metadata:
   name: nodes
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: c4.xlarge
+  machineType: c4.2xlarge
   maxSize: 6
   minSize: 6
   role: Node
