@@ -305,7 +305,14 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
+    application: justice-cloud-platform
+    business-unit: hq
+    component: master
+    infrastructure-support: platforms@digital.justice.gov.uk
+    is-production: true
     kops.k8s.io/cluster: ${cluster_domain_name}
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   name: master-eu-west-1a
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
@@ -325,7 +332,14 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
+    application: justice-cloud-platform
+    business-unit: hq
+    component: master
+    infrastructure-support: platforms@digital.justice.gov.uk
+    is-production: true
     kops.k8s.io/cluster: ${cluster_domain_name}
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   name: master-eu-west-1b
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
@@ -345,7 +359,14 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
+    application: justice-cloud-platform
+    business-unit: hq
+    component: master
+    infrastructure-support: platforms@digital.justice.gov.uk
+    is-production: true
     kops.k8s.io/cluster: ${cluster_domain_name}
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   name: master-eu-west-1c
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
@@ -365,11 +386,18 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
+    application: justice-cloud-platform
+    business-unit: hq
+    component: node
+    infrastructure-support: platforms@digital.justice.gov.uk
+    is-production: true
     kops.k8s.io/cluster: ${cluster_domain_name}
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   name: nodes
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: c4.xlarge
+  machineType: c4.2xlarge
   maxSize: 6
   minSize: 6
   nodeLabels:
