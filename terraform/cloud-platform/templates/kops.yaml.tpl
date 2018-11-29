@@ -312,8 +312,15 @@ spec:
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
-  nodeLabels:
+  cloudLabels:
+    application: justice-cloud-platform
+    business-unit: hq
+    component: master
+    infrastructure-support: platforms@digital.justice.gov.uk
+    is-production: true
     kops.k8s.io/instancegroup: master-eu-west-1a
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
   subnets:
   - eu-west-1a
@@ -332,8 +339,15 @@ spec:
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
-  nodeLabels:
+  cloudLabels:
+    application: justice-cloud-platform
+    business-unit: hq
+    component: master
+    infrastructure-support: platforms@digital.justice.gov.uk
+    is-production: true
     kops.k8s.io/instancegroup: master-eu-west-1b
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
   subnets:
   - eu-west-1b
@@ -352,8 +366,15 @@ spec:
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
-  nodeLabels:
+  cloudLabels:
+    application: justice-cloud-platform
+    business-unit: hq
+    component: master
+    infrastructure-support: platforms@digital.justice.gov.uk
+    is-production: true
     kops.k8s.io/instancegroup: master-eu-west-1c
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
   subnets:
   - eu-west-1c
@@ -369,11 +390,18 @@ metadata:
   name: nodes
 spec:
   image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: c4.xlarge
+  machineType: c4.2xlarge
   maxSize: 6
   minSize: 6
-  nodeLabels:
+  cloudLabels:
+    application: justice-cloud-platform
+    business-unit: hq
+    component: node
+    infrastructure-support: platforms@digital.justice.gov.uk
+    is-production: true
     kops.k8s.io/instancegroup: nodes
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Node
   subnets:
   - eu-west-1a
