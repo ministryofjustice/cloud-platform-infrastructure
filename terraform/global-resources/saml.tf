@@ -1,3 +1,76 @@
+resource "auth0_client" "saml" {
+  name        = "AWS-SAML: cloud-platform-aws"
+  description = "SAML provider for the cloud-platform-aws account"
+  app_type    = "regular_web"
+  callbacks   = ["https://signin.aws.amazon.com/saml"]
+
+  addons {
+    samlp {}
+  }
+
+  # This does not currently work as intended. See the output below.
+  #
+  # addons {
+  #   samlp {
+  #     audience = "https://signin.aws.amazon.com/saml"
+  #
+  #     mappings {
+  #       email = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+  #       name  = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+  #     }
+  #
+  #     create_upn_claim                   = false
+  #     passthrough_claims_with_no_mapping = false
+  #     map_unknown_claims_as_is           = false
+  #     map_identities                     = false
+  #     name_identifier_format             = "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"
+  #
+  #     name_identifier_probes = [
+  #       "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+  #     ]
+  #   }
+  # }
+}
+
+output "samlp_configuration" {
+  value = <<EOF
+
+=-------------------------------- MANUAL SETUP --------------------------------=
+
+Support for the `samlp` addon in `terraform-provider-auth0` is currently not
+producing valid configuration. Therefore, manual activation required.
+
+See https://github.com/yieldr/terraform-provider-auth0/issues/63 for more detail
+on the issue.
+
+To finish the setup, please visit
+
+https://manage.auth0.com/#/applications/${auth0_client.saml.client_id}/addons
+
+Enable the SAML2 addon and use the following configuration:
+
+{
+  "audience": "https://signin.aws.amazon.com/saml",
+  "mappings": {
+    "email": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+    "name": "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+  },
+  "createUpnClaim": false,
+  "passthroughClaimsWithNoMapping": false,
+  "mapUnknownClaimsAsIs": false,
+  "mapIdentities": false,
+  "nameIdentifierFormat": "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent",
+  "nameIdentifierProbes": [
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier",
+    "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+  ]
+}
+
+=------------------------------------------------------------------------------=
+
+EOF
+}
+
 data "external" "metadata" {
   program = [
     "bash",
