@@ -313,7 +313,7 @@ spec:
   maxSize: 1
   minSize: 1
   nodeLabels:
-    kops.k8s.io/instancegroup: nodes
+    kops.k8s.io/instancegroup: master-eu-west-1a
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -340,7 +340,7 @@ spec:
   maxSize: 1
   minSize: 1
   nodeLabels: 
-    kops.k8s.io/instancegroup: nodes
+    kops.k8s.io/instancegroup: master-eu-west-1b
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -394,7 +394,7 @@ spec:
   maxSize: 6
   minSize: 6
   nodeLabels:
-    kops.k8s.io/instancegroup: master-eu-west-1c
+    kops.k8s.io/instancegroup: nodes
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
