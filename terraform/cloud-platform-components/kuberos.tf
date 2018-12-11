@@ -34,6 +34,11 @@ resource "helm_release" "kuberos" {
     value = "${data.terraform_remote_state.cluster.oidc_client_secret}"
   }
 
+  set {
+    name  = "replicaCount"
+    value = "2"
+  }
+
   depends_on = ["null_resource.deploy"]
 
   lifecycle {
