@@ -188,8 +188,8 @@ resource "aws_sns_topic" "GuardDuty-notifications" {
 }
 
 resource "aws_sns_topic_subscription" "GuardDuty-notifications_sns_subscription" {
-  topic_arn = "arn:aws:sns:eu-west-1:${var.aws_account_id}:GuardDuty-notifications"
+  topic_arn = "${var.topic_arn}"
   protocol  = "https"
-  endpoint  = "https://events.pagerduty.com/integration/${var.integration_key}/enqueue"
+  endpoint  = "${var.endpoint}"
   endpoint_auto_confirms = true
 }
