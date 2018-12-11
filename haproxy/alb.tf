@@ -32,11 +32,10 @@ resource "aws_lb_target_group" "haproxy_alb_target" {
 }
 
 resource "aws_lb_listener" "haproxy_alb_listener" {
-  depends_on        = ["aws_route53_record.cert_validation"]
   load_balancer_arn = "${aws_lb.haproxy_alb.arn}"
   port              = 443
   protocol          = "HTTPS"
-  certificate_arn   = "${aws_acm_certificate.cert.arn}"
+  certificate_arn   = "${aws_acm_certificate_validation.cert.certificate_arn}"
 
   default_action {
     target_group_arn = "${aws_lb_target_group.haproxy_alb_target.arn}"
