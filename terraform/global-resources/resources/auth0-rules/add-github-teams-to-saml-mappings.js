@@ -24,21 +24,21 @@ function (user, context, callback) {
 
       // IAM resource constants
       // `idp_arn` - reference to the SAML provider that has a trust relationship with AWS
-      var idp_arn = "arn:aws:iam::926803513772:saml-provider/shared-auth0";
-      var role_base_arn = "arn:aws:iam::926803513772:role/";
+      var idp_arn = "arn:aws:iam::" + configuration.AWS_ACCOUNT_ID + ":saml-provider/" + configuration.AWS_SAML_PROVIDER_NAME;
+      var role_base_arn = "arn:aws:iam::" + configuration.AWS_ACCOUNT_ID + ":role/";
 
       // Add list of IAM roles that the user can assume, one role per Github team
       // SAML spec requires that the IDP identifier is included with each role
       // identifier, separated with a comma
       user.awsRole = JSON.parse(body).map(function (team) {
-        return role_base_arn + "test-github-" + team.slug + "," + idp_arn;
+        return role_base_arn + configuration.AWS_SAML_ROLE_PREFIX + team.slug + "," + idp_arn;
       });
 
       // Name for the user's login session, typically their username
       // The AWS console will display the logged-in account as `role_name/session_name`,
       // e.g. `github_webops/kerin`
       user.awsRoleSession = user.nickname;
-    
+
       // Map the user's AWS roles and session name to the equivalent SAML attributes
       context.samlConfiguration.mappings = {
         'https://aws.amazon.com/SAML/Attributes/Role': 'awsRole',
