@@ -23,7 +23,7 @@ resource "tls_private_key" "haproxy_private_key" {
 }
 
 resource "aws_key_pair" "haproxy_key_pair" {
-  key_name   = "haproxy-${var.haproxy_host}.${var.haproxy_domain}"
+  key_name   = "haproxy-${var.haproxy_domain}-${random_id.id.hex}"
   public_key = "${tls_private_key.haproxy_private_key.public_key_openssh}"
 }
 
@@ -41,6 +41,6 @@ resource "aws_instance" "haproxy_node" {
   key_name  = "${aws_key_pair.haproxy_key_pair.key_name}"
 
   tags {
-    Name = "haproxy-${var.haproxy_host}.${var.haproxy_domain}"
+    Name = "haproxy-${var.haproxy_domain}-${random_id.id.hex}-${count.index}"
   }
 }

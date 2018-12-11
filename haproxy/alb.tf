@@ -1,5 +1,5 @@
 resource "aws_lb" "haproxy_alb" {
-  name            = "haproxy-test-alb"
+  name            = "haproxy-alb-${random_id.id.hex}"
   internal        = false
   subnets         = ["${aws_subnet.haproxy_subnet.*.id}"]
   security_groups = ["${aws_security_group.alb.id}"]
@@ -10,7 +10,7 @@ resource "aws_lb" "haproxy_alb" {
 }
 
 resource "aws_lb_target_group" "haproxy_alb_target" {
-  name     = "haproxy-test-alb-tg"
+  name     = "haproxy-alb-tg-${random_id.id.hex}"
   vpc_id   = "${aws_vpc.default.id}"
   protocol = "HTTP"
   port     = 80
