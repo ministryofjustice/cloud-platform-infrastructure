@@ -18,6 +18,11 @@ resource "aws_security_group" "instance_sg1" {
     cidr_blocks = ["0.0.0.0/0"]
     self        = true
   }
+
+  tags {
+    Name   = "cp-haproxy-split"
+    Domain = "${var.haproxy_domain}"
+  }
 }
 
 resource "aws_security_group" "instance_sg2" {
@@ -44,6 +49,11 @@ resource "aws_security_group" "instance_sg2" {
     to_port         = 9000
     protocol        = "tcp"
     security_groups = ["${aws_security_group.instance_sg1.id}", "${aws_security_group.alb.id}"]
+  }
+
+  tags {
+    Name   = "cp-haproxy-split"
+    Domain = "${var.haproxy_domain}"
   }
 }
 
@@ -82,4 +92,9 @@ resource "aws_security_group" "alb" {
   }
 
   depends_on = ["aws_internet_gateway.gw"]
+
+  tags {
+    Name   = "cp-haproxy-split"
+    Domain = "${var.haproxy_domain}"
+  }
 }

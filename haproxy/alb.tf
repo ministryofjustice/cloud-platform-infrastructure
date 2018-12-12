@@ -1,16 +1,17 @@
 resource "aws_lb" "haproxy_alb" {
-  name            = "haproxy-test-alb"
+  name            = "haproxy-alb-${random_id.id.hex}"
   internal        = false
   subnets         = ["${aws_subnet.haproxy_subnet.*.id}"]
   security_groups = ["${aws_security_group.alb.id}"]
 
   tags {
-    Name = "haproxy_alb"
+    Name   = "cp-haproxy-split"
+    Domain = "${var.haproxy_domain}"
   }
 }
 
 resource "aws_lb_target_group" "haproxy_alb_target" {
-  name     = "haproxy-test-alb-tg"
+  name     = "haproxy-alb-tg-${random_id.id.hex}"
   vpc_id   = "${aws_vpc.default.id}"
   protocol = "HTTP"
   port     = 80
@@ -27,7 +28,8 @@ resource "aws_lb_target_group" "haproxy_alb_target" {
   }
 
   tags {
-    Name = "haproxy_alb_tg"
+    Name   = "cp-haproxy-split"
+    Domain = "${var.haproxy_domain}"
   }
 }
 
@@ -35,7 +37,7 @@ resource "aws_lb_listener" "haproxy_alb_listener" {
   load_balancer_arn = "${aws_lb.haproxy_alb.arn}"
   port              = 443
   protocol          = "HTTPS"
-  certificate_arn   = "${aws_acm_certificate.cert.arn}"
+  certificate_arn   = "${aws_acm_certificate_validation.cert.certificate_arn}"
 
   default_action {
     target_group_arn = "${aws_lb_target_group.haproxy_alb_target.arn}"
