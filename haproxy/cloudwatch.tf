@@ -1,7 +1,7 @@
 module "alb_alarms" {
   source                         = "git::https://github.com/cloudposse/terraform-aws-alb-target-group-cloudwatch-sns-alarms.git?ref=0.5.1"
   name                           = "haproxy-${random_id.id.hex}"
-  namespace                      = "cp-haproxy-"
+  namespace                      = "${var.haproxy_domain}"
   stage                          = "prod"
   alb_name                       = "${aws_lb.haproxy_alb.name}"
   alb_arn_suffix                 = "${aws_lb.haproxy_alb.arn_suffix}"
