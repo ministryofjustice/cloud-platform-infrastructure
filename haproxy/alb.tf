@@ -5,7 +5,8 @@ resource "aws_lb" "haproxy_alb" {
   security_groups = ["${aws_security_group.alb.id}"]
 
   tags {
-    Name = "haproxy_alb"
+    Name   = "cp-haproxy-split"
+    Domain = "${var.haproxy_domain}"
   }
 }
 
@@ -27,7 +28,8 @@ resource "aws_lb_target_group" "haproxy_alb_target" {
   }
 
   tags {
-    Name = "haproxy_alb_tg"
+    Name   = "cp-haproxy-split"
+    Domain = "${var.haproxy_domain}"
   }
 }
 

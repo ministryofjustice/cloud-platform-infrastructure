@@ -41,6 +41,7 @@ resource "aws_instance" "haproxy_node" {
   key_name  = "${aws_key_pair.haproxy_key_pair.key_name}"
 
   tags {
-    Name = "haproxy-${var.haproxy_domain}-${random_id.id.hex}-${count.index}"
+    Name   = "haproxy-${var.haproxy_domain}-${random_id.id.hex}-${count.index}"
+    Domain = "${var.haproxy_domain}"
   }
 }
