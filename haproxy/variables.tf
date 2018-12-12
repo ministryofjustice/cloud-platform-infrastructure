@@ -58,3 +58,8 @@ variable "cidr_block" {
 variable "dns_ip" {
   default = "100.127.0.2"
 }
+
+variable "sns_arns" {
+  type    = "list"
+  default = []
+}
