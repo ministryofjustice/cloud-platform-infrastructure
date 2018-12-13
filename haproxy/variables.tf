@@ -63,3 +63,7 @@ variable "sns_arns" {
   type    = "list"
   default = []
 }
+
+variable "manage_alias" {
+  default = false
+}
