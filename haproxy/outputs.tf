@@ -7,7 +7,7 @@ output "alb-dns" {
 }
 
 output "haproxy-dns" {
-  value = "${aws_route53_record.www.name}"
+  value = "${var.haproxy_domain}"
 }
 
 output "public-ips" {
