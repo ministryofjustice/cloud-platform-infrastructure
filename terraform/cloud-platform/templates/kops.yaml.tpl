@@ -220,6 +220,8 @@ spec:
   iam:
     allowContainerRegistry: true
     legacy: false
+  kubelet:
+    anonymousAuth: false
   kubeAPIServer:
     oidcClientID: ${oidc_client_id}
     oidcIssuerURL: ${oidc_issuer_url}
