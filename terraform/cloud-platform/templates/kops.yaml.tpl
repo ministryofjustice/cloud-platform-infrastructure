@@ -319,7 +319,7 @@ spec:
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
-    is-production: true
+    is-production: "true"
     role: master
     owner: cloud-platform:platforms@digital.justice.gov.uk
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
@@ -341,12 +341,12 @@ spec:
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
-  nodeLabels: 
+  nodeLabels:
     kops.k8s.io/instancegroup: master-eu-west-1b
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
-    is-production: true
+    is-production: "true"
     role: master
     owner: cloud-platform:platforms@digital.justice.gov.uk
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
@@ -373,7 +373,7 @@ spec:
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
-    is-production: true
+    is-production: "true"
     role: master
     owner: cloud-platform:platforms@digital.justice.gov.uk
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
@@ -400,7 +400,7 @@ spec:
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
-    is-production: true
+    is-production: "true"
     role: node
     owner: cloud-platform:platforms@digital.justice.gov.uk
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
