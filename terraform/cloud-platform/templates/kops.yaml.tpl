@@ -222,6 +222,7 @@ spec:
     legacy: false
   kubelet:
     anonymousAuth: false
+    readOnlyPort: 0
   kubeAPIServer:
     oidcClientID: ${oidc_client_id}
     oidcIssuerURL: ${oidc_issuer_url}
