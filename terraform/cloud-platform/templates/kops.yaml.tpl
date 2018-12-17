@@ -249,7 +249,7 @@ spec:
     - PodSecurityPolicy
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.10.3
+  kubernetesVersion: 1.10.11
   masterPublicName: api.${cluster_domain_name}
   networkCIDR: ${network_cidr_block}
   networkID: ${network_id}
@@ -312,7 +312,7 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-1a
 spec:
-  image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
@@ -339,7 +339,7 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-1b
 spec:
-  image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
@@ -366,7 +366,7 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-1c
 spec:
-  image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
@@ -393,8 +393,8 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: nodes
 spec:
-  image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: c4.2xlarge
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  machineType: r5.xlarge
   maxSize: 6
   minSize: 6
   nodeLabels:
