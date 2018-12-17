@@ -164,7 +164,7 @@ resource "aws_cloudwatch_event_rule" "main" {
 resource "aws_cloudwatch_event_target" "main" {
   rule      = "${aws_cloudwatch_event_rule.main.name}"
   target_id = "send-to-sns"
-  arn       = "${data.aws_sns_topic.main.arn}"
+  arn       = "${aws_sns_topic.GuardDuty-notifications.arn}"
 
   input_transformer = {
     input_paths {
@@ -178,17 +178,13 @@ resource "aws_cloudwatch_event_target" "main" {
 # -----------------------------------------------------------
 # set up AWS sns topic and subscription
 # -----------------------------------------------------------
- 
-data "aws_sns_topic" "main" {
-   name = "${var.sns_topic_name}"
- }
 
 resource "aws_sns_topic" "GuardDuty-notifications" {
   name = "GuardDuty-notifications"
 }
 
 resource "aws_sns_topic_subscription" "GuardDuty-notifications_sns_subscription" {
-  topic_arn = "${var.topic_arn}"
+  topic_arn = "${aws_sns_topic.GuardDuty-notifications.arn}"
   protocol  = "https"
   endpoint  = "${var.endpoint}"
   endpoint_auto_confirms = true

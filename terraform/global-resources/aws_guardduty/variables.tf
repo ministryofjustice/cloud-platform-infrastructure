@@ -29,7 +29,3 @@ variable "tags" {
   }
 }
 
-variable "sns_topic_name" {
-  type        = "string"
-  description = "GuardDuty-notifications"
-}
