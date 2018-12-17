@@ -394,7 +394,7 @@ metadata:
   name: nodes
 spec:
   image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
-  machineType: c4.2xlarge
+  machineType: r5.xlarge
   maxSize: 6
   minSize: 6
   nodeLabels:
