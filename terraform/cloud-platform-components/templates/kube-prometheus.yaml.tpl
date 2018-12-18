@@ -1,10 +1,31 @@
 # exporter-node configuration
 deployExporterNode: true
 
+exporter-node:
+  image:
+    repository: quay.io/prometheus/node-exporter
+    tag: v0.17.0
+
+deployKubeState: true
+
+exporter-kube-state:
+  kube_state_metrics:
+    image:
+      repository: gcr.io/google_containers/kube-state-metrics
+      tag: v1.4.0
+  addon_resizer:
+    image:
+      repository: gcr.io/google_containers/addon-resizer
+      tag: 1.8.4
+
 # Grafana
 deployGrafana: true
 
 grafana:
+  image:
+    repository: grafana/grafana
+    tag: 5.4.2
+
   auth:
     anonymous:
       enabled: "false"
@@ -117,7 +138,7 @@ alertmanager:
   ##
   image:
     repository: quay.io/prometheus/alertmanager
-    tag: v0.14.0
+    tag: v0.15.3
 
   ingress:
     ## If true, Alertmanager Ingress will be created
@@ -252,7 +273,7 @@ prometheus:
   ##
   image:
     repository: quay.io/prometheus/prometheus
-    tag: v2.2.1
+    tag: v2.6.0
 
   ingress:
     ## If true, Prometheus Ingress will be created
@@ -337,7 +358,12 @@ prometheus:
   ## 2. If `matchExpressions` is used `rules.additionalLabels` must contain at least one label
   ##    from `matchExpressions` in order to be matched by Prometheus
   ## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels
-  rulesSelector: {}
+  rulesSelector:
+    any: true
+
+  ruleNamespaceSelector:
+    any: true
+
    # rulesSelector: {
    #   matchExpressions: [{key: prometheus, operator: In, values: [example-rules, example-rules-2]}]
    # }
