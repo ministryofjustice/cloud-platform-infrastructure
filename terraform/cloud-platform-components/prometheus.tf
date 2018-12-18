@@ -15,12 +15,21 @@ resource "kubernetes_storage_class" "prometheus_storage" {
   }
 }
 
+data "template_file" "prometheus_operator" {
+  template = "${file("${path.module}/templates/prometheus-operator.yaml.tpl")}"
+  vars     = {}
+}
+
 resource "helm_release" "prometheus_operator" {
   name          = "prometheus-operator"
   chart         = "prometheus-operator"
   repository    = "${helm_repository.coreos.metadata.0.name}"
   namespace     = "monitoring"
   recreate_pods = "true"
+
+  values = [
+    "${data.template_file.prometheus_operator.rendered}",
+  ]
 
   depends_on = [
     "null_resource.deploy",

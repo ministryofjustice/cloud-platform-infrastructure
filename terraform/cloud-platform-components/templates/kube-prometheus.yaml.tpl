@@ -1,10 +1,31 @@
 # exporter-node configuration
 deployExporterNode: true
 
+exporter-node:
+  image:
+    repository: quay.io/prometheus/node-exporter
+    tag: v0.17.0
+
+deployKubeState: true
+
+exporter-kube-state:
+  kube_state_metrics:
+    image:
+      repository: gcr.io/google_containers/kube-state-metrics
+      tag: v1.4.0
+  addon_resizer:
+    image:
+      repository: gcr.io/google_containers/addon-resizer
+      tag: 1.8.4
+
 # Grafana
 deployGrafana: true
 
 grafana:
+  image:
+    repository: grafana/grafana
+    tag: 5.4.2
+
   auth:
     anonymous:
       enabled: "false"
