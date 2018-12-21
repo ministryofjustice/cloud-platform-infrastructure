@@ -12,15 +12,10 @@ provider "aws" {
   profile = "moj-pi"
 }
 
-provider "kubernetes" {
-  version     = "~> 1.3"
-  config_path = "~/.kube/config"
-}
+provider "kubernetes" {}
 
 provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config"
-  }
+  kubernetes {}
 }
 
 data "terraform_remote_state" "cluster" {
