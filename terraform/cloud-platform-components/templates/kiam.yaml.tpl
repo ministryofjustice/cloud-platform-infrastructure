@@ -35,6 +35,8 @@ agent:
     key: ${ agent_key }
 
 server:
+  useHostNetwork: true
+
   image:
     tag: ${ kiam_version }
 
