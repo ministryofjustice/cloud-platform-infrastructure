@@ -177,3 +177,14 @@ resource "kubernetes_service" "agent-metrics" {
     }
   }
 }
+
+resource "null_resource" "kiam_servicemonitor" {
+  provisioner "local-exec" {
+    command = "kubectl apply -f ${path.module}/resources/kiam-servicemonitor.yaml"
+  }
+
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete -f ${path.module}/resources/kiam-servicemonitor.yaml"
+  }
+}
