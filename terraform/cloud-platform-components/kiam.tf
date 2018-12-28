@@ -41,8 +41,8 @@ resource "tls_locally_signed_cert" "agent" {
   ca_private_key_pem = "${tls_private_key.ca.private_key_pem}"
   ca_cert_pem        = "${tls_self_signed_cert.ca.cert_pem}"
 
-  validity_period_hours = 87600 // 1 year
-  early_renewal_hours   = 720   // 1 month
+  validity_period_hours = 8760 // 1 year
+  early_renewal_hours   = 720  // 1 month
 
   allowed_uses = [
     "key_encipherment",
@@ -80,8 +80,8 @@ resource "tls_locally_signed_cert" "server" {
   ca_private_key_pem = "${tls_private_key.ca.private_key_pem}"
   ca_cert_pem        = "${tls_self_signed_cert.ca.cert_pem}"
 
-  validity_period_hours = 87600 // 1 year
-  early_renewal_hours   = 720   // 1 month
+  validity_period_hours = 8760 // 1 year
+  early_renewal_hours   = 720  // 1 month
 
   allowed_uses = [
     "key_encipherment",
