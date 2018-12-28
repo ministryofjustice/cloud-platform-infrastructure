@@ -5,48 +5,38 @@
 Example of IAM policy for a user application:
 
 ```hcl
-data "aws_caller_identity" "current" {}
+// This is the kubernetes role that node hosts are assigned.
+data "aws_iam_role" "nodes" {
+  name = "nodes.${data.terraform_remote_state.cluster.cluster_domain_name}"
+}
+
+data "aws_iam_policy_document" "app_assume" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["${data.aws_iam_role.nodes.arn}"]
+    }
+  }
+}
 
 resource "aws_iam_role" "app" {
-  name = "app_role"
-  path = "/"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "AWS": [
-          "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/nodes.${data.terraform_remote_state.cluster.cluster_domain_name}"
-        ]
-      },
-      "Effect": "Allow"
-    }
-  ]
+  name               = "app.${data.terraform_remote_state.cluster.cluster_domain_name}"
+  assume_role_policy = "${data.aws_iam_policy_document.app_assume.json}"
 }
-EOF
+
+data "aws_iam_policy_document" "app" {
+  statement {
+    actions   = ["ec2:DescribeInstances"]
+    resources = ["*"]
+  }
 }
 
 resource "aws_iam_role_policy" "app" {
-  name = "policy"
-  role = "${aws_iam_role.app.id}"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "ec2:DescribeInstances"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-EOF
+  name   = "policy"
+  role   = "${aws_iam_role.app.id}"
+  policy = "${data.aws_iam_policy_document.app.json}"
 }
 ```
 
