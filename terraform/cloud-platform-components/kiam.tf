@@ -105,10 +105,11 @@ data "template_file" "kiam" {
 }
 
 resource "helm_release" "kiam" {
-  name      = "kiam"
-  chart     = "stable/kiam"
-  namespace = "kiam"
-  version   = "2.0.0-rc3"
+  name          = "kiam"
+  chart         = "stable/kiam"
+  namespace     = "kiam"
+  version       = "2.0.0-rc3"
+  recreate_pods = "true"
 
   values = [
     "${data.template_file.kiam.rendered}",
