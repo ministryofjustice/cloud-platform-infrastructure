@@ -51,10 +51,9 @@ server:
   ## Pod tolerations
   ## Ref https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
-  ## XXX OA:
+  tolerations: []
   # - key: node-role.kubernetes.io/master
   #   effect: NoSchedule
-  tolerations: []
 
   ## Additional container hostPath mounts
   ##

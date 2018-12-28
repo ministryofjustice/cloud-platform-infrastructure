@@ -104,6 +104,12 @@ data "template_file" "kiam" {
   }
 }
 
+resource "null_resource" "kube_system_kiam_annotation" {
+  provisioner "local-exec" {
+    command = "kubectl annotate --overwrite namespace kube-system 'iam.amazonaws.com/permitted=.*'"
+  }
+}
+
 resource "helm_release" "kiam" {
   name          = "kiam"
   chart         = "stable/kiam"
