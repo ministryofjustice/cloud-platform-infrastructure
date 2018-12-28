@@ -127,3 +127,53 @@ resource "helm_release" "kiam" {
     ignore_changes = ["keyring"]
   }
 }
+
+resource "kubernetes_service" "server-metrics" {
+  metadata {
+    name      = "kiam-server-metrics"
+    namespace = "kiam"
+
+    labels {
+      app       = "kiam"
+      component = "server-metrics"
+    }
+  }
+
+  spec {
+    selector {
+      component = "server"
+    }
+
+    port {
+      name        = "metrics"
+      port        = 9621
+      target_port = 9621
+      protocol    = "TCP"
+    }
+  }
+}
+
+resource "kubernetes_service" "agent-metrics" {
+  metadata {
+    name      = "kiam-agent-metrics"
+    namespace = "kiam"
+
+    labels {
+      app       = "kiam"
+      component = "agent-metrics"
+    }
+  }
+
+  spec {
+    selector {
+      component = "agent"
+    }
+
+    port {
+      name        = "metrics"
+      port        = 9620
+      target_port = 9620
+      protocol    = "TCP"
+    }
+  }
+}

@@ -69,3 +69,6 @@ server:
     ca: ${ ca }
     cert: ${ server_cert }
     key: ${ server_key }
+
+  prometheus:
+    port: 9621
