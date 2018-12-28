@@ -8,7 +8,6 @@ data "template_file" "kops" {
 
   vars {
     cluster_domain_name                  = "${local.cluster_base_domain_name}"
-    hosted_zone_id                       = "${module.cluster_dns.cluster_dns_zone_id}"
     kops_state_store                     = "${data.terraform_remote_state.global.kops_state_store}"
     oidc_issuer_url                      = "${local.oidc_issuer_url}"
     oidc_client_id                       = "${auth0_client.kubernetes.client_id}"
