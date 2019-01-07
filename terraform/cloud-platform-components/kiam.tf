@@ -129,6 +129,8 @@ resource "helm_release" "kiam" {
 }
 
 resource "kubernetes_service" "server-metrics" {
+  depends_on = ["helm_release.kiam"]
+
   metadata {
     name      = "kiam-server-metrics"
     namespace = "kiam"
@@ -154,6 +156,8 @@ resource "kubernetes_service" "server-metrics" {
 }
 
 resource "kubernetes_service" "agent-metrics" {
+  depends_on = ["helm_release.kiam"]
+
   metadata {
     name      = "kiam-agent-metrics"
     namespace = "kiam"
@@ -179,6 +183,8 @@ resource "kubernetes_service" "agent-metrics" {
 }
 
 resource "null_resource" "kiam_servicemonitor" {
+  depends_on = ["helm_release.kiam", "helm_release.kube_prometheus"]
+
   provisioner "local-exec" {
     command = "kubectl apply -f ${path.module}/resources/kiam-servicemonitor.yaml"
   }
