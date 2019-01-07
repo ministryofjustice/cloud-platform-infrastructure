@@ -28,4 +28,3 @@ variable "tags" {
     "client"  = "Internal"
   }
 }
-

@@ -36,11 +36,11 @@ resource "aws_s3_bucket" "security" {
 }
 
 resource "aws_s3_bucket_object" "ip_list" {
-  key        = "${var.guardduty_assets}/iplist.txt"
-  bucket     = "${aws_s3_bucket.security.id}"
-  source     = "${path.module}/iplist.txt"
+  key          = "${var.guardduty_assets}/iplist.txt"
+  bucket       = "${aws_s3_bucket.security.id}"
+  source       = "${path.module}/iplist.txt"
   content_type = "text/plain"
-  etag   = "${md5(file("${path.module}/iplist.txt"))}"
+  etag         = "${md5(file("${path.module}/iplist.txt"))}"
 }
 
 # -----------------------------------------------------------
@@ -97,11 +97,6 @@ resource "aws_iam_policy" "use_security_bucket" {
 {
   "Version": "2012-10-17",
   "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "s3:ListAllMyBuckets",
-      "Resource": "arn:aws:s3:::*"
-    },
     {
       "Effect": "Allow",
       "Action": "s3:*",
@@ -166,13 +161,14 @@ resource "aws_cloudwatch_event_target" "main" {
   target_id = "send-to-sns"
   arn       = "${aws_sns_topic.GuardDuty-notifications.arn}"
 
-  input_transformer = {
-    input_paths {
-      title = "$.detail.title"
-    }
-
-    input_template = "\"GuardDuty finding: <title>\""
-  }
+  #
+  #  input_transformer = {
+  #    input_paths {
+  #      title = "$.detail.title"
+  #    }
+  #
+  #    input_template = "\"GuardDuty finding: <title>\""
+  #  }
 }
 
 # -----------------------------------------------------------
@@ -184,8 +180,8 @@ resource "aws_sns_topic" "GuardDuty-notifications" {
 }
 
 resource "aws_sns_topic_subscription" "GuardDuty-notifications_sns_subscription" {
-  topic_arn = "${aws_sns_topic.GuardDuty-notifications.arn}"
-  protocol  = "https"
-  endpoint  = "${var.endpoint}"
+  topic_arn              = "${aws_sns_topic.GuardDuty-notifications.arn}"
+  protocol               = "https"
+  endpoint               = "${var.endpoint}"
   endpoint_auto_confirms = true
 }
