@@ -11,16 +11,8 @@ resource "aws_guardduty_detector" "guardduty" {
   enable = true
 }
 
-#resource "aws_guardduty_ipset" "IPSet" {
-#  activate    = true
-#  detector_id = "${aws_guardduty_detector.guardduty.id}"
-#  format      = "TXT"
-#  location    = "s3://${aws_s3_bucket_object.ip_list.bucket}/${aws_s3_bucket_object.ip_list.key}"
-#  name        = "IPSet"
-#}
-
 # -----------------------------------------------------------
-# set up S3 bucket to hold things of interest
+# set up S3 bucket
 # -----------------------------------------------------------
 
 resource "aws_s3_bucket" "security" {
@@ -44,7 +36,7 @@ resource "aws_s3_bucket_object" "ip_list" {
 }
 
 # -----------------------------------------------------------
-# set up group with appropriate policy
+# set up iam group with appropriate iam policy
 # -----------------------------------------------------------
 
 resource "aws_iam_policy" "enable_guardduty" {
@@ -160,15 +152,6 @@ resource "aws_cloudwatch_event_target" "main" {
   rule      = "${aws_cloudwatch_event_rule.main.name}"
   target_id = "send-to-sns"
   arn       = "${aws_sns_topic.GuardDuty-notifications.arn}"
-
-  #
-  #  input_transformer = {
-  #    input_paths {
-  #      title = "$.detail.title"
-  #    }
-  #
-  #    input_template = "\"GuardDuty finding: <title>\""
-  #  }
 }
 
 # -----------------------------------------------------------

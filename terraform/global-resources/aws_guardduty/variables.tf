@@ -23,8 +23,8 @@ variable "group_name" {
 
 variable "tags" {
   default = {
-    "owner"   = "rahook"
-    "project" = "guardduty-test"
+    "owner"   = "moj-platform"
+    "project" = "cp-guardduty"
     "client"  = "Internal"
   }
 }
