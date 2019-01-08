@@ -1,10 +1,13 @@
-variable "aws_account_id" {}
-variable "aws_profile" {}
+variable "aws_master_account_id" {}
+variable "aws_master_profile" {}
+variable "aws_member_account_id" {}
+variable "aws_member_profile" {}
 variable "aws_region" {}
 variable "integration_key" {}
 variable "endpoint" {}
 variable "topic_arn" {}
-
+variable "member_email" {}
+ 
 variable "users" {
   type = "list"
 }

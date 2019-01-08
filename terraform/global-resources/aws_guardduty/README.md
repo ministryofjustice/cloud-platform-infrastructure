@@ -17,7 +17,7 @@ It also monitors AWS account access behavior for signs of compromise, such as un
 
 GuardDuty informs you of the status of your AWS environment by producing security findings that you can be viewed in the GuardDuty console or through Amazon CloudWatch events.
 
-Our setup at the moment is a very basic set up of GuardDuty in a single AWS account/Region. In this case [moj-cloud-platform](https://moj-cloud-platform-test-2.eu.auth0.com/samlp/WAgw4FygIHs1Vny6whAjfnem6BiUr4qv). 
+Our setup at the moment is a very basic set up of GuardDuty in a single AWS Region. There is at present one master account, [moj-cloud-platform](https://moj-cloud-platform-test-2.eu.auth0.com/samlp/WAgw4FygIHs1Vny6whAjfnem6BiUr4qv) controlling one member account [moj-platforms-integration](https://mojds-platforms-integration.signin.aws.amazon.com/console). 
 
 Any findings in GuardDuty are sent to Cloudwatch event rules that then integrate with AWS SNS (Simple Notification Service) topics and subscriptions. These are alerted to Pagerduty (presently 'in office hours') and then onto slack channels (at the moment #lower-priority-alarms)
 
@@ -47,13 +47,14 @@ Please also see [terraform aws GuardDuty detector ](https://www.terraform.io/doc
 
 'main.tf contains code for the following config:
 
-* Enabling and turning GuardDuty on.
+* Enabling and turning GuardDuty on for the master account.
+* Enabling and turning GuardDuty on for the member account.
 * Setting up the S3 bucket and then adding trusted IP ranges etc to its contents.
-* Setting up the iam group with the appropriate iam policies, allowing the setup, configuration and use of GuardDuty. Also allowing full access to the contents of the security bucket.
-* Adding chosen iam users to the iam groups so that they have admin permissions to set up and use GuardDuty..
-* Setting up AWS Cloudwatch Event rules to integrate with 'AWS GuardDuty Findings' and config to alert to the relevant AWS sns topic (and thence onto pagerduty)
+* On the master account - setting up the iam group with the appropriate iam policies, allowing the setup, configuration and use of GuardDuty. Also allowing full access to the contents of the security bucket.
+* On the master account - Adding chosen iam users to the iam groups so that they have admin permissions to set up and use GuardDuty..
+* On the master account -Setting up AWS Cloudwatch Event rules to integrate with 'AWS GuardDuty Findings' and config to alert to the relevant AWS sns topic (and thence onto pagerduty)
 .Also to set up an event pattern (json file).
-* Setting up the relevant GuardDuty AWS SNS (Simple Notification Service) topic and subscription.
+* On the master account Setting up the relevant GuardDuty AWS SNS (Simple Notification Service) topic and subscription.
 
 #### Terraform Variables File
 

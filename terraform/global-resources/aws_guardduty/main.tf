@@ -1,14 +1,47 @@
 provider "aws" {
   region  = "${var.aws_region}"
-  profile = "${var.aws_profile}"
+  profile = "${var.aws_master_profile}"
+}
+
+# -----------------------------------------------------------
+# placeholder for membership account provider (has to be 'owned by master account'
+# -----------------------------------------------------------
+
+provider "aws.dev" {
+  region = "${var.aws_region}"
+  profile = "${var.aws_member_profile}"
 }
 
 # -----------------------------------------------------------
 # enable guard duty
 # -----------------------------------------------------------
 
-resource "aws_guardduty_detector" "guardduty" {
+resource "aws_guardduty_detector" "master" {
   enable = true
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
+}
+
+# -----------------------------------------------------------
+# placeholder for membership account GuardDuty detector (has to be 'owned by master account'
+# -----------------------------------------------------------
+
+resource "aws_guardduty_detector" "member" {
+  provider = "aws.dev"
+
+  enable = true
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
+}
+
+# -----------------------------------------------------------
+# placeholder for membership account GuardDuty member (has to be 'owned by master account'
+# -----------------------------------------------------------
+
+resource "aws_guardduty_member" "member" {
+  account_id         = "${aws_guardduty_detector.member.account_id}"
+  detector_id        = "${aws_guardduty_detector.master.id}"
+  email              = "${var.member_email}"
+  invite             = true
+  invitation_message = "please accept guardduty invitation"
 }
 
 # -----------------------------------------------------------
@@ -60,7 +93,7 @@ resource "aws_iam_policy" "enable_guardduty" {
             "Action": [
                 "iam:CreateServiceLinkedRole"
             ],
-            "Resource": "arn:aws:iam::${var.aws_account_id}:role/aws-service-role/guardduty.amazonaws.com/AWSServiceRoleForAmazonGuardDuty",
+            "Resource": "arn:aws:iam::${var.aws_master_account_id}:role/aws-service-role/guardduty.amazonaws.com/AWSServiceRoleForAmazonGuardDuty",
             "Condition": {
                 "StringLike": {
                     "iam:AWSServiceName": "guardduty.amazonaws.com"
@@ -73,7 +106,7 @@ resource "aws_iam_policy" "enable_guardduty" {
                 "iam:PutRolePolicy",
                 "iam:DeleteRolePolicy"
             ],
-            "Resource": "arn:aws:iam::${var.aws_account_id}:role/aws-service-role/guardduty.amazonaws.com/AWSServiceRoleForAmazonGuardDuty"
+            "Resource": "arn:aws:iam::${var.aws_master_account_id}:role/aws-service-role/guardduty.amazonaws.com/AWSServiceRoleForAmazonGuardDuty"
         }
     ]
 }
