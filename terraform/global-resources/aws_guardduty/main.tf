@@ -8,7 +8,7 @@ provider "aws" {
 # -----------------------------------------------------------
 
 provider "aws.dev" {
-  region = "${var.aws_region}"
+  region  = "${var.aws_region}"
   profile = "${var.aws_member_profile}"
 }
 
@@ -17,7 +17,7 @@ provider "aws.dev" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "master" {
-  enable = true
+  enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
 }
 
@@ -28,7 +28,7 @@ resource "aws_guardduty_detector" "master" {
 resource "aws_guardduty_detector" "member" {
   provider = "aws.dev"
 
-  enable = true
+  enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
 }
 

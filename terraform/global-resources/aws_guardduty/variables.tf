@@ -7,7 +7,7 @@ variable "integration_key" {}
 variable "endpoint" {}
 variable "topic_arn" {}
 variable "member_email" {}
- 
+
 variable "users" {
   type = "list"
 }
