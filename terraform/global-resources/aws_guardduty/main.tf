@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 # -----------------------------------------------------------
-# placeholder for membership account provider (has to be 'owned by master account'
+# membership account provider
 # -----------------------------------------------------------
 
 provider "aws.dev" {
@@ -22,7 +22,7 @@ resource "aws_guardduty_detector" "master" {
 }
 
 # -----------------------------------------------------------
-# placeholder for membership account GuardDuty detector (has to be 'owned by master account'
+# membership account GuardDuty detector
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member" {
@@ -33,7 +33,7 @@ resource "aws_guardduty_detector" "member" {
 }
 
 # -----------------------------------------------------------
-# placeholder for membership account GuardDuty member (has to be 'owned by master account'
+# membership account GuardDuty member
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member" {
