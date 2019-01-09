@@ -4,44 +4,12 @@ provider "aws" {
 }
 
 # -----------------------------------------------------------
-# membership account provider
-# -----------------------------------------------------------
-
-provider "aws.dev" {
-  region  = "${var.aws_region}"
-  profile = "${var.aws_member_profile}"
-}
-
-# -----------------------------------------------------------
 # enable guard duty
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "master" {
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
-}
-
-# -----------------------------------------------------------
-# membership account GuardDuty detector
-# -----------------------------------------------------------
-
-resource "aws_guardduty_detector" "member" {
-  provider = "aws.dev"
-
-  enable                       = true
-  finding_publishing_frequency = "FIFTEEN_MINUTES"
-}
-
-# -----------------------------------------------------------
-# membership account GuardDuty member
-# -----------------------------------------------------------
-
-resource "aws_guardduty_member" "member" {
-  account_id         = "${aws_guardduty_detector.member.account_id}"
-  detector_id        = "${aws_guardduty_detector.master.id}"
-  email              = "${var.member_email}"
-  invite             = true
-  invitation_message = "please accept guardduty invitation"
 }
 
 # -----------------------------------------------------------
@@ -200,4 +168,132 @@ resource "aws_sns_topic_subscription" "GuardDuty-notifications_sns_subscription"
   protocol               = "https"
   endpoint               = "${var.endpoint}"
   endpoint_auto_confirms = true
+}
+
+# -----------------------------------------------------------
+# membership account provider
+# -----------------------------------------------------------
+
+provider "aws.dev" {
+  region  = "${var.aws_region}"
+  profile = "${var.aws_member_profile}"
+}
+
+# -----------------------------------------------------------
+# membership account GuardDuty detector
+# -----------------------------------------------------------
+
+resource "aws_guardduty_detector" "member" {
+  provider = "aws.dev"
+
+  enable                       = true
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
+}
+
+# -----------------------------------------------------------
+# membership account GuardDuty member
+# -----------------------------------------------------------
+
+resource "aws_guardduty_member" "member" {
+  account_id         = "${aws_guardduty_detector.member.account_id}"
+  detector_id        = "${aws_guardduty_detector.master.id}"
+  email              = "${var.member_email}"
+  invite             = true
+  invitation_message = "please accept guardduty invitation"
+}
+
+# -----------------------------------------------------------
+# membership1 account provider
+# -----------------------------------------------------------
+
+provider "aws.dev1" {
+  region  = "${var.aws_region}"
+  profile = "${var.aws_member1_profile}"
+}
+
+# -----------------------------------------------------------
+# membership1 account GuardDuty detector
+# -----------------------------------------------------------
+
+resource "aws_guardduty_detector" "member1" {
+  provider = "aws.dev1"
+
+  enable                       = true
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
+}
+
+# -----------------------------------------------------------
+# membership1 account GuardDuty member
+# -----------------------------------------------------------
+
+resource "aws_guardduty_member" "member1" {
+  account_id         = "${aws_guardduty_detector.member1.account_id}"
+  detector_id        = "${aws_guardduty_detector.master.id}"
+  email              = "${var.member1_email}"
+  invite             = true
+  invitation_message = "please accept guardduty invitation"
+}
+
+# -----------------------------------------------------------
+# membership2 account provider
+# -----------------------------------------------------------
+
+provider "aws.dev2" {
+  region  = "${var.aws_region}"
+  profile = "${var.aws_member2_profile}"
+}
+
+# -----------------------------------------------------------
+# membership2 account GuardDuty detector
+# -----------------------------------------------------------
+
+resource "aws_guardduty_detector" "member2" {
+  provider = "aws.dev2"
+
+  enable                       = true
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
+}
+
+# -----------------------------------------------------------
+# membership2 account GuardDuty member
+# -----------------------------------------------------------
+
+resource "aws_guardduty_member" "member2" {
+  account_id         = "${aws_guardduty_detector.member2.account_id}"
+  detector_id        = "${aws_guardduty_detector.master.id}"
+  email              = "${var.member2_email}"
+  invite             = true
+  invitation_message = "please accept guardduty invitation"
+}
+
+# -----------------------------------------------------------
+# membership3 account provider
+# -----------------------------------------------------------
+
+provider "aws.dev3" {
+  region  = "${var.aws_region}"
+  profile = "${var.aws_member3_profile}"
+}
+
+# -----------------------------------------------------------
+# membership3 account GuardDuty detector
+# -----------------------------------------------------------
+
+resource "aws_guardduty_detector" "member3" {
+  provider = "aws.dev3"
+
+  enable                       = true
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
+}
+
+# -----------------------------------------------------------
+# membership2 account GuardDuty member
+# -----------------------------------------------------------
+
+resource "aws_guardduty_member" "member3" {
+  account_id         = "${aws_guardduty_detector.member3.account_id}"
+  detector_id        = "${aws_guardduty_detector.master.id}"
+  email              = "${var.member3_email}"
+  invite             = true
+  invitation_message = "please accept guardduty invitation"
 }

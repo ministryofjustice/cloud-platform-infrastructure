@@ -1,12 +1,26 @@
-variable "aws_master_account_id" {}
-variable "aws_master_profile" {}
-variable "aws_member_account_id" {}
-variable "aws_member_profile" {}
 variable "aws_region" {}
 variable "integration_key" {}
 variable "endpoint" {}
 variable "topic_arn" {}
+
+variable "aws_master_account_id" {}
+variable "aws_master_profile" {}
+
+variable "aws_member_account_id" {}
+variable "aws_member_profile" {}
 variable "member_email" {}
+
+variable "aws_member1_account_id" {}
+variable "aws_member1_profile" {}
+variable "member1_email" {}
+
+variable "aws_member2_account_id" {}
+variable "aws_member2_profile" {}
+variable "member2_email" {}
+
+variable "aws_member3_account_id" {}
+variable "aws_member3_profile" {}
+variable "member3_email" {}
 
 variable "users" {
   type = "list"
