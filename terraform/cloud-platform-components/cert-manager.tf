@@ -1,11 +1,7 @@
-variable "cert-manager-ns" {
-  default = "cert-manager"
-}
-
 resource "helm_release" "cert-manager" {
   name      = "cert-manager"
   chart     = "stable/cert-manager"
-  namespace = "${var.cert-manager-ns}"
+  namespace = "cert-manager"
   version   = "v0.5.2"
 
   set {
@@ -15,7 +11,7 @@ resource "helm_release" "cert-manager" {
 
   set {
     name  = "ingressShim.defaultIssuerName"
-    value = "letsencrypt-staging"
+    value = "letsencrypt-production"
   }
 
   set {
@@ -23,14 +19,22 @@ resource "helm_release" "cert-manager" {
     value = "ClusterIssuer"
   }
 
-  set {
-    name  = "createCustomResource"
-    value = "false"
-  }
-
   depends_on = ["null_resource.deploy"]
 
   lifecycle {
     ignore_changes = ["keyring"]
+  }
+}
+
+resource "null_resource" "cert-manager-issuers" {
+  depends_on = ["helm_release.cert-manager"]
+
+  provisioner "local-exec" {
+    command = "kubectl apply -n cert-manager -f ${path.module}/resources/cert-manager/"
+  }
+
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete -n cert-manager -f ${path.module}/resources/cert-manager/"
   }
 }

@@ -50,12 +50,7 @@ Refreshing Terraform state in-memory prior to plan...
 ...
 ```
 
-For now, `cert-manager` requires an additional
-```
-kubectl apply -f resources/cert-manager/
-```
-
-All resources share a single S3 state bucket called `cloud-platform-terraform-state` located on the [aws-cloud-platform](https://moj-cloud-platform-test-2.eu.auth0.com/samlp/WAgw4FygIHs1Vny6whAjfnem6BiUr4qv) account. `tfstate` files however are seperated by `workspace_key_prefix` defined in each directories `main.tf` and `environment` defined by workspace. 
+All resources share a single S3 state bucket called `cloud-platform-terraform-state` located on the [aws-cloud-platform](https://moj-cloud-platform-test-2.eu.auth0.com/samlp/WAgw4FygIHs1Vny6whAjfnem6BiUr4qv) account. `tfstate` files however are seperated by `workspace_key_prefix` defined in each directories `main.tf` and `environment` defined by workspace.
 
 The s3 state store structure appears as follows:
 
