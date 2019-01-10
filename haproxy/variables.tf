@@ -67,3 +67,13 @@ variable "sns_arns" {
 variable "manage_alias" {
   default = false
 }
+
+variable "slack_webhook" {
+  default     = ""
+  description = "If defined, it will also send alarms to this slack webhook"
+}
+
+variable "slack_channel" {
+  default     = ""
+  description = "If defined, it will override the slack channel where alerts are sent"
+}
