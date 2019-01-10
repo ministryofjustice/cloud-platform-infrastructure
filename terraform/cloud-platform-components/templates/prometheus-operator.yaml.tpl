@@ -24,3 +24,40 @@ image:
   repository: quay.io/coreos/prometheus-operator
   tag: v0.26.0
   pullPolicy: IfNotPresent
+
+## If enabled, prometheus-operator will create a service for scraping kubelets
+##
+kubeletService:
+  enable: true
+  namespace: kube-system
+  name: kubelet
+
+## Node labels for prometheus-operator pod assignment
+##
+nodeSelector: {}
+
+## Tolerations for use with node taints
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: {}
+
+## If true, create & use RBAC resources
+##
+rbacEnable: true
+
+## If true, create Pod Security Policy resources
+pspEnable: true
+
+## Prometheus-operator resource limits & requests
+## Ref: https://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources: {}
+  # limits:
+  #   cpu: 200m
+  #   memory: 100Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 50Mi
+
+jobLabel: prometheus-operator
+
