@@ -11,7 +11,25 @@ spec:
   selector:
     app: wordpress
     tier: frontend
-  type: LoadBalancer
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: wordpress-ingress
+  namespace: starter-pack-apps
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    kubernetes.io/tls-acme: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  rules:
+  - host: wordpress.apps.cloud-platform-live-0.k8s.integration.dsd.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: wordpress
+          servicePort: 80
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
