@@ -2,9 +2,6 @@ locals {
   live_domain = "cloud-platform-live"
 
   allowed_live_ips = {
-    "54.229.250.233/32" = "test-1-a"
-    "54.229.139.68/32"  = "test-1-b"
-    "34.246.149.106/32" = "test-1-c"
     "52.17.133.167/32"  = "live-0-a"
     "34.247.134.240/32" = "live-0-b"
     "34.251.93.81/32"   = "live-0-c"
