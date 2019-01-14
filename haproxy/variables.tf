@@ -77,3 +77,28 @@ variable "slack_channel" {
   default     = ""
   description = "If defined, it will override the slack channel where alerts are sent"
 }
+
+variable "alarm_target_3xx_count_threshold" {
+  default     = "-1"
+  description = "Target's 3xx count. Set to -1 to disable."
+}
+
+variable "alarm_target_4xx_count_threshold" {
+  default     = "25"
+  description = "Target's 4xx count. Set to -1 to disable."
+}
+
+variable "alarm_target_5xx_count_threshold" {
+  default     = "25"
+  description = "Target's 5xx count. Set to -1 to disable."
+}
+
+variable "alarm_elb_5xx_count_threshold" {
+  default     = "25"
+  description = "ELB's 5xx count. Set to -1 to disable."
+}
+
+variable "alarm_target_response_time_threshold" {
+  default     = "2"
+  description = "Target's response time in seconds. Set to -1 to disable."
+}
