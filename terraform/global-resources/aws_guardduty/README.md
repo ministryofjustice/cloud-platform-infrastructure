@@ -17,7 +17,7 @@ It also monitors AWS account access behavior for signs of compromise, such as un
 
 GuardDuty informs you of the status of your AWS environment by producing security findings that you can be viewed in the GuardDuty console or through Amazon CloudWatch events.
 
-Our setup at the moment is a very basic set up of GuardDuty in a single AWS Region. There is at present one master account, [moj-cloud-platform](https://moj-cloud-platform-test-2.eu.auth0.com/samlp/WAgw4FygIHs1Vny6whAjfnem6BiUr4qv) controlling one member account [moj-platforms-integration](https://mojds-platforms-integration.signin.aws.amazon.com/console). 
+Our setup at the moment is a very basic set up of GuardDuty in a single AWS Region. There is at present one master account, [moj-cloud-platform](https://moj-cloud-platform-test-2.eu.auth0.com/samlp/WAgw4FygIHs1Vny6whAjfnem6BiUr4qv) controlling several member accounts.
 
 Any findings in GuardDuty are sent to Cloudwatch event rules that then integrate with AWS SNS (Simple Notification Service) topics and subscriptions. These are alerted to Pagerduty (presently 'in office hours') and then onto slack channels (at the moment #lower-priority-alarms)
 
@@ -25,7 +25,7 @@ Please see [AWS GuardDuty](https://docs.aws.amazon.com/guardduty/latest/ug/guard
 
 Also see here [Aws Cloudwatch Frequently Asked Questions](https://aws.amazon.com/guardduty/faqs/ where most general information regarding this service can be found)
 
-Consideration will have to be given as to whether GuardDuty is set up here in [moj-cloud-platform](https://moj-cloud-platform-test-2.eu.auth0.com/samlp/WAgw4FygIHs1Vny6whAjfnem6BiUr4qv) or whether it should be in the digital AWS route account. You will then be able to set up control of AWS subaccounts from here, [laa security](https://github.com/ministryofjustice/laa-aws-infrastructure/tree/master/security) is one such example of this
+Consideration will have to be given as to whether GuardDuty is set up here in [moj-cloud-platform](https://moj-cloud-platform-test-2.eu.auth0.com/samlp/WAgw4FygIHs1Vny6whAjfnem6BiUr4qv) or whether it should be in the digital AWS route account. You will then be able to set up control of AWS subaccounts from here.
 
 Please also see [terraform aws GuardDuty detector ](https://www.terraform.io/docs/providers/aws/r/guardduty_detector.html) regarding setting up the config (here) for terraform GuardDuty detector
 
@@ -61,13 +61,13 @@ Please also see [terraform aws GuardDuty detector ](https://www.terraform.io/doc
 'terraform.tfvars' contains code for the following config variables:
 
 * aws_region
-* aws_profile (set locally in ~/.aws/credentials)
-* aws_account_id (the id for the master aws account)
+* aws_profile for the master and member accounts (set locally in ~/.aws/credentials). This is set up using format "moj-[account] (see terraform.tfvars file)
+* aws_account_id (the id for the master and member aws accounts)
 * integration_key (the Amazon-GuardDuty service integration key configured in pagerduty to integrate with AWS Guardduty)  
 * users (admin aws iam  users)
 * topic_arn = "arn:aws:sns:eu-west-1:[aws-account-id]:GuardDuty-notifications" (this is how it will be configured as an aws sns (simple notification service) topic 
 * endpoint  = "https://events.pagerduty.com/integration/[pagerduty to AWS Guardduty integraion_key]/enqueue" this is required by the sns subscription endpoint configuration)
-
+* member_email (the email to which the initial invitation email(s) should be sent {from the master account} when setting up GuardDuty on the member account - this must match email used to set up the root account)
 #### AWS Cloudwatch Event Rules File
 
 'event-pattern.json'
@@ -88,13 +88,62 @@ At this point in time terraform is unable to update this list by 'terraform appl
 
 * Used to set up the terraform variables and defaults required by terraform 'main.tf'
 
+### 2 Adding a new member account
 
-### 2 Pagerduty to Slack integration
+* main.tf add the following (incrementing the member no as required):
 
-This is is also set up utilising terraform separatly config here:
+```
+# -----------------------------------------------------------
+# membership7 account provider
+# -----------------------------------------------------------
 
-* https://github.com/ministryofjustice/cloudplatforms-terraform-ops/blob/master/main.tf
-* https://github.com/ministryofjustice/cloudplatforms-terraform-ops/blob/master/services/amazon-guardduty-notifications/pagerduty.tf
+provider "aws.dev7" {
+  region  = "${var.aws_region}"
+  profile = "${var.aws_member7_profile}"
+}
+
+# -----------------------------------------------------------
+# membership7 account GuardDuty detector
+# -----------------------------------------------------------
+
+resource "aws_guardduty_detector" "member7" {
+  provider = "aws.dev7"
+
+  enable                       = true
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
+}
+
+# -----------------------------------------------------------
+# membership7 account GuardDuty member
+# -----------------------------------------------------------
+
+resource "aws_guardduty_member" "member7" {
+  account_id         = "${aws_guardduty_detector.member7.account_id}"
+  detector_id        = "${aws_guardduty_detector.master.id}"
+  email              = "${var.member7_email}"
+  invite             = true
+  invitation_message = "please accept guardduty invitation"
+}
+```
+
+* variable.tf add the following (incrementing the memmber no as required):
+
+```
+variable "aws_member7_account_id" {}
+variable "aws_member7_profile" {}
+variable "member7_email" {}
+```
+
+* terraform.tfvars add the following (incrementing the member no as required):
+
+```
+aws_member7_profile = "moj-[account name]"
+aws_member7_account_id = "[aws account id]"
+member7_email = "[root email address at time of account creation]"
+```
+
+* In AWS member account Dashboard go to GuardDuty link > Accounts > Accept the invite
+This will add GuardDuty in the member account. Fidings will now also appear in the GuardDuty master accounty.
 
 ### 3 Applying the terraform changes
 
@@ -103,3 +152,11 @@ terraform init
 terraform plan
 terraform apply (answer 'yes' to actually update remote config)
 ```
+
+### 4 Pagerduty to Slack integration
+
+This is is also set up utilising terraform separatly config here:
+
+* https://github.com/ministryofjustice/cloudplatforms-terraform-ops/blob/master/main.tf
+* https://github.com/ministryofjustice/cloudplatforms-terraform-ops/blob/master/services/amazon-guardduty-notifications/pagerduty.tf
+
