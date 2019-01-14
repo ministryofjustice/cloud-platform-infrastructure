@@ -191,11 +191,11 @@ When you do this you have the option of adding a reviewer. It's good to share yo
 
 ### Kops
 
-The `kops/` directory contains the cluster specification, including an additional IAM policy to allow Route53 management, and config for OIDC authentication and RBAC. To make changes, edit `kops/sandboc_cluster.yaml` and:
+The `kops/` directory contains the cluster specification, including an additional IAM policy to allow Route53 management, and config for OIDC authentication and RBAC. To make changes, edit `kops/<clusterName e.g. cloud-platform-test-3>.yaml` and:
 
 ```
 $ cd kops
-$ kops replace -f test_cluster.yaml
+$ kops replace -f clusterName.yaml
 $ kops cluster update
 $ kops cluster update --yes
 ```
