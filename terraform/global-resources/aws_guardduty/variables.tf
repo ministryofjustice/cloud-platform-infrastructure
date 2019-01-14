@@ -22,6 +22,10 @@ variable "aws_member3_account_id" {}
 variable "aws_member3_profile" {}
 variable "member3_email" {}
 
+variable "aws_member4_account_id" {}
+variable "aws_member4_profile" {}
+variable "member4_email" {}
+
 variable "users" {
   type = "list"
 }
