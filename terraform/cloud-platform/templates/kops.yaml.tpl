@@ -170,29 +170,6 @@ spec:
   api:
     loadBalancer:
       type: Public
-  additionalPolicies:
-    node: |
-      [
-        {
-          "Effect": "Allow",
-          "Action": [
-            "route53:ChangeResourceRecordSets"
-          ],
-          "Resource": [
-            "arn:aws:route53:::hostedzone/${hosted_zone_id}"
-          ]
-        },
-        {
-          "Effect": "Allow",
-          "Action": [
-            "route53:ListHostedZones",
-            "route53:ListResourceRecordSets"
-          ],
-          "Resource": [
-            "*"
-          ]
-        }
-      ]
   authorization:
     rbac: {}
   channel: stable
