@@ -1,4 +1,4 @@
-provider "aws" {
+provider "aws.master" {
   region  = "${var.aws_region}"
   profile = "${var.aws_master_profile}"
 }
@@ -8,6 +8,7 @@ provider "aws" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "master" {
+  provider                     = "aws.master"
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
 }
@@ -31,9 +32,9 @@ resource "aws_s3_bucket" "security" {
 resource "aws_s3_bucket_object" "ip_list" {
   key          = "${var.guardduty_assets}/iplist.txt"
   bucket       = "${aws_s3_bucket.security.id}"
-  source       = "${path.module}/iplist.txt"
+  source       = "${path.module}/resources/iplist.txt"
   content_type = "text/plain"
-  etag         = "${md5(file("${path.module}/iplist.txt"))}"
+  etag         = "${md5(file("${path.module}/resources/iplist.txt"))}"
 }
 
 # -----------------------------------------------------------
@@ -142,7 +143,7 @@ resource "aws_iam_group_membership" "guardduty" {
 resource "aws_cloudwatch_event_rule" "main" {
   name          = "guardduty-finding-events"
   description   = "AWS GuardDuty event findings"
-  event_pattern = "${file("${path.module}/event-pattern.json")}"
+  event_pattern = "${file("${path.module}/resources/event-pattern.json")}"
 }
 
 # -----------------------------------------------------------
@@ -174,7 +175,7 @@ resource "aws_sns_topic_subscription" "GuardDuty-notifications_sns_subscription"
 # membership account provider
 # -----------------------------------------------------------
 
-provider "aws.dev" {
+provider "aws.member" {
   region  = "${var.aws_region}"
   profile = "${var.aws_member_profile}"
 }
@@ -184,7 +185,7 @@ provider "aws.dev" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member" {
-  provider = "aws.dev"
+  provider = "aws.member"
 
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
@@ -206,7 +207,7 @@ resource "aws_guardduty_member" "member" {
 # membership1 account provider
 # -----------------------------------------------------------
 
-provider "aws.dev1" {
+provider "aws.member1" {
   region  = "${var.aws_region}"
   profile = "${var.aws_member1_profile}"
 }
@@ -216,7 +217,7 @@ provider "aws.dev1" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member1" {
-  provider = "aws.dev1"
+  provider = "aws.member1"
 
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
@@ -238,7 +239,7 @@ resource "aws_guardduty_member" "member1" {
 # membership2 account provider
 # -----------------------------------------------------------
 
-provider "aws.dev2" {
+provider "aws.member2" {
   region  = "${var.aws_region}"
   profile = "${var.aws_member2_profile}"
 }
@@ -248,7 +249,7 @@ provider "aws.dev2" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member2" {
-  provider = "aws.dev2"
+  provider = "aws.member2"
 
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
@@ -270,7 +271,7 @@ resource "aws_guardduty_member" "member2" {
 # membership3 account provider
 # -----------------------------------------------------------
 
-provider "aws.dev3" {
+provider "aws.member3" {
   region  = "${var.aws_region}"
   profile = "${var.aws_member3_profile}"
 }
@@ -280,7 +281,7 @@ provider "aws.dev3" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member3" {
-  provider = "aws.dev3"
+  provider = "aws.member3"
 
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
@@ -302,7 +303,7 @@ resource "aws_guardduty_member" "member3" {
 # membership4 account provider
 # -----------------------------------------------------------
 
-provider "aws.dev4" {
+provider "aws.member4" {
   region  = "${var.aws_region}"
   profile = "${var.aws_member4_profile}"
 }
@@ -312,7 +313,7 @@ provider "aws.dev4" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member4" {
-  provider = "aws.dev4"
+  provider = "aws.member4"
 
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
@@ -334,7 +335,7 @@ resource "aws_guardduty_member" "member4" {
 # membership5 account provider
 # -----------------------------------------------------------
 
-provider "aws.dev5" {
+provider "aws.member5" {
   region  = "${var.aws_region}"
   profile = "${var.aws_member5_profile}"
 }
@@ -344,7 +345,7 @@ provider "aws.dev5" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member5" {
-  provider = "aws.dev5"
+  provider = "aws.member5"
 
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
@@ -366,7 +367,7 @@ resource "aws_guardduty_member" "member5" {
 # membership6 account provider
 # -----------------------------------------------------------
 
-provider "aws.dev6" {
+provider "aws.member6" {
   region  = "${var.aws_region}"
   profile = "${var.aws_member6_profile}"
 }
@@ -376,7 +377,7 @@ provider "aws.dev6" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member6" {
-  provider = "aws.dev6"
+  provider = "aws.member6"
 
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
@@ -398,7 +399,7 @@ resource "aws_guardduty_member" "member6" {
 # membership7 account provider
 # -----------------------------------------------------------
 
-provider "aws.dev7" {
+provider "aws.member7" {
   region  = "${var.aws_region}"
   profile = "${var.aws_member7_profile}"
 }
@@ -408,7 +409,7 @@ provider "aws.dev7" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member7" {
-  provider = "aws.dev7"
+  provider = "aws.member7"
 
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
