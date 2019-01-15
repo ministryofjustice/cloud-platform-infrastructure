@@ -91,5 +91,5 @@ module "alb_alarms" {
   target_5xx_count_threshold     = "${var.alarm_target_5xx_count_threshold}"
   elb_5xx_count_threshold        = "${var.alarm_elb_5xx_count_threshold}"
   target_response_time_threshold = "${var.alarm_target_response_time_threshold}"
-  treat_missing_data             = "ignore"
+  treat_missing_data             = "notBreaching"
 }
