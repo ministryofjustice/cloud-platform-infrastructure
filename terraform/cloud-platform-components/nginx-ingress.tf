@@ -2,7 +2,7 @@ resource "helm_release" "nginx_ingress" {
   name      = "nginx-ingress"
   chart     = "stable/nginx-ingress"
   namespace = "ingress-controllers"
-  version   = "v0.29.0"
+  version   = "v1.1.4"
 
   values = [<<EOF
 controller:
