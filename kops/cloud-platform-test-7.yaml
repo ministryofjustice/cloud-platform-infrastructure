@@ -1,7 +1,12 @@
+############################################
+# NOTE: This file is managed by Terraform  #
+# Don't make any manual modification to it #
+############################################
 apiVersion: kops/v1alpha2
 kind: Cluster
 metadata:
   creationTimestamp: null
+  name: cloud-platform-test-7.k8s.integration.dsd.io
 spec:
   fileAssets:
   - name: kubernetes-audit
@@ -174,7 +179,7 @@ spec:
             "route53:ChangeResourceRecordSets"
           ],
           "Resource": [
-            "arn:aws:route53:::hostedzone/"
+            "arn:aws:route53:::hostedzone/ZHTTYO4QSJ3IT"
           ]
         },
         {
@@ -192,11 +197,33 @@ spec:
     rbac: {}
   channel: stable
   cloudProvider: aws
+  sshKeyName: cloud-platform-test-7.k8s.integration.dsd.io
+  configBase: s3://moj-cp-k8s-investigation-kops/cloud-platform-test-7.k8s.integration.dsd.io
+  dnsZone: cloud-platform-test-7.k8s.integration.dsd.io
+  etcdClusters:
+  - etcdMembers:
+    - instanceGroup: master-eu-west-1a
+      name: a
+    - instanceGroup: master-eu-west-1b
+      name: b
+    - instanceGroup: master-eu-west-1c
+      name: c
+    name: main
+  - etcdMembers:
+    - instanceGroup: master-eu-west-1a
+      name: a
+    - instanceGroup: master-eu-west-1b
+      name: b
+    - instanceGroup: master-eu-west-1c
+      name: c
+    name: events
   iam:
     allowContainerRegistry: true
     legacy: false
+  kubelet:
+    anonymousAuth: false
   kubeAPIServer:
-    oidcClientID: lFevjGBPzBGiXUlf76CJnwqEad2JZo0w
+    oidcClientID: 6UAPcPcVjuQuHYPStnqbPxHZno4tsqyL
     oidcIssuerURL: https://moj-cloud-platforms-dev.eu.auth0.com/
     oidcUsernameClaim: nickname
     oidcGroupsClaim: https://k8s.integration.dsd.io/groups
@@ -205,14 +232,85 @@ spec:
     auditLogMaxBackups: 1
     auditLogMaxSize: 100
     auditPolicyFile: /srv/kubernetes/audit.yaml
+    enableAdmissionPlugins:
+    - Initializers
+    - NamespaceLifecycle
+    - LimitRanger
+    - ServiceAccount
+    - PersistentVolumeLabel
+    - DefaultStorageClass
+    - DefaultTolerationSeconds
+    - MutatingAdmissionWebhook
+    - ValidatingAdmissionWebhook
+    - NodeRestriction
+    - ResourceQuota
+    - PodSecurityPolicy
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.11.2
+  kubernetesVersion: 1.10.12
+  masterPublicName: api.cloud-platform-test-7.k8s.integration.dsd.io
+  networkCIDR: 172.20.0.0/16
+  networkID: vpc-02def50c7e93d5732
   networking:
     calico: {}
   nonMasqueradeCIDR: 100.64.0.0/10
   sshAccess:
   - 0.0.0.0/0
+  subnets:
+  - cidr: 172.20.32.0/19
+    id: subnet-068ff0ee1843bc46e
+    name: eu-west-1a
+    type: Private
+    zone: eu-west-1a
+  - cidr: 172.20.64.0/19
+    id: subnet-0df58455e81cd662c
+    name: eu-west-1b
+    type: Private
+    zone: eu-west-1b
+  - cidr: 172.20.96.0/19
+    id: subnet-0d35bfec9b1bf07e7
+    name: eu-west-1c
+    type: Private
+    zone: eu-west-1c
+  - cidr: 172.20.0.0/22
+    id: subnet-040183e0b9a34d97f
+    name: utility-eu-west-1a
+    type: Utility
+    zone: eu-west-1a
+  - cidr: 172.20.4.0/22
+    id: subnet-07c8f2dc7bb8dbab0
+    name: utility-eu-west-1b
+    type: Utility
+    zone: eu-west-1b
+  - cidr: 172.20.8.0/22
+    id: subnet-02da2a7a4a4d05ed6
+    name: utility-eu-west-1c
+    type: Utility
+    zone: eu-west-1c
+  topology:
+    dns:
+      type: Public
+    masters: private
+    nodes: private
+  hooks:
+  - name: authorized-keys-manager.service
+    roles:
+    - Master
+    - Node
+    manifest: |
+      [Unit]
+      Description=authorized-keys-manager
+      [Service]
+      ExecStart=/bin/bash -c '\
+        while true; do \
+          ak=$(curl -Lfs https://s3-eu-west-1.amazonaws.com/cloud-platform-bf93848161c6b2e960c32272e2911566/authorized_keys) \
+            && [ ! -z "$${ak}" ] \
+            && echo "$${ak}" > /home/admin/.ssh/authorized_keys; \
+          sleep 60; \
+        done;'
+      [Install]
+      WantedBy=multi-user.target
+      
 
 ---
 
@@ -220,13 +318,26 @@ apiVersion: kops/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: cloud-platform-test-7.k8s.integration.dsd.io
   name: master-eu-west-1a
 spec:
-  image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: t2.medium
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  machineType: c4.xlarge
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-eu-west-1a
+  cloudLabels:
+    application: moj-cloud-platform
+    business-unit: platforms
+    is-production: "true"
+    role: master
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
+  subnets:
+  - eu-west-1a
 
 ---
 
@@ -234,13 +345,26 @@ apiVersion: kops/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: cloud-platform-test-7.k8s.integration.dsd.io
   name: master-eu-west-1b
 spec:
-  image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: t2.medium
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  machineType: c4.xlarge
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-eu-west-1b
+  cloudLabels:
+    application: moj-cloud-platform
+    business-unit: platforms
+    is-production: "true"
+    role: master
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
+  subnets:
+  - eu-west-1b
 
 ---
 
@@ -248,13 +372,26 @@ apiVersion: kops/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: cloud-platform-test-7.k8s.integration.dsd.io
   name: master-eu-west-1c
 spec:
-  image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: t2.medium
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  machineType: c4.xlarge
   maxSize: 1
   minSize: 1
+  nodeLabels:
+    kops.k8s.io/instancegroup: master-eu-west-1c
+  cloudLabels:
+    application: moj-cloud-platform
+    business-unit: platforms
+    is-production: "true"
+    role: master
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
+  subnets:
+  - eu-west-1c
 
 ---
 
@@ -262,10 +399,25 @@ apiVersion: kops/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: cloud-platform-test-7.k8s.integration.dsd.io
   name: nodes
 spec:
-  image: kope.io/k8s-1.8-debian-jessie-amd64-hvm-ebs-2018-01-14
-  machineType: t2.medium
-  maxSize: 3
-  minSize: 3
+  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  machineType: r5.xlarge
+  maxSize: 6
+  minSize: 6
+  nodeLabels:
+    kops.k8s.io/instancegroup: nodes
+  cloudLabels:
+    application: moj-cloud-platform
+    business-unit: platforms
+    is-production: "true"
+    role: node
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Node
+  subnets:
+  - eu-west-1a
+  - eu-west-1b
+  - eu-west-1c
