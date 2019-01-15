@@ -62,3 +62,5 @@ The user_name ,secret_access_key and repository_arn outputs will need to be dist
 ## Modules
 The modules directory contains Terraform modules within this repository. These modules will need to be migrated to one git repository per module, the same way the AWS ECR module was built.
 
+## Cloud Platform DR
+The cloud-platform-dr directory contains Terraform code to be used in a disaster recovery scenario to restore resources / data.
