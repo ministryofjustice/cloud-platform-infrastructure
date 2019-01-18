@@ -30,8 +30,8 @@ grafana:
     anonymous:
       enabled: "false"
 
-    adminUser: "${random_username}"
-    adminPassword: "${random_password}"
+  adminUser: "${random_username}"
+  adminPassword: "${random_password}"
 
   ingress:
     enabled: true
