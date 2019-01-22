@@ -1,14 +1,14 @@
-provider "aws.master" {
-  region  = "${var.aws_region}"
-  profile = "${var.aws_master_profile}"
-}
+#provider "aws" {
+#  region  = "${var.aws_region}"
+#  profile = "${var.aws_master_profile}"
+#}
 
 # -----------------------------------------------------------
 # enable guard duty
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "master" {
-  provider                     = "aws.master"
+  provider                     = "aws.cloud-platform"
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
 }
@@ -42,6 +42,7 @@ resource "aws_s3_bucket_object" "ip_list" {
 # -----------------------------------------------------------
 
 resource "aws_iam_policy" "enable_guardduty" {
+  provider                     = "aws.cloud-platform"
   name        = "enable-guardduty"
   path        = "/"
   description = "Allows setup and configuration of GuardDuty"
@@ -83,6 +84,7 @@ EOF
 }
 
 resource "aws_iam_policy" "use_security_bucket" {
+  provider                     = "aws.cloud-platform"
   name        = "access-security-bucket"
   path        = "/security/"
   description = "Allows full access to the contents of the security bucket"
@@ -105,31 +107,37 @@ EOF
 }
 
 resource "aws_iam_group" "guardduty" {
+  provider                     = "aws.cloud-platform"
   name = "${var.group_name}"
   path = "/"
 }
 
 resource "aws_iam_group_policy_attachment" "enable" {
+  provider                     = "aws.cloud-platform"
   group      = "${aws_iam_group.guardduty.name}"
   policy_arn = "${aws_iam_policy.enable_guardduty.arn}"
 }
 
 resource "aws_iam_group_policy_attachment" "useS3bucket" {
+  provider                     = "aws.cloud-platform"
   group      = "${aws_iam_group.guardduty.name}"
   policy_arn = "${aws_iam_policy.use_security_bucket.arn}"
 }
 
 resource "aws_iam_group_policy_attachment" "access" {
+  provider                     = "aws.cloud-platform"
   group      = "${aws_iam_group.guardduty.name}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonGuardDutyFullAccess"
 }
 
 resource "aws_iam_group_policy_attachment" "s3readonly" {
+  provider                     = "aws.cloud-platform"
   group      = "${aws_iam_group.guardduty.name}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
 
 resource "aws_iam_group_membership" "guardduty" {
+  provider                     = "aws.cloud-platform"
   name  = "guardduty-admin-members"
   group = "${aws_iam_group.guardduty.name}"
   users = "${var.users}"
@@ -141,6 +149,7 @@ resource "aws_iam_group_membership" "guardduty" {
 # -----------------------------------------------------------
 
 resource "aws_cloudwatch_event_rule" "main" {
+  provider = "aws.cloud-platform"
   name          = "guardduty-finding-events"
   description   = "AWS GuardDuty event findings"
   event_pattern = "${file("${path.module}/resources/event-pattern.json")}"
@@ -150,26 +159,29 @@ resource "aws_cloudwatch_event_rule" "main" {
 # set up AWS Cloudwatch Event to target an sns topic for above event rule
 # -----------------------------------------------------------
 
-resource "aws_cloudwatch_event_target" "main" {
-  rule      = "${aws_cloudwatch_event_rule.main.name}"
-  target_id = "send-to-sns"
-  arn       = "${aws_sns_topic.GuardDuty-notifications.arn}"
-}
+ resource "aws_cloudwatch_event_target" "main" {
+   provider = "aws.cloud-platform"
+   rule      = "${aws_cloudwatch_event_rule.main.name}"
+   target_id = "send-to-sns"
+   arn       = "${aws_sns_topic.GuardDuty-notifications.arn}"
+ }
 
 # -----------------------------------------------------------
 # set up AWS sns topic and subscription
 # -----------------------------------------------------------
 
-resource "aws_sns_topic" "GuardDuty-notifications" {
-  name = "GuardDuty-notifications"
+ resource "aws_sns_topic" "GuardDuty-notifications" {
+   provider = "aws.cloud-platform"
+   name = "GuardDuty-notifications"
 }
 
-resource "aws_sns_topic_subscription" "GuardDuty-notifications_sns_subscription" {
-  topic_arn              = "${aws_sns_topic.GuardDuty-notifications.arn}"
-  protocol               = "https"
-  endpoint               = "${var.endpoint}"
-  endpoint_auto_confirms = true
-}
+ resource "aws_sns_topic_subscription" "GuardDuty-notifications_sns_subscription" {
+   provider = "aws.cloud-platform"
+   topic_arn              = "${aws_sns_topic.GuardDuty-notifications.arn}"
+   protocol               = "https"
+   endpoint               = "${var.endpoint}"
+   endpoint_auto_confirms = true
+ }
 
 # -----------------------------------------------------------
 # membership account provider
@@ -196,6 +208,7 @@ resource "aws_guardduty_detector" "member" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member" {
+  provider = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member.account_id}"
   detector_id        = "${aws_guardduty_detector.master.id}"
   email              = "${var.member_email}"
@@ -228,6 +241,7 @@ resource "aws_guardduty_detector" "member1" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member1" {
+  provider = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member1.account_id}"
   detector_id        = "${aws_guardduty_detector.master.id}"
   email              = "${var.member1_email}"
@@ -260,6 +274,7 @@ resource "aws_guardduty_detector" "member2" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member2" {
+  provider = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member2.account_id}"
   detector_id        = "${aws_guardduty_detector.master.id}"
   email              = "${var.member2_email}"
@@ -292,6 +307,7 @@ resource "aws_guardduty_detector" "member3" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member3" {
+  provider = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member3.account_id}"
   detector_id        = "${aws_guardduty_detector.master.id}"
   email              = "${var.member3_email}"
@@ -324,6 +340,7 @@ resource "aws_guardduty_detector" "member4" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member4" {
+  provider = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member4.account_id}"
   detector_id        = "${aws_guardduty_detector.master.id}"
   email              = "${var.member4_email}"
@@ -356,6 +373,7 @@ resource "aws_guardduty_detector" "member5" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member5" {
+  provider = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member5.account_id}"
   detector_id        = "${aws_guardduty_detector.master.id}"
   email              = "${var.member5_email}"
@@ -388,6 +406,7 @@ resource "aws_guardduty_detector" "member6" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member6" {
+  provider = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member6.account_id}"
   detector_id        = "${aws_guardduty_detector.master.id}"
   email              = "${var.member6_email}"
@@ -420,6 +439,7 @@ resource "aws_guardduty_detector" "member7" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member7" {
+  provider = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member7.account_id}"
   detector_id        = "${aws_guardduty_detector.master.id}"
   email              = "${var.member7_email}"

@@ -4,6 +4,7 @@ variable "aws_region" {}
 variable "integration_key" {}
 variable "endpoint" {}
 variable "topic_arn" {}
+variable "sns_arn" {}
 
 variable "aws_master_account_id" {}
 variable "aws_master_profile" {}
