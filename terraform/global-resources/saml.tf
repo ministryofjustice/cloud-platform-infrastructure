@@ -4,7 +4,6 @@ resource "auth0_client" "saml" {
   app_type    = "regular_web"
   callbacks   = ["https://signin.aws.amazon.com/saml"]
 
-
   # This does not currently work as intended. See the output below.
   #
   # addons {
