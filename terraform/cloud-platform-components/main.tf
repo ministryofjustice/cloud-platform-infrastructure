@@ -10,6 +10,7 @@ terraform {
 
 provider "aws" {
   profile = "moj-pi"
+  region  = "eu-west-1"
 }
 
 provider "kubernetes" {}
