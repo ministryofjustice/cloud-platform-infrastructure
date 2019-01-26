@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: evry/oidc-proxy
-  tag: latest
+  tag: v1.3.0
   pullPolicy: Always
 
 nameOverride: ""
@@ -38,7 +38,7 @@ resources:
 oidc:
   clientId: ""
   clientSecret: ""
-  discovery: ""
-  renewToken: ""
-  sessionName: ""
+  discovery: "https://moj-cloud-platforms-dev.eu.auth0.com/.well-known/openid-configuration"
+  renewToken: "true"
+  sessionName: "oidc_proxy"
   sessionSecret: ""
