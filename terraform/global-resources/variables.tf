@@ -59,8 +59,13 @@ variable "group_name" {
 
 variable "tags" {
   default = {
-    "owner"   = "moj-platform"
-    "project" = "cp-guardduty"
-    "client"  = "Internal"
+    "application"            = "AWS GuardDuty"
+    "business-unit"          = "HQ"
+    "component"              = "none"
+    "environment-name"       = "production"
+    "infrastructure-support" = "Cloud Platforms platforms@digital.justice.gov.uk"
+    "is-production"          = "true"
+    "owner"                  = "Cloud Platforms platforms@digital.justice.gov.uk"
+    "runbook"                = "none"
   }
 }

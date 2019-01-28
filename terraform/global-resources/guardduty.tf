@@ -1,13 +1,8 @@
-#provider "aws" {
-#  region  = "${var.aws_region}"
-#  profile = "${var.aws_master_profile}"
-#}
-
 # -----------------------------------------------------------
 # enable guard duty
 # -----------------------------------------------------------
 
-resource "aws_guardduty_detector" "master" {
+resource "aws_guardduty_detector" "guardduty" {
   provider                     = "aws.cloud-platform"
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
@@ -18,6 +13,7 @@ resource "aws_guardduty_detector" "master" {
 # -----------------------------------------------------------
 
 resource "aws_s3_bucket" "security" {
+  provider      = "aws.cloud-platform"
   bucket_prefix = "${var.bucket_prefix}"
   acl           = "private"
   region        = "${var.aws_region}"
@@ -30,6 +26,7 @@ resource "aws_s3_bucket" "security" {
 }
 
 resource "aws_s3_bucket_object" "ip_list" {
+  provider     = "aws.cloud-platform"
   key          = "${var.guardduty_assets}/iplist.txt"
   bucket       = "${aws_s3_bucket.security.id}"
   source       = "${path.module}/resources/iplist.txt"
@@ -210,7 +207,7 @@ resource "aws_guardduty_detector" "member" {
 resource "aws_guardduty_member" "member" {
   provider           = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member.account_id}"
-  detector_id        = "${aws_guardduty_detector.master.id}"
+  detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member_email}"
   invite             = true
   invitation_message = "please accept guardduty invitation"
@@ -243,7 +240,7 @@ resource "aws_guardduty_detector" "member1" {
 resource "aws_guardduty_member" "member1" {
   provider           = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member1.account_id}"
-  detector_id        = "${aws_guardduty_detector.master.id}"
+  detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member1_email}"
   invite             = true
   invitation_message = "please accept guardduty invitation"
@@ -276,7 +273,7 @@ resource "aws_guardduty_detector" "member2" {
 resource "aws_guardduty_member" "member2" {
   provider           = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member2.account_id}"
-  detector_id        = "${aws_guardduty_detector.master.id}"
+  detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member2_email}"
   invite             = true
   invitation_message = "please accept guardduty invitation"
@@ -309,7 +306,7 @@ resource "aws_guardduty_detector" "member3" {
 resource "aws_guardduty_member" "member3" {
   provider           = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member3.account_id}"
-  detector_id        = "${aws_guardduty_detector.master.id}"
+  detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member3_email}"
   invite             = true
   invitation_message = "please accept guardduty invitation"
@@ -342,7 +339,7 @@ resource "aws_guardduty_detector" "member4" {
 resource "aws_guardduty_member" "member4" {
   provider           = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member4.account_id}"
-  detector_id        = "${aws_guardduty_detector.master.id}"
+  detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member4_email}"
   invite             = true
   invitation_message = "please accept guardduty invitation"
@@ -375,7 +372,7 @@ resource "aws_guardduty_detector" "member5" {
 resource "aws_guardduty_member" "member5" {
   provider           = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member5.account_id}"
-  detector_id        = "${aws_guardduty_detector.master.id}"
+  detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member5_email}"
   invite             = true
   invitation_message = "please accept guardduty invitation"
@@ -408,7 +405,7 @@ resource "aws_guardduty_detector" "member6" {
 resource "aws_guardduty_member" "member6" {
   provider           = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member6.account_id}"
-  detector_id        = "${aws_guardduty_detector.master.id}"
+  detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member6_email}"
   invite             = true
   invitation_message = "please accept guardduty invitation"
@@ -441,8 +438,17 @@ resource "aws_guardduty_detector" "member7" {
 resource "aws_guardduty_member" "member7" {
   provider           = "aws.cloud-platform"
   account_id         = "${aws_guardduty_detector.member7.account_id}"
-  detector_id        = "${aws_guardduty_detector.master.id}"
+  detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member7_email}"
   invite             = true
   invitation_message = "please accept guardduty invitation"
+}
+
+resource "aws_guardduty_ipset" "guardduty" {
+  provider    = "aws.cloud-platform"
+  activate    = false
+  detector_id = "${aws_guardduty_detector.guardduty.id}"
+  format      = "TXT"
+  location    = "https://s3-eu-west-1.amazonaws.com/${aws_s3_bucket_object.ip_list.bucket}/${aws_s3_bucket_object.ip_list.key}"
+  name        = "guardduty"
 }
