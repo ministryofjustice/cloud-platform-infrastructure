@@ -83,3 +83,123 @@ resource "helm_release" "kube_prometheus" {
     ignore_changes = ["keyring"]
   }
 }
+
+# Alertmanager and Prometheus proxy frontends
+
+resource "random_id" "session_secret" {
+  byte_length = 32
+}
+
+resource "helm_release" "prometheus-proxy" {
+  name          = "prometheus"
+  namespace     = "monitoring"
+  chart         = "../../helm-charts/oidc-proxy"
+  recreate_pods = true
+
+  set {
+    name  = "application.healthCheck.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "application.path"
+    value = "/-/healthy"
+  }
+
+  set {
+    name  = "application.hostName"
+    value = "prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+  }
+
+  set {
+    name  = "application.port"
+    value = "9090"
+  }
+
+  set {
+    name  = "application.serviceName"
+    value = "${helm_release.kube_prometheus.name}"
+  }
+
+  set {
+    name  = "oidc.clientId"
+    value = "${data.terraform_remote_state.cluster.oidc_client_id}"
+  }
+
+  set {
+    name  = "oidc.clientSecret"
+    value = "${data.terraform_remote_state.cluster.oidc_client_secret}"
+  }
+
+  set {
+    name  = "oidc.sessionSecret"
+    value = "${random_id.session_secret.dec}"
+  }
+
+  depends_on = [
+    "null_resource.deploy",
+    "helm_release.kube_prometheus",
+    "random_id.session_secret",
+  ]
+
+  lifecycle {
+    ignore_changes = ["keyring"]
+  }
+}
+
+resource "helm_release" "alertmanager-proxy" {
+  name          = "alertmanager"
+  namespace     = "monitoring"
+  chart         = "../../helm-charts/oidc-proxy"
+  recreate_pods = true
+
+  set {
+    name  = "application.healthCheck.enabled"
+    value = "true"
+  }
+
+  set {
+    name  = "application.path"
+    value = "/-/healthy"
+  }
+
+  set {
+    name  = "application.hostName"
+    value = "alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+  }
+
+  set {
+    name  = "application.port"
+    value = "9093"
+  }
+
+  set {
+    name  = "application.serviceName"
+    value = "alertmanager-operated"
+  }
+
+  set {
+    name  = "oidc.clientId"
+    value = "${data.terraform_remote_state.cluster.oidc_client_id}"
+  }
+
+  set {
+    name  = "oidc.clientSecret"
+    value = "${data.terraform_remote_state.cluster.oidc_client_secret}"
+  }
+
+  set {
+    name  = "oidc.sessionSecret"
+    value = "${random_id.session_secret.dec}"
+  }
+
+  depends_on = [
+    "null_resource.deploy",
+    "helm_release.kube_prometheus",
+    "random_id.session_secret",
+  ]
+
+  lifecycle {
+    ignore_changes = ["keyring"]
+  }
+}
