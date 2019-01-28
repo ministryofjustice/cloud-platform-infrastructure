@@ -1,8 +1,3 @@
-// This is the kubernetes role that node hosts are assigned.
-data "aws_iam_role" "nodes" {
-  name = "nodes.${data.terraform_remote_state.cluster.cluster_domain_name}"
-}
-
 data "aws_iam_policy_document" "external_dns_assume" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -66,7 +61,7 @@ podAnnotations:
 EOF
   ]
 
-  depends_on = ["null_resource.deploy"]
+  depends_on = ["null_resource.deploy", "helm_release.kiam"]
 
   lifecycle {
     ignore_changes = ["keyring"]
