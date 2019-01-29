@@ -37,6 +37,34 @@ resource "aws_iam_role_policy" "cert_manager" {
   policy = "${data.aws_iam_policy_document.cert_manager.json}"
 }
 
+data "http" "cert-manager-crds" {
+  url = "https://raw.githubusercontent.com/jetstack/cert-manager/release-0.6/deploy/manifests/00-crds.yaml"
+}
+
+resource "null_resource" "cert-manager-crds" {
+  provisioner "local-exec" {
+    command = <<EOS
+kubectl apply -n cert-manager -f - <<EOF
+${data.http.cert-manager-crds.body}
+EOF
+EOS
+  }
+
+  provisioner "local-exec" {
+    when = "destroy"
+
+    command = <<EOS
+kubectl delete -n cert-manager -f - <<EOF
+${data.http.cert-manager-crds.body}
+EOF
+EOS
+  }
+
+  triggers {
+    contents_crds = "${sha1("${data.http.cert-manager-crds.body}")}"
+  }
+}
+
 resource "helm_release" "cert-manager" {
   name          = "cert-manager"
   chart         = "stable/cert-manager"
@@ -59,7 +87,7 @@ podAnnotations:
 EOF
   ]
 
-  depends_on = ["null_resource.deploy"]
+  depends_on = ["null_resource.deploy", "null_resource.cert_manager_crds"]
 
   lifecycle {
     ignore_changes = ["keyring"]
@@ -92,6 +120,8 @@ resource "null_resource" "cert_manager_kiam_annotation" {
   depends_on = ["helm_release.cert-manager"]
 }
 
+// This is likely not needed beyond the 0.6 upgrade, see:
+//   http://docs.cert-manager.io/en/latest/admin/upgrading/upgrading-0.4-0.5.html
 resource "null_resource" "cert_manager_webhook_label" {
   provisioner "local-exec" {
     command = "kubectl label --overwrite namespace cert-manager 'certmanager.k8s.io/disable-validation=true'"
