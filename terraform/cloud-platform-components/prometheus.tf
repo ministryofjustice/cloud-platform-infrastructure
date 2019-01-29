@@ -83,3 +83,81 @@ resource "helm_release" "kube_prometheus" {
     ignore_changes = ["keyring"]
   }
 }
+
+# Alertmanager and Prometheus proxy
+
+resource "random_id" "session_secret" {
+  byte_length = 16
+}
+
+data "template_file" "prometheus_proxy" {
+  template = "${file("${path.module}/templates/oidc-proxy.yaml.tpl")}"
+
+  vars {
+    application_service_name     = "kube-prometheus"
+    application_port             = "9090"
+    application_hostname         = "prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    application_healthcheck      = "enabled"
+    application_healthcheck_port = "/-/healthy"
+    oidc_client_id               = "${data.terraform_remote_state.cluster.oidc_client_id}"
+    oidc_client_secret           = "${data.terraform_remote_state.cluster.oidc_client_secret}"
+    oidc_session_secret          = "${random_id.session_secret.hex}"
+  }
+}
+
+resource "helm_release" "prometheus_proxy" {
+  name          = "prometheus"
+  namespace     = "monitoring"
+  chart         = "../../helm-charts/oidc-proxy"
+  recreate_pods = true
+
+  values = [
+    "${data.template_file.prometheus_proxy.rendered}",
+  ]
+
+  depends_on = [
+    "null_resource.deploy",
+    "helm_release.kube_prometheus",
+    "random_id.session_secret",
+  ]
+
+  lifecycle {
+    ignore_changes = ["keyring"]
+  }
+}
+
+data "template_file" "alertmanager_proxy" {
+  template = "${file("${path.module}/templates/oidc-proxy.yaml.tpl")}"
+
+  vars {
+    application_service_name     = "alertmanager-operated"
+    application_port             = "9093"
+    application_hostname         = "alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    application_healthcheck      = "enabled"
+    application_healthcheck_port = "/-/healthy"
+    oidc_client_id               = "${data.terraform_remote_state.cluster.oidc_client_id}"
+    oidc_client_secret           = "${data.terraform_remote_state.cluster.oidc_client_secret}"
+    oidc_session_secret          = "${random_id.session_secret.hex}"
+  }
+}
+
+resource "helm_release" "alertmanager_proxy" {
+  name          = "alertmanager-operated"
+  namespace     = "monitoring"
+  chart         = "../../helm-charts/oidc-proxy"
+  recreate_pods = true
+
+  values = [
+    "${data.template_file.alertmanager_proxy.rendered}",
+  ]
+
+  depends_on = [
+    "null_resource.deploy",
+    "helm_release.kube_prometheus",
+    "random_id.session_secret",
+  ]
+
+  lifecycle {
+    ignore_changes = ["keyring"]
+  }
+}
