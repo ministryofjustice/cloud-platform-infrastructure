@@ -84,57 +84,36 @@ resource "helm_release" "kube_prometheus" {
   }
 }
 
-# Alertmanager and Prometheus proxy frontends
+# Alertmanager and Prometheus proxy
 
 resource "random_id" "session_secret" {
-  byte_length = 32
+  byte_length = 16
 }
 
-resource "helm_release" "prometheus-proxy" {
+data "template_file" "prometheus_proxy" {
+  template = "${file("${path.module}/templates/oidc-proxy.yaml.tpl")}"
+
+  vars {
+    application_service_name     = "kube-prometheus"
+    application_port             = "9090"
+    application_hostname         = "prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    application_healthcheck      = "enabled"
+    application_healthcheck_port = "/-/healthy"
+    oidc_client_id               = "${data.terraform_remote_state.cluster.oidc_client_id}"
+    oidc_client_secret           = "${data.terraform_remote_state.cluster.oidc_client_secret}"
+    oidc_session_secret          = "${random_id.session_secret.hex}"
+  }
+}
+
+resource "helm_release" "prometheus_proxy" {
   name          = "prometheus"
   namespace     = "monitoring"
   chart         = "../../helm-charts/oidc-proxy"
   recreate_pods = true
 
-  set {
-    name  = "application.healthCheck.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "application.path"
-    value = "/-/healthy"
-  }
-
-  set {
-    name  = "application.hostName"
-    value = "prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-  }
-
-  set {
-    name  = "application.port"
-    value = "9090"
-  }
-
-  set {
-    name  = "application.serviceName"
-    value = "${helm_release.kube_prometheus.name}"
-  }
-
-  set {
-    name  = "oidc.clientId"
-    value = "${data.terraform_remote_state.cluster.oidc_client_id}"
-  }
-
-  set {
-    name  = "oidc.clientSecret"
-    value = "${data.terraform_remote_state.cluster.oidc_client_secret}"
-  }
-
-  set {
-    name  = "oidc.sessionSecret"
-    value = "${random_id.session_secret.dec}"
-  }
+  values = [
+    "${data.template_file.prometheus_proxy.rendered}",
+  ]
 
   depends_on = [
     "null_resource.deploy",
@@ -147,51 +126,30 @@ resource "helm_release" "prometheus-proxy" {
   }
 }
 
-resource "helm_release" "alertmanager-proxy" {
-  name          = "alertmanager"
+data "template_file" "alertmanager_proxy" {
+  template = "${file("${path.module}/templates/oidc-proxy.yaml.tpl")}"
+
+  vars {
+    application_service_name     = "alertmanager-operated"
+    application_port             = "9093"
+    application_hostname         = "alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    application_healthcheck      = "enabled"
+    application_healthcheck_port = "/-/healthy"
+    oidc_client_id               = "${data.terraform_remote_state.cluster.oidc_client_id}"
+    oidc_client_secret           = "${data.terraform_remote_state.cluster.oidc_client_secret}"
+    oidc_session_secret          = "${random_id.session_secret.hex}"
+  }
+}
+
+resource "helm_release" "alertmanager_proxy" {
+  name          = "alertmanager-operated"
   namespace     = "monitoring"
   chart         = "../../helm-charts/oidc-proxy"
   recreate_pods = true
 
-  set {
-    name  = "application.healthCheck.enabled"
-    value = "true"
-  }
-
-  set {
-    name  = "application.path"
-    value = "/-/healthy"
-  }
-
-  set {
-    name  = "application.hostName"
-    value = "alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-  }
-
-  set {
-    name  = "application.port"
-    value = "9093"
-  }
-
-  set {
-    name  = "application.serviceName"
-    value = "alertmanager-operated"
-  }
-
-  set {
-    name  = "oidc.clientId"
-    value = "${data.terraform_remote_state.cluster.oidc_client_id}"
-  }
-
-  set {
-    name  = "oidc.clientSecret"
-    value = "${data.terraform_remote_state.cluster.oidc_client_secret}"
-  }
-
-  set {
-    name  = "oidc.sessionSecret"
-    value = "${random_id.session_secret.dec}"
-  }
+  values = [
+    "${data.template_file.alertmanager_proxy.rendered}",
+  ]
 
   depends_on = [
     "null_resource.deploy",
