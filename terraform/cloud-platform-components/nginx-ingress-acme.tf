@@ -1,5 +1,5 @@
-resource "helm_release" "nginx_ingress" {
-  name      = "nginx-ingress"
+resource "helm_release" "nginx_ingress_acme" {
+  name      = "nginx-ingress-acme"
   chart     = "stable/nginx-ingress"
   namespace = "ingress-controllers"
   version   = "v1.1.4"
