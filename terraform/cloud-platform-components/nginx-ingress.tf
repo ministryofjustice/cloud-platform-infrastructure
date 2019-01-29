@@ -26,14 +26,38 @@ controller:
 
     externalTrafficPolicy: "Local"
 
+  extraArgs:
+    default-ssl-certificate: ingress-controllers/default-certificate
+
 rbac:
   create: true
 EOF
   ]
 
+  // Although it _does_ depend on cert-manager for getting the default
+  // certificate issued, it's not a hard dependency and will resort to using a
+  // self-signed certificate until the proper one becomes available. This
+  // dependency is not captured here.
   depends_on = ["null_resource.deploy"]
 
   lifecycle {
     ignore_changes = ["keyring"]
+  }
+}
+
+resource "null_resource" "nginx_ingress_default_certificate" {
+  depends_on = ["helm_release.cert-manager"]
+
+  provisioner "local-exec" {
+    command = "kubectl apply -n ingress-controllers -f ${path.module}/resources/nginx-ingress/"
+  }
+
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete -n ingress-controllers -f ${path.module}/resources/nginx-ingress/"
+  }
+
+  triggers {
+    contents = "${sha1(file("${path.module}/resources/nginx-ingress/default-certificate.yaml"))}"
   }
 }
