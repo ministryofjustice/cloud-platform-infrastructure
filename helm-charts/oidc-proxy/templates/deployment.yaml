@@ -1,0 +1,66 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "oidc-proxy.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "oidc-proxy.name" . }}
+    helm.sh/chart: {{ include "oidc-proxy.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "oidc-proxy.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "oidc-proxy.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        env:
+        - name: OID_CLIENT_ID
+          value: {{ .Values.oidc.clientId | quote }}
+        - name: OID_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "oidc-proxy.secretName" . }}
+              key: clientSecret
+        - name: OID_DISCOVERY
+          value: {{ .Values.oidc.discovery | quote }}
+        - name: OIDC_RENEW_ACCESS_TOKEN_ON_EXPIERY
+          value: {{ .Values.oidc.renewToken | quote }}
+        - name: OID_SESSION_NAME
+          value: {{ .Values.oidc.sessionName | quote }}
+        - name: OID_SESSION_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "oidc-proxy.secretName" . }}
+              key: sessionSecret
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+        ports:
+          - containerPort: 80
+            protocol: TCP
+        volumeMounts:
+        - name: config
+          mountPath: /usr/local/openresty/nginx/conf/sites/
+        - name: auth-script
+          mountPath: /usr/local/openresty/nginx/lua
+      volumes:
+      - name: config
+        configMap:
+          name: {{ include "oidc-proxy.configmapNameConfig" . }}
+      - name: auth-script
+        configMap:
+          name: {{ include "oidc-proxy.configmapNameAuth" . }}

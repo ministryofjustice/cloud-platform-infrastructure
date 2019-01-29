@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "oidc-proxy.configmapNameAuth" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "oidc-proxy.name" . }}
+    helm.sh/chart: {{ include "oidc-proxy.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+data:
+  # this is based on the upstream authentication script with added bits to limit
+  # access to the webops team
+  # https://github.com/evry/docker-oidc-proxy/blob/master/nginx/lua/auth.lua
+  auth.lua: |
+    local opts = {
+        redirect_uri_path = os.getenv("OID_REDIRECT_PATH") or "/redirect_uri",
+        discovery = os.getenv("OID_DISCOVERY"),
+        client_id = os.getenv("OID_CLIENT_ID"),
+        client_secret = os.getenv("OID_CLIENT_SECRET"),
+        token_endpoint_auth_method = os.getenv("OIDC_AUTH_METHOD") or "client_secret_basic",
+        renew_access_token_on_expiry = os.getenv("OIDC_RENEW_ACCESS_TOKEN_ON_EXPIERY"),
+        refresh_session_interval = os.getenv("OIDC_REFRESH_INTERVAL"),
+        access_token_expires_in = os.getenv("OIDC_TOKEN_EXIRE_TIME"),
+        scope = os.getenv("OIDC_AUTH_SCOPE") or "openid",
+        iat_slack = 600,
+    }
+
+    -- call authenticate for OpenID Connect user authentication
+    local res, err, _target, session = require("resty.openidc").authenticate(opts)
+    if err then
+        ngx.log(ngx.DEBUG, tostring(err))
+        ngx.exit(ngx.HTTP_FORBIDDEN)
+    end
+
+    ngx.log(ngx.DEBUG, "Authentication successful, setting Auth header...")
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "oidc-proxy.configmapNameConfig" . }}
+  labels:
+    app: {{ include "oidc-proxy.name" . }}
+    chart: {{ include "oidc-proxy.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  # .common is based on the default proxy configuration of the image
+  # https://github.com/evry/docker-oidc-proxy/blob/master/nginx/conf/sites/proxy.conf
+  .common.conf: |
+    listen 80;
+
+    error_log /dev/stdout info;
+
+    large_client_header_buffers 8 64k;
+    client_header_buffer_size 64k;
+    set_by_lua $session_secret 'return os.getenv("OID_SESSION_SECRET")';
+    set_by_lua $session_check_ssi 'return os.getenv("OID_SESSION_CHECK_SSI")';
+    set_by_lua $session_name 'return os.getenv("OID_SESSION_NAME")';
+
+    location /favicon.ico {
+      return 404;
+    }
+
+    location /healthz {
+      return 201;
+    }
+
+    location / {
+      access_by_lua_file  lua/auth.lua;
+      proxy_set_header    Host $http_host;
+      proxy_pass          http://$upstream;
+    }
+
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root html;
+    }
+
+  00-http.conf: |
+    server_names_hash_bucket_size 128;
+
+  10-application.conf: |
+    upstream app {
+        server {{ .Values.application.serviceName }}:{{ .Values.application.port }};
+    }
+    server {
+        server_name {{ .Values.application.hostName }};
+        set $upstream app;
+        include sites/.common.conf;
+    }
