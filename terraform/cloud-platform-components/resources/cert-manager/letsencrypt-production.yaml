@@ -11,5 +11,10 @@ spec:
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
       name: letsencrypt-production
-    # Enable the HTTP-01 challenge provider
-    http01: {}
+    # Enable the DNS-01 challenge provider
+    dns01:
+      # Here we define a list of DNS-01 providers that can solve DNS challenges
+      providers:
+      - name: route53
+        route53:
+          region: eu-west-1
