@@ -13,6 +13,7 @@ spec:
       name: letsencrypt-staging
     # Enable the DNS-01 challenge provider
     dns01:
+      cnameStrategy: "Follow"
       # Here we define a list of DNS-01 providers that can solve DNS challenges
       providers:
       - name: route53
