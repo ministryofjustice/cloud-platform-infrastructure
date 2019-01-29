@@ -87,7 +87,7 @@ podAnnotations:
 EOF
   ]
 
-  depends_on = ["null_resource.deploy", "null_resource.cert_manager_crds"]
+  depends_on = ["null_resource.deploy", "null_resource.cert-manager-crds"]
 
   lifecycle {
     ignore_changes = ["keyring"]
