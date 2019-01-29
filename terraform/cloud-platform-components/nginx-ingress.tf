@@ -12,6 +12,10 @@ controller:
     generate-request-id: "true"
     proxy-buffer-size: "16k"
     proxy-body-size: "16m"
+    server-snippet: |
+      if ($scheme != 'https') {
+        return 308 https://$host$request_uri;
+      }
 
   stats:
     enabled: true
