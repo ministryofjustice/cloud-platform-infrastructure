@@ -129,3 +129,20 @@ resource "null_resource" "cert_manager_webhook_label" {
 
   depends_on = ["helm_release.cert-manager"]
 }
+
+resource "null_resource" "cert_manager_servicemonitor" {
+  depends_on = ["helm_release.kube_prometheus"]
+
+  provisioner "local-exec" {
+    command = "kubectl apply -n cert-manager -f ${path.module}/resources/cert-manager/servicemonitor.yaml"
+  }
+
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete -n cert-manager -f ${path.module}/resources/cert-manager/servicemonitor.yaml"
+  }
+
+  triggers {
+    contents = "${sha1(file("${path.module}/resources/cert-manager/servicemonitor.yaml"))}"
+  }
+}

@@ -53,15 +53,32 @@ resource "null_resource" "nginx_ingress_default_certificate" {
   depends_on = ["helm_release.cert-manager"]
 
   provisioner "local-exec" {
-    command = "kubectl apply -n ingress-controllers -f ${path.module}/resources/nginx-ingress/"
+    command = "kubectl apply -n ingress-controllers -f ${path.module}/resources/nginx-ingress/default-certificate.yaml"
   }
 
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete -n ingress-controllers -f ${path.module}/resources/nginx-ingress/"
+    command = "kubectl delete -n ingress-controllers -f ${path.module}/resources/nginx-ingress/default-certificate.yaml"
   }
 
   triggers {
     contents = "${sha1(file("${path.module}/resources/nginx-ingress/default-certificate.yaml"))}"
+  }
+}
+
+resource "null_resource" "nginx_ingress_servicemonitor" {
+  depends_on = ["helm_release.kube_prometheus"]
+
+  provisioner "local-exec" {
+    command = "kubectl apply -n ingress-controllers -f ${path.module}/resources/nginx-ingress/servicemonitor.yaml"
+  }
+
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete -n ingress-controllers -f ${path.module}/resources/nginx-ingress/servicemonitor.yaml"
+  }
+
+  triggers {
+    contents = "${sha1(file("${path.module}/resources/nginx-ingress/servicemonitor.yaml"))}"
   }
 }
