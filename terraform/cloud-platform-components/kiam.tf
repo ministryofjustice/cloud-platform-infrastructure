@@ -183,14 +183,18 @@ resource "kubernetes_service" "agent-metrics" {
 }
 
 resource "null_resource" "kiam_servicemonitor" {
-  depends_on = ["helm_release.kiam", "helm_release.kube_prometheus"]
+  depends_on = ["helm_release.kube_prometheus"]
 
   provisioner "local-exec" {
-    command = "kubectl apply -f ${path.module}/resources/kiam-servicemonitor.yaml"
+    command = "kubectl apply -f ${path.module}/resources/kiam/servicemonitor.yaml"
   }
 
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete -f ${path.module}/resources/kiam-servicemonitor.yaml"
+    command = "kubectl delete -f ${path.module}/resources/kiam/servicemonitor.yaml"
+  }
+
+  triggers {
+    contents = "${sha1(file("${path.module}/resources/kiam/servicemonitor.yaml"))}"
   }
 }
