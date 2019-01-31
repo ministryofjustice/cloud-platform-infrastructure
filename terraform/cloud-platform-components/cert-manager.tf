@@ -1,3 +1,7 @@
+locals {
+  cert-manager-version = "v0.6.0"
+}
+
 data "aws_iam_policy_document" "cert_manager_assume" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -38,7 +42,7 @@ resource "aws_iam_role_policy" "cert_manager" {
 }
 
 data "http" "cert-manager-crds" {
-  url = "https://raw.githubusercontent.com/jetstack/cert-manager/release-0.6/deploy/manifests/00-crds.yaml"
+  url = "https://raw.githubusercontent.com/jetstack/cert-manager/release-${replace(local.cert-manager-version, "/^v?(\\d+\\.\\d+)\\.\\d+$/", "$1")}/deploy/manifests/00-crds.yaml"
 }
 
 resource "null_resource" "cert-manager-crds" {
@@ -69,7 +73,7 @@ resource "helm_release" "cert-manager" {
   name          = "cert-manager"
   chart         = "stable/cert-manager"
   namespace     = "cert-manager"
-  version       = "v0.6.0"
+  version       = "${local.cert-manager-version}"
   recreate_pods = true
 
   values = [<<EOF
