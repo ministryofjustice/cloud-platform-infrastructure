@@ -102,12 +102,12 @@ resource "null_resource" "cert-manager-issuers" {
   depends_on = ["helm_release.cert-manager"]
 
   provisioner "local-exec" {
-    command = "kubectl apply -n cert-manager -f ${path.module}/resources/cert-manager/"
+    command = "kubectl apply -n cert-manager -f ${path.module}/resources/cert-manager/letsencrypt-production.yaml -f ${path.module}/resources/cert-manager/letsencrypt-staging.yaml"
   }
 
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete -n cert-manager -f ${path.module}/resources/cert-manager/"
+    command = "kubectl delete -n cert-manager -f ${path.module}/resources/cert-manager/letsencrypt-production.yaml -f ${path.module}/resources/cert-manager/letsencrypt-staging.yaml"
   }
 
   triggers {
