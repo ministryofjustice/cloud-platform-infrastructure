@@ -49,10 +49,6 @@ variable "bucket_prefix" {
   default = "security"
 }
 
-variable "guardduty_assets" {
-  default = "guardduty"
-}
-
 variable "group_name" {
   default = "guardduty-admin"
 }

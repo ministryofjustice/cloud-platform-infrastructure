@@ -27,7 +27,7 @@ resource "aws_s3_bucket" "security" {
 
 resource "aws_s3_bucket_object" "ip_list" {
   provider     = "aws.cloud-platform"
-  key          = "${var.guardduty_assets}/iplist.txt"
+  key          = "iplist.txt"
   bucket       = "${aws_s3_bucket.security.id}"
   source       = "${path.module}/resources/iplist.txt"
   content_type = "text/plain"
@@ -446,7 +446,7 @@ resource "aws_guardduty_member" "member7" {
 
 resource "aws_guardduty_ipset" "guardduty" {
   provider    = "aws.cloud-platform"
-  activate    = false
+  activate    = true
   detector_id = "${aws_guardduty_detector.guardduty.id}"
   format      = "TXT"
   location    = "https://s3-eu-west-1.amazonaws.com/${aws_s3_bucket_object.ip_list.bucket}/${aws_s3_bucket_object.ip_list.key}"
