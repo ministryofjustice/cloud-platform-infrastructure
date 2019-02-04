@@ -306,7 +306,7 @@ grafana:
   ingress:
     ## If true, Prometheus Ingress will be created
     ##
-    enabled: false
+    enabled: enabled
 
     ## Annotations for Prometheus Ingress
     ##
@@ -323,7 +323,8 @@ grafana:
     ##
     # hosts:
     #   - prometheus.domain.com
-    hosts: []
+    hosts: 
+    - grafana.apps.cloud-platform-test-4.k8s.integration.dsd.io
 
     ## TLS configuration for prometheus Ingress
     ## Secret must be manually created in the namespace
@@ -332,6 +333,24 @@ grafana:
     # - secretName: prometheus-general-tls
     #   hosts:
     #   - prometheus.example.com
+
+  env:
+    GF_SERVER_ROOT_URL: "https://grafana.apps.cloud-platform-test-4.k8s.integration.dsd.io"
+    GF_ANALYTICS_REPORTING_ENABLED: "false"
+    GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    GF_USERS_ALLOW_SIGN_UP: "false"
+    GF_USERS_AUTO_ASSIGN_ORG_ROLE: "Viewer"
+    GF_USERS_VIEWERS_CAN_EDIT: "true"
+    GF_AUTH_GITHUB_ENABLED: "true"
+    GF_AUTH_GITHUB_ALLOW_SIGN_UP: "true"
+    GF_SMTP_ENABLED: "false"
+    GF_AUTH_GITHUB_ALLOWED_ORGANIZATIONS: "ministryofjustice"
+    GF_AUTH_GITHUB_CLIENT_ID: ""
+    GF_AUTH_GITHUB_CLIENT_SECRET: ""
+    GF_SECURITY_SECRET_KEY: ""
+
+  serverDashboardConfigmaps:
+    - grafana-user-dashboards
 
   sidecar:
     dashboards:
