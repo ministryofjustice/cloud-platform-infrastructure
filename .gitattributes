@@ -1,1 +1,2 @@
 *.tfvars filter=git-crypt diff=git-crypt
+iplist.txt filter=git-crypt diff=git-crypt
