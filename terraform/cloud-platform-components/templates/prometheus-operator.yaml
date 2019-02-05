@@ -38,7 +38,8 @@ defaultRules:
     prometheusOperator: true
     prometheus: true
   ## Labels for default rules
-  labels: {}
+  labels:
+    defaultRules: true
   ## Annotations for default rules
   annotations: {}
 
@@ -97,8 +98,32 @@ alertmanager:
       - match:
           alertname: DeadMansSwitch
         receiver: 'null'
+      - match:
+          alertname: DeploymentReplicasAreOutdated
+        receiver: 'null'
+      - match:
+          alertname: PodIsRestartingFrequently
+        receiver: 'null'
+      - match:
+          severity: critical
+        receiver: pager-duty-high-priority
+      - match:
+          severity: warning
+        receiver: slack-low-priority
     receivers:
     - name: 'null'
+    # Add PagerDuty key to allow integration with a PD service.
+    - name: 'pager-duty-high-priority'
+      pagerduty_configs:
+      - service_key: "${pagerduty_config}"
+    # Add Slack webhook API URL and channel for integration with slack.
+    - name: 'slack-low-priority'
+      slack_configs:
+      - api_url: "${slack_config}"
+        channel: "#lower-priority-alarms"
+        title: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}"
+        text: "{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}"
+        send_resolved: True
 
   ## Alertmanager template files to format alerts
   ## ref: https://prometheus.io/docs/alerting/notifications/
@@ -222,7 +247,7 @@ alertmanager:
 
     ## 	The external URL the Alertmanager instances will be available under. This is necessary to generate correct URLs. This is necessary if Alertmanager is not served from root of a DNS name.	string	false
     ##
-    externalUrl:
+    externalUrl: alertmanager.apps.cloud-platform-test-4.integration.dsd.io
 
     ## 	The route prefix Alertmanager registers HTTP handlers for. This is useful, if using ExternalURL and a proxy is rewriting HTTP routes of a request, and the actual ExternalURL is still true,
     ## but the server serves requests under a different route prefix. For example for use with kubectl proxy.
@@ -250,7 +275,7 @@ alertmanager:
     ## The value "hard" means that the scheduler is *required* to not schedule two replica pods onto the same node.
     ## The value "" will disable pod anti-affinity so that no anti-affinity rules will be configured.
     ##
-    podAntiAffinity: ""
+    podAntiAffinity: "soft"
 
     ## If anti-affinity is enabled sets the topologyKey to use for anti-affinity.
     ## This can be changed to, for example, failure-domain.beta.kubernetes.io/zone
@@ -296,17 +321,20 @@ alertmanager:
 ##
 grafana:
   enabled: true
+  image:
+    repository: grafana/grafana
+    tag: 5.4.2
 
   ## Deploy default dashboards.
   ##
   defaultDashboardsEnabled: true
 
-  adminPassword: prom-operator
+  adminPassword: "${random_password}"
 
   ingress:
     ## If true, Prometheus Ingress will be created
     ##
-    enabled: enabled
+    enabled: true
 
     ## Annotations for Prometheus Ingress
     ##
@@ -787,7 +815,7 @@ prometheus:
 
     ## External URL at which Prometheus will be reachable.
     ##
-    externalUrl: ""
+    externalUrl: "prometheus.apps.cloud-platform-test-4.integration.dsd.io"
 
     ## Define which Nodes the Pods are scheduled on.
     ## ref: https://kubernetes.io/docs/user-guide/node-selection/
@@ -809,7 +837,8 @@ prometheus:
     ## Namespaces to be selected for PrometheusRules discovery.
     ## If unspecified, only the same namespace as the Prometheus object is in is used.
     ##
-    ruleNamespaceSelector: {}
+    ruleNamespaceSelector: 
+      any: true
 
     ## If true, a nil or {} value for prometheus.prometheusSpec.ruleSelector will cause the
     ## prometheus resource to be created with selectors based on values in the helm deployment,
@@ -822,7 +851,8 @@ prometheus:
     ## If unspecified the release `app` and `release` will be used as the label selector
     ## to load rules
     ##
-    ruleSelector: {}
+    ruleSelector:
+      any: true
     ## Example which select all prometheusrules resources
     ## with label "prometheus" with values any of "example-rules" or "example-rules-2"
     # ruleSelector:
@@ -860,7 +890,7 @@ prometheus:
 
     ## How long to retain metrics
     ##
-    retention: 10d
+    retention: 30d
 
     ## If true, the Operator won't process any Prometheus configuration changes
     ##
@@ -918,15 +948,15 @@ prometheus:
     ## Prometheus StorageSpec for persistent data
     ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md
     ##
-    storageSpec: {}
-    #  volumeClaimTemplate:
-    #    spec:
-    #      storageClassName: gluster
-    #      accessModes: ["ReadWriteOnce"]
-    #      resources:
-    #        requests:
-    #          storage: 50Gi
-    #    selector: {}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: persistent-storage
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 100Gi
+        selector: {}
 
     ## AdditionalScrapeConfigs allows specifying additional Prometheus scrape configurations. Scrape configurations
     ## are appended to the configurations generated by the Prometheus Operator. Job configurations must have the form
