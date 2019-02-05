@@ -15,5 +15,5 @@ variable "github_client_secret" {
 }
 
 variable "github_secret_key" {
-  description = "Client secret of GitHub Oauth application"
+  description = "Session secret, to generate a session secret use: `head -c 32 /dev/urandom`"
 }
