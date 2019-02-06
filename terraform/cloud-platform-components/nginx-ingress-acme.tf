@@ -49,20 +49,37 @@ EOF
   }
 }
 
+data "template_file" "nginx_ingress_default_certificate" {
+  template = "${file("${path.module}/templates/nginx-ingress/default-certificate.yaml")}"
+
+  vars {
+    common_name = "*.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+  }
+}
+
 resource "null_resource" "nginx_ingress_default_certificate" {
   depends_on = ["helm_release.cert-manager"]
 
   provisioner "local-exec" {
-    command = "kubectl apply -n ingress-controllers -f ${path.module}/resources/nginx-ingress/default-certificate.yaml"
+    command = <<EOS
+kubectl apply -n ingress-controllers -f - <<EOF
+${data.template_file.nginx_ingress_default_certificate.rendered}
+EOF
+EOS
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
-    command = "kubectl delete -n ingress-controllers -f ${path.module}/resources/nginx-ingress/default-certificate.yaml"
+    when = "destroy"
+
+    command = <<EOS
+kubectl delete -n ingress-controllers -f - <<EOF
+${data.template_file.nginx_ingress_default_certificate.rendered}
+EOF
+EOS
   }
 
   triggers {
-    contents = "${sha1(file("${path.module}/resources/nginx-ingress/default-certificate.yaml"))}"
+    contents = "${sha1("${data.template_file.nginx_ingress_default_certificate.rendered}")}"
   }
 }
 

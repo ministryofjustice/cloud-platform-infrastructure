@@ -8,10 +8,10 @@ spec:
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
-  commonName: '*.apps.cloud-platform-test-8.k8s.integration.dsd.io'
+  commonName: '{{ common_name }}'
   acme:
     config:
     - dns01:
         provider: route53
       domains:
-      - '*.apps.cloud-platform-test-8.k8s.integration.dsd.io'
+      - '{{ common_name }}'
