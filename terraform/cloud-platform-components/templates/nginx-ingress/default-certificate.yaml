@@ -8,10 +8,10 @@ spec:
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
-  commonName: '{{ common_name }}'
+  commonName: '${common_name}'
   acme:
     config:
     - dns01:
         provider: route53
       domains:
-      - '{{ common_name }}'
+      - '${common_name}'
