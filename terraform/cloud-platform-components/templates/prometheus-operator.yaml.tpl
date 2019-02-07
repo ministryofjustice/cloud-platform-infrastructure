@@ -596,7 +596,7 @@ prometheusOperator:
 
   ## Attempt to clean up CRDs created by Prometheus Operator.
   ##
-  cleanupCustomResource: false
+  cleanupCustomResource: true
 
   ## Labels to add to the operator pod
   ##

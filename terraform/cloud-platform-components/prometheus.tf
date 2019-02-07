@@ -54,17 +54,14 @@ resource "helm_release" "prometheus_operator" {
     "null_resource.deploy",
   ]
 
-  lifecycle {
-    ignore_changes = ["keyring"]
-  }
-}
-
-# Delete Prometheus leftovers
-# Ref: https://github.com/coreos/prometheus-operator#removal
-resource "null_resource" "destroy_prometheus" {
+  # Delete Prometheus leftovers
+  # Ref: https://github.com/coreos/prometheus-operator#removal
   provisioner "local-exec" {
     when    = "destroy"
-    command = "kubectl delete --ignore-not-found --all crd && kubectl delete svc -l k8s-app=kubelet -n kube-system"
+    command = "kubectl delete svc -l k8s-app=kubelet -n kube-system"
+  }
+  lifecycle {
+    ignore_changes = ["keyring"]
   }
 }
 
