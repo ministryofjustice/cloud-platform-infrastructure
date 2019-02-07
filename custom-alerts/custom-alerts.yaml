@@ -122,3 +122,12 @@ spec:
       annotations:
         description: Job completion is taking more than 1h to complete cronjob {{$labels.namespaces}}/{{$labels.job}}
         summary: Job {{$labels.job}} didn't finish to complete after 1h
+    - alert: LoadBalancer5XXCountHigh
+      expr: count by (service) (increase(http_requests_total{code=~"5.*"}[15m]))  >=  10
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        description: HTTPCode_Target_5XX_Count high for `{{$labels.service}}`
+        summary: HTTPCode_Target_5XX_Count high
+
