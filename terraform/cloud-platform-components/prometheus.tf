@@ -60,6 +60,7 @@ resource "helm_release" "prometheus_operator" {
     when    = "destroy"
     command = "kubectl delete svc -l k8s-app=kubelet -n kube-system"
   }
+
   lifecycle {
     ignore_changes = ["keyring"]
   }
