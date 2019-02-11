@@ -46,14 +46,17 @@ resource "aws_elasticsearch_domain" "live" {
   elasticsearch_version = "6.2"
 
   cluster_config {
-    instance_type  = "m4.large.elasticsearch"
-    instance_count = "3"
+    instance_type            = "m4.large.elasticsearch"
+    instance_count           = "3"
+    dedicated_master_enabled = true
+    dedicated_master_type    = "m4.large.elasticsearch"
+    dedicated_master_count   = "3"
   }
 
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp2"
-    volume_size = "320"
+    volume_size = "512"
   }
 
   advanced_options {
