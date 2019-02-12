@@ -21,5 +21,5 @@ You can see the list of providers in [guardduty.tf](guardduty.tf#L10-L29), as we
 
 ---
 
-For instructions regarding AWS GuardDuty please see [AWS GuardDuty utilising Terraform](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/aws-guardduty-config/terraform/global-resources/docs/GuardDutyREADME.md)
+For instructions regarding AWS GuardDuty please see [AWS GuardDuty utilising Terraform](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/global-resources/docs/GuardDutyREADME.md)
   
