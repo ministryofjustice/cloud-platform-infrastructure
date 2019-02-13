@@ -120,8 +120,6 @@ alertmanager:
       slack_configs:
       - api_url: "${ slack_config }"
         channel: "#lower-priority-alarms"
-        title: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}"
-        text: "{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}"
         send_resolved: True
 
   ## Alertmanager template files to format alerts
@@ -233,15 +231,15 @@ alertmanager:
     ## Storage is the definition of how storage will be used by the Alertmanager instances.
     ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md
     ##
-    storage: {}
-    # volumeClaimTemplate:
-    #   spec:
-    #     storageClassName: gluster
-    #     accessModes: ["ReadWriteOnce"]
-    #     resources:
-    #       requests:
-    #         storage: 50Gi
-    #   selector: {}
+    storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: default
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
+      selector: {}
 
 
     ## 	The external URL the Alertmanager instances will be available under. This is necessary to generate correct URLs. This is necessary if Alertmanager is not served from root of a DNS name.	string	false
@@ -680,7 +678,7 @@ prometheusOperator:
   ##
   hyperkubeImage:
     repository: k8s.gcr.io/hyperkube
-    tag: v1.12.1
+    tag: v1.11.0
     pullPolicy: IfNotPresent
 
 ## Deploy a Prometheus instance
@@ -782,7 +780,7 @@ prometheus:
     ##
     image:
       repository: quay.io/prometheus/prometheus
-      tag: v2.6.1
+      tag: v2.7.1
 
     ## Tolerations for use with node taints
     ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
@@ -956,7 +954,7 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 50Gi
+              storage: 100Gi
         selector: {}
 
     ## AdditionalScrapeConfigs allows specifying additional Prometheus scrape configurations. Scrape configurations
