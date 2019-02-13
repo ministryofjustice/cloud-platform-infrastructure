@@ -90,34 +90,54 @@ resource "random_id" "session_secret" {
   byte_length = 16
 }
 
-data "template_file" "prometheus_proxy" {
-  template = "${file("${path.module}/templates/oidc-proxy.yaml.tpl")}"
+resource "auth0_client" "monitoring" {
+  name        = "monitoring.${data.terraform_remote_state.cluster.cluster_domain_name}"
+  description = "monitoring auth proxy"
+  app_type    = "regular_web"
 
-  vars {
-    application_service_name     = "kube-prometheus"
-    application_port             = "9090"
-    application_hostname         = "prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-    application_healthcheck      = "enabled"
-    application_healthcheck_port = "/-/healthy"
-    oidc_client_id               = "${data.terraform_remote_state.cluster.oidc_client_id}"
-    oidc_client_secret           = "${data.terraform_remote_state.cluster.oidc_client_secret}"
-    oidc_session_secret          = "${random_id.session_secret.hex}"
+  callbacks = [
+    "https://prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}/oauth2/callback",
+    "https://alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}/oauth2/callback",
+  ]
+
+  custom_login_page_on = true
+  is_first_party       = true
+  oidc_conformant      = true
+  sso                  = true
+
+  jwt_configuration = {
+    alg                 = "RS256"
+    lifetime_in_seconds = "36000"
   }
 }
 
-resource "helm_release" "prometheus_proxy" {
-  name          = "prometheus"
+data "template_file" "prometheus-proxy" {
+  template = "${file("${path.module}/templates/oauth2-proxy.yaml.tpl")}"
+
+  vars {
+    upstream      = "http://kube-prometheus:9090"
+    hostname      = "prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    exclude_paths = "^/-/healthy$"
+    issuer_url    = "${data.terraform_remote_state.cluster.oidc_issuer_url}"
+    client_id     = "${auth0_client.monitoring.client_id}"
+    client_secret = "${auth0_client.monitoring.client_secret}"
+    cookie_secret = "${random_id.session_secret.b64_std}"
+  }
+}
+
+resource "helm_release" "prometheus-proxy" {
+  name          = "prometheus-proxy"
   namespace     = "monitoring"
-  chart         = "../../helm-charts/oidc-proxy"
+  chart         = "stable/oauth2-proxy"
+  version       = "0.9.1"
   recreate_pods = true
 
   values = [
-    "${data.template_file.prometheus_proxy.rendered}",
+    "${data.template_file.prometheus-proxy.rendered}",
   ]
 
   depends_on = [
     "null_resource.deploy",
-    "helm_release.kube_prometheus",
     "random_id.session_secret",
   ]
 
@@ -126,34 +146,33 @@ resource "helm_release" "prometheus_proxy" {
   }
 }
 
-data "template_file" "alertmanager_proxy" {
-  template = "${file("${path.module}/templates/oidc-proxy.yaml.tpl")}"
+data "template_file" "alertmanager-proxy" {
+  template = "${file("${path.module}/templates/oauth2-proxy.yaml.tpl")}"
 
   vars {
-    application_service_name     = "alertmanager-operated"
-    application_port             = "9093"
-    application_hostname         = "alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-    application_healthcheck      = "enabled"
-    application_healthcheck_port = "/-/healthy"
-    oidc_client_id               = "${data.terraform_remote_state.cluster.oidc_client_id}"
-    oidc_client_secret           = "${data.terraform_remote_state.cluster.oidc_client_secret}"
-    oidc_session_secret          = "${random_id.session_secret.hex}"
+    upstream      = "http://kube-prometheus-alertmanager:9093"
+    hostname      = "alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    exclude_paths = "^/-/healthy$"
+    issuer_url    = "${data.terraform_remote_state.cluster.oidc_issuer_url}"
+    client_id     = "${auth0_client.monitoring.client_id}"
+    client_secret = "${auth0_client.monitoring.client_secret}"
+    cookie_secret = "${random_id.session_secret.b64_std}"
   }
 }
 
-resource "helm_release" "alertmanager_proxy" {
-  name          = "alertmanager-operated"
+resource "helm_release" "alertmanager-proxy" {
+  name          = "alertmanager-proxy"
   namespace     = "monitoring"
-  chart         = "../../helm-charts/oidc-proxy"
+  chart         = "stable/oauth2-proxy"
+  version       = "0.9.1"
   recreate_pods = true
 
   values = [
-    "${data.template_file.alertmanager_proxy.rendered}",
+    "${data.template_file.alertmanager-proxy.rendered}",
   ]
 
   depends_on = [
     "null_resource.deploy",
-    "helm_release.kube_prometheus",
     "random_id.session_secret",
   ]
 
