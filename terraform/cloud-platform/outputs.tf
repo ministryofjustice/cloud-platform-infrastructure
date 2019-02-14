@@ -62,6 +62,14 @@ output "oidc_client_secret" {
   value = "${auth0_client.kubernetes.client_secret}"
 }
 
+output "oidc_components_client_id" {
+  value = "${auth0_client.components.client_id}"
+}
+
+output "oidc_components_client_secret" {
+  value = "${auth0_client.components.client_secret}"
+}
+
 output "certificate_arn" {
   value = "${module.cluster_ssl.apps_acm_arn}"
 }

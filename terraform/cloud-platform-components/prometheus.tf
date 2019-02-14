@@ -90,27 +90,6 @@ resource "random_id" "session_secret" {
   byte_length = 16
 }
 
-resource "auth0_client" "monitoring" {
-  name        = "monitoring.${data.terraform_remote_state.cluster.cluster_domain_name}"
-  description = "monitoring auth proxy"
-  app_type    = "regular_web"
-
-  callbacks = [
-    "https://prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}/oauth2/callback",
-    "https://alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}/oauth2/callback",
-  ]
-
-  custom_login_page_on = true
-  is_first_party       = true
-  oidc_conformant      = true
-  sso                  = true
-
-  jwt_configuration = {
-    alg                 = "RS256"
-    lifetime_in_seconds = "36000"
-  }
-}
-
 data "template_file" "prometheus_proxy" {
   template = "${file("${path.module}/templates/oauth2-proxy.yaml.tpl")}"
 
@@ -119,8 +98,8 @@ data "template_file" "prometheus_proxy" {
     hostname      = "prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
     exclude_paths = "^/-/healthy$"
     issuer_url    = "${data.terraform_remote_state.cluster.oidc_issuer_url}"
-    client_id     = "${auth0_client.monitoring.client_id}"
-    client_secret = "${auth0_client.monitoring.client_secret}"
+    client_id     = "${data.terraform_remote_state.cluster.oidc_components_client_id}"
+    client_secret = "${data.terraform_remote_state.cluster.oidc_components_client_secret}"
     cookie_secret = "${random_id.session_secret.b64_std}"
   }
 }
@@ -154,8 +133,8 @@ data "template_file" "alertmanager_proxy" {
     hostname      = "alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
     exclude_paths = "^/-/healthy$"
     issuer_url    = "${data.terraform_remote_state.cluster.oidc_issuer_url}"
-    client_id     = "${auth0_client.monitoring.client_id}"
-    client_secret = "${auth0_client.monitoring.client_secret}"
+    client_id     = "${data.terraform_remote_state.cluster.oidc_components_client_id}"
+    client_secret = "${data.terraform_remote_state.cluster.oidc_components_client_secret}"
     cookie_secret = "${random_id.session_secret.b64_std}"
   }
 }
