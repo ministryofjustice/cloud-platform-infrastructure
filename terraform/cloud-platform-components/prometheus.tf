@@ -111,7 +111,7 @@ resource "auth0_client" "monitoring" {
   }
 }
 
-data "template_file" "prometheus-proxy" {
+data "template_file" "prometheus_proxy" {
   template = "${file("${path.module}/templates/oauth2-proxy.yaml.tpl")}"
 
   vars {
@@ -125,7 +125,7 @@ data "template_file" "prometheus-proxy" {
   }
 }
 
-resource "helm_release" "prometheus-proxy" {
+resource "helm_release" "prometheus_proxy" {
   name          = "prometheus-proxy"
   namespace     = "monitoring"
   chart         = "stable/oauth2-proxy"
@@ -133,7 +133,7 @@ resource "helm_release" "prometheus-proxy" {
   recreate_pods = true
 
   values = [
-    "${data.template_file.prometheus-proxy.rendered}",
+    "${data.template_file.prometheus_proxy.rendered}",
   ]
 
   depends_on = [
@@ -146,7 +146,7 @@ resource "helm_release" "prometheus-proxy" {
   }
 }
 
-data "template_file" "alertmanager-proxy" {
+data "template_file" "alertmanager_proxy" {
   template = "${file("${path.module}/templates/oauth2-proxy.yaml.tpl")}"
 
   vars {
@@ -160,7 +160,7 @@ data "template_file" "alertmanager-proxy" {
   }
 }
 
-resource "helm_release" "alertmanager-proxy" {
+resource "helm_release" "alertmanager_proxy" {
   name          = "alertmanager-proxy"
   namespace     = "monitoring"
   chart         = "stable/oauth2-proxy"
@@ -168,7 +168,7 @@ resource "helm_release" "alertmanager-proxy" {
   recreate_pods = true
 
   values = [
-    "${data.template_file.alertmanager-proxy.rendered}",
+    "${data.template_file.alertmanager_proxy.rendered}",
   ]
 
   depends_on = [
