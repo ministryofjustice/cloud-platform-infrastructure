@@ -29,3 +29,5 @@ data "terraform_remote_state" "cluster" {
     profile = "moj-cp"
   }
 }
+
+data "aws_caller_identity" "current" {}
