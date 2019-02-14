@@ -21,6 +21,7 @@ extraArgs:
   http-address: "0.0.0.0:4180"
   skip-auth-regex: "${exclude_paths}"
   cookie-expire: "7h"
+  skip-provider-button: true
 
 ingress:
   enabled: true
