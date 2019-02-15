@@ -121,6 +121,24 @@ alertmanager:
       - api_url: "${ slack_config }"
         channel: "#lower-priority-alarms"
         send_resolved: True
+        username: '{{ template "slack.default.username" . }}'
+        color: '{{ if eq .Status "firing" }}danger{{ else }}good{{ end }}'
+        title: '{{ template "slack.default.title" . }}'
+        title_link: '{{ template "slack.default.titlelink" . }}'
+        pretext: 
+        text: |-
+          {{ range .Alerts }}
+            *Alert:* {{ .Annotations.message}}
+            *Runbook:* {{ .Annotations.runbook_url }}
+            *Details:*
+            {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+            {{ end }}
+            *-----*
+          {{ end }}
+        fallback: '{{ template "slack.default.fallback" . }}'
+        icon_emoji: '{{ template "slack.default.iconemoji" . }}'
+        icon_url: '{{ template "slack.default.iconurl" . }}'
+        footer: ${ alertmanager_ingress }
 
   ## Alertmanager template files to format alerts
   ## ref: https://prometheus.io/docs/alerting/notifications/
