@@ -1,43 +1,19 @@
-resource "helm_repository" "coreos" {
-  name = "coreos"
-  url  = "https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/"
-}
+# Prometheus operator
+# Ref: https://github.com/helm/charts/tree/master/stable/prometheus-operator
 
-resource "kubernetes_storage_class" "prometheus_storage" {
+resource "kubernetes_secret" "grafana_secret" {
   metadata {
-    name = "prometheus-storage"
+    name      = "grafana-env"
+    namespace = "monitoring"
   }
 
-  storage_provisioner = "kubernetes.io/aws-ebs"
-
-  parameters {
-    type = "gp2"
+  data {
+    GF_AUTH_GITHUB_CLIENT_ID     = "${ var.github_client_id }"
+    GF_AUTH_GITHUB_CLIENT_SECRET = "${ var.github_client_secret }"
+    GF_SECURITY_SECRET_KEY       = "${ var.github_secret_key }"
   }
-}
 
-data "template_file" "prometheus_operator" {
-  template = "${file("${path.module}/templates/prometheus-operator.yaml.tpl")}"
-  vars     = {}
-}
-
-resource "helm_release" "prometheus_operator" {
-  name          = "prometheus-operator"
-  chart         = "prometheus-operator"
-  repository    = "${helm_repository.coreos.metadata.0.name}"
-  namespace     = "monitoring"
-  recreate_pods = "true"
-
-  values = [
-    "${data.template_file.prometheus_operator.rendered}",
-  ]
-
-  depends_on = [
-    "null_resource.deploy",
-  ]
-
-  lifecycle {
-    ignore_changes = ["keyring"]
-  }
+  type = "Opaque"
 }
 
 resource "random_id" "username" {
@@ -48,36 +24,42 @@ resource "random_id" "password" {
   byte_length = 8
 }
 
-data "template_file" "kube_prometheus" {
-  template = "${file("${path.module}/templates/kube-prometheus.yaml.tpl")}"
+data "template_file" "prometheus_operator" {
+  template = "${file("${ path.module }/templates/prometheus-operator.yaml.tpl")}"
 
   vars {
-    alertmanager_ingress = "https://alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-    grafana_ingress      = "grafana.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-    grafana_root         = "https://grafana.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-    pagerduty_config     = "${var.pagerduty_config}"
-    slack_config         = "${var.slack_config}"
-    promtheus_ingress    = "https://prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-    random_username      = "${random_id.username.hex}"
-    random_password      = "${random_id.password.hex}"
+    alertmanager_ingress = "https://alertmanager.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
+    grafana_ingress      = "grafana.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
+    grafana_root         = "https://grafana.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
+    pagerduty_config     = "${ var.pagerduty_config }"
+    slack_config         = "${ var.slack_config }"
+    prometheus_ingress   = "https://prometheus.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
+    random_username      = "${ random_id.username.hex }"
+    random_password      = "${ random_id.password.hex }"
   }
 }
 
-resource "helm_release" "kube_prometheus" {
-  name          = "kube-prometheus"
-  chart         = "kube-prometheus"
-  repository    = "${helm_repository.coreos.metadata.0.name}"
+resource "helm_release" "prometheus_operator" {
+  name          = "prometheus-operator"
+  chart         = "stable/prometheus-operator"
   namespace     = "monitoring"
   recreate_pods = "true"
 
   values = [
-    "${data.template_file.kube_prometheus.rendered}",
+    "${ data.template_file.prometheus_operator.rendered }",
   ]
 
+  # Depends on Helm being installed
   depends_on = [
     "null_resource.deploy",
-    "helm_release.prometheus_operator",
   ]
+
+  # Delete Prometheus leftovers
+  # Ref: https://github.com/coreos/prometheus-operator#removal
+  provisioner "local-exec" {
+    when    = "destroy"
+    command = "kubectl delete svc -l k8s-app=kubelet -n kube-system"
+  }
 
   lifecycle {
     ignore_changes = ["keyring"]
@@ -85,7 +67,7 @@ resource "helm_release" "kube_prometheus" {
 }
 
 # Alertmanager and Prometheus proxy
-
+# Ref: https://github.com/evry/docker-oidc-proxy
 resource "random_id" "session_secret" {
   byte_length = 16
 }
@@ -94,7 +76,7 @@ data "template_file" "prometheus_proxy" {
   template = "${file("${path.module}/templates/oidc-proxy.yaml.tpl")}"
 
   vars {
-    application_service_name     = "kube-prometheus"
+    application_service_name     = "prometheus-operated"
     application_port             = "9090"
     application_hostname         = "prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
     application_healthcheck      = "enabled"
@@ -117,7 +99,7 @@ resource "helm_release" "prometheus_proxy" {
 
   depends_on = [
     "null_resource.deploy",
-    "helm_release.kube_prometheus",
+    "helm_release.prometheus_operator",
     "random_id.session_secret",
   ]
 
@@ -142,7 +124,7 @@ data "template_file" "alertmanager_proxy" {
 }
 
 resource "helm_release" "alertmanager_proxy" {
-  name          = "alertmanager-operated"
+  name          = "alertmanager"
   namespace     = "monitoring"
   chart         = "../../helm-charts/oidc-proxy"
   recreate_pods = true
@@ -153,7 +135,7 @@ resource "helm_release" "alertmanager_proxy" {
 
   depends_on = [
     "null_resource.deploy",
-    "helm_release.kube_prometheus",
+    "helm_release.prometheus_operator",
     "random_id.session_secret",
   ]
 
