@@ -742,7 +742,7 @@ prometheus:
     ## a role binding in the release namespace will always be created.
     ##
     roleNamespaces:
-      - kube-system
+      - monitoring
 
   ## Configure pod disruption budgets for Prometheus
   ## ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/#specifying-a-poddisruptionbudget
@@ -826,7 +826,7 @@ prometheus:
 
     ## External URL at which Prometheus will be reachable.
     ##
-    externalUrl: "${ promtheus_ingress }"
+    externalUrl: "${ prometheus_ingress }"
 
     ## Define which Nodes the Pods are scheduled on.
     ## ref: https://kubernetes.io/docs/user-guide/node-selection/
