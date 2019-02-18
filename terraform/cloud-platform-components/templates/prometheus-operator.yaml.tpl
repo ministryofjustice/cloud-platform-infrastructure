@@ -88,7 +88,7 @@ alertmanager:
     global:
       resolve_timeout: 5m
     route:
-      group_by: ['job']
+      group_by: ['alertname', 'job']
       group_wait: 30s
       group_interval: 5m
       repeat_interval: 12h
@@ -121,46 +121,81 @@ alertmanager:
       - api_url: "${ slack_config }"
         channel: "#lower-priority-alarms"
         send_resolved: True
-        username: '{{ template "slack.default.username" . }}'
-        color: '{{ if eq .Status "firing" }}danger{{ else }}good{{ end }}'
-        title: '{{ template "slack.default.title" . }}'
-        title_link: '{{ template "slack.default.titlelink" . }}'
-        pretext: 
-        text: |-
-          {{ range .Alerts }}
-            *Alert:* {{ .Annotations.message}}
-            *Runbook:* {{ .Annotations.runbook_url }}
-            *Details:*
-            {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
-            {{ end }}
-            *-----*
-          {{ end }}
-        fallback: '{{ template "slack.default.fallback" . }}'
-        icon_emoji: '{{ template "slack.default.iconemoji" . }}'
-        icon_url: '{{ template "slack.default.iconurl" . }}'
+        title: '{{ template "slack.cp.title" . }}'
+        text: '{{ template "slack.cp.text" . }}'
         footer: ${ alertmanager_ingress }
+        actions:
+        - type: button
+          text: 'Runbook :blue_book:'
+          url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+        - type: button
+          text: 'Query :mag:'
+          url: '{{ (index .Alerts 0).GeneratorURL }}'
+        - type: button
+          text: 'Silence :no_bell:'
+          url: '{{ template "__alert_silence_link" . }}'
+    templates: 
+    - '/etc/alertmanager/config/cp-slack-templates.tmpl'
+        
 
   ## Alertmanager template files to format alerts
   ## ref: https://prometheus.io/docs/alerting/notifications/
   ##      https://prometheus.io/docs/alerting/notification_examples/
   ##
-  templateFiles: {}
-  #
-  # An example template:
-  #   template_1.tmpl: |-
-  #       {{ define "cluster" }}{{ .ExternalURL | reReplaceAll ".*alertmanager\\.(.*)" "$1" }}{{ end }}
-  #
-  #       {{ define "slack.myorg.text" }}
-  #       {{- $root := . -}}
-  #       {{ range .Alerts }}
-  #         *Alert:* {{ .Annotations.summary }} - `{{ .Labels.severity }}`
-  #         *Cluster:*  {{ template "cluster" $root }}
-  #         *Description:* {{ .Annotations.description }}
-  #         *Graph:* <{{ .GeneratorURL }}|:chart_with_upwards_trend:>
-  #         *Runbook:* <{{ .Annotations.runbook }}|:spiral_note_pad:>
-  #         *Details:*
-  #           {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
-  #           {{ end }}
+  templateFiles: 
+    cp-slack-templates.tmpl: |-
+      {{ define "slack.cp.title" -}}
+        [{{ .Status | toUpper -}}
+        {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
+        ] {{ template "__alert_severity_prefix_title" . }} {{ .CommonLabels.alertname }}
+      {{- end }}
+
+      {{/* The test to display in the alert */}}
+      {{ define "slack.cp.text" -}}
+        {{ range .Alerts }}
+            *Alert:* {{ .Annotations.message}}
+            *Details:*
+            {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+            {{ end }}
+            *-----*
+          {{ end }}
+      {{- end }}
+        
+      {{ define "__alert_silence_link" -}}
+        {{ .ExternalURL }}/#/silences/new?filter=%7B
+        {{- range .CommonLabels.SortedPairs -}}
+          {{- if ne .Name "alertname" -}}
+            {{- .Name }}%3D"{{- .Value -}}"%2C%20
+          {{- end -}}
+        {{- end -}}
+          alertname%3D"{{ .CommonLabels.alertname }}"%7D
+      {{- end }}
+
+      {{ define "__alert_severity_prefix" -}}
+          {{ if ne .Status "firing" -}}
+          :white_check_mark:
+          {{- else if eq .Labels.severity "critical" -}}
+          :fire:
+          {{- else if eq .Labels.severity "warning" -}}
+          :warning:
+          {{- else -}}
+          :question:
+          {{- end }}
+      {{- end }}
+
+      {{ define "__alert_severity_prefix_title" -}}
+          {{ if ne .Status "firing" -}}
+          :white_check_mark:
+          {{- else if eq .CommonLabels.severity "critical" -}}
+          :fire:
+          {{- else if eq .CommonLabels.severity "warning" -}}
+          :warning:
+          {{- else if eq .CommonLabels.severity "info" -}}
+          :information_source:
+          {{- else -}}
+          :question:
+          {{- end }}
+      {{- end }}
 
   ingress:
     enabled: false
