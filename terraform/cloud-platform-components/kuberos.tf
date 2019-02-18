@@ -26,12 +26,12 @@ resource "helm_release" "kuberos" {
 
   set {
     name  = "oidc.clientId"
-    value = "${data.terraform_remote_state.cluster.oidc_client_id}"
+    value = "${data.terraform_remote_state.cluster.oidc_kubernetes_client_id}"
   }
 
   set {
     name  = "oidc.clientSecret"
-    value = "${data.terraform_remote_state.cluster.oidc_client_secret}"
+    value = "${data.terraform_remote_state.cluster.oidc_kubernetes_client_secret}"
   }
 
   set {
