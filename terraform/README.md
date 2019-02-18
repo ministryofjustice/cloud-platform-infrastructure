@@ -1,66 +1,34 @@
-# Kubernetes Investigations Terraform code
+# Cloud Platform Infrastructure - Terraform
 
-This Readme includes the Terraform code part for the Kubernetes investigations repository.
-The following directory is structured into:
+This `README` will serve as a brief outline of the `cloud-platform-infrastructure/terraform` directory and its structure. Each directory will contain a README outlining its own function and design.
 
 ```
 ├── README.md
+├── cloud-platform-account
 ├── cloud-platform-components
+├── cloud-platform-dr
 ├── cloud-platform
 ├── global-resources
 └── modules
 ```
+At present, there is no pipeline to apply changes to the Cloud Platform Infrastructure so this must be applied locally using:
+
+```terraform
+terraform init
+terraform workspace select <clusterName>
+terraform apply
+```
+## Cloud Platform Account
+To be run at account level only. Contains (AWS) account level configuration such as `cloudtrail` and `dlm`.
+
 ## Cloud Platform Components
-The cloud-platform-components directory contains applicatoins that enable a "cluster ready" status. You'll need to rely on Terraform workspaces to amend different clusters.
+Contains a variety of applications to bootstrap a Kubernetes cluster into a "ready" state including `pod-security-policies`, `monitoring` and `kiam`.
 
 ## Cloud Platform
-The cloud-platform directory is were the cluster specific code lives and relies on Terraform workspaces as the starting point.
-
-## Global Resources
-The global-resources directory contains Terraform code to build the common resources for all clusters.
-Within Global Resources you can find:
-
-### ecr_credentials.tf
-
-This Terraform file uses the following Terraform module which creates ECR credentials and repository on AWS.
-This Module is used to create the user, ECR repository and credentials for our example app. The team name is `webops` and the repository name is `cloud-platform-reference-app` and these are the parameters used by the module in this case
-
-* [AWS ECR Cloud Platform Terraform module](https://github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials)
-
-### How to use the Module
-
-#### Context
-
-This module can be used by cloud platforms to create an ECR repository, credentials, and a user for other teams upon request. An ERC repository and credentials are required by any team to build and application on AWS. They would need to upload the image into ECR to use it within AWS.
-
-The way to use this module, similarly than the ecr_credentials.tf, a new Terraform TF file needs to be created with:
-
-```hcl
-module "team_ECR_credentials" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=master"
-
-  repository_name = "team-repository"
-  team_name = "the-team"
-}
-```
-
-Where the `repository_name` and `team_name` variables would have to be replaced with the team specifics, along with the module name.
-
-To run this example you need to execute:
-
-```bash
-$ Terraform init
-$ Terraform plan
-$ Terraform apply
-```
-In the same directory where the newly created Terraform file lives.
-
-**Note that this example may create resources which can cost money. Run `Terraform destroy` when you don't need these resources.**
-
-The user_name ,secret_access_key and repository_arn outputs will need to be distributed to the Team after this code is run.
-
-## Modules
-The modules directory contains Terraform modules within this repository. These modules will need to be migrated to one git repository per module, the same way the AWS ECR module was built.
+This directory will create you the outlines of a Kubernetes cluster, including a `kops.tf` to be used to create or modify a cluster. 
 
 ## Cloud Platform DR
-The cloud-platform-dr directory contains Terraform code to be used in a disaster recovery scenario to restore resources / data.
+To be used in a disaster recovery scenario, which restores resources and data.
+
+## Global Resources
+The global-resources directory contains Terraform code to build the common resources for all clusters across a multitude of AWS accounts.
