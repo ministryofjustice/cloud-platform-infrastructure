@@ -431,6 +431,7 @@ grafana:
     dashboards:
       enabled: true
       label: grafana_dashboard
+      searchNamespace: ALL
     datasources:
       enabled: true
       label: grafana_datasource
