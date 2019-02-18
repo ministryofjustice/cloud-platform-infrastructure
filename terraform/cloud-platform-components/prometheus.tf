@@ -76,7 +76,7 @@ data "template_file" "prometheus_proxy" {
   template = "${file("${path.module}/templates/oauth2-proxy.yaml.tpl")}"
 
   vars {
-    upstream      = "http://kube-prometheus:9090"
+    upstream      = "http://prometheus-operator-prometheus:9090"
     hostname      = "prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
     exclude_paths = "^/-/healthy$"
     issuer_url    = "${data.terraform_remote_state.cluster.oidc_issuer_url}"
@@ -111,7 +111,7 @@ data "template_file" "alertmanager_proxy" {
   template = "${file("${path.module}/templates/oauth2-proxy.yaml.tpl")}"
 
   vars {
-    upstream      = "http://kube-prometheus-alertmanager:9093"
+    upstream      = "http://prometheus-operator-alertmanager:9093"
     hostname      = "alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
     exclude_paths = "^/-/healthy$"
     issuer_url    = "${data.terraform_remote_state.cluster.oidc_issuer_url}"
