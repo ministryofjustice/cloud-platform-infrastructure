@@ -22,6 +22,8 @@ extraArgs:
   skip-auth-regex: "${exclude_paths}"
   cookie-expire: "7h"
   skip-provider-button: true
+  pass-basic-auth: false
+  pass-host-header: false
 
 ingress:
   enabled: true
