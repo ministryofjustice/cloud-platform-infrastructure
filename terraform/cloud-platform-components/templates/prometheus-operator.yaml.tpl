@@ -957,10 +957,10 @@ prometheus:
     resources:
       requests:
         cpu: 1
-        memory: 4000Mi
+        memory: 10Gi
       limits:
         cpu: 1
-        memory: 4000Mi
+        memory: 10Gi
 
     ## Prometheus StorageSpec for persistent data
     ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md
