@@ -84,7 +84,7 @@ EOS
 }
 
 resource "null_resource" "nginx_ingress_servicemonitor" {
-  depends_on = ["helm_release.kube_prometheus"]
+  depends_on = ["helm_release.prometheus_operator"]
 
   provisioner "local-exec" {
     command = "kubectl apply -n ingress-controllers -f ${path.module}/resources/nginx-ingress/servicemonitor.yaml"

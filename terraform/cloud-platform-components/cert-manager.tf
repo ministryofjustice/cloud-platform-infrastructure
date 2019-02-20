@@ -135,7 +135,7 @@ resource "null_resource" "cert_manager_webhook_label" {
 }
 
 resource "null_resource" "cert_manager_servicemonitor" {
-  depends_on = ["helm_release.kube_prometheus", "helm_release.cert-manager"]
+  depends_on = ["helm_release.prometheus_operator", "helm_release.cert-manager"]
 
   provisioner "local-exec" {
     command = "kubectl apply -n cert-manager -f ${path.module}/resources/cert-manager/servicemonitor.yaml"
