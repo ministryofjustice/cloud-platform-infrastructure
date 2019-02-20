@@ -53,17 +53,17 @@ Once complete, make a note of the new Webhook for use within the Prometheus conf
 
 
 #### 2. Add webhook to `terraform.tfvars` file
-```sh
+```yaml
 slack_config_<team_name> = "https://hooks.slack.com/services/xxxxxx/xxxxxx/xxxxxx"
 ```
 
-#### 3. Add new entries to `kube.prometheus.yaml.tpl`
+#### 3. Add new entries to `prometheus-operator.yaml.tpl`
 
 `alertmanager:config:routes`
 
 `alertmanager:config:receivers`
 
-```bash
+```yaml
 alertmanager:
   config:
     global:
@@ -83,15 +83,26 @@ alertmanager:
       slack_configs:
       - api_url: "${slack_config_<team_name>}"
         channel: "#<channel_name>"
-        title: "{{ range .Alerts }}{{ .Annotations.summary }}\n{{ end }}"
-        text: "{{ range .Alerts }}{{ .Annotations.description }}\n{{ end }}"
         send_resolved: True
+        title: '{{ template "slack.cp.title" . }}'
+        text: '{{ template "slack.cp.text" . }}'
+        footer: ${ alertmanager_ingress }
+        actions:
+        - type: button
+          text: 'Runbook :blue_book:'
+          url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+        - type: button
+          text: 'Query :mag:'
+          url: '{{ (index .Alerts 0).GeneratorURL }}'
+        - type: button
+          text: 'Silence :no_bell:'
+          url: '{{ template "__alert_silence_link" . }}'
 ```
 
-Note: For alerts into multiple slack channels, add a second entry under `slack_configs` in the new receiver name.
+Note: For alerts into multiple slack channels, add a second entry for `api_url` and `channel` under `slack_configs` 
 #### Add a new vars entry in `prometheus.tf`
 
-```bash
+```yaml
 data "template_file" "kube_prometheus" {
   template = "${file("${path.module}/templates/kube-prometheus.yaml.tpl")}"
 
@@ -102,7 +113,7 @@ data "template_file" "kube_prometheus" {
 ```
 #### Add a new variable in `variables.tf`
 
-```bash
+```yaml
 variable "slack_config_<teamn_name>" {
   description = "Add Slack webhook API URL and channel for integration with slack."
 }
@@ -111,20 +122,23 @@ variable "slack_config_<teamn_name>" {
 All alerts are routed using the `severity` label. Provide the development team the severity label created for each route (default is team_name),
 which will be used by the developemt team when creating custom application alerts. 
 
-#### kube-prometheus-custom-alerts<application_name>.yaml
+#### prometheus-custom-alerts-<application_name>.yaml
+
+Once the route configuration is complete by the Cloud Platform Team, the application team to use the 'severity' label value supplied and create a custom alert using the template below:
 
 ```yaml
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   creationTimestamp: null
+  namespace: <namespace>
   labels:
-    prometheus: kube-prometheus
+    prometheus: prometheus-operator
     role: alert-rules
-  name: kube-prometheus-custom-alerts-<application_name>
+  name: prometheus-custom-alerts-<application_name>
 spec:
   groups:
-  - name: application.rules
+  - name: application-rules
     rules:
     - alert: <alert_name>
       expr: <alert_query>
@@ -132,8 +146,8 @@ spec:
       labels:
         severity: <team_name>
       annotations:
-        description: <description_alert>
-        summary: <summary_alert>
+        message: <alert_message> 
+        runbook_url: <http://my-support-docs>
 ```
 
 
@@ -144,10 +158,11 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   creationTimestamp: null
+  namespace: test-namespace
   labels:
-    prometheus: kube-prometheus
+    prometheus: prometheus-operator
     role: alert-rules
-  name: kube-prometheus-custom-alerts-my-application
+  name: prometheus-custom-alerts-my-application
 spec:
   groups:
   - name: node.rules
@@ -156,8 +171,9 @@ spec:
       expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
       for: 5m
       labels:
-        severity: it-team
+        severity: cp-team
       annotations:
-        description: This device's CPU usage has exceeded the threshold with a value of {{ $value }}.
-        summary: Instance {{ $labels.instance }} CPU usage is dangerously high
+        message: This device's CPU usage has exceeded the threshold with a value of {{ $value }}. Instance {{ $labels.instance }} CPU usage is dangerously high
+        runbook_url: http://link-to-support-docs.website
 ```
+
