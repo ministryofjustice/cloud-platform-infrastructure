@@ -4,16 +4,16 @@ This directory contains application layer components that essentially bootstrap 
 
 
 ## Contents
-- [External-dns](#auth0)
-- [Fluentd](#dns)
-- [Helm](#elasticsearch)
-- [KIAM](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/global-resources/docs/GuardDutyREADME.md)
-- [Kuberos](#s3)
-- [Metrics-server](#saml)
-- [Nginx-ingress](#saml)
-- [Prometheus](#saml)
-- [Pod Security Policies](#saml)
-- [RBAC](#saml)
+- [External-dns](#external-dns)
+- [Fluentd](#fluentd)
+- [Helm](#helm)
+- [KIAM](#kiam)
+- [Kuberos](#kuberos)
+- [Metrics-server](#metrics-server)
+- [Nginx-ingress](#nginx-ingress)
+- [Prometheus](#prometheus)
+- [Pod Security Policies](#pod-security-policies)
+- [RBAC](#rbac)
 
 ## External-dns
 ExternalDNS synchronizes exposed Kubernetes Services and Ingresses with DNS providers. This basically makes Kubernetes resources discoverable via public DNS servers. We utilise the stable Helm [chart](https://github.com/helm/charts/tree/master/stable/external-dns) passing an IAM role and cluster domain name.

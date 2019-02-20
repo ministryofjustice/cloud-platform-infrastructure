@@ -3,9 +3,8 @@
 This README will detail the purpose of the Cloud Platform Account layer in Terraform. 
 
 ## Contents
-  - [What it contains?](#what-it-contains)
-    - [Cloudtrail]()
-    - [DLM]()
+  - [Cloudtrail](#cloudtrail)
+  - [DLM](#dlm)
   - [When do I use this?](#when-do-I-use-this)
   - [How do I run this?](#terraform-modules)
 

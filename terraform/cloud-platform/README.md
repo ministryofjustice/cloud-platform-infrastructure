@@ -3,9 +3,8 @@
 This README will detail the purpose of the Cloud Platform layer in Terraform. The Cloud Platform in this context refers to the Kubernetes platform built by the MoJ Cloud Platform team. All Terraform in this directory will create cluster specific infrastructure. 
 
 ## Contents
-  - [What it contains?](#what-it-contains)
-    - [Bastion]()
-    - [Kops]()
+  - [Bastion](#bastion)
+  - [Kops](#kops)
   - [When do I use this?](#when-do-I-use-this)
   - [How do I run this?](#terraform-modules)
 
