@@ -13,9 +13,9 @@ This README will detail the purpose of the Cloud Platform Account layer in Terra
 ### CloudTrail
 The `cloudtrail.tf` in this directory will create a cloudtrail and a bucket in your specified AWS account. Please note you can only run this once per account as there will be a name clash.
 
-### DLM - Backup etcd Persistant Volumes 
+### DLM - Backup etcd Persistent Volumes 
 
-Created to backup etcd persistant volumes within an AWS account.
+Created to backup etcd persistent volumes within an AWS account.
 
 #### Bucket Names
 

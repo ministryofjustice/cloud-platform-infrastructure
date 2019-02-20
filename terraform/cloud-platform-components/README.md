@@ -1,6 +1,6 @@
 # Cloud Platform Components - Terraform
 
-This directory contains application layer components that essestially bootstrap the cluster into what we would consider "ready to use". This includes applications such as Prometheus etc. 
+This directory contains application layer components that essentially bootstrap the cluster into what we would consider "ready to use". This includes applications such as Prometheus etc. 
 
 
 ## Contents
@@ -75,7 +75,7 @@ Again, we use the stable Helm chart for the deployment.
 Metrics-server allows us to perform resource queries against the cluster. Commands like `kubectl top pods` allow us to diagnose resource constraints. 
 
 ## Nginx-ingress
-A vital component in the cluster. The Nginx-ingress controlle is a daemon, deployed as a Kubernetes Pod, that watches the apiserver's /ingresses endpoint for updates to the Ingress resource. Its job is to satisfy requests for Ingresses.
+A vital component in the cluster. The Nginx-ingress controller is a daemon, deployed as a Kubernetes Pod, that watches the apiserver's /ingresses endpoint for updates to the Ingress resource. Its job is to satisfy requests for Ingresses.
 
 ## Prometheus
 We utilise [Prometheus-Operator](https://github.com/helm/charts/tree/master/stable/prometheus-operator) to deploy Prometheus onto the Cloud Platform. Once installed a `DaemonSet` of exporters is deployed scraping metrics from across the cluster. Grafana and AlertManager are also deployed as part of this chart along with relevant proxies. 
@@ -87,7 +87,7 @@ To maintain data across deployments and version upgrades data must be persisted 
 This has previously been achieved by applying an individual storage class manifest and referencing it in the values.yaml Prometheus-operator Helm chart.
 
 ### Adding Pingdom Alerts to monitor Prometheus and Alermanager Externally
-Prometheus and AlertManager will be behind an OIDC proxy with GitHub credentials required to view the GUI. However, the /-/healthy endpoint for each applcation will be exposed directly to the internet.
+Prometheus and AlertManager will be behind an OIDC proxy with GitHub credentials required to view the GUI. However, the /-/healthy endpoint for each application will be exposed directly to the internet.
 
 ```
 https://$PROMETHEUS_URL$/-/healthy
@@ -96,7 +96,7 @@ https://$ALERTMANAGER_URL$/-/healthy
 
 To expose the /-/healthy endpoint, an additional path entry is required in the Ingress object. Please see (oidc-proxy.yaml)[monitoring/oidc-proxy.yaml] for details.
 
-A pingdom alert should be setup (with appropiate alert recipients) to the /healthy endpoints for each application described above.
+A pingdom alert should be setup (with appropriate alert recipients) to the /healthy endpoints for each application described above.
 
 ### Prometheus to Slack Alerting Routes
 
@@ -164,7 +164,7 @@ variable "slack_config_<teamn_name>" {
 ```
 
 All alerts are routed using the `severity` label. Provide the development team the severity label created for each route (default is team_name),
-which will be used by the developemt team when creating custom application alerts. 
+which will be used by the development team when creating custom application alerts. 
 
 #### kube-prometheus-custom-alerts<application_name>.yaml
 
