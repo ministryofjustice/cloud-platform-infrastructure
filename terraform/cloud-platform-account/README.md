@@ -68,3 +68,8 @@ After fully restoring the volume ensure that the old volume is no longer there, 
 ## When do I use this?
 The idea of this directory is to collect all terraform that runs at account level. For example, if you provision a brand new account to be used as part of the Cloud Platform, you should run this terraform. 
 ## How do I use this?
+```bash
+terraform init
+terraform workspace select/new <AWSaccountName>
+terraform apply
+```
