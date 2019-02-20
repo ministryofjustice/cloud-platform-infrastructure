@@ -1,4 +1,4 @@
-# Cloud Platform Account - Terraform
+# Cloud Platform - Terraform
 
 This README will detail the purpose of the Cloud Platform layer in Terraform. The Cloud Platform in this context refers to the Kubernetes platform built by the MoJ Cloud Platform team. All Terraform in this directory will create cluster specific infrastructure. 
 
