@@ -84,24 +84,19 @@ alertmanager:
       - api_url: "${slack_config_<team_name>}"
         channel: "#<channel_name>"
         send_resolved: True
-        username: '{{ template "slack.default.username" . }}'
-        color: '{{ if eq .Status "firing" }}danger{{ else }}good{{ end }}'
-        title: '{{ template "slack.default.title" . }}'
-        title_link: '{{ template "slack.default.titlelink" . }}'
-        pretext: 
-        text: |-
-          {{ range .Alerts }}
-            *Alert:* {{ .Annotations.message}}
-            *Runbook:* {{ .Annotations.runbook_url }}
-            *Details:*
-            {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
-            {{ end }}
-            *-----*
-          {{ end }}
-        fallback: '{{ template "slack.default.fallback" . }}'
-        icon_emoji: '{{ template "slack.default.iconemoji" . }}'
-        icon_url: '{{ template "slack.default.iconurl" . }}'
+        title: '{{ template "slack.cp.title" . }}'
+        text: '{{ template "slack.cp.text" . }}'
         footer: ${ alertmanager_ingress }
+        actions:
+        - type: button
+          text: 'Runbook :blue_book:'
+          url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+        - type: button
+          text: 'Query :mag:'
+          url: '{{ (index .Alerts 0).GeneratorURL }}'
+        - type: button
+          text: 'Silence :no_bell:'
+          url: '{{ template "__alert_silence_link" . }}'
 ```
 
 Note: For alerts into multiple slack channels, add a second entry for `api_url` and `channel` under `slack_configs` 
