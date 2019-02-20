@@ -95,6 +95,9 @@ alertmanager:
       receiver: 'null'
       routes:
       - match:
+          alertname: CPUThrottlingHigh
+        receiver: 'null'
+      - match:
           alertname: DeadMansSwitch
         receiver: 'null'
       - match:
