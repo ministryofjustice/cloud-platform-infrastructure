@@ -34,3 +34,5 @@ data "terraform_remote_state" "cluster" {
 data "aws_iam_role" "nodes" {
   name = "nodes.${data.terraform_remote_state.cluster.cluster_domain_name}"
 }
+
+data "aws_caller_identity" "current" {}

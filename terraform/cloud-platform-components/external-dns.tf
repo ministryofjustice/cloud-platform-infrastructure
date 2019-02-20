@@ -49,6 +49,7 @@ provider: aws
 aws:
   region: eu-west-1
   zoneType: public
+  roleArn: "${aws_iam_role.external_dns.arn}"
 domainFilters:
   - "${data.terraform_remote_state.cluster.cluster_domain_name}"
 rbac:

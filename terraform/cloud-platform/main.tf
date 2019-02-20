@@ -98,10 +98,31 @@ resource "aws_key_pair" "cluster" {
 }
 
 resource "auth0_client" "kubernetes" {
-  name                 = "${local.cluster_name}"
-  description          = "kubernetes authentication"
+  name                 = "${local.cluster_name}:kubernetes"
+  description          = "Cloud Platform kubernetes"
   app_type             = "regular_web"
   callbacks            = ["https://login.apps.${local.cluster_base_domain_name}/ui"]
+  custom_login_page_on = true
+  is_first_party       = true
+  oidc_conformant      = true
+  sso                  = true
+
+  jwt_configuration = {
+    alg                 = "RS256"
+    lifetime_in_seconds = "36000"
+  }
+}
+
+resource "auth0_client" "components" {
+  name        = "${local.cluster_name}:components"
+  description = "Cloud Platform components"
+  app_type    = "regular_web"
+
+  callbacks = [
+    "https://prometheus.apps.${local.cluster_base_domain_name}/oauth2/callback",
+    "https://alertmanager.apps.${local.cluster_base_domain_name}/oauth2/callback",
+  ]
+
   custom_login_page_on = true
   is_first_party       = true
   oidc_conformant      = true

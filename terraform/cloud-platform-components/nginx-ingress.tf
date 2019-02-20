@@ -10,7 +10,7 @@ controller:
   config:
     generate-request-id: "true"
     proxy-buffer-size: "16k"
-    proxy-body-size: "16m"
+    proxy-body-size: "50m"
     server-snippet: |
       if ($http_x_forwarded_proto != 'https') {
         return 308 https://$host$request_uri;
