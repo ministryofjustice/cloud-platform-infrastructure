@@ -160,7 +160,7 @@ metadata:
   creationTimestamp: null
   namespace: test-namespace
   labels:
-    prometheus: prometheus-oprator
+    prometheus: prometheus-operator
     role: alert-rules
   name: prometheus-custom-alerts-my-application
 spec:
