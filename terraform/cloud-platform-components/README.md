@@ -151,8 +151,8 @@ spec:
       labels:
         severity: <team_name>
       annotations:
-        Message: <alert_message> 
-        Runbook URL: <http://my-support-docs>
+        message: <alert_message> 
+        runbook_url: <http://my-support-docs>
 ```
 
 
@@ -178,7 +178,7 @@ spec:
       labels:
         severity: cp-team
       annotations:
-        Message: This device's CPU usage has exceeded the threshold with a value of {{ $value }}. Instance {{ $labels.instance }} CPU usage is dangerously high
-        Runbook URL: http://link-to-support-docs.website
+        message: This device's CPU usage has exceeded the threshold with a value of {{ $value }}. Instance {{ $labels.instance }} CPU usage is dangerously high
+        runbook_url: http://link-to-support-docs.website
 ```
 
