@@ -40,10 +40,10 @@ data "template_file" "prometheus_operator" {
 }
 
 resource "helm_release" "prometheus_operator" {
-  name          = "prometheus-operator"
-  chart         = "stable/prometheus-operator"
-  namespace     = "monitoring"
-  recreate_pods = "true"
+  name      = "prometheus-operator"
+  chart     = "stable/prometheus-operator"
+  namespace = "monitoring"
+  version   = "3.0.0"
 
   values = [
     "${ data.template_file.prometheus_operator.rendered }",
@@ -87,11 +87,10 @@ data "template_file" "prometheus_proxy" {
 }
 
 resource "helm_release" "prometheus_proxy" {
-  name          = "prometheus-proxy"
-  namespace     = "monitoring"
-  chart         = "stable/oauth2-proxy"
-  version       = "0.9.1"
-  recreate_pods = true
+  name      = "prometheus-proxy"
+  namespace = "monitoring"
+  chart     = "stable/oauth2-proxy"
+  version   = "0.9.1"
 
   values = [
     "${data.template_file.prometheus_proxy.rendered}",
@@ -122,11 +121,10 @@ data "template_file" "alertmanager_proxy" {
 }
 
 resource "helm_release" "alertmanager_proxy" {
-  name          = "alertmanager-proxy"
-  namespace     = "monitoring"
-  chart         = "stable/oauth2-proxy"
-  version       = "0.9.1"
-  recreate_pods = true
+  name      = "alertmanager-proxy"
+  namespace = "monitoring"
+  chart     = "stable/oauth2-proxy"
+  version   = "0.9.1"
 
   values = [
     "${data.template_file.alertmanager_proxy.rendered}",
