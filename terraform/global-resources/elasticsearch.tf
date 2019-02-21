@@ -47,7 +47,7 @@ resource "aws_elasticsearch_domain" "live" {
 
   cluster_config {
     instance_type            = "m4.large.elasticsearch"
-    instance_count           = "3"
+    instance_count           = "4"
     dedicated_master_enabled = true
     dedicated_master_type    = "m4.large.elasticsearch"
     dedicated_master_count   = "3"
