@@ -94,8 +94,6 @@ https://$PROMETHEUS_URL$/-/healthy
 https://$ALERTMANAGER_URL$/-/healthy
 ```
 
-To expose the /-/healthy endpoint, an additional path entry is required in the Ingress object. Please see (oidc-proxy.yaml)[monitoring/oidc-proxy.yaml] for details.
-
 A pingdom alert should be setup (with appropriate alert recipients) to the /healthy endpoints for each application described above.
 
 ### Prometheus to Slack Alerting Routes
