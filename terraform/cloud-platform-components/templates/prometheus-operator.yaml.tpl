@@ -95,6 +95,9 @@ alertmanager:
       receiver: 'null'
       routes:
       - match:
+          alertname: CPUThrottlingHigh
+        receiver: 'null'
+      - match:
           alertname: DeadMansSwitch
         receiver: 'null'
       - match:
@@ -431,6 +434,7 @@ grafana:
     dashboards:
       enabled: true
       label: grafana_dashboard
+      searchNamespace: ALL
     datasources:
       enabled: true
       label: grafana_datasource
