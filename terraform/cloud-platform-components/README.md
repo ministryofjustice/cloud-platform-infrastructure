@@ -1,6 +1,30 @@
-# cloud-platform-components
+# Cloud Platform Components - Terraform
 
-## kiam
+This directory contains application layer components that essentially bootstrap the cluster into what we would consider "ready to use". This includes applications such as Prometheus etc. 
+
+
+## Contents
+- [External-dns](#external-dns)
+- [Fluentd](#fluentd)
+- [Helm](#helm)
+- [KIAM](#kiam)
+- [Kuberos](#kuberos)
+- [Metrics-server](#metrics-server)
+- [Nginx-ingress](#nginx-ingress)
+- [Prometheus](#prometheus)
+- [Pod Security Policies](#pod-security-policies)
+- [RBAC](#rbac)
+
+## External-dns
+ExternalDNS synchronizes exposed Kubernetes Services and Ingresses with DNS providers. This basically makes Kubernetes resources discoverable via public DNS servers. We utilise the stable Helm [chart](https://github.com/helm/charts/tree/master/stable/external-dns) passing an IAM role and cluster domain name.
+
+## Fluentd
+The Terraform in this directory has all the required resources to deploy `fluentd` as a `DaemonSet` on the cluster. As long as applications are writing out to stdout logs are scrapped and pushed to Elasticsearch. 
+
+## Helm
+To enable three quarters of deployments on the cluster we must first install and configure Helm. This is done via a series of `local_exec`'s in the `helm.tf` file. 
+
+## KIAM
 
 Example of IAM policy for a user application:
 
@@ -42,10 +66,39 @@ resource "aws_iam_role_policy" "app" {
 
 This can easily be configured as part of a user environment's resources, along with the required namespace annotation (see the [kiam docs](https://github.com/uswitch/kiam#overview)).
 
-## Prometheus to Slack Alerting Routes
+## Kuberos
+To allow users to authenticate we spin up a `Kuberos` pod. Kuberos is an OIDC authentication helper for Kubernetes' kubectl and enables users to perform queries against the clusters API. 
+
+Again, we use the stable Helm chart for the deployment.
+
+## Metrics-server
+Metrics-server allows us to perform resource queries against the cluster. Commands like `kubectl top pods` allow us to diagnose resource constraints. 
+
+## Nginx-ingress
+A vital component in the cluster. The Nginx-ingress controller is a daemon, deployed as a Kubernetes Pod, that watches the apiserver's /ingresses endpoint for updates to the Ingress resource. Its job is to satisfy requests for Ingresses.
+
+## Prometheus
+We utilise [Prometheus-Operator](https://github.com/helm/charts/tree/master/stable/prometheus-operator) to deploy Prometheus onto the Cloud Platform. Once installed a `DaemonSet` of exporters is deployed scraping metrics from across the cluster. Grafana and AlertManager are also deployed as part of this chart along with relevant proxies. 
+
+### Persistent Volumes with Prometheus
+
+To maintain data across deployments and version upgrades data must be persisted to a volume (AWS EBS) other than emptyDir, allowing it to be reused by pods after upgrade. Please see the following documentation by CoreOS on how to do this. https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md
+
+This has previously been achieved by applying an individual storage class manifest and referencing it in the values.yaml Prometheus-operator Helm chart.
+
+### Adding Pingdom Alerts to monitor Prometheus and Alermanager Externally
+Prometheus and AlertManager will be behind an OIDC proxy with GitHub credentials required to view the GUI. However, the /-/healthy endpoint for each application will be exposed directly to the internet.
+
+```
+https://$PROMETHEUS_URL$/-/healthy
+https://$ALERTMANAGER_URL$/-/healthy
+```
+
+A pingdom alert should be setup (with appropriate alert recipients) to the /healthy endpoints for each application described above.
+
+### Prometheus to Slack Alerting Routes
 
 #### 1. Create a Slack incoming webhook
-
 Log into the MOJ org Slack and find the 'AlertManager Notifications' App on https://api.slack.com/apps. 
 Once within the app settings, select 'Incoming Webhooks' in the 'Features' section.
 Scroll to the bottom of the page and click on 'Add New Webhook to Workspace' and choose the 'channel' you want the alerts to go to.
@@ -120,7 +173,7 @@ variable "slack_config_<teamn_name>" {
 ```
 
 All alerts are routed using the `severity` label. Provide the development team the severity label created for each route (default is team_name),
-which will be used by the developemt team when creating custom application alerts. 
+which will be used by the development team when creating custom application alerts. 
 
 #### prometheus-custom-alerts-<application_name>.yaml
 
@@ -177,3 +230,10 @@ spec:
         runbook_url: http://link-to-support-docs.website
 ```
 
+### Pod Security Policies
+A Pod Security Policy is a cluster-level resource that controls security sensitive aspects of the pod specification. The PodSecurityPolicy objects define a set of conditions that a pod must run with in order to be accepted into the system, as well as defaults for the related fields.
+
+The admission controller is enabled in all new Cloud Platform clusters, whcih means we must define the rules for `restricted` and `priviledged` containers. This is done in `psp.tf`
+
+### RBAC
+Role-based access control (RBAC) is a method of regulating access to computer or network resources based on the roles of individual users within an enterprise.
