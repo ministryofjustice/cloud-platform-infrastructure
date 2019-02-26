@@ -2,7 +2,7 @@ resource "helm_release" "nginx_ingress_acme" {
   name      = "nginx-ingress-acme"
   chart     = "stable/nginx-ingress"
   namespace = "ingress-controllers"
-  version   = "v1.1.4"
+  version   = "v1.3.1"
 
   values = [<<EOF
 controller:
@@ -11,7 +11,7 @@ controller:
   config:
     generate-request-id: "true"
     proxy-buffer-size: "16k"
-    proxy-body-size: "16m"
+    proxy-body-size: "50m"
     server-snippet: |
       if ($scheme != 'https') {
         return 308 https://$host$request_uri;
