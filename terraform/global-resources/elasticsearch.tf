@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "live" {
 
 resource "aws_elasticsearch_domain" "live" {
   domain_name           = "${local.live_domain}"
-  elasticsearch_version = "6.2"
+  elasticsearch_version = "6.4"
 
   cluster_config {
     instance_type            = "m4.large.elasticsearch"
@@ -114,7 +114,7 @@ data "aws_iam_policy_document" "audit" {
 
 resource "aws_elasticsearch_domain" "audit" {
   domain_name           = "${local.audit_domain}"
-  elasticsearch_version = "6.2"
+  elasticsearch_version = "6.4"
 
   cluster_config {
     instance_type  = "m4.large.elasticsearch"
