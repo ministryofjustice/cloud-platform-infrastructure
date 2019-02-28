@@ -11,7 +11,7 @@ terraform {
 
 provider "aws" {
   region  = "eu-west-1"
-  profile = "moj-pi"
+  profile = "moj-cp"
 }
 
 #
