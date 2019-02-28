@@ -47,7 +47,7 @@ sources:
   - ingress
 provider: aws
 aws:
-  region: eu-west-1
+  region: eu-west-2
   zoneType: public
 extraArgs:
   aws-assume-role: "${aws_iam_role.external_dns.arn}"

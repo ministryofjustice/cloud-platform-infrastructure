@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "eu-west-1"
+  region = "eu-west-2"
 }
 
 locals {
@@ -95,7 +95,7 @@ data "aws_ebs_snapshot" "ebs_events_c" {
 }
 
 resource "aws_ebs_volume" "volume_from_snapshot_main_a" {
-  availability_zone = "eu-west-1a"
+  availability_zone = "eu-west-2a"
   snapshot_id       = "${data.aws_ebs_snapshot.ebs_main_a.snapshot_id}"
   size              = 20
   type              = "gp2"
@@ -110,7 +110,7 @@ resource "aws_ebs_volume" "volume_from_snapshot_main_a" {
 }
 
 resource "aws_ebs_volume" "volume_from_snapshot_events_a" {
-  availability_zone = "eu-west-1a"
+  availability_zone = "eu-west-2a"
   snapshot_id       = "${data.aws_ebs_snapshot.ebs_events_a.snapshot_id}"
   size              = 20
   type              = "gp2"
@@ -125,7 +125,7 @@ resource "aws_ebs_volume" "volume_from_snapshot_events_a" {
 }
 
 resource "aws_ebs_volume" "volume_from_snapshot_main_b" {
-  availability_zone = "eu-west-1b"
+  availability_zone = "eu-west-2b"
   snapshot_id       = "${data.aws_ebs_snapshot.ebs_main_b.snapshot_id}"
   size              = 20
   type              = "gp2"
@@ -140,7 +140,7 @@ resource "aws_ebs_volume" "volume_from_snapshot_main_b" {
 }
 
 resource "aws_ebs_volume" "volume_from_snapshot_events_b" {
-  availability_zone = "eu-west-1b"
+  availability_zone = "eu-west-2b"
   snapshot_id       = "${data.aws_ebs_snapshot.ebs_events_b.snapshot_id}"
   size              = 20
   type              = "gp2"
@@ -155,7 +155,7 @@ resource "aws_ebs_volume" "volume_from_snapshot_events_b" {
 }
 
 resource "aws_ebs_volume" "volume_from_snapshot_main_c" {
-  availability_zone = "eu-west-1c"
+  availability_zone = "eu-west-2c"
   snapshot_id       = "${data.aws_ebs_snapshot.ebs_main_c.snapshot_id}"
   size              = 20
   type              = "gp2"
@@ -170,7 +170,7 @@ resource "aws_ebs_volume" "volume_from_snapshot_main_c" {
 }
 
 resource "aws_ebs_volume" "volume_from_snapshot_events_c" {
-  availability_zone = "eu-west-1c"
+  availability_zone = "eu-west-2c"
   snapshot_id       = "${data.aws_ebs_snapshot.ebs_events_c.snapshot_id}"
   size              = 20
   type              = "gp2"
