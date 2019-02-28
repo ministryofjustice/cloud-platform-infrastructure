@@ -91,7 +91,7 @@ data "terraform_remote_state" "global" {
 module "cluster_dns" {
   source = "../modules/cluster_dns"
 
-  parent_zone_id = "${data.terraform_remote_state.global.k8s_zone_id}"
+  parent_zone_id = "${data.terraform_remote_state.global.cp_zone_id}"
 }
 ```
 
@@ -245,18 +245,18 @@ $ kops create -f ../../kops/${CLUSTER_NAME}.yaml
 ```
 4. Create SSH public key in kops state store.
 ```bash
-$ kops create secret --name ${CLUSTER_NAME}.k8s.integration.dsd.io sshpublickey admin -i ~/.ssh/id_rsa.pub
+$ kops create secret --name ${CLUSTER_NAME}.cloud-platform.service.justice.gov.uk sshpublickey admin -i ~/.ssh/id_rsa.pub
 ```
 5. Create cluster resources in AWS.
 aka update cluster in AWS according to the yaml specification:
 ```bash
-kops update cluster ${CLUSTER_NAME}.k8s.integration.dsd.io --yes
+kops update cluster ${CLUSTER_NAME}.cloud-platform.service.justice.gov.uk --yes
 ```
 When complete (takes a few minutes), you can check the progress with:
 ```bash
 $ kops validate cluster
 ```
-Once it reports Your cluster `${CLUSTER_NAME}.k8s.integration.dsd.io is ready` you can proceed to use kubectl to interact with the cluster.
+Once it reports Your cluster `${CLUSTER_NAME}.cloud-platform.service.justice.gov.uk is ready` you can proceed to use kubectl to interact with the cluster.
 
 6. Now you need to install the `cloud-platform-components`.
 ```bash
@@ -279,7 +279,7 @@ fix / destroy / apply again if the values don't match.
 1. To delete a cluster you must first export the following:
 ```
 $ export AWS_PROFILE=moj-cp
-$ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
+$ export KOPS_STATE_STORE=s3://cloud-platform-kops-state
 ```
 2. After changing directory, run the following command which will destroy all cluster components.
 ```bash

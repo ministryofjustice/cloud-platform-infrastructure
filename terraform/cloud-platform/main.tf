@@ -39,7 +39,7 @@ data "terraform_remote_state" "global" {
 
 locals {
   cluster_name             = "${terraform.workspace}"
-  cluster_base_domain_name = "${local.cluster_name}.k8s.integration.dsd.io"
+  cluster_base_domain_name = "${local.cluster_name}.cloud-platform.service.justice.gov.uk"
   auth0_tenant_domain      = "justice-cloud-platform.eu.auth0.com"
   oidc_issuer_url          = "https://${local.auth0_tenant_domain}/"
 }
@@ -48,7 +48,7 @@ locals {
 module "cluster_dns" {
   source                   = "../modules/cluster_dns"
   cluster_base_domain_name = "${local.cluster_base_domain_name}"
-  parent_zone_id           = "${data.terraform_remote_state.global.k8s_zone_id}"
+  parent_zone_id           = "${data.terraform_remote_state.global.cp_zone_id}"
 }
 
 module "cluster_ssl" {

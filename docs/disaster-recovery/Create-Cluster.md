@@ -47,7 +47,7 @@ Have access to the justice-cloud-platform Auth0 tenant
 1. Export Kops state store
       
     ```
-    $ export KOPS_STATE_STORE=s3://moj-cp-k8s-investigation-kops
+    $ export KOPS_STATE_STORE=s3://cloud-platform-kops-state
     ```
 
 1. Download Cluster Spec from S3 and configure kubectl for use
