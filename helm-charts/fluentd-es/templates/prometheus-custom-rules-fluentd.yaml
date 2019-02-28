@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  namespace: <namespace>
+  labels:
+    role: alert-rules
+  name: prometheus-custom-rules-<application_name>
+spec:
+  groups:
+  - name: application-rules
+    rules:
+    - alert: <alert_name>
+      expr: <alert_query>
+      for: <check_time_length>
+      labels:
+        severity: <team_name>
+      annotations:
+        message: <alert_message> 
+        runbook_url: <http://my-support-docs>
