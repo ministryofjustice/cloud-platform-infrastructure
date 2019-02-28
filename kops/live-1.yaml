@@ -175,7 +175,7 @@ spec:
   channel: stable
   cloudProvider: aws
   sshKeyName: live-1.cloud-platform.service.justice.gov.uk
-  configBase: s3://moj-cp-k8s-investigation-kops/live-1.cloud-platform.service.justice.gov.uk
+  configBase: s3://cloud-platform-kops-state/live-1.cloud-platform.service.justice.gov.uk
   dnsZone: live-1.cloud-platform.service.justice.gov.uk
   etcdClusters:
   - etcdMembers:
@@ -202,7 +202,7 @@ spec:
     readOnlyPort: 0
     authenticationTokenWebhook: true
   kubeAPIServer:
-    oidcClientID: 2A0ReIllrTHG0DZ9M8Gwub3lrvfab55w
+    oidcClientID: R5V4LWfFcqaUCCdWSX8Jtmtf7PuxMFlw
     oidcIssuerURL: https://justice-cloud-platform.eu.auth0.com/
     oidcUsernameClaim: nickname
     oidcGroupsClaim: https://k8s.integration.dsd.io/groups
@@ -229,7 +229,7 @@ spec:
   kubernetesVersion: 1.11.6
   masterPublicName: api.live-1.cloud-platform.service.justice.gov.uk
   networkCIDR: 172.20.0.0/16
-  networkID: vpc-0540a99a5dc358e10
+  networkID: vpc-0d24c1ee915a524db
   networking:
     calico: {}
   nonMasqueradeCIDR: 100.64.0.0/10
@@ -237,32 +237,32 @@ spec:
   - 0.0.0.0/0
   subnets:
   - cidr: 172.20.32.0/19
-    id: subnet-0264065b2ffd9fc9f
+    id: subnet-0e61d3fff112ebaf6
     name: eu-west-2a
     type: Private
     zone: eu-west-2a
   - cidr: 172.20.64.0/19
-    id: subnet-02f0ee4507c001f38
+    id: subnet-0e3c57d147f8031f3
     name: eu-west-2b
     type: Private
     zone: eu-west-2b
   - cidr: 172.20.96.0/19
-    id: subnet-0e4719eeb04c3dc8b
+    id: subnet-06cc51ebe12620c09
     name: eu-west-2c
     type: Private
     zone: eu-west-2c
   - cidr: 172.20.0.0/22
-    id: subnet-06c0d5a1d79fa391d
+    id: subnet-07c95ade0d5645628
     name: utility-eu-west-2a
     type: Utility
     zone: eu-west-2a
   - cidr: 172.20.4.0/22
-    id: subnet-099f416e4ee50deb8
+    id: subnet-02997933bb7f13b5e
     name: utility-eu-west-2b
     type: Utility
     zone: eu-west-2b
   - cidr: 172.20.8.0/22
-    id: subnet-013486b8b5b9b60c6
+    id: subnet-05821f46c8e123a06
     name: utility-eu-west-2c
     type: Utility
     zone: eu-west-2c
