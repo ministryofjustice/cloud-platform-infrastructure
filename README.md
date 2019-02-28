@@ -219,7 +219,7 @@ $ kops cluster rolling-update --yes
 https://github.com/yieldr/terraform-provider-auth0#using-the-provider
 For the auth0 provider, setup the following environment variables locally:
 ```
-  AUTH0_DOMAIN="moj-cloud-platforms-dev.eu.auth0.com"
+  AUTH0_DOMAIN="justice-cloud-platform.eu.auth0.com"
   AUTH0_CLIENT_ID="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   AUTH0_CLIENT_SECRET="yyyyyyyyyyyyyyyyyyyyyyyyyyyy"
 ```

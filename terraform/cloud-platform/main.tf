@@ -40,7 +40,7 @@ data "terraform_remote_state" "global" {
 locals {
   cluster_name             = "${terraform.workspace}"
   cluster_base_domain_name = "${local.cluster_name}.k8s.integration.dsd.io"
-  auth0_tenant_domain      = "moj-cloud-platforms-dev.eu.auth0.com"
+  auth0_tenant_domain      = "justice-cloud-platform.eu.auth0.com"
   oidc_issuer_url          = "https://${local.auth0_tenant_domain}/"
 }
 

@@ -11,12 +11,12 @@ $ git clone git@github.com:ministryofjustice/kubernetes-investigations.git
 $ git clone git@github.com:ministryofjustice/cloud-platform-environments.git
 $ git clone git@github.com:ministryofjustice/laa-fee-calculator.git
 
-Have access to the moj-cloud-platforms-dev Auth0 tenant 
+Have access to the justice-cloud-platform Auth0 tenant 
 ```
 
 ### Create a Kuberos application on Auth0
 
-1. Use your Github credentials to log into https://manage.auth0.com. Switch the tenant to `moj-cloud-platforms-dev`.
+1. Use your Github credentials to log into https://manage.auth0.com. Switch the tenant to `justice-cloud-platform`.
 
 1. Under `Applications`, create a new single ["Regular Web App"](https://auth0.com/docs/applications/webapps). Name the application `<your-cluster-name>-kuberos`. 
 
