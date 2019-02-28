@@ -24,7 +24,7 @@ provider "aws" {
 
 # https://cloud-platform-aws.signin.aws.amazon.com/console
 provider "aws" {
-  region  = "eu-west-2"
+  region  = "eu-west-1"
   alias   = "cloud-platform"
   profile = "moj-cp"
 }

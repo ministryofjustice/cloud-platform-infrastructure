@@ -54,7 +54,6 @@ resource "aws_s3_bucket" "cloud_platform_kops_state" {
   }
 }
 
-
 resource "aws_s3_bucket" "concourse_terraform" {
   bucket = "${local.project_name}-concourse-terraform"
   acl    = "private"
