@@ -140,17 +140,15 @@ resource "helm_release" "alertmanager_proxy" {
   }
 }
 
-
-resource "null_resource" "prometheus-customalerts-noderules" {  
+resource "null_resource" "prometheus-customalerts-noderules" {
   depends_on = ["helm_release.prometheus_operator"]
 
   provisioner "local-exec" {
     command = "kubectl apply -n monitoring -f ${path.module}/resources/prometheusrule-alerts/node-alerts.yaml"
   }
-  
+
   provisioner "local-exec" {
     when    = "destroy"
     command = "kubectl delete -n monitoring -f ${path.module}/resources/prometheusrule-alerts/node-alerts.yaml"
-   }
-
+  }
 }
