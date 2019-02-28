@@ -1,19 +1,19 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  namespace: <namespace>
+  namespace: logging
   labels:
     role: alert-rules
-  name: prometheus-custom-rules-<application_name>
+  name: prometheus-custom-rules-fluentd
 spec:
   groups:
   - name: application-rules
     rules:
-    - alert: <alert_name>
-      expr: <alert_query>
-      for: <check_time_length>
+    - alert: fluentd_buffer_full
+      expr: fluentd_output_status_buffer_total_bytes > 1800000000
+      for: 2m
       labels:
-        severity: <team_name>
+        severity: cp-team
       annotations:
-        message: <alert_message> 
-        runbook_url: <http://my-support-docs>
+        message: The Fluentd buffer limit of 8 x 256Mb chunks is full. This indicates that Fluentd is having issues writing to the ElasticSearch cluster or it is collecting logs quicker than it can write. 
+        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/tree/master/helm-charts/fluentd-es
