@@ -1,5 +1,5 @@
 locals {
-  cert-manager-version = "v0.6.0"
+  cert-manager-version = "v0.6.6"
 }
 
 data "aws_iam_policy_document" "cert_manager_assume" {
