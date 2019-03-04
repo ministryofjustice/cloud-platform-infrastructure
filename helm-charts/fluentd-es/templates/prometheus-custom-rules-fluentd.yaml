@@ -13,7 +13,7 @@ spec:
       expr: fluentd_output_status_buffer_total_bytes > 1800000000
       for: 2m
       labels:
-        severity: cp-team
+        severity: high-priority
       annotations:
         message: The Fluentd buffer limit (defined by the chunk_limit_size and queue_limit_length values in helm-charts/fluentd-es/config/output.conf) is full. This indicates that Fluentd is having issues writing to the ElasticSearch cluster or it is collecting logs quicker than it can write. 
-        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/tree/master/helm-charts/fluentd-es
+        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/README.md
