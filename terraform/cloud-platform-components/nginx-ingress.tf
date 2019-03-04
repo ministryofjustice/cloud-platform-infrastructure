@@ -25,7 +25,7 @@ controller:
 
   service:
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: "*.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+      external-dns.alpha.kubernetes.io/hostname: "*.apps.${data.terraform_remote_state.cluster.cluster_domain_name},apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
       service.beta.kubernetes.io/aws-load-balancer-ssl-cert: "${data.terraform_remote_state.cluster.certificate_arn}"
       service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"

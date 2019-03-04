@@ -36,3 +36,9 @@ data "aws_iam_role" "nodes" {
 }
 
 data "aws_caller_identity" "current" {}
+
+provider "aws" {
+  alias   = "dsd"
+  profile = "moj-dsd"
+  region  = "eu-west-1"
+}
