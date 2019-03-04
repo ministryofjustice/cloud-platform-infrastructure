@@ -3,6 +3,10 @@ resource "local_file" "kops" {
   filename = "../../kops/${terraform.workspace}.yaml"
 }
 
+resource "aws_kms_key" "kms" {
+  description = "Creates KMS key for etcd volume encryption"
+}
+
 data "template_file" "kops" {
   template = "${file("./templates/kops.yaml.tpl")}"
 
@@ -20,5 +24,6 @@ data "template_file" "kops" {
     external_subnets_id_b                = "${module.cluster_vpc.public_subnets[1]}"
     external_subnets_id_c                = "${module.cluster_vpc.public_subnets[2]}"
     authorized_keys_manager_systemd_unit = "${indent(6, data.template_file.authorized_keys_manager.rendered)}"
+    kms_key                              = "${aws_kms_key.kms.arn}"
   }
 }
