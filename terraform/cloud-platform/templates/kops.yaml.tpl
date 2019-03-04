@@ -181,19 +181,33 @@ spec:
   - etcdMembers:
     - instanceGroup: master-eu-west-2a
       name: a
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
     - instanceGroup: master-eu-west-2b
       name: b
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
     - instanceGroup: master-eu-west-2c
       name: c
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
     name: main
+    version: 3.3.10
   - etcdMembers:
     - instanceGroup: master-eu-west-2a
       name: a
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
     - instanceGroup: master-eu-west-2b
       name: b
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
     - instanceGroup: master-eu-west-2c
       name: c
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
     name: events
+    version: 3.3.10
   iam:
     allowContainerRegistry: true
     legacy: false
@@ -228,7 +242,7 @@ spec:
       admissionregistration.k8s.io/v1alpha1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.11.6
+  kubernetesVersion: 1.11.8
   masterPublicName: api.${cluster_domain_name}
   networkCIDR: ${network_cidr_block}
   networkID: ${network_id}
