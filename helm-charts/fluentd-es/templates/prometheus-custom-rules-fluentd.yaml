@@ -15,5 +15,5 @@ spec:
       labels:
         severity: cp-team
       annotations:
-        message: The Fluentd buffer limit of 8 x 256Mb chunks is full. This indicates that Fluentd is having issues writing to the ElasticSearch cluster or it is collecting logs quicker than it can write. 
+        message: The Fluentd buffer limit (defined by the chunk_limit_size and queue_limit_length values in helm-charts/fluentd-es/config/output.conf) is full. This indicates that Fluentd is having issues writing to the ElasticSearch cluster or it is collecting logs quicker than it can write. 
         runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/tree/master/helm-charts/fluentd-es
