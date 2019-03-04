@@ -16,7 +16,7 @@ spec:
       cnameStrategy: "Follow"
       # Here we define a list of DNS-01 providers that can solve DNS challenges
       providers:
-      - name: route53-local
+      - name: route53-cloud-platform
         route53:
           region: eu-west-1
       - name: route53-dsd
