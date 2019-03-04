@@ -12,6 +12,6 @@ spec:
   acme:
     config:
     - dns01:
-        provider: route53
+        provider: route53-local
       domains:
       - '${common_name}'
