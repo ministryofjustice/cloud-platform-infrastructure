@@ -144,7 +144,6 @@ alertmanager:
         - type: button
           text: 'Silence :no_bell:'
           url: '{{ template "__alert_silence_link" . }}'
-<<<<<<< HEAD
     - name: 'slack-laa-cla-fala'
       slack_configs:
       - api_url: "${slack_config_laa-cla-fala}"
@@ -181,10 +180,7 @@ alertmanager:
         - type: button
           text: 'Silence :no_bell:'
           url: '{{ template "__alert_silence_link" . }}'
-    templates: 
-=======
     templates:
->>>>>>> origin
     - '/etc/alertmanager/config/cp-slack-templates.tmpl'
 
 
