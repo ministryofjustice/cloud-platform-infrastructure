@@ -21,6 +21,11 @@ ExternalDNS synchronizes exposed Kubernetes Services and Ingresses with DNS prov
 ## Fluentd
 The Terraform in this directory has all the required resources to deploy `fluentd` as a `DaemonSet` on the cluster. As long as applications are writing out to stdout logs are scrapped and pushed to Elasticsearch. 
 
+### Full buffer
+Fluentd has a buffer limit (defined by the chunk_limit_size and queue_limit_length values in helm-charts/fluentd-es/config/output.conf)
+
+When full this normally indicates that Fluentd is unable to write to the ElasticSearch cluster. In this case, view various sources of metrics and logs to determine the cause. 
+
 ## Helm
 To enable three quarters of deployments on the cluster we must first install and configure Helm. This is done via a series of `local_exec`'s in the `helm.tf` file. 
 
