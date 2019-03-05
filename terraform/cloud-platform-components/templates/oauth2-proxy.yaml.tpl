@@ -30,6 +30,10 @@ ingress:
   path: /
   hosts:
     - "${hostname}"
+  tls:
+    - hosts:
+      - "${hostname}"
+
   # annotations:
   #   kubernetes.io/ingress.class: nginx
   #   kubernetes.io/tls-acme: "true"
