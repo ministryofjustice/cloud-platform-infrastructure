@@ -33,10 +33,10 @@ data "template_file" "prometheus_operator" {
     grafana_root              = "https://grafana.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
     pagerduty_config          = "${ var.pagerduty_config }"
     slack_config              = "${ var.slack_config }"
+    slack_config_laa-cla-fala = "${var.slack_config_laa-cla-fala}"
     prometheus_ingress        = "https://prometheus.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
     random_username           = "${ random_id.username.hex }"
     random_password           = "${ random_id.password.hex }"
-    slack_config_laa-cla-fala = "${var.slack_config_laa-cla-fala}"
   }
 }
 
