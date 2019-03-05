@@ -9,8 +9,8 @@ locals {
 
   allowed_live_1_ips = {
     "35.178.209.113/32" = "live-1-a"
-    "35.177.252.54/32" = "live-1-b"
-    "3.8.51.207/32"   = "live-1-c"
+    "35.177.252.54/32"  = "live-1-b"
+    "3.8.51.207/32"     = "live-1-c"
   }
 
   audit_domain = "cloud-platform-audit"
@@ -110,7 +110,7 @@ resource "aws_elasticsearch_domain" "live" {
 
 resource "aws_elasticsearch_domain" "live_1" {
   domain_name           = "${local.live_domain}"
-  provider = "aws.cloud-platform"
+  provider              = "aws.cloud-platform"
   elasticsearch_version = "6.4"
 
   cluster_config {
@@ -250,7 +250,7 @@ resource "aws_elasticsearch_domain" "audit" {
 
 resource "aws_elasticsearch_domain" "audit_1" {
   domain_name           = "${local.audit_domain}"
-  provider = "aws.cloud-platform"
+  provider              = "aws.cloud-platform"
   elasticsearch_version = "6.4"
 
   cluster_config {
