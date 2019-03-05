@@ -158,11 +158,11 @@ alertmanager:
 ```
 
 Note: For alerts into multiple slack channels, add a second entry for `api_url` and `channel` under `slack_configs` 
-#### Add a new vars entry in `prometheus.tf`
+#### Add a new vars entry in `prometheus.tf` in the following data config:
 
 ```yaml
-data "template_file" "kube_prometheus" {
-  template = "${file("${path.module}/templates/kube-prometheus.yaml.tpl")}"
+data "template_file" "prometheus_operator" {
+  template = "${file("${ path.module }/templates/prometheus-operator.yaml.tpl")}"
 
   vars {
     slack_config_<team_name> = "${var.slack_config_<team_name>}"
