@@ -115,6 +115,9 @@ alertmanager:
       - match:
           severity: laa-cla-fala
         receiver: slack-laa-cla-fala
+      - match:
+          severity: prisoner-money
+        receiver: slack-prisoner-money
 
     receivers:
     - name: 'null'
@@ -145,6 +148,24 @@ alertmanager:
       slack_configs:
       - api_url: "${slack_config_laa-cla-fala}"
         channel: "#cla-alerts"
+        send_resolved: True
+        title: '{{ template "slack.cp.title" . }}'
+        text: '{{ template "slack.cp.text" . }}'
+        footer: ${ alertmanager_ingress }
+        actions:
+        - type: button
+          text: 'Runbook :blue_book:'
+          url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+        - type: button
+          text: 'Query :mag:'
+          url: '{{ (index .Alerts 0).GeneratorURL }}'
+        - type: button
+          text: 'Silence :no_bell:'
+          url: '{{ template "__alert_silence_link" . }}'
+    - name: 'slack-prisoner-money'
+      slack_configs:
+      - api_url: "${slack_config_prisoner-money}"
+        channel: "#prisoner-money-alerts"
         send_resolved: True
         title: '{{ template "slack.cp.title" . }}'
         text: '{{ template "slack.cp.text" . }}'
