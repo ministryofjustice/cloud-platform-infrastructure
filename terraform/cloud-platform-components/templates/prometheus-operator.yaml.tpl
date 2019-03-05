@@ -144,6 +144,7 @@ alertmanager:
         - type: button
           text: 'Silence :no_bell:'
           url: '{{ template "__alert_silence_link" . }}'
+<<<<<<< HEAD
     - name: 'slack-laa-cla-fala'
       slack_configs:
       - api_url: "${slack_config_laa-cla-fala}"
@@ -181,14 +182,17 @@ alertmanager:
           text: 'Silence :no_bell:'
           url: '{{ template "__alert_silence_link" . }}'
     templates: 
+=======
+    templates:
+>>>>>>> origin
     - '/etc/alertmanager/config/cp-slack-templates.tmpl'
-        
+
 
   ## Alertmanager template files to format alerts
   ## ref: https://prometheus.io/docs/alerting/notifications/
   ##      https://prometheus.io/docs/alerting/notification_examples/
   ##
-  templateFiles: 
+  templateFiles:
     cp-slack-templates.tmpl: |-
       {{ define "slack.cp.title" -}}
         [{{ .Status | toUpper -}}
@@ -206,7 +210,7 @@ alertmanager:
             *-----*
           {{ end }}
       {{- end }}
-        
+
       {{ define "__alert_silence_link" -}}
         {{ .ExternalURL }}/#/silences/new?filter=%7B
         {{- range .CommonLabels.SortedPairs -}}
@@ -445,13 +449,15 @@ grafana:
     ##
     # hosts:
     #   - prometheus.domain.com
-    hosts: 
+    hosts:
     - "${ grafana_ingress }"
 
     ## TLS configuration for prometheus Ingress
     ## Secret must be manually created in the namespace
     ##
-    tls: []
+    tls:
+      - hosts:
+        - "${ grafana_ingress }"
     # - secretName: prometheus-general-tls
     #   hosts:
     #   - prometheus.example.com
@@ -930,7 +936,7 @@ prometheus:
     ## Namespaces to be selected for PrometheusRules discovery.
     ## If unspecified, only the same namespace as the Prometheus object is in is used.
     ##
-    ruleNamespaceSelector: 
+    ruleNamespaceSelector:
       any: true
 
     ## If true, a nil or {} value for prometheus.prometheusSpec.ruleSelector will cause the
