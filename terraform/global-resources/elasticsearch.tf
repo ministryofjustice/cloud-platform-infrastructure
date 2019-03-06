@@ -56,7 +56,7 @@ data "aws_iam_policy_document" "live_1" {
     ]
 
     resources = [
-      "arn:aws:es:::domain/${local.live_domain}/*",
+      "arn:aws:es:*:*:domain/${local.live_domain}/*",
     ]
 
     principals {
@@ -199,7 +199,7 @@ data "aws_iam_policy_document" "audit_1" {
     ]
 
     resources = [
-      "arn:aws:es:::domain/${local.audit_domain}/*",
+      "arn:aws:es:*:*:domain/${local.audit_domain}/*",
     ]
 
     principals {
