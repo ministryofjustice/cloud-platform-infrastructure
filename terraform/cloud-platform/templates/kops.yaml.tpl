@@ -224,6 +224,8 @@ spec:
     - NodeRestriction
     - ResourceQuota
     - PodSecurityPolicy
+    runtimeConfig:
+      admissionregistration.k8s.io/v1alpha1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
   kubernetesVersion: 1.10.11
