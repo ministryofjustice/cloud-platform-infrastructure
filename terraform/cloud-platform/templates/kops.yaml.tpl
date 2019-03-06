@@ -374,8 +374,8 @@ metadata:
 spec:
   image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: r5.xlarge
-  maxSize: 12
-  minSize: 12
+  maxSize: 15
+  minSize: 15
   nodeLabels:
     kops.k8s.io/instancegroup: nodes
   cloudLabels:
