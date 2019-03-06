@@ -158,3 +158,11 @@ spec:
       - name: config-volume
         configMap:
           name: {{  template "fluentd-es.fullname" . }}-config
+---
+apiVersion: scheduling.k8s.io/v1beta1
+kind: PriorityClass
+metadata:
+  name: node-critical
+value: 1000000000
+globalDefault: false
+description: "This priority class is meant to be used as the system-node-critical class, outside of the kube-system namespace."
