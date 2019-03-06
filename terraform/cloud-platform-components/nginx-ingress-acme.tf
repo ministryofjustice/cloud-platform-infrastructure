@@ -6,7 +6,7 @@ resource "helm_release" "nginx_ingress_acme" {
 
   values = [<<EOF
 controller:
-  replicaCount: 3
+  replicaCount: 6
 
   config:
     generate-request-id: "true"
