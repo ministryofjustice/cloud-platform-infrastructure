@@ -5,7 +5,7 @@
 Node-Disk-Space-Warning
 Severity: warning
 ```
-This alert is triggered when a node will run of of disk space in the next 6 hours at current usgae rate.
+This alert is triggered when a node will run off of disk space in the next 6 hours at the current usage rate.
 
 Expression:
 ```
@@ -20,7 +20,7 @@ Run the following command to confirm disk shortage on a node:
 You are looking for the boolean condition of:
 `OutOfDiskSpace`
 
-Please read the documentation from [Kubernetes](https://github.com/kubernetes/kops/blob/master/docs/instance_groups.md#changing-the-root-volume-size-or-type) regarding best possible actions.
+Please read the documentation from [Kubernetes](https://github.com/kubernetes/kops/blob/master/docs/instance_groups.md#changing-the-root-volume-size-or-type) regarding the best possible actions.
 
 [Changing the root volume size or type](https://github.com/kubernetes/kops/blob/master/docs/instance_groups.md#changing-the-root-volume-size-or-type)
 [Resize an instance group](https://github.com/kubernetes/kops/blob/master/docs/instance_groups.md#resize-an-instance-group)
@@ -46,7 +46,7 @@ Run the following command to confirm disk shortage on a node:
 You are looking for the boolean condition of:
 `OutOfDiskSpace`
 
-Please read the documentation from [Kubernetes](https://github.com/kubernetes/kops/blob/master/docs/instance_groups.md#changing-the-root-volume-size-or-type) regarding best possible actions.
+Please read the documentation from [Kubernetes](https://github.com/kubernetes/kops/blob/master/docs/instance_groups.md#changing-the-root-volume-size-or-type) regarding the best possible actions.
 
 [Changing the root volume size or type](https://github.com/kubernetes/kops/blob/master/docs/instance_groups.md#changing-the-root-volume-size-or-type)
 [Resize an instance group](https://github.com/kubernetes/kops/blob/master/docs/instance_groups.md#resize-an-instance-group)
@@ -71,7 +71,7 @@ Run the following to get a breakdown of memory usage:
 kubectl describe node <node_name>
 ```
 
-Please read the Kubernetes documentaion of the [Meaning of Memory](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory)
+Please read the Kubernetes documentation of the [Meaning of Memory](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory)
 
 You can [set Memory limits](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/) to pods and containers, as by default - pods run with unbounded memory limits.
 
@@ -95,7 +95,7 @@ Run the following to get a breakdown of memory usage:
 ```bash
 kubectl describe node <node_name>
 ```
-Please read the Kubernetes documentaion of the [Meaning of Memory](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory)
+Please read the Kubernetes documentation of the [Meaning of Memory](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-memory)
 
 You can [set Memory limits](https://kubernetes.io/docs/tasks/configure-pod-container/assign-memory-resource/) to pods and containers, as by default - pods run with unbounded memory limits.
 
@@ -120,7 +120,7 @@ Run the following to get a breakdown of CPU usage:
 kubectl describe node <node_name>
 ```
 
-Please read the Kubernetes documentaion of the [Meaning of CPU](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu)
+Please read the Kubernetes documentation of the [Meaning of CPU](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu)
 
 You can [set CPU limits](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/) to pods and containers, as by default - pods run with unbounded CPU limits.
 
@@ -146,7 +146,7 @@ Run the following to get a breakdown of CPU usage:
 kubectl describe node <node_name>
 ```
 
-Please read the Kubernetes documentaion of the [Meaning of CPU](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu)
+Please read the Kubernetes documentation of the [Meaning of CPU](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/#meaning-of-cpu)
 
 You can [set CPU limits](https://kubernetes.io/docs/tasks/configure-pod-container/assign-cpu-resource/) to pods and containers, as by default - pods run with unbounded CPU limits.
 
@@ -253,7 +253,7 @@ If the pod is missing or you think it's possible to scale up, do the following:
 
 `$ kubectl scale --current-replicas=2 --replicas=3 deployment/nginx-ingress-controller -n nginx-controllers`
 
-The above example shows that 2 nginx-ingress pods are running and we need 3. The command will increase the amount of pods.
+The above example shows that 2 nginx-ingress pods are running and we need 3. The command will increase the number of pods.
 
 ## NginxIngressDown
 
@@ -286,7 +286,7 @@ $ kubectl logs <nginx-ingress-container> -n nginx-controllers
 RootVolUtilisation-High
 Severity: warning
 ```
-This alert is triggered when the root volume has 85% of the capicity used
+This alert is triggered when the root volume has 85% of the capacity used
 
 Expression:
 ```
@@ -320,7 +320,7 @@ If the file system needs resizing, please follow the [offical AWS documentation]
 RootVolUtilisation-Critical
 Severity: critical
 ```
-This alert is triggered when the root volume has 95% of the capicity used
+This alert is triggered when the root volume has 95% of the capacity used
 
 Expression:
 ```
@@ -382,7 +382,7 @@ CuratorCronJobRunning
 Severity: warning
 ```
 
-This alert is triggered when the curator cronjob is running longer then 1 hour
+This alert is triggered when the curator cronjob is running longer than 1 hour
 
 Expression:
 ```
@@ -409,7 +409,7 @@ CuratorJobCompletion
 Severity: warning
 ```
 
-This alert is triggered when job completion is taking longer then 1 hour to complete curator cronjob
+This alert is triggered when job completion is taking longer than 1 hour to complete curator cronjob
 
 Expression:
 ```
@@ -428,5 +428,3 @@ $ kubectl logs <cronjob-name> -n logging
 ```
 
 The following links have more information on [Kubernetes Cronjobs](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/) and [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/)
-
-
