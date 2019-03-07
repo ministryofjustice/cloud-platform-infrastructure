@@ -5,7 +5,7 @@
 Node-Disk-Space-Warning
 Severity: warning
 ```
-This alert is triggered when a node will run off of disk space in the next 6 hours at the current usage rate.
+This alert is triggered when a node will run out of disk space in the next 6 hours at the current usage rate.
 
 Expression:
 ```
