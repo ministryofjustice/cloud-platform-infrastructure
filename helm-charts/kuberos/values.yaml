@@ -20,10 +20,10 @@ ingress:
   annotations:
     kubernetes.io/ingress.class: "nginx"
   host: kuberos.cluster.local
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  tls:
+    - secretName: kuberos-tls
+      host:
+        - kuberos.cluster.local
 
 resources:
   limits:
