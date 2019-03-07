@@ -27,7 +27,7 @@ EOF
     name  = "ingress.host"
     value = "login.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
   }
-  
+
   set {
     name  = "ingress.tls.secretName.host"
     value = "login.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
