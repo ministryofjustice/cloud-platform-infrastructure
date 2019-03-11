@@ -102,10 +102,7 @@ resource "auth0_client" "kubernetes" {
   description = "Cloud Platform kubernetes"
   app_type    = "regular_web"
 
-  callbacks = [
-    "https://login.apps.${local.cluster_base_domain_name}/ui",
-    "https://kibana.apps.${local.cluster_base_domain_name}/oauth2/callback",
-  ]
+  callbacks = ["https://login.apps.${local.cluster_base_domain_name}/ui"]
 
   custom_login_page_on = true
   is_first_party       = true
@@ -129,6 +126,7 @@ resource "auth0_client" "components" {
     "https://prometheus.apps.${local.cluster_base_domain_name}/redirect_uri",
     "https://alertmanager.apps.${local.cluster_base_domain_name}/redirect_uri",
     "https://concourse.apps.${local.cluster_base_domain_name}/sky/issuer/callback",
+    "https://kibana.apps.${local.cluster_base_domain_name}/oauth2/callback",
   ]
 
   custom_login_page_on = true
