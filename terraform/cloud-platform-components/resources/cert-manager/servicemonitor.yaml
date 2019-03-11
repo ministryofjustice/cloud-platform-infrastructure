@@ -3,6 +3,9 @@ kind: Service
 metadata:
   name: cert-manager-metrics
   namespace: cert-manager
+  labels:
+    app: cert-manager
+    release: cert-manager
 spec:
   ports:
   - name: metrics
