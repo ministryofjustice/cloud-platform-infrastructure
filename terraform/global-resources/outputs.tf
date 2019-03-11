@@ -18,6 +18,10 @@ output "kops_state_store" {
   value = "${aws_s3_bucket.kops_state_store.bucket}"
 }
 
+output "cloud_platform_kops_state" {
+  value = "${aws_s3_bucket.cloud_platform_kops_state.bucket}"
+}
+
 output "k8s_oidc_group_claim_domain" {
   value = "${auth0_rule_config.k8s-oidc-group-claim-domain.value}"
 }

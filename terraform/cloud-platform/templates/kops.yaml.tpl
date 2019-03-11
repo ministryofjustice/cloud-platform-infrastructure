@@ -179,21 +179,35 @@ spec:
   dnsZone: ${cluster_domain_name}
   etcdClusters:
   - etcdMembers:
-    - instanceGroup: master-eu-west-1a
+    - instanceGroup: master-eu-west-2a
       name: a
-    - instanceGroup: master-eu-west-1b
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
+    - instanceGroup: master-eu-west-2b
       name: b
-    - instanceGroup: master-eu-west-1c
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
+    - instanceGroup: master-eu-west-2c
       name: c
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
     name: main
+    version: 3.3.10
   - etcdMembers:
-    - instanceGroup: master-eu-west-1a
+    - instanceGroup: master-eu-west-2a
       name: a
-    - instanceGroup: master-eu-west-1b
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
+    - instanceGroup: master-eu-west-2b
       name: b
-    - instanceGroup: master-eu-west-1c
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
+    - instanceGroup: master-eu-west-2c
       name: c
+      encryptedVolume: true
+      kmsKeyId: "${ kms_key }"
     name: events
+    version: 3.3.10
   iam:
     allowContainerRegistry: true
     legacy: false
@@ -228,7 +242,7 @@ spec:
       admissionregistration.k8s.io/v1alpha1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.10.11
+  kubernetesVersion: 1.11.8
   masterPublicName: api.${cluster_domain_name}
   networkCIDR: ${network_cidr_block}
   networkID: ${network_id}
@@ -240,34 +254,34 @@ spec:
   subnets:
   - cidr: 172.20.32.0/19
     id: ${internal_subnets_id_a}
-    name: eu-west-1a
+    name: eu-west-2a
     type: Private
-    zone: eu-west-1a
+    zone: eu-west-2a
   - cidr: 172.20.64.0/19
     id: ${internal_subnets_id_b}
-    name: eu-west-1b
+    name: eu-west-2b
     type: Private
-    zone: eu-west-1b
+    zone: eu-west-2b
   - cidr: 172.20.96.0/19
     id: ${internal_subnets_id_c}
-    name: eu-west-1c
+    name: eu-west-2c
     type: Private
-    zone: eu-west-1c
+    zone: eu-west-2c
   - cidr: 172.20.0.0/22
     id: ${external_subnets_id_a}
-    name: utility-eu-west-1a
+    name: utility-eu-west-2a
     type: Utility
-    zone: eu-west-1a
+    zone: eu-west-2a
   - cidr: 172.20.4.0/22
     id: ${external_subnets_id_b}
-    name: utility-eu-west-1b
+    name: utility-eu-west-2b
     type: Utility
-    zone: eu-west-1b
+    zone: eu-west-2b
   - cidr: 172.20.8.0/22
     id: ${external_subnets_id_c}
-    name: utility-eu-west-1c
+    name: utility-eu-west-2c
     type: Utility
-    zone: eu-west-1c
+    zone: eu-west-2c
   topology:
     dns:
       type: Public
@@ -289,14 +303,14 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: ${cluster_domain_name}
-  name: master-eu-west-1a
+  name: master-eu-west-2a
 spec:
-  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
   nodeLabels:
-    kops.k8s.io/instancegroup: master-eu-west-1a
+    kops.k8s.io/instancegroup: master-eu-west-2a
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -306,7 +320,7 @@ spec:
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
   subnets:
-  - eu-west-1a
+  - eu-west-2a
 
 ---
 
@@ -316,14 +330,14 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: ${cluster_domain_name}
-  name: master-eu-west-1b
+  name: master-eu-west-2b
 spec:
-  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
   nodeLabels:
-    kops.k8s.io/instancegroup: master-eu-west-1b
+    kops.k8s.io/instancegroup: master-eu-west-2b
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -333,7 +347,7 @@ spec:
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
   subnets:
-  - eu-west-1b
+  - eu-west-2b
 
 ---
 
@@ -343,14 +357,14 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: ${cluster_domain_name}
-  name: master-eu-west-1c
+  name: master-eu-west-2c
 spec:
-  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
   nodeLabels:
-    kops.k8s.io/instancegroup: master-eu-west-1c
+    kops.k8s.io/instancegroup: master-eu-west-2c
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -360,7 +374,7 @@ spec:
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
   subnets:
-  - eu-west-1c
+  - eu-west-2c
 
 ---
 
@@ -372,7 +386,7 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: nodes
 spec:
-  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: r5.xlarge
   maxSize: 15
   minSize: 15
@@ -387,6 +401,6 @@ spec:
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Node
   subnets:
-  - eu-west-1a
-  - eu-west-1b
-  - eu-west-1c
+  - eu-west-2a
+  - eu-west-2b
+  - eu-west-2c

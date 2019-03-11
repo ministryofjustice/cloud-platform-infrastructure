@@ -5,12 +5,12 @@ resource "helm_release" "fluentd_es" {
 
   set {
     name  = "fluent_elasticsearch_host"
-    value = "search-cloud-platform-live-7qrzc26xexgxtkt5qz72gt6cxa.eu-west-1.es.amazonaws.com"
+    value = "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
   }
 
   set {
     name  = "fluent_elasticsearch_audit_host"
-    value = "search-cloud-platform-audit-effm3qdiau42obkarrpvdxioxm.eu-west-1.es.amazonaws.com"
+    value = "search-cloud-platform-audit-dq5bdnjokj4yt7qozshmifug6e.eu-west-2.es.amazonaws.com"
   }
 
   set {

@@ -21,13 +21,13 @@ resource "aws_route53_record" "k8s_integration_dsd_io_NS" {
 
 data "aws_route53_zone" "justice_gov_uk" {
   provider = "aws.dsd"
-  name     = "justice.gov.uk."
+  name     = "service.justice.gov.uk."
 }
 
 # new parent DNS zone for clusters
 resource "aws_route53_zone" "cloud-platform_justice_gov_uk" {
   provider = "aws.cloud-platform"
-  name     = "cloud-platform.justice.gov.uk."
+  name     = "cloud-platform.service.justice.gov.uk."
 }
 
 resource "aws_route53_record" "cloud-platform_justice_gov_uk_NS" {

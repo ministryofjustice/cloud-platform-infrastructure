@@ -15,7 +15,7 @@ output "network_cidr_block" {
 }
 
 output "kops_state_store" {
-  value = "${data.terraform_remote_state.global.kops_state_store}"
+  value = "${data.terraform_remote_state.global.cloud_platform_kops_state}"
 }
 
 output "availability_zones" {

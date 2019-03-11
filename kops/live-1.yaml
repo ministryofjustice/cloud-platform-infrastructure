@@ -6,7 +6,7 @@ apiVersion: kops/v1alpha2
 kind: Cluster
 metadata:
   creationTimestamp: null
-  name: cloud-platform-test-7.k8s.integration.dsd.io
+  name: live-1.cloud-platform.service.justice.gov.uk
 spec:
   fileAssets:
   - name: kubernetes-audit
@@ -170,61 +170,54 @@ spec:
   api:
     loadBalancer:
       type: Public
-  additionalPolicies:
-    node: |
-      [
-        {
-          "Effect": "Allow",
-          "Action": [
-            "route53:ChangeResourceRecordSets"
-          ],
-          "Resource": [
-            "arn:aws:route53:::hostedzone/ZHTTYO4QSJ3IT"
-          ]
-        },
-        {
-          "Effect": "Allow",
-          "Action": [
-            "route53:ListHostedZones",
-            "route53:ListResourceRecordSets"
-          ],
-          "Resource": [
-            "*"
-          ]
-        }
-      ]
   authorization:
     rbac: {}
   channel: stable
   cloudProvider: aws
-  sshKeyName: cloud-platform-test-7.k8s.integration.dsd.io
-  configBase: s3://moj-cp-k8s-investigation-kops/cloud-platform-test-7.k8s.integration.dsd.io
-  dnsZone: cloud-platform-test-7.k8s.integration.dsd.io
+  sshKeyName: live-1.cloud-platform.service.justice.gov.uk
+  configBase: s3://cloud-platform-kops-state/live-1.cloud-platform.service.justice.gov.uk
+  dnsZone: live-1.cloud-platform.service.justice.gov.uk
   etcdClusters:
   - etcdMembers:
-    - instanceGroup: master-eu-west-1a
+    - instanceGroup: master-eu-west-2a
       name: a
-    - instanceGroup: master-eu-west-1b
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
+    - instanceGroup: master-eu-west-2b
       name: b
-    - instanceGroup: master-eu-west-1c
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
+    - instanceGroup: master-eu-west-2c
       name: c
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
     name: main
+    version: 3.3.10
   - etcdMembers:
-    - instanceGroup: master-eu-west-1a
+    - instanceGroup: master-eu-west-2a
       name: a
-    - instanceGroup: master-eu-west-1b
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
+    - instanceGroup: master-eu-west-2b
       name: b
-    - instanceGroup: master-eu-west-1c
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
+    - instanceGroup: master-eu-west-2c
       name: c
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
     name: events
+    version: 3.3.10
   iam:
     allowContainerRegistry: true
     legacy: false
   kubelet:
     anonymousAuth: false
+    readOnlyPort: 0
+    authenticationTokenWebhook: true
   kubeAPIServer:
-    oidcClientID: 6UAPcPcVjuQuHYPStnqbPxHZno4tsqyL
-    oidcIssuerURL: https://moj-cloud-platforms-dev.eu.auth0.com/
+    oidcClientID: Ug30lt9mPkLaL5nWL6hhAweTTGN7DQUe
+    oidcIssuerURL: https://justice-cloud-platform.eu.auth0.com/
     oidcUsernameClaim: nickname
     oidcGroupsClaim: https://k8s.integration.dsd.io/groups
     auditLogPath: /var/log/kube-apiserver-audit.log
@@ -245,12 +238,14 @@ spec:
     - NodeRestriction
     - ResourceQuota
     - PodSecurityPolicy
+    runtimeConfig:
+      admissionregistration.k8s.io/v1alpha1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.10.12
-  masterPublicName: api.cloud-platform-test-7.k8s.integration.dsd.io
+  kubernetesVersion: 1.11.8
+  masterPublicName: api.live-1.cloud-platform.service.justice.gov.uk
   networkCIDR: 172.20.0.0/16
-  networkID: vpc-02def50c7e93d5732
+  networkID: vpc-0726ec279947067f8
   networking:
     calico: {}
   nonMasqueradeCIDR: 100.64.0.0/10
@@ -258,35 +253,35 @@ spec:
   - 0.0.0.0/0
   subnets:
   - cidr: 172.20.32.0/19
-    id: subnet-068ff0ee1843bc46e
-    name: eu-west-1a
+    id: subnet-042d27892b9d249dc
+    name: eu-west-2a
     type: Private
-    zone: eu-west-1a
+    zone: eu-west-2a
   - cidr: 172.20.64.0/19
-    id: subnet-0df58455e81cd662c
-    name: eu-west-1b
+    id: subnet-008096de384cdb660
+    name: eu-west-2b
     type: Private
-    zone: eu-west-1b
+    zone: eu-west-2b
   - cidr: 172.20.96.0/19
-    id: subnet-0d35bfec9b1bf07e7
-    name: eu-west-1c
+    id: subnet-07fa62f055b2bcfce
+    name: eu-west-2c
     type: Private
-    zone: eu-west-1c
+    zone: eu-west-2c
   - cidr: 172.20.0.0/22
-    id: subnet-040183e0b9a34d97f
-    name: utility-eu-west-1a
+    id: subnet-093d68ed2bf08e445
+    name: utility-eu-west-2a
     type: Utility
-    zone: eu-west-1a
+    zone: eu-west-2a
   - cidr: 172.20.4.0/22
-    id: subnet-07c8f2dc7bb8dbab0
-    name: utility-eu-west-1b
+    id: subnet-051ebb33ce1319210
+    name: utility-eu-west-2b
     type: Utility
-    zone: eu-west-1b
+    zone: eu-west-2b
   - cidr: 172.20.8.0/22
-    id: subnet-02da2a7a4a4d05ed6
-    name: utility-eu-west-1c
+    id: subnet-03cf43ce8ae2b114c
+    name: utility-eu-west-2c
     type: Utility
-    zone: eu-west-1c
+    zone: eu-west-2c
   topology:
     dns:
       type: Public
@@ -319,15 +314,15 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: cloud-platform-test-7.k8s.integration.dsd.io
-  name: master-eu-west-1a
+    kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
+  name: master-eu-west-2a
 spec:
-  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
   nodeLabels:
-    kops.k8s.io/instancegroup: master-eu-west-1a
+    kops.k8s.io/instancegroup: master-eu-west-2a
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -337,7 +332,7 @@ spec:
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
   subnets:
-  - eu-west-1a
+  - eu-west-2a
 
 ---
 
@@ -346,15 +341,15 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: cloud-platform-test-7.k8s.integration.dsd.io
-  name: master-eu-west-1b
+    kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
+  name: master-eu-west-2b
 spec:
-  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
   nodeLabels:
-    kops.k8s.io/instancegroup: master-eu-west-1b
+    kops.k8s.io/instancegroup: master-eu-west-2b
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -364,7 +359,7 @@ spec:
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
   subnets:
-  - eu-west-1b
+  - eu-west-2b
 
 ---
 
@@ -373,15 +368,15 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: cloud-platform-test-7.k8s.integration.dsd.io
-  name: master-eu-west-1c
+    kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
+  name: master-eu-west-2c
 spec:
-  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: c4.xlarge
   maxSize: 1
   minSize: 1
   nodeLabels:
-    kops.k8s.io/instancegroup: master-eu-west-1c
+    kops.k8s.io/instancegroup: master-eu-west-2c
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -391,7 +386,7 @@ spec:
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Master
   subnets:
-  - eu-west-1c
+  - eu-west-2c
 
 ---
 
@@ -400,13 +395,13 @@ kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: cloud-platform-test-7.k8s.integration.dsd.io
+    kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: nodes
 spec:
-  image: kope.io/k8s-1.10-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: r5.xlarge
-  maxSize: 6
-  minSize: 6
+  maxSize: 15
+  minSize: 15
   nodeLabels:
     kops.k8s.io/instancegroup: nodes
   cloudLabels:
@@ -418,6 +413,6 @@ spec:
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Node
   subnets:
-  - eu-west-1a
-  - eu-west-1b
-  - eu-west-1c
+  - eu-west-2a
+  - eu-west-2b
+  - eu-west-2c

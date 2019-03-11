@@ -18,5 +18,5 @@ variable "external_subnets" {
 variable "availability_zones" {
   type        = "list"
   description = "a list of EC2 availability zones"
-  default     = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  default     = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 }

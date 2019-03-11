@@ -9,8 +9,8 @@ terraform {
 }
 
 provider "aws" {
-  profile = "moj-pi"
-  region  = "eu-west-1"
+  profile = "moj-cp"
+  region  = "eu-west-2"
 }
 
 provider "kubernetes" {}

@@ -15,7 +15,7 @@ Steps:
 1. `terraform plan && terraform apply`
 1. Create a k8s cluster, see [../kops/](../kops/) folder for existing ones
    1. Copy the live-0 yaml, edit oidcClientID to match the Terraform-created app above
-   1. Commit to master and check pipeline output in [CodePipeline](https://eu-west-1.console.aws.amazon.com/codepipeline/home?region=eu-west-1#/view/cluster-creation-pipeline)
+   1. Commit to master and check pipeline output in [CodePipeline](https://eu-west-2.console.aws.amazon.com/codepipeline/home?region=eu-west-2#/view/cluster-creation-pipeline)
    1. Use `kops export kubecfg` to get the super-admin config
 1. Install Helm
     ```
@@ -36,7 +36,7 @@ Steps:
       $ helm install -n nginx-ingress --namespace ingress-controller stable/nginx-ingress -f ../../../cluster-components/nginx-ingress/
       $ kubectl --namespace ingress-controller get services -o wide -w nginx-ingress-controller
       NAME                       TYPE           CLUSTER-IP      EXTERNAL-IP                                                               PORT(S)                      AGE       SELECTOR
-      nginx-ingress-controller   LoadBalancer   100.68.102.11   a968b3bdf851c11e886e00a458ee6675-1910441520.eu-west-1.elb.amazonaws.com   80:30967/TCP,443:31280/TCP   33s       app=nginx-ingress,component=controller,release=nginx-ingress
+      nginx-ingress-controller   LoadBalancer   100.68.102.11   a968b3bdf851c11e886e00a458ee6675-1910441520.eu-west-2.elb.amazonaws.com   80:30967/TCP,443:31280/TCP   33s       app=nginx-ingress,component=controller,release=nginx-ingress
     ```
 1. Edit config for Kuberos, see [../cluster-components/kuberos](../cluster-components/kuberos) for existing ones
     1. Copy the live-0 folder with the new name, `cd` to it

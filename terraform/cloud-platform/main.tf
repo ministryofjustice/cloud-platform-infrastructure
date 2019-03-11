@@ -10,8 +10,8 @@ terraform {
 }
 
 provider "aws" {
-  region  = "eu-west-1"
-  profile = "moj-pi"
+  region  = "eu-west-2"
+  profile = "moj-cp"
 }
 
 #
@@ -39,8 +39,8 @@ data "terraform_remote_state" "global" {
 
 locals {
   cluster_name             = "${terraform.workspace}"
-  cluster_base_domain_name = "${local.cluster_name}.k8s.integration.dsd.io"
-  auth0_tenant_domain      = "moj-cloud-platforms-dev.eu.auth0.com"
+  cluster_base_domain_name = "${local.cluster_name}.cloud-platform.service.justice.gov.uk"
+  auth0_tenant_domain      = "justice-cloud-platform.eu.auth0.com"
   oidc_issuer_url          = "https://${local.auth0_tenant_domain}/"
 }
 
@@ -48,7 +48,7 @@ locals {
 module "cluster_dns" {
   source                   = "../modules/cluster_dns"
   cluster_base_domain_name = "${local.cluster_base_domain_name}"
-  parent_zone_id           = "${data.terraform_remote_state.global.k8s_zone_id}"
+  parent_zone_id           = "${data.terraform_remote_state.global.cp_zone_id}"
 }
 
 module "cluster_ssl" {
@@ -98,10 +98,12 @@ resource "aws_key_pair" "cluster" {
 }
 
 resource "auth0_client" "kubernetes" {
-  name                 = "${local.cluster_name}:kubernetes"
-  description          = "Cloud Platform kubernetes"
-  app_type             = "regular_web"
-  callbacks            = ["https://login.apps.${local.cluster_base_domain_name}/ui"]
+  name        = "${local.cluster_name}:kubernetes"
+  description = "Cloud Platform kubernetes"
+  app_type    = "regular_web"
+
+  callbacks = ["https://login.apps.${local.cluster_base_domain_name}/ui"]
+
   custom_login_page_on = true
   is_first_party       = true
   oidc_conformant      = true
@@ -121,6 +123,10 @@ resource "auth0_client" "components" {
   callbacks = [
     "https://prometheus.apps.${local.cluster_base_domain_name}/oauth2/callback",
     "https://alertmanager.apps.${local.cluster_base_domain_name}/oauth2/callback",
+    "https://prometheus.apps.${local.cluster_base_domain_name}/redirect_uri",
+    "https://alertmanager.apps.${local.cluster_base_domain_name}/redirect_uri",
+    "https://concourse.apps.${local.cluster_base_domain_name}/sky/issuer/callback",
+    "https://kibana.apps.${local.cluster_base_domain_name}/oauth2/callback",
   ]
 
   custom_login_page_on = true

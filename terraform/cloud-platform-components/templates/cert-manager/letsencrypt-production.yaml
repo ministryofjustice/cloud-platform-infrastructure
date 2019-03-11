@@ -18,7 +18,7 @@ spec:
       providers:
       - name: route53-cloud-platform
         route53:
-          region: eu-west-1
+          region: eu-west-2
       - name: route53-dsd
         route53:
           region: eu-west-1
