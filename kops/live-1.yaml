@@ -181,19 +181,33 @@ spec:
   - etcdMembers:
     - instanceGroup: master-eu-west-2a
       name: a
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
     - instanceGroup: master-eu-west-2b
       name: b
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
     - instanceGroup: master-eu-west-2c
       name: c
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
     name: main
+    version: 3.3.10
   - etcdMembers:
     - instanceGroup: master-eu-west-2a
       name: a
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
     - instanceGroup: master-eu-west-2b
       name: b
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
     - instanceGroup: master-eu-west-2c
       name: c
+      encryptedVolume: true
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d1d8717f-10de-4620-b42b-a52088a5704a"
     name: events
+    version: 3.3.10
   iam:
     allowContainerRegistry: true
     legacy: false
@@ -202,7 +216,7 @@ spec:
     readOnlyPort: 0
     authenticationTokenWebhook: true
   kubeAPIServer:
-    oidcClientID: R5V4LWfFcqaUCCdWSX8Jtmtf7PuxMFlw
+    oidcClientID: Ug30lt9mPkLaL5nWL6hhAweTTGN7DQUe
     oidcIssuerURL: https://justice-cloud-platform.eu.auth0.com/
     oidcUsernameClaim: nickname
     oidcGroupsClaim: https://k8s.integration.dsd.io/groups
@@ -224,12 +238,14 @@ spec:
     - NodeRestriction
     - ResourceQuota
     - PodSecurityPolicy
+    runtimeConfig:
+      admissionregistration.k8s.io/v1alpha1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.11.6
+  kubernetesVersion: 1.11.8
   masterPublicName: api.live-1.cloud-platform.service.justice.gov.uk
   networkCIDR: 172.20.0.0/16
-  networkID: vpc-0d24c1ee915a524db
+  networkID: vpc-0726ec279947067f8
   networking:
     calico: {}
   nonMasqueradeCIDR: 100.64.0.0/10
@@ -237,32 +253,32 @@ spec:
   - 0.0.0.0/0
   subnets:
   - cidr: 172.20.32.0/19
-    id: subnet-0e61d3fff112ebaf6
+    id: subnet-042d27892b9d249dc
     name: eu-west-2a
     type: Private
     zone: eu-west-2a
   - cidr: 172.20.64.0/19
-    id: subnet-0e3c57d147f8031f3
+    id: subnet-008096de384cdb660
     name: eu-west-2b
     type: Private
     zone: eu-west-2b
   - cidr: 172.20.96.0/19
-    id: subnet-06cc51ebe12620c09
+    id: subnet-07fa62f055b2bcfce
     name: eu-west-2c
     type: Private
     zone: eu-west-2c
   - cidr: 172.20.0.0/22
-    id: subnet-07c95ade0d5645628
+    id: subnet-093d68ed2bf08e445
     name: utility-eu-west-2a
     type: Utility
     zone: eu-west-2a
   - cidr: 172.20.4.0/22
-    id: subnet-02997933bb7f13b5e
+    id: subnet-051ebb33ce1319210
     name: utility-eu-west-2b
     type: Utility
     zone: eu-west-2b
   - cidr: 172.20.8.0/22
-    id: subnet-05821f46c8e123a06
+    id: subnet-03cf43ce8ae2b114c
     name: utility-eu-west-2c
     type: Utility
     zone: eu-west-2c
@@ -384,8 +400,8 @@ metadata:
 spec:
   image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: r5.xlarge
-  maxSize: 6
-  minSize: 6
+  maxSize: 15
+  minSize: 15
   nodeLabels:
     kops.k8s.io/instancegroup: nodes
   cloudLabels:
