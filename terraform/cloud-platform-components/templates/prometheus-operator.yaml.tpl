@@ -113,6 +113,9 @@ alertmanager:
           severity: warning
         receiver: slack-low-priority
       - match:
+          severity: apply-for-legal-aid
+        receiver: apply-for-legal-aid
+      - match:
           severity: laa-cla-fala
         receiver: slack-laa-cla-fala
       - match:
@@ -144,6 +147,24 @@ alertmanager:
         - type: button
           text: 'Silence :no_bell:'
           url: '{{ template "__alert_silence_link" . }}'
+    - name: 'slack-apply-for-legal-aid'
+      slack_configs:
+      - api_url: "${slack_config_apply-for-legal-aid}"
+        channel: "#apply-alerts-staging"
+        send_resolved: True
+        title: '{{ template "slack.cp.title" . }}'
+        text: '{{ template "slack.cp.text" . }}'
+        footer: ${ alertmanager_ingress }
+        actions:
+        - type: button
+          text: 'Runbook :blue_book:'
+          url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+        - type: button
+          text: 'Query :mag:'
+          url: '{{ (index .Alerts 0).GeneratorURL }}'
+        - type: button
+          text: 'Silence :no_bell:'
+          url: '{{ template "__alert_silence_link" . }}' 
     - name: 'slack-laa-cla-fala'
       slack_configs:
       - api_url: "${slack_config_laa-cla-fala}"
