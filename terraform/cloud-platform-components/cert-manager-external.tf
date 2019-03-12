@@ -3,6 +3,7 @@ locals {
   # cert-manager will be given access to.
   cert_manager_dsd_zones = [
     "find-legal-advice.justice.gov.uk.",
+    "checklegalaid.service.gov.uk.",
   ]
 }
 
