@@ -114,7 +114,7 @@ alertmanager:
         receiver: slack-low-priority
       - match:
           severity: apply-for-legal-aid
-        receiver: apply-for-legal-aid
+        receiver: slack-apply-for-legal-aid
       - match:
           severity: laa-cla-fala
         receiver: slack-laa-cla-fala
