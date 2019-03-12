@@ -49,15 +49,13 @@ provider: aws
 aws:
   region: eu-west-2
   zoneType: public
-extraArgs:
-  aws-assume-role: "${aws_iam_role.external_dns.arn}"
 domainFilters:
   - "${data.terraform_remote_state.cluster.cluster_domain_name}"
 rbac:
   create: true
   apiVersion: v1
   serviceAccountName: default
-logLevel: debug
+logLevel: info
 podAnnotations:
   iam.amazonaws.com/role: "${aws_iam_role.external_dns.name}"
 EOF
