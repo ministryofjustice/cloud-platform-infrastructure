@@ -14,14 +14,14 @@ variable "slack_config_prisoner-money" {
   description = "Add Slack webhook API URL and channel for integration with slack."
 }
 
-variable "github_client_id" {
-  description = "ClientID of GitHub Oauth application"
+variable "auth0_client_id" {
+  description = "The client id of the Auth0 application."
 }
 
-variable "github_client_secret" {
-  description = "Client secret of GitHub Oauth application"
+variable "auth0_client_secret" {
+  description = "The client secret of the Auth0 application."
 }
 
-variable "github_secret_key" {
-  description = "Session secret, to generate a session secret use: `head -c 32 /dev/urandom`"
-}
+variable "auth0_domain" {
+  description = "The endpoint URL of the tenant without sub-domains."
+} 
