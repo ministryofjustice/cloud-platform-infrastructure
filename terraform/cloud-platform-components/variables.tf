@@ -24,4 +24,4 @@ variable "auth0_client_secret" {
 
 variable "auth0_domain" {
   description = "The endpoint URL of the tenant without sub-domains."
-} 
+}
