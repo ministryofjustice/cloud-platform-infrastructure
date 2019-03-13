@@ -8,11 +8,11 @@ resource "kubernetes_secret" "grafana_secret" {
   }
 
   data {
-    GF_AUTH_GENERIC_OAUTH_CLIENT_ID     = "${ var.auth0_client_id }"
-    GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET = "${ var.auth0_client_secret }"
-    GF_AUTH_GENERIC_OAUTH_AUTH_URL      = "${ var.auth0_domain }/authorize"
-    GF_AUTH_GENERIC_OAUTH_TOKEN_URL     = "${ var.auth0_domain }/oauth/token"
-    GF_AUTH_GENERIC_OAUTH_API_URL       = "${ var.auth0_domain }/userinfo"
+    GF_AUTH_GENERIC_OAUTH_CLIENT_ID     = "${data.terraform_remote_state.cluster.oidc_components_client_id}"
+    GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET = "${data.terraform_remote_state.cluster.oidc_components_client_secret}"
+    GF_AUTH_GENERIC_OAUTH_AUTH_URL      = "${data.terraform_remote_state.cluster.oidc_issuer_url}authorize"
+    GF_AUTH_GENERIC_OAUTH_TOKEN_URL     = "${data.terraform_remote_state.cluster.oidc_issuer_url}oauth/token"
+    GF_AUTH_GENERIC_OAUTH_API_URL       = "${data.terraform_remote_state.cluster.oidc_issuer_url}userinfo"
   }
 
   type = "Opaque"
