@@ -6,8 +6,8 @@ Description: Initializes IAM User policy, enforce MFA to access resources.
 # AWS Cloudformation template for establishing MFA for CLI and Console logins
 # It creates a 1) Developer Policy which has access to EC2, RDS, S3, Route53,
 # Cloudformation, elasticloadbalancing, autoscaling, kms; 2) Developer MFA Role;
-# 3) Developer Group to add users; 4) Managed Policy that allows user to manage
-# his IAM MFA device permissions
+# 3) Developer Group to add users; 4) User Self Service Policy that allows user to manage
+# their IAM & MFA device permissions
 #==================================================================================
 
 Resources:
@@ -17,13 +17,11 @@ Resources:
     Type: "AWS::IAM::ManagedPolicy"
     Properties:
       Description: "A policy that allows Developers to access Dev Resources"
-      Groups:
-        - !Ref DeveloperMFAGroup
-      ManagedPolicyName: "DeveloperMFAAccessPolicy"
+      ManagedPolicyName: "aws-iam-userdeveloper-access-policy"
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          -
+          - Sid: "UserDeveloperAccessAcl"
             Effect: "Allow"
             Action:
               - "ec2:*"
@@ -36,46 +34,22 @@ Resources:
               - "kms:*"
             Resource: "*"
             Condition:
-              Bool:
-                aws:MultiFactorAuthPresent: true
-
-# Role for the user to assume the policy permissions
-  DeveloperMFARole:
-    Type: AWS::IAM::Role
-    Properties:
-      ManagedPolicyArns:
-        - !Ref DeveloperAccessPolicy
-      RoleName: DeveloperMFARole
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          - Sid: "AllowAssumeRoleIfMFAIsPresent"
-            # see http://docs.aws.amazon.com/cli/latest/userguide/cli-roles.html#cli-roles-mfa
-            Effect: "Allow"
-            Principal:
-              AWS: !Ref 'AWS::AccountId'
+              StringEquals:
+                aws:RequestedRegion: ["eu-west-1", "eu-west-2", "eu-west-3", "us-east-1"]
+          - Sid: "DenyPublicCannedAcl"
+            Effect: "Deny"
             Action:
-              - "sts:AssumeRole"
+              - "s3:PutBucketAcl"
+              - "s3:PutObjectAcl"
+              - "s3:PutObjectVersionAcl"
+            Resource:
+              - "arn:aws:s3:::*"
             Condition:
-              Bool:
-                aws:MultiFactorAuthPresent: true
-
-# Group which has the assume role permissions and the policy attached to it. Dev users can be
-# added to this group to gain access to only Dev resources
-  DeveloperMFAGroup:
-    Type: AWS::IAM::Group
-    Properties:
-      GroupName: DeveloperMFAGroup
-      Policies:
-        - PolicyName: AllowDeveloperAssumeMFAPolicy
-          PolicyDocument:
-            Version: 2012-10-17
-            Statement:
-              Sid: "AllowUserToAssumeMFARole"
-              Effect: "Allow"
-              Action: "sts:AssumeRole"
-              Resource: !GetAtt DeveloperMFARole.Arn
-
+              StringEquals:
+                "s3:x-amz-acl":
+                  - "public-read"
+                  - "public-read-write"
+                  - "authenticated-read"
 # Managed Policy for the Users to manage their personal mfa configuration
   UserSelfServicePolicy:
     Type: AWS::IAM::ManagedPolicy
@@ -83,8 +57,7 @@ Resources:
       Description: A policy that allows users to manage their personal credentials and MFA configuration
       Groups:
         - !Ref DeveloperMFAGroup
-        # add more groups that should have MFA requirement
-      ManagedPolicyName: ManageMFAPolicy
+      ManagedPolicyName: "aws-iam-user-selfservice-policy"
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -151,17 +124,40 @@ Resources:
           Condition:
             Bool:
               aws:MultiFactorAuthPresent: "true"
-        - Sid: BlockMostAccessUnlessSignedInWithMFA
-          Effect: Deny
-          Action:
-          - iam:CreateVirtualMFADevice
-          - iam:EnableMFADevice
-          - iam:ListMFADevices
-          - iam:ListUsers
-          - iam:ListVirtualMFADevices
-          - iam:ResyncMFADevice
-          Resource: "*"
-          Condition:
-            BoolIfExists:
-              aws:MultiFactorAuthPresent: "false"
-        
+# Role for the user to assume the policy permissions
+  DeveloperMFARole:
+    Type: AWS::IAM::Role
+    DependsOn:
+      - DeveloperAccessPolicy
+    Properties:
+      ManagedPolicyArns:
+        - !Ref DeveloperAccessPolicy
+      RoleName: DevRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: "AllowAssumeRoleIfMFAIsPresent"
+            # see http://docs.aws.amazon.com/cli/latest/userguide/cli-roles.html#cli-roles-mfa
+            Effect: "Allow"
+            Principal:
+              AWS: !Ref 'AWS::AccountId'
+            Action:
+              - "sts:AssumeRole"
+            Condition:
+              Bool:
+                aws:MultiFactorAuthPresent: true
+# Group which has the assume role permissions and the policy attached to it. Dev users can be
+# added to this group to gain access to only Dev resources
+  DeveloperMFAGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: DevMFAGroup
+      Policies:
+        - PolicyName: AllowDeveloperAssumeMFAPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              Sid: "AllowUserToAssumeMFARole"
+              Effect: "Allow"
+              Action: "sts:AssumeRole"
+              Resource: !GetAtt DeveloperMFARole.Arn

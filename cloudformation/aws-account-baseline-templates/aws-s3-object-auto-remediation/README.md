@@ -1,4 +1,4 @@
-# S3 Private 
+# Auto Remediate Unintended Permissions change on S3 Objects
 
 ## Background
 AWS S3 buckets are often accidentally left public, resulting in the accidental disclosure of confidential data to everyone. Also if the number of objects and users in the AWS account are large, ensuring that the ACLs are correctly configured to the objects can be a challenge. 
@@ -33,39 +33,37 @@ aws cloudformation deploy --template-file aws-s3-object-auto-remediation.yaml --
 
 ```
 
-## S3 Bucket Policy to prevent Public Permissions
-The proactive approach is to restrict permissions for the users from having the access to update to public permissions. The IAM policy is set with conditions to force the users to put objects with private access.
-
+## IAM User Policy to prevent Public Permissions
+The proactive approach is to restrict user permissions from having the access to update to public permissions. The IAM policy is set with conditions to force the users to put objects with private access.
 
 ```
-# Managed Policy that denies Users to update s3 objects to public permissions
-  DenyS3PublicPermissions:
-    Type: AWS::IAM::ManagedPolicy
-    Properties:
-      Description: A policy that denies users to update s3 objects to public permissions
-      Groups:
-        - !Ref {user-group}
-      ManagedPolicyName: aws-iam-s3-deny-public-permissions
-      PolicyDocument:
-        Version: "2012-10-17"
-        Id: "s3objecttrailbucketpolicy"
-        Statement:
-          - Sid: "DenyPublicCannedAcl"
-            Effect: "Deny"
-            Principal: "*"
-            Action:
-              - "s3:PutBucketAcl"
-              - "s3:PutObjectAcl"
-              - "s3:PutObjectVersionAcl"
-            Resource:
-              - "arn:aws:s3:::{bucket_name}"
-              - "arn:aws:s3:::{bucket_name}/*"
-            Condition:
-              StringEquals:
-                "s3:x-amz-acl":
-                  - "public-read"
-                  - "public-read-write"
-                  - "authenticated-read"
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DenyPublicCannedAcl",
+            "Effect": "Deny",
+            "Action": [
+              "s3:PutBucketAcl",
+              "s3:PutObjectAcl",
+              "s3:PutObjectVersionAcl"
+            ],
+            "Resource": [
+              "arn:aws:s3:::{bucket_name}",
+              "arn:aws:s3:::{bucket_name}/*"
+            ],
+            "Condition": {
+                "StringEquals": {
+                    "s3:x-amz-acl": [
+                        "public-read",
+                        "public-read-write",
+                        "authenticated-read"
+                    ]
+                }
+            }
+        }
+    ]
+}
 
 ```
 

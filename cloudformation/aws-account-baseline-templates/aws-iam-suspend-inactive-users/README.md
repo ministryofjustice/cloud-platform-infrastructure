@@ -15,7 +15,7 @@ EXCEPTION - Users with Admin privileges obtained through AWS Managed Policy are 
 ## How to Deploy
 
 ### Prerequisites
-Install [AWS CLI] (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) and [configure the AWS CLI] (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) access keys using the below commands:
+Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) and [configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) access keys using the below commands:
 
 ```
 sudo apt-get install -y python-dev python-pip
@@ -25,8 +25,9 @@ aws configure
 ``` 
 
 ### Parameters
-The IAM user or the access key is made Inactive if they have not logged in or used the accee key for DEFAULT_AGE_THRESHOLD_IN_DAYS. Currently set to 120 days
-A New IAM user or a New access key is not checked for inactive status for CREATE_DATE_AGE_THRESHOLD_IN_DAYS. Currently set as 7 days
+The IAM user or the access key is made Inactive if they have not logged in or used the access key for DEFAULT_AGE_THRESHOLD_IN_DAYS which is currently set to 120 days
+
+A New IAM user or a New access key is not checked for inactive status for CREATE_DATE_AGE_THRESHOLD_IN_DAYS which is currently set as 7 days
 
 ### Package the template 
 
