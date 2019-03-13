@@ -28,16 +28,19 @@ data "template_file" "prometheus_operator" {
   template = "${file("${ path.module }/templates/prometheus-operator.yaml.tpl")}"
 
   vars {
-    alertmanager_ingress        = "https://alertmanager.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
-    grafana_ingress             = "grafana.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
-    grafana_root                = "https://grafana.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
-    pagerduty_config            = "${ var.pagerduty_config }"
-    slack_config                = "${ var.slack_config }"
-    slack_config_laa-cla-fala   = "${var.slack_config_laa-cla-fala}"
-    slack_config_prisoner-money = "${var.slack_config_prisoner-money}"
-    prometheus_ingress          = "https://prometheus.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
-    random_username             = "${ random_id.username.hex }"
-    random_password             = "${ random_id.password.hex }"
+    alertmanager_ingress                     = "https://alertmanager.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
+    grafana_ingress                          = "grafana.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
+    grafana_root                             = "https://grafana.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
+    pagerduty_config                         = "${ var.pagerduty_config }"
+    slack_config                             = "${ var.slack_config }"
+    slack_config_apply-for-legal-aid-prod    = "${var.slack_config_apply-for-legal-aid-prod}"
+    slack_config_apply-for-legal-aid-staging = "${var.slack_config_apply-for-legal-aid-staging}"
+    slack_config_apply-for-legal-aid-uat     = "${var.slack_config_apply-for-legal-aid-uat}"
+    slack_config_laa-cla-fala                = "${var.slack_config_laa-cla-fala}"
+    slack_config_prisoner-money              = "${var.slack_config_prisoner-money}"
+    prometheus_ingress                       = "https://prometheus.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
+    random_username                          = "${ random_id.username.hex }"
+    random_password                          = "${ random_id.password.hex }"
   }
 }
 

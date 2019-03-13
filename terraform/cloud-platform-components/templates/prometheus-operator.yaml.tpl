@@ -113,6 +113,15 @@ alertmanager:
           severity: warning
         receiver: slack-low-priority
       - match:
+          severity: apply-for-legal-aid-prod
+        receiver: slack-apply-for-legal-aid-prod
+      - match:
+          severity: apply-for-legal-aid-staging
+        receiver: slack-apply-for-legal-aid-staging
+      - match:
+          severity: apply-for-legal-aid-uat
+        receiver: slack-apply-for-legal-aid-uat
+      - match:
           severity: laa-cla-fala
         receiver: slack-laa-cla-fala
       - match:
@@ -130,6 +139,60 @@ alertmanager:
       slack_configs:
       - api_url: "${ slack_config }"
         channel: "#lower-priority-alarms"
+        send_resolved: True
+        title: '{{ template "slack.cp.title" . }}'
+        text: '{{ template "slack.cp.text" . }}'
+        footer: ${ alertmanager_ingress }
+        actions:
+        - type: button
+          text: 'Runbook :blue_book:'
+          url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+        - type: button
+          text: 'Query :mag:'
+          url: '{{ (index .Alerts 0).GeneratorURL }}'
+        - type: button
+          text: 'Silence :no_bell:'
+          url: '{{ template "__alert_silence_link" . }}'
+    - name: 'slack-apply-for-legal-aid-prod'
+      slack_configs:
+      - api_url: "${slack_config_apply-for-legal-aid-prod}"
+        channel: "#apply-alerts-prod"
+        send_resolved: True
+        title: '{{ template "slack.cp.title" . }}'
+        text: '{{ template "slack.cp.text" . }}'
+        footer: ${ alertmanager_ingress }
+        actions:
+        - type: button
+          text: 'Runbook :blue_book:'
+          url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+        - type: button
+          text: 'Query :mag:'
+          url: '{{ (index .Alerts 0).GeneratorURL }}'
+        - type: button
+          text: 'Silence :no_bell:'
+          url: '{{ template "__alert_silence_link" . }}'
+    - name: 'slack-apply-for-legal-aid-staging'
+      slack_configs:
+      - api_url: "${slack_config_apply-for-legal-aid-staging}"
+        channel: "#apply-alerts-staging"
+        send_resolved: True
+        title: '{{ template "slack.cp.title" . }}'
+        text: '{{ template "slack.cp.text" . }}'
+        footer: ${ alertmanager_ingress }
+        actions:
+        - type: button
+          text: 'Runbook :blue_book:'
+          url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+        - type: button
+          text: 'Query :mag:'
+          url: '{{ (index .Alerts 0).GeneratorURL }}'
+        - type: button
+          text: 'Silence :no_bell:'
+          url: '{{ template "__alert_silence_link" . }}'
+    - name: 'slack-apply-for-legal-aid-uat'
+      slack_configs:
+      - api_url: "${slack_config_apply-for-legal-aid-uat}"
+        channel: "#apply-alerts-uat"
         send_resolved: True
         title: '{{ template "slack.cp.title" . }}'
         text: '{{ template "slack.cp.text" . }}'
@@ -452,11 +515,9 @@ grafana:
     ## Secret must be manually created in the namespace
     ##
     tls:
-      - hosts:
-        - "${ grafana_ingress }"
-    # - secretName: prometheus-general-tls
-    #   hosts:
-    #   - prometheus.example.com
+    - secretName: prometheus-general-tls
+      hosts:
+      - "${ grafana_ingress }"
 
   env:
     GF_SERVER_ROOT_URL: "${ grafana_root }"
