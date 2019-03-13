@@ -1,16 +1,7 @@
-locals {
-  # This is the list of Route53 Hosted Zones in the DSD account that
-  # cert-manager will be given access to.
-  cert_manager_dsd_zones = [
-    "find-legal-advice.justice.gov.uk.",
-    "checklegalaid.service.gov.uk.",
-  ]
-}
-
 data "aws_route53_zone" "cert_manager_dsd" {
   provider = "aws.dsd"
-  count    = "${length(local.cert_manager_dsd_zones)}"
-  name     = "${local.cert_manager_dsd_zones[count.index]}"
+  count    = "${length(local.dsd_zones)}"
+  name     = "${local.dsd_zones[count.index]}"
 }
 
 resource "aws_iam_user" "cert_manager_dsd" {
