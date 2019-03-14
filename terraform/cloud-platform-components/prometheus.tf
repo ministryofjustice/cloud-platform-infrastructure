@@ -8,9 +8,11 @@ resource "kubernetes_secret" "grafana_secret" {
   }
 
   data {
-    GF_AUTH_GITHUB_CLIENT_ID     = "${ var.github_client_id }"
-    GF_AUTH_GITHUB_CLIENT_SECRET = "${ var.github_client_secret }"
-    GF_SECURITY_SECRET_KEY       = "${ var.github_secret_key }"
+    GF_AUTH_GENERIC_OAUTH_CLIENT_ID     = "${data.terraform_remote_state.cluster.oidc_components_client_id}"
+    GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET = "${data.terraform_remote_state.cluster.oidc_components_client_secret}"
+    GF_AUTH_GENERIC_OAUTH_AUTH_URL      = "${data.terraform_remote_state.cluster.oidc_issuer_url}authorize"
+    GF_AUTH_GENERIC_OAUTH_TOKEN_URL     = "${data.terraform_remote_state.cluster.oidc_issuer_url}oauth/token"
+    GF_AUTH_GENERIC_OAUTH_API_URL       = "${data.terraform_remote_state.cluster.oidc_issuer_url}userinfo"
   }
 
   type = "Opaque"
