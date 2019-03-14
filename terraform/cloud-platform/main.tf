@@ -127,6 +127,7 @@ resource "auth0_client" "components" {
     "https://alertmanager.apps.${local.cluster_base_domain_name}/redirect_uri",
     "https://concourse.apps.${local.cluster_base_domain_name}/sky/issuer/callback",
     "https://kibana.apps.${local.cluster_base_domain_name}/oauth2/callback",
+    "https://grafana.apps.${local.cluster_base_domain_name}/login/generic_oauth",
   ]
 
   custom_login_page_on = true
