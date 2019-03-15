@@ -20,3 +20,7 @@ variable "availability_zones" {
   description = "a list of EC2 availability zones"
   default     = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 }
+variable "cluster_node_min_size" {
+  description = "min number of worker node in kops manifest"
+  default     = 15
+}
