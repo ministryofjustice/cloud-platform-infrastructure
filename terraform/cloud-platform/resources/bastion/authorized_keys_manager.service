@@ -4,8 +4,8 @@ Description=authorized-keys-manager
 ExecStart=/bin/bash -c '\
   while true; do \
     ak=$(curl -Lfs ${authorized_keys_url}) \
-      && [ ! -z "$$$${ak}" ] \
-      && echo "$$$${ak}" > /home/admin/.ssh/authorized_keys; \
+      && [ ! -z "$$ak" ] \
+      && echo "$$ak" > /home/admin/.ssh/authorized_keys; \
     sleep 60; \
   done;'
 [Install]
