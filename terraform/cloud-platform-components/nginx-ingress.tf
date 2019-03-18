@@ -17,9 +17,6 @@ controller:
         return 308 https://$host$request_uri;
       }
 
-  publishService:
-    enabled: true
-
   stats:
     enabled: true
 

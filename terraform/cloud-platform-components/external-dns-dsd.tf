@@ -41,7 +41,6 @@ resource "helm_release" "external_dns_dsd" {
 
   values = [<<EOF
 sources:
-  - service
   - ingress
 provider: aws
 aws:

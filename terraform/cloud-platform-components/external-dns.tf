@@ -44,7 +44,6 @@ resource "helm_release" "external_dns" {
   values = [<<EOF
 sources:
   - service
-  - ingress
 provider: aws
 aws:
   region: eu-west-1
