@@ -121,6 +121,7 @@ resource "auth0_client" "components" {
   callbacks = [
     "https://prometheus.apps.${local.cluster_base_domain_name}/oauth2/callback",
     "https://alertmanager.apps.${local.cluster_base_domain_name}/oauth2/callback",
+    "https://grafana.apps.${local.cluster_base_domain_name}/login/generic_oauth",
   ]
 
   custom_login_page_on = true
