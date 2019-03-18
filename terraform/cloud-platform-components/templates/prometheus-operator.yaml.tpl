@@ -515,9 +515,9 @@ grafana:
     ## Secret must be manually created in the namespace
     ##
     tls:
-    # - secretName: prometheus-general-tls
-    #   hosts:
-    #   - prometheus.example.com
+      - hosts:
+        - "${ grafana_ingress }"
+    # secretName: prometheus-general-tls
 
   env:
     GF_SERVER_ROOT_URL: "${ grafana_root }"
