@@ -517,7 +517,9 @@ grafana:
     tls:
       - hosts:
         - "${ grafana_ingress }"
-    # secretName: prometheus-general-tls
+    # - secretName: prometheus-general-tls
+    #   hosts:
+    #   - prometheus.example.com
 
   env:
     GF_SERVER_ROOT_URL: "${ grafana_root }"
