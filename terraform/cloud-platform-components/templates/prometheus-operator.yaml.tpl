@@ -696,6 +696,13 @@ nodeExporter:
   ## Use the value configured in prometheus-node-exporter.podLabels
   ##
   jobLabel: jobLabel
+  resources:
+    limits:
+      cpu: 10m
+      memory: 50Mi
+    requests:
+      cpu: 5m
+      memory: 25Mi
 
 ## Configuration for prometheus-node-exporter subchart
 ##
