@@ -17,7 +17,7 @@ This repository contains sample code for all the Lambda functions depicted in th
     * Send security notification message containing summary to `SecurityNotificationTopic` SNS Topic. If there was an error in the first step the notify security that error occurred and incident requires manual inspection and intervention.
 
 
-## Running the Example
+## How to Deploy
  
 #### Option 1: Launch the CloudFormation Template in US East - N. Virginia (us-east-1) 
 The backend infrastructure can be deployed in US East - N. Virginia (us-east-1) using the provided CloudFormation template.
@@ -32,7 +32,7 @@ Click **Launch Stack** to launch the template in the US East - N. Virginia (us-e
 1. Click **"Execute"**
 )
 
-#### Option 2: Launch the CloudFormation Template Manually 
+#### Option 2: Launch the CloudFormation Template
 
 If you would like to deploy the template manually, you need a S3 bucket in the target region, and then package the Lambda functions into that S3 bucket by using the `aws cloudformation package` utility.
 
@@ -40,28 +40,22 @@ Clone the repository
 
 ```bash
 git clone https://github.com/ministryofjustice/cloud-platform-infrastructure.git
+
+#Set environment variables for later commands to use:
+S3BUCKETNAME=[REPLACE_WITH_AN_EXISTING_BUCKET_IN_THE_ACCOUNT]
+REGION=[REPLACE_WITH_THE_REGION]
+STACKNAME=aws-risk-credentials-exposed
+AWS_PROFILE=[REPLACE_WITH_AWS_PROFILE]
+
+cd cloudformation/aws-account-baseline-templates/aws-risk-credentials-exposed/
+
+#package the template
+aws cloudformation package --region $REGION --s3-bucket $S3BUCKETNAME --template risk_credentials_exposed.serverless.yaml --output-template-file risk_credentials_exposed.output.yaml --profile $AWS_PROFILE
+
+#deploy the stack with the resulting yaml (`risk_credentials_exposed.output.yaml`) through the CloudFormation Console or command line:
+aws cloudformation deploy --region $REGION --template-file risk_credentials_exposed.output.yaml --stack-name $STACKNAME --capabilities CAPABILITY_NAMED_IAM  --profile $AWS_PROFILE
 ```
 
-Set environment variables for later commands to use:
-
-```bash
-S3BUCKET=[REPLACE_WITH_YOUR_BUCKET]
-REGION=[REPLACE_WITH_YOUR_REGION]
-STACKNAME=[REPLACE_WITH_DESIRED_NAME]
-```
-
-Then go to the `cloudformation` folder and use the `aws cloudformation package` utility
-
-```bash
-cd cloudformation
-
-aws cloudformation package --region $REGION --s3-bucket $S3BUCKET --template risk_credentials_exposed.serverless.yaml --output-template-file risk_credentials_exposed.output.yaml
-```
-Last, deploy the stack with the resulting yaml (`risk_credentials_exposed.output.yaml`) through the CloudFormation Console or command line:
-
-```bash
-aws cloudformation deploy --region $REGION --template-file risk_credentials_exposed.output.yaml --stack-name $STACKNAME --capabilities CAPABILITY_NAMED_IAM
-```
 
 ## Testing the Example
 To test the example without exposing an IAM Access Key to a public repository you can simulate the workflow by executing the `ExposedKey-XXXXXXXXXXXX` state machine with a set of test json for the event. To do this follow the steps detailed below.

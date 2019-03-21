@@ -15,7 +15,7 @@ Metadata:
     - Label:
         default: Log Storage
       Parameters:
-        - pS3BucketName
+        - pConfigBucket
         - pCreateS3Bucket
         - pS3Prefix
     - Label:
@@ -23,6 +23,7 @@ Metadata:
       Parameters:
         - pCreateSnsTopic
         - pSnsNotifyEmail
+        - pExistingSnsTopic
     - Label: 
         default: 'Default Rules: Unrestricted Ports'
       Parameters:
@@ -51,7 +52,7 @@ Metadata:
         default: AWS Config log delivery frequency
       pConfigResourceTypes:
         default: Resource types to monitor
-      pS3BucketName:
+      pConfigBucket:
         default: S3 Bucket for log storage
       pCreateS3Bucket:
         default: Should we create this bucket?
@@ -61,6 +62,8 @@ Metadata:
         default: Should we create a notification for alarms?
       pSnsNotifyEmail:
         default: Email address to notify if rules alarm
+      pExistingSnsTopic:
+        default: Arn of the existing SNS Topic
       pRuleUnrestrictedSsh:
         default: Monitor unrestricted SSH
       pRuleUnrestrictedPorts:
@@ -108,7 +111,7 @@ Parameters:
     Type: String
     Default: AllSupported
     Description: This can be either 'AllSupported' or any comma-separated list of values from http://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources
-  pS3BucketName:
+  pConfigBucket:
     Type: String
     Description: Must be a DNS compliant bucket name
   pS3Prefix:
@@ -130,6 +133,9 @@ Parameters:
     - 'false'
   pSnsNotifyEmail:
     Description: Must be a single valid email address
+    Type: String
+  pExistingSnsTopic:
+    Description: Arn of an existing SNS Topic
     Type: String
   pRuleUnrestrictedSsh:
     Type: String
@@ -243,7 +249,7 @@ Resources:
     Condition: cCreateS3Bucket
     DeletionPolicy: Retain
     Properties:
-      BucketName: !Ref pS3BucketName
+      BucketName: !Ref pConfigBucket
       VersioningConfiguration:
         Status: Enabled
   
@@ -264,7 +270,7 @@ Resources:
           - s3:getBucketAcl
           Principal:
             Service: config.amazonaws.com
-          Resource: !Sub [ 'arn:${Partition}:s3:::${pS3BucketName}',
+          Resource: !Sub [ 'arn:${Partition}:s3:::${pConfigBucket}',
             { Partition: !If [ cIsGovCloud, aws-us-gov, aws ] } ]
         - Sid: allowLogDelivery
           Effect: Allow
@@ -275,7 +281,7 @@ Resources:
           Condition:
             StringEquals:
               s3:x-amz-acl: bucket-owner-full-control
-          Resource: !Sub [ 'arn:${Partition}:s3:::${pS3BucketName}/AWSLogs/${AWS::AccountId}/Config/*',
+          Resource: !Sub [ 'arn:${Partition}:s3:::${pConfigBucket}/AWSLogs/${AWS::AccountId}/Config/*',
             { Partition: !If [ cIsGovCloud, aws-us-gov, aws ] } ] 
   
   ####
@@ -330,7 +336,7 @@ Resources:
         - Effect: Allow
           Action:
           - s3:PutObject
-          Resource: !Sub ['arn:${Partition}:s3:::${pS3BucketName}/*',
+          Resource: !Sub ['arn:${Partition}:s3:::${pConfigBucket}/*',
             { Partition: !If [ cIsGovCloud, aws-us-gov, aws ] } ]
           Condition:
             StringLike:
@@ -338,7 +344,7 @@ Resources:
         - Effect: Allow
           Action:
           - s3:GetBucketAcl
-          Resource: !Sub ['arn:${Partition}:s3:::${pS3BucketName}', 
+          Resource: !Sub ['arn:${Partition}:s3:::${pConfigBucket}',
             { Partition: !If [ cIsGovCloud, aws-us-gov, aws ] } ]
 
   ####
@@ -350,9 +356,9 @@ Resources:
     Type: AWS::Config::DeliveryChannel
     DependsOn: rIamRole
     Properties:
-      S3BucketName: !Ref pS3BucketName
+      S3BucketName: !Ref pConfigBucket
       S3KeyPrefix: !If [ cUseKeyPrefix, !Ref pS3Prefix, !Ref 'AWS::NoValue' ]
-      SnsTopicARN: !If [ cCreateSnsTopic, !Ref rSnsAlarmTopic, !Ref 'AWS::NoValue' ]
+      SnsTopicARN: !If [ cCreateSnsTopic, !Ref rSnsAlarmTopic, !Ref pExistingSnsTopic ]
       ConfigSnapshotDeliveryProperties:
         DeliveryFrequency: !Ref pDeliveryFrequency
   
@@ -463,7 +469,7 @@ Resources:
                 };
 
         Handler: index.handler
-        Runtime: nodejs4.3
+        Runtime: nodejs8.10
         Timeout: 30
         Role: !GetAtt [ rConfigRulesLambdaRole, Arn ]
   
@@ -534,7 +540,7 @@ Resources:
                 };
 
         Handler: index.handler
-        Runtime: nodejs4.3
+        Runtime: nodejs8.10
         Timeout: 30
         Role: !GetAtt [ rConfigRulesLambdaRole, Arn ]
   
@@ -749,9 +755,6 @@ Resources:
     Properties:
         ConfigRuleName: check-whether-cloudwatch-log-is-encrypted
         Description: Checks whether CloudWatch logs are encrypted.
-        # Scope:
-        #     ComplianceResourceTypes:
-        #       - AWS::EC2::Instance
         Source:
             Owner: CUSTOM_LAMBDA
             SourceDetails:
@@ -854,4 +857,4 @@ Resources:
 Outputs:
   oAwsConfigBucket:
     Description: AWS Config logging bucket
-    Value: !If [ cCreateS3Bucket, rLoggingBucket, pS3BucketName ]
+    Value: !If [ cCreateS3Bucket, rLoggingBucket, pConfigBucket ]

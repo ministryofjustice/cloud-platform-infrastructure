@@ -4,7 +4,19 @@ The lowest acceptable common denominator of security-related promises, capabilit
 ## Background
 As an organization expands its use of AWS services, there is often a conversation about the need to create multiple AWS accounts to ensure separation of business processes or for security, compliance, and billing. We tend to use separate AWS accounts for each business unit so that it can meet the different needs of the organization. Although creating multiple accounts has simplified operational issues and provided benefits like security and resource isolation, a smaller blast radius, and simplified billing, it results in widely varying security posture across the accounts and there is the need to align all of these accounts to a baseline secure standard. 
 
-This section provides the definition of baseline controls and list of templates that cover the baseline and governance guardrails that can be deployed to new accounts. 
+The list of [baseline-controls] (https://docs.google.com/document/d/1TWdeTmiMDbjcEnOzEXizr6254fGsZ6Wc77tKygCi4Ng/edit#heading=h.9j1uay34xjpw) for AWS accounts are -
+
+* Guardduty
+* Cloudtrail
+* Config Service
+* Tagging
+* Regions
+* Identity and Access Management
+* Encryption
+* Leaky Bucket Problem
+* SecurityHub
+
+This section provides the definition of baseline controls and list of templates that cover the baseline and governance guardrails that can be deployed to new accounts.
 
 ## [GuardDuty](cloud-platform-infrastructure/terraform/global-resources/docs/GuardDutyREADME.md)
 We want to leverage AWS’ commodity IDS solution to detect/protect from malicious or unauthorized behavior

@@ -292,61 +292,59 @@ Reference - https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_
 
 
 # How to Deploy
-* aws-iam-adminandgroups.yaml
+
+## aws-iam-adminandgroups.yaml
 ```
-GIT_DIR={git_dir}
 AWS_PROFILE={aws_profile}
 
 # Validate template
-aws cloudformation validate-template --template-body file://$GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-iam-user-roles-groups/aws-iam-adminandgroups.yaml --profile $AWS_PROFILE
+aws cloudformation validate-template --template-body file://aws-iam-adminandgroups.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation deploy --template-file $GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-iam-user-roles-groups/aws-iam-adminandgroups.yaml --stack-name aws-iam-adminandgroups \\
+aws cloudformation deploy --template-file aws-iam-adminandgroups.yaml --stack-name aws-iam-adminandgroups \\
 --tags Owner={team_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production \\
 --capabilities CAPABILITY_NAMED_IAM \\
 --profile $AWS_PROFILE
 ```
 
-* aws-iam-adminandroles.yaml
+## aws-iam-adminandroles.yaml
 ```
-GIT_DIR={git_dir}
 AWS_PROFILE={aws_profile}
 
 # Validate template
-aws cloudformation validate-template --template-body file://$GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-iam-user-roles-groups/aws-iam-adminandroles.yaml --profile $AWS_PROFILE
+aws cloudformation validate-template --template-body file://aws-iam-adminandroles.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation deploy --template-file $GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-iam-user-roles-groups/aws-iam-adminandroles.yaml --stack-name aws-iam-adminandroles \\
+aws cloudformation deploy --template-file aws-iam-adminandroles.yaml --stack-name aws-iam-adminandroles \\
 --tags Owner={team_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production \\
 --capabilities CAPABILITY_NAMED_IAM \\
 --profile $AWS_PROFILE
 ```
 
-* aws-iam-instanceprofiles.yaml
+## aws-iam-instanceprofiles.yaml
 ```
-GIT_DIR={git_dir}
 AWS_PROFILE={aws_profile}
 
 # Validate template
-aws cloudformation validate-template --template-body file://$GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-iam-user-roles-groups/aws-iam-instanceprofiles.yaml --profile $AWS_PROFILE
+aws cloudformation validate-template --template-body file://aws-iam-instanceprofiles.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation deploy --template-file $GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-iam-user-roles-groups/aws-iam-instanceprofiles.yaml --stack-name aws-iam-instanceprofiles
+aws cloudformation deploy --template-file aws-iam-instanceprofiles.yaml --stack-name aws-iam-instanceprofiles
 --tags Owner={team_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production \\
 --capabilities CAPABILITY_NAMED_IAM \\
 --profile $AWS_PROFILE
 ```
 
-* aws-iam-userpolicy-cli-mfa.yaml
+## aws-iam-userpolicy-cli-mfa.yaml
 ```
 GIT_DIR={git_dir}
 AWS_PROFILE={aws_profile}
 
 # Validate template
-aws cloudformation validate-template --template-body file://$GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-iam-user-roles-groups/aws-iam-userpolicy-cli-mfa.yaml --profile $AWS_PROFILE
+aws cloudformation validate-template --template-body file://aws-iam-userpolicy-cli-mfa.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation deploy --template-file $GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-iam-user-roles-groups/aws-iam-userpolicy-cli-mfa.yaml --stack-name aws-iam-userpolicy-cli-mfa \\
+aws cloudformation deploy --template-file aws-iam-userpolicy-cli-mfa.yaml --stack-name aws-iam-userpolicy-cli-mfa \\
 --tags Owner={team_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production \\
 --capabilities CAPABILITY_NAMED_IAM \\
 --profile $AWS_PROFILE

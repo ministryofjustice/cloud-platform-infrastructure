@@ -43,6 +43,8 @@ The template defines metric filters that monitor create, delete, and update oper
 * Unauthorized attempts
 * Console Sign-in or API activity without MFA
 
+![alt text](../images/cloudtrail-api-monitoring.png "cloudtrail-api-monitoring-process")
+
 When an API call occurs in the account, a metric filter monitors that API call. If the API call exceeds the thresholds that was specified,this triggers the alarm and CloudWatch sends a notification to the SNS Topic. The team that implements the stack is responsible to chose the suitable means to receive the alerts.
 
 By default, most of the filters in the template trigger an alarm when a monitored event occurs within a five-minute period. The alarm thresholds can be modified for specific requirements. For example, three events can be monitored in a ten-minute period. To make the changes, the template has to be edited or, after uploading the template, the thresholds are specified in the CloudWatch console. Because CloudTrail typically delivers log files every five minutes, specify alarm periods of five minutes or more.
@@ -51,59 +53,54 @@ By default, most of the filters in the template trigger an alarm when a monitore
 # How to Deploy the templates
 Deploy the templates under aws-config-cloudtrail-logging into the aws accounts through Cloudformation as individual stacks.
 
-* aws-confiog-enable-rules.yaml
-```
-# parameters
-GIT_DIR={git_dir}
-AWS_PROFILE={aws_profile_name}
+Step 1 - Run the aws-cloudtrail-create-bucket.yaml template to create the below S3 Buckets
+- Bucket for Cloudtrail logs
+- Bucket for storing Config logs
+- Bucket for Access Logs
 
-# validate the template
-aws cloudformation validate-template --template-body file://$GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-config-cloudtrail-logging/aws-config-enable-rules.yaml --profile $AWS_PROFILE
+Step 2 - Run the aws-config-enable-rules.yaml template to enable config service and create config rules
+Use the bucket created in Step 1 for Config logs in the parameter pConfigBucket
 
-# deploy the template
-aws cloudformation deploy --template-file $GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-config-cloudtrail-logging/aws-config-enable-rules.yaml --stack-name aws-enable-config-service \\
---parameter-overrides ParameterKey=pDeliveryFrequency,ParameterValue=Three_Hours ParameterKey=pConfigResourceTypes,ParameterValue=AllSupported ParameterKey=pS3BucketName,ParameterValue={central-cloudtrail-bucket-name} ParameterKey=pCreateS3Bucket,ParameterValue=false  ParameterKey=pS3Prefix,ParameterValue=laa ParameterKey=pCreateSnsTopic,ParameterValue=true ParameterKey=pSnsNotifyEmail,ParameterValue={notification-email} ParameterKey=pRuleUnrestrictedSsh,ParameterValue=true ParameterKey=pRuleUnrestrictedPorts,ParameterValue=true ParameterKey=pRuleUnrestictedPortsBlockedPort1,ParameterValue=1521 ParameterKey=pRuleUnrestictedPortsBlockedPort2,ParameterValue=2484 ParameterKey=pRuleUnrestictedPortsBlockedPort3,ParameterValue= ParameterKey=pRuleUnrestictedPortsBlockedPort4,ParameterValue= ParameterKey=pRuleUnrestictedPortsBlockedPort5,ParameterValue= ParameterKey=pRuleAmiCompliance,ParameterValue=false ParameterKey=pRuleAmiComplianceAmiList,ParameterValue= ParameterKey=pRuleCloudtrailValidation,ParameterValue=true ParameterKey=pRuleRootMfa,ParameterValue=true ParameterKey=pRuleRequiredTag,ParameterValue=true ParameterKey=pRuleRequiredTagToCheck,ParameterValue=Owner \\
---tags Owner={team_email} AgencyName={agency_name} ApplicationID=aws-config Environment=Production \\
---capabilities CAPABILITY_NAMED_IAM \\
---profile $AWS_PROFILE
-```
+Step 3 - Run the aws-cloudtrail-log-monitoring.yaml template to implement cloudtrail log monitoring metrics and alarms
+Use the bucket created in Step 1 for the Cloudtrail logs in the parameter pCloudtrailBucket
 
-* aws-cloudtrail-log-monitoring.yaml
-```
-# parameters
-GIT_DIR={git_dir}
-AWS_PROFILE={aws_profile_name}
-
-# validate the template
-aws cloudformation validate-template --template-body file://$GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-config-cloudtrail-logging/aws-cloudtrail-log-monitoring.yaml --profile $AWS_PROFILE
-
-# deploy the template
-aws cloudformation deploy \\
---stack-set-name aws-cloudtrail-log-monitoring \\
---template-file $GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-config-cloudtrail-logging/aws-cloudtrail-log-monitoring.yaml \\
---parameter-overrides ParameterKey=pCloudtrailBucket,ParameterValue={cloudtrail-bucket-name} ParameterKey=pCreateSnsTopic,ParameterValue=false ParameterKey=pNotifyEmail,ParameterValue= ParameterKey=pExistingSnsTopic,ParameterValue= ParameterKey=pServiceName,ParameterValue=Cloudtrail ParameterKey=pSupportsGlacier,ParameterValue=true \\
---tags Key=Owner,Value={team-email} Key=AgencyName,Value={agency-name} Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production \\
---capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
-```
-
-
-* aws-cloudtrail-create-bucket.yaml
+## aws-cloudtrail-create-bucket.yaml
 This template is run on the account where the cloudtrail needs to be stored for a longer period.
 ```
 # parameters
-GIT_DIR={git_dir}
 AWS_PROFILE={aws_profile_name}
 
 # validate the template
-aws cloudformation validate-template --template-body file://$GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-config-cloudtrail-logging/aws-cloudtrail-create-bucket.yaml --profile $AWS_PROFILE
+aws cloudformation validate-template --template-body file://aws-cloudtrail-create-bucket.yaml --profile $AWS_PROFILE
 
 # deploy the template
-aws cloudformation deploy \\
---stack-set-name aws-cloudtrail-create-bucket \\
---template-file $GIT_DIR/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-config-cloudtrail-logging/aws-cloudtrail-create-bucket.yaml \\
---parameters ParameterKey=CloudTrailBucketName,ParameterValue={agency}-cloudtraillogs ParameterKey=ConfigBucketName,ParameterValue={agency}-configlogs ParameterKey=AccessLogsBucketName,ParameterValue={agency}-accesslogs ParameterKey=ApplicationAccessLogsBucketName,ParameterValue={agency}-applicationaccesslogs \\
---tags Key=Owner,Value={team-email} Key=AgencyName,Value={agency-name} Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production \\
---capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
+aws cloudformation create-stack --stack-name aws-cloudtrail-create-bucket --template-body file://aws-cloudtrail-create-bucket.yaml --parameters 
+ParameterKey=CloudTrailBucketName,ParameterValue={agency}-cloudtraillogs ParameterKey=ConfigBucketName,ParameterValue={agency}-configlogs ParameterKey=AccessLogsBucketName,ParameterValue={agency}-accesslogs --tags Key=Owner,Value={team-email} Key=AgencyName,Value={agency-name} Key=ApplicationID,Value=aws-cloudtrail Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
+
+```
+
+## aws-config-enable-rules.yaml
+```
+# parameters
+AWS_PROFILE={aws_profile_name}
+
+# validate the template
+aws cloudformation validate-template --template-body file://aws-config-enable-rules.yaml --profile $AWS_PROFILE
+
+# deploy the template
+aws cloudformation create-stack --stack-name aws-enable-config-service  --template-body file://aws-config-enable-rules.yaml  --parameters ParameterKey=pDeliveryFrequency,ParameterValue=Three_Hours ParameterKey=pConfigResourceTypes,ParameterValue=AllSupported ParameterKey=pConfigBucket,ParameterValue={config-bucket-name-from-create-bucket-template}  ParameterKey=pCreateS3Bucket,ParameterValue=false ParameterKey=pS3Prefix,ParameterValue= ParameterKey=pCreateSnsTopic,ParameterValue=false ParameterKey=pSnsNotifyEmail,ParameterValue= ParameterKey=pExistingSnsTopic,ParameterValue={existing-sns-topic-arn} ParameterKey=pRuleUnrestrictedSsh,ParameterValue=true ParameterKey=pRuleUnrestrictedPorts,ParameterValue=true  ParameterKey=pRuleUnrestictedPortsBlockedPort1,ParameterValue={port_to_be_blocked}  ParameterKey=pRuleUnrestictedPortsBlockedPort2,ParameterValue={port_to_be_blocked}  ParameterKey=pRuleUnrestictedPortsBlockedPort3,ParameterValue= ParameterKey=pRuleUnrestictedPortsBlockedPort4,ParameterValue=  ParameterKey=pRuleUnrestictedPortsBlockedPort5,ParameterValue= ParameterKey=pRuleAmiCompliance,ParameterValue=false  ParameterKey=pRuleAmiComplianceAmiList,ParameterValue=  ParameterKey=pRuleCloudtrailValidation,ParameterValue=true ParameterKey=pRuleRootMfa,ParameterValue=true  ParameterKey=pRuleRequiredTag,ParameterValue=true ParameterKey=pRuleRequiredTagToCheck,ParameterValue=Owner  --tags Key=Owner,Value={team_email} Key=AgencyName,Value={agency_name} Key=ApplicationID,Value=aws-config Key=Environment,Value=Production  --capabilities CAPABILITY_NAMED_IAM  --profile $AWS_PROFILE
+```
+
+## aws-cloudtrail-log-monitoring.yaml
+```
+# parameters
+AWS_PROFILE={aws_profile_name}
+
+# validate the template
+aws cloudformation validate-template --template-body file://aws-cloudtrail-log-monitoring.yaml --profile $AWS_PROFILE
+
+# deploy the template
+aws cloudformation create-stack --stack-name aws-cloudtrail-log-monitoring --template-body file://aws-cloudtrail-log-monitoring.yaml --parameters ParameterKey=pCloudtrailBucket,ParameterValue={cloudtrail-bucket-name-from-create-bucket-template} ParameterKey=pCreateSnsTopic,ParameterValue=false ParameterKey=pNotifyEmail,ParameterValue= ParameterKey=pExistingSnsTopic,ParameterValue={existing-sns-topic-arn} ParameterKey=pServiceName,ParameterValue=Cloudtrail ParameterKey=pSupportsGlacier,ParameterValue=true --tags Key=Owner,Value={team-email} Key=AgencyName,Value={agency-name} Key=ApplicationID,Value=aws-cloudtrail Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 ```
 
 

@@ -27,9 +27,9 @@ Metadata:
         - pEventsRuleName
         - pLambdaExecutionRoleName
         - pCreateSnsTopic
-        - pExistingSnsTopic
         - pSlackChannelName
         - pSlackHookUrl
+        - pExistingSnsTopic
 
     ParameterLabels:
       pCreateS3PrivateBucket:
@@ -50,13 +50,12 @@ Metadata:
         default: Name of the lambda execution role
       pCreateSnsTopic:
         default: Create SNS Topic for notifications
-      pExistingSnsTopic:
-        default: Existing SNS Topic integrated with slack
       pSlackChannelName:
         default: Slack Channel Name
       pSlackHookUrl:
         default: Slack Channel Hook Url
-
+      pExistingSnsTopic:
+        default: Existing SNS Topic integrated with slack
 
 ############################
 #### Template input parameters
@@ -64,23 +63,23 @@ Metadata:
 Parameters:
   pCreateS3PrivateBucket:
     Type: String
-    Default: 'true'
-    Description: If set to true, it will create the named S3 bucket
+    Default: 'false'
+    Description: If set to true, it will create an S3 bucket
     AllowedValues:
     - 'true'
     - 'false'
   pS3PrivateBucketName:
     Type: String
-    Default: "a-everything-private-bucket"
-    Description: The S3 Bucket that should be private
+    Default: ''
+    Description: New bucket will be created
   pExistingPrivateBucketName:
     Type: String
-    Description: Name of the Existing S3 Bucket that should be private
-    Default: ""  
+    Description: Input existing bucket if above option is set false
+    Default: ''
   pS3ObjectTrailBucketName:
     Type: String
-    Default: "bucket-for-s3-object-level-trail"
-    Description: The S3 Bucket for storing object level log trail
+    Description: New object trail bucket will be created
+    Default: 'bucket-for-s3-object-trail-4'
   pObjectCloudTrailName:
     Type: String
     Default: "s3-object-level-trail"
@@ -99,15 +98,11 @@ Parameters:
     Description: Lambda Execution Role
   pCreateSnsTopic:
     Type: String
-    Default: 'true'
+    Default: 'false'
     Description: If set to true, it will create a new SNS topic for notifications
     AllowedValues:
     - 'true'
     - 'false'
-  pExistingSnsTopic:
-    Type: String
-    Description: Arn of existing SNS Topic with lambda to slack integration
-    Default: ''
   pSlackChannelName:
     Type: String
     Description: Slack Channel Name
@@ -115,6 +110,10 @@ Parameters:
   pSlackHookUrl:
     Type: String
     Description: Slack Hook Url
+    Default: ''
+  pExistingSnsTopic:
+    Type: String
+    Description: Arn of existing SNS Topic with lambda to slack integration
     Default: ''
 
 ########################
@@ -130,7 +129,7 @@ Conditions:
 Resources:
   ####### Step 1: Turn on object-level logging in CloudTrail for the S3 bucket
   # S3 private bucket that has to be private - created if pCreateS3PrivateBucket is 'true'
-  # DeletionPolicy to be enabled in Production
+  # DeletionPolicy enabled in Production
   rS3PrivateBucket:
     Type: AWS::S3::Bucket
     Condition: cCreateS3PrivateBucket
@@ -188,7 +187,7 @@ Resources:
           - Type: AWS::S3::Object
             Values:
               - !Sub
-                - "arn:aws:s3:::${bucket}/*"
+                - "arn:aws:s3:::${bucket}/"
                 - { bucket: !If [cCreateS3PrivateBucket, !Ref pS3PrivateBucketName, !Ref pExistingPrivateBucketName] }
           IncludeManagementEvents: false
           ReadWriteType: All
@@ -246,8 +245,7 @@ Resources:
                   - "logs:CreateLogGroup"
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
-                Resource: 
-                  - !Sub "arn:aws:logs:*:${AWS::AccountId}:*"
+                Resource: !Sub "arn:aws:logs:*:${AWS::AccountId}:*"
               - Sid: "allowSnsAccess"
                 Effect: "Allow"
                 Action:
@@ -315,7 +313,7 @@ Resources:
               s3.put_object_acl(Bucket=bucket, Key=key, ACL="private")
               print("Object with key=" + key + " in bucket=" + bucket + " is marked as private.")
               if (send_sns(bucket, key)):
-                  print("Email sent to notify about the change")
+                  print("SNS sent to notify about the change")
 
           # Section that sends notification to SNS topic on object made private
           def send_sns(bucket, key):
