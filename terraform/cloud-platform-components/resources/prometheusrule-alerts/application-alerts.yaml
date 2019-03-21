@@ -2,7 +2,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   labels:
-  name: prometheus-operator-kubernetes-apps
+    prometheus: prometheus-operator
+    role: alert-rules
+  name: prometheus-operator-custom-kubernetes-apps.rules
 spec:
   groups:
   - name: kubernetes-apps
@@ -29,10 +31,11 @@ spec:
           }}) is restarting {{ printf "%.2f" $value }} times / 5 minutes.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubepodcrashlooping
       expr: |-
-      rate(kube_pod_container_status_restarts_total{job="kube-state-metrics"}[15m]) * on (namespace)
-      group_left() 
-      kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"}
-      * 60 * 5 > 0
+        rate(kube_pod_container_status_restarts_total{job="kube-state-metrics"}[15m]) 
+        * on (namespace)
+        group_left() 
+        kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"}
+        * 60 * 5 > 0
       for: 1h
       labels:
         severity: warning
@@ -42,11 +45,11 @@ spec:
           state for longer than an hour.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubepodnotready
       expr: |-
-      sum by (namespace, pod) (kube_pod_status_phase{job="kube-state-metrics", phase=~"Pending|Unknown"}) 
-      * on (namespace) 
-      group_left() 
-      kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
-      > 0
+        sum by (namespace, pod) (kube_pod_status_phase{job="kube-state-metrics", phase=~"Pending|Unknown"}) 
+        * on (namespace) 
+        group_left() 
+        kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
+        > 0
       for: 1h
       labels:
         severity: warning
@@ -173,11 +176,11 @@ spec:
           }} are running where they are not supposed to run.'
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubedaemonsetmisscheduled
       expr: |-
-      kube_daemonset_status_number_misscheduled{job="kube-state-metrics"} 
-      * on (namespace)
-      group_left() 
-      kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
-      > 0
+        kube_daemonset_status_number_misscheduled{job="kube-state-metrics"} 
+        * on (namespace)
+        group_left() 
+        kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
+        > 0
       for: 10m
       labels:
         severity: warning
@@ -187,11 +190,11 @@ spec:
           than 1h to complete.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubecronjobrunning
       expr: |-
-      time() - kube_cronjob_next_schedule_time{job="kube-state-metrics"} 
-      * on (namespace)
-      group_left() 
-      kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
-      > 3600
+        time() - kube_cronjob_next_schedule_time{job="kube-state-metrics"} 
+        * on (namespace)
+        group_left() 
+        kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
+        > 3600
       for: 1h
       labels:
         severity: warning
@@ -201,11 +204,11 @@ spec:
           than one hour to complete.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubejobcompletion
       expr: |-
-      kube_job_spec_completions{job="kube-state-metrics"} - kube_job_status_succeeded{job="kube-state-metrics"} 
-      * on (namespace)
-      group_left() 
-      kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
-      > 0
+        kube_job_spec_completions{job="kube-state-metrics"} - kube_job_status_succeeded{job="kube-state-metrics"} 
+        * on (namespace)
+        group_left() 
+        kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
+        > 0
       for: 1h
       labels:
         severity: warning
@@ -213,11 +216,12 @@ spec:
       annotations:
         message: Job {{ $labels.namespace }}/{{ $labels.job_name }} failed to complete.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubejobfailed
-      expr: kube_job_status_failed{job="kube-state-metrics"}  
-      * on (namespace)
-      group_left() 
-      kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
-      > 0
+      expr: |-
+        kube_job_status_failed{job="kube-state-metrics"}  
+        * on (namespace)
+        group_left() 
+        kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
+        > 0
       for: 1h
       labels:
         severity: warning
@@ -225,11 +229,11 @@ spec:
       annotations:
         message: '{{ $value }}% of the {{ $labels.job }} targets are down.'
       expr: |-
-      100 * (count(up == 0) BY (job) / count(up) BY (job)) 
-      * on (namespace)
-      group_left() 
-      kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
-      > 10
+        100 * (count(up == 0) BY (job) / count(up) BY (job)) 
+        * on (namespace)
+        group_left() 
+        kube_namespace_annotations{annotation_cloud_platform_justice_gov_uk_business_unit="cloud-platform"} 
+        > 10
       for: 10m
       labels:
         severity: warning

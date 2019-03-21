@@ -18,7 +18,7 @@ spec:
         message: 'A node is reporting low disk space below 10%. Action is required on a node.'
         runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#node-disk-space-low
     - alert: CPU-High
-      expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 1
+      expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
       for: 5m
       labels:
         severity: warning
@@ -105,8 +105,9 @@ spec:
       annotations:
         message: '{{ $labels.instance }} has exceeded the threshold of root volume utilisation with a value of {{ $value }}. Instance {{ $labels.instance }} root volume utilisation usage is critically high'
         runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#root-volume-utilisation---critical
-    ok- alert: LoadBalancer5XXCountHigh
-      expr: count by (service) (increase(http_requests_total{code=~"5.*"}[15m]))  >=  10
+    - alert: LoadBalancer5XXCountHigh
+      expr: |-
+        count by (service) (increase(http_requests_total{code=~"5.*"}[15m]))  >=  10
       for: 15m
       labels:
         severity: warning
