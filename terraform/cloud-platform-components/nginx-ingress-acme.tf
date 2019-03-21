@@ -8,6 +8,8 @@ resource "helm_release" "nginx_ingress_acme" {
 controller:
   replicaCount: 6
 
+  electionID: ingress-controller-leader-acme
+
   config:
     generate-request-id: "true"
     proxy-buffer-size: "16k"
