@@ -55,6 +55,7 @@ rbac:
   create: true
   apiVersion: v1
   serviceAccountName: default
+txtPrefix: "_external_dns."
 logLevel: info
 podAnnotations:
   iam.amazonaws.com/role: "${aws_iam_role.external_dns.name}"
