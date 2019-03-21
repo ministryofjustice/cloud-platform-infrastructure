@@ -54,6 +54,7 @@ rbac:
   create: true
   apiVersion: v1
   serviceAccountName: default
+txtPrefix: "_external_dns."
 logLevel: info
 EOF
   ]
