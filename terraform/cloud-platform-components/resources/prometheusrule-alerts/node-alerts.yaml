@@ -9,14 +9,6 @@ spec:
   groups:
   - name: node.rules
     rules:
-    - alert: Node-Disk-Space-Warning
-      expr: predict_linear(node_filesystem_free[6h], 3600 * 24) < 0
-      for: 30m
-      labels:
-        severity: warning
-      annotations: 
-        message: 'A node is reporting low disk space. Action is required on a node.'
-        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#node-disk-space-warning
     - alert: Node-Disk-Space-Low
       expr: ((node_filesystem_avail_bytes * 100) / node_filesystem_size_bytes) < 10
       for: 30m
@@ -56,15 +48,7 @@ spec:
         severity: critical
       annotations:
         message: '{{ $labels.instance }} has high memory usage for than 5 minutes. Instance {{ $labels.instance }} memory has critically high usage.'
-        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#memory-critical
-    - alert: KubeDNSDown
-      expr: absent(up{job="kube-dns"} == 1)
-      for: 5m
-      labels:
-        severity: critical
-      annotations:
-        message: Prometheus could not scrape kube-dns. kube-dns is down
-        runbook_url: 
+        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#memory-critical 
     - alert: External-DNSDown
       expr: kube_deployment_status_replicas_available{deployment="external-dns"} == 0
       for: 5m
@@ -74,7 +58,7 @@ spec:
         message: external-dns container has not been running in the namespace 'kube-system' for 5 minutes.
         runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#kubednsdown
     - alert: NginxIngressPodDown
-      expr: kube_deployment_status_replicas_available{deployment="nginx-ingress-controller"} <3
+      expr: kube_deployment_status_replicas_available{deployment="nginx-ingress-controller"} <6
       for: 5m
       labels:
         severity: warning
@@ -88,6 +72,22 @@ spec:
         severity: critical
       annotations:
         descrition: '{{ $labels.pod}} pod unavailable in the {{ $labels.namespace}} namespace. nginx-ingress has been down for 5 minutes'
+        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#nginxingressdown
+    - alert: NginxAcmeIngressPodDown
+      expr: kube_deployment_status_replicas_available{deployment="nginx-ingress-acme-controller"} <6
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        message: '{{ $labels.pod}} pod unavailable in the {{ $labels.namespace}} namespace. 1 or more nginx-acme-ingress pods have been unavailable for 5 minutes'
+        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#nginxingresspoddown
+    - alert: NginxAcmeIngressDown
+      expr: kube_deployment_status_replicas_available{deployment="nginx-ingress-acme-controller"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        descrition: '{{ $labels.pod}} pod unavailable in the {{ $labels.namespace}} namespace. nginx-acme-ingress has been down for 5 minutes'
         runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#nginxingressdown
     - alert: RootVolUtilisation-High
       expr: (node_filesystem_size_bytes {mountpoint="/"} - node_filesystem_avail_bytes {mountpoint="/"} ) / (node_filesystem_size_bytes {mountpoint="/"} ) * 100 >85
@@ -105,31 +105,7 @@ spec:
       annotations:
         message: '{{ $labels.instance }} has exceeded the threshold of root volume utilisation with a value of {{ $value }}. Instance {{ $labels.instance }} root volume utilisation usage is critically high'
         runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#root-volume-utilisation---critical
-    - alert: CuratorCronJobFailure
-      expr: kube_job_status_failed{job_name=~"elasticsearch-curator-cronjob.+"} > 0
-      for: 1h
-      labels:
-        severity: warning
-      annotations:
-        message: 'Job {{$labels.namespaces}}/{{$labels.job}} failed to complete. Curator cronjob failed'
-        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#curator-cronjob-failure
-    - alert: CuratorCronJobRunning
-      expr: time() - kube_cronjob_next_schedule_time {cronjob="elasticsearch-curator-cronjob"} > 3600
-      for: 1h
-      labels:
-        severity: warning
-      annotations:
-        message: 'Curator CronJob {{$labels.namespaces}}/{{$labels.cronjob}} is taking more than 1h to complete. Curator cronjob did not complete after 1h'
-        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#curator-cronjob-running
-    - alert: CuratorJobCompletion
-      expr: kube_job_spec_completions {job_name=~"elasticsearch-curator-cronjob.+"} - kube_job_status_succeeded {job_name=~"elasticsearch-curator-cronjob.+"} > 0
-      for: 1h
-      labels:
-        severity: warning
-      annotations:
-        message: 'Job completion is taking more than 1h to complete cronjob {{$labels.namespaces}}/{{$labels.job}}. Job {{$labels.job}} did not finish to complete after 1h'
-        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#curator-job-completion
-    - alert: LoadBalancer5XXCountHigh
+    ok- alert: LoadBalancer5XXCountHigh
       expr: count by (service) (increase(http_requests_total{code=~"5.*"}[15m]))  >=  10
       for: 15m
       labels:
