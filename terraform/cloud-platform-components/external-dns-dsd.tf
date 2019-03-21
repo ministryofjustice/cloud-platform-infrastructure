@@ -38,8 +38,11 @@ resource "helm_release" "external_dns_dsd" {
   name      = "external-dns-dsd"
   chart     = "stable/external-dns"
   namespace = "kube-system"
+  version   = "1.7.0"
 
   values = [<<EOF
+image:
+  tag: v0.5.11
 sources:
   - ingress
 provider: aws
@@ -54,6 +57,7 @@ rbac:
   create: true
   apiVersion: v1
   serviceAccountName: default
+txtPrefix: "_external_dns."
 logLevel: info
 EOF
   ]
