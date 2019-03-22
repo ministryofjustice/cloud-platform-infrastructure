@@ -15,7 +15,7 @@ EXCEPTION - Users with Admin privileges obtained through AWS Managed Policy are 
 ## How to Deploy
 
 ### Prerequisites
-Install [AWS CLI] (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) and [configure the AWS CLI] (https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) access keys using the below commands:
+Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) and [configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) access keys using the below commands:
 
 ```
 sudo apt-get install -y python-dev python-pip
@@ -25,8 +25,9 @@ aws configure
 ``` 
 
 ### Parameters
-The IAM user or the access key is made Inactive if they have not logged in or used the accee key for DEFAULT_AGE_THRESHOLD_IN_DAYS. Currently set to 120 days
-A New IAM user or a New access key is not checked for inactive status for CREATE_DATE_AGE_THRESHOLD_IN_DAYS. Currently set as 7 days
+The IAM user or the access key is made Inactive if they have not logged in or used the access key for DEFAULT_AGE_THRESHOLD_IN_DAYS which is currently set to 120 days
+
+A New IAM user or a New access key is not checked for inactive status for CREATE_DATE_AGE_THRESHOLD_IN_DAYS which is currently set as 7 days
 
 ### Package the template 
 
@@ -44,18 +45,14 @@ export S3BUCKETNAME
 
 # create bucket & package template
 aws s3 mb s3://$S3BUCKETNAME --profile $AWS_PROFILE
-aws cloudformation package --template-file check_inactive_users.yaml --s3-bucket $S3BUCKETNAME --output-template-file check_inactive_users-output.yaml --profile $AWS_PROFILE
+aws cloudformation package --template-file aws-iam-suspend-inactive-users.yaml --s3-bucket $S3BUCKETNAME --output-template-file aws-iam-suspend-inactive-users-output.yaml --profile $AWS_PROFILE
 aws s3 ls s3://$S3BUCKETNAME --profile $AWS_PROFILE
 
 # validate the template
-aws cloudformation validate-template --template-body file://check_inactive_users-output.yaml --profile $AWS_PROFILE 
+aws cloudformation validate-template --template-body file://aws-iam-suspend-inactive-users-output.yaml --profile $AWS_PROFILE 
 
 # deploy the template
-aws cloudformation deploy --template-file check_inactive_users-output.yaml --stack-name check-inactive-users \\
---parameter-overrides ParameterKey=pCreateSnsTopic,ParameterValue=false ParameterKey=pSlackChannelName,ParameterValue= ParameterKey=pSlackHookUrl,ParameterValue= ParameterKey=pExistingSnsTopic,ParameterValue={existing-sns-topic-arn} \\
---tags Owner={team_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production \\
---capabilities CAPABILITY_NAMED_IAM \\
---profile $AWS_PROFILE
+aws cloudformation deploy --template-file aws-iam-suspend-inactive-users-output.yaml --stack-name aws-iam-suspend-inactive-users  --parameter-overrides ParameterKey=pCreateSnsTopic,ParameterValue=false ParameterKey=pSlackChannelName,ParameterValue= ParameterKey=pSlackHookUrl,ParameterValue= ParameterKey=pExistingSnsTopic,ParameterValue={existing-sns-topic-arn} --tags Owner={team_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 
 ```
 

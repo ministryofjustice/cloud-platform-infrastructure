@@ -1,0 +1,860 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Sets up the AWS Config service for logging and rule enforcement
+
+####
+#### CloudFormation Metadata - makes the parameter inputs look nice
+####
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: AWS Config Service
+      Parameters:
+        - pDeliveryFrequency
+        - pConfigResourceTypes
+    - Label:
+        default: Log Storage
+      Parameters:
+        - pConfigBucket
+        - pCreateS3Bucket
+        - pS3Prefix
+    - Label:
+        default: SNS Notifications
+      Parameters:
+        - pCreateSnsTopic
+        - pSnsNotifyEmail
+        - pExistingSnsTopic
+    - Label: 
+        default: 'Default Rules: Unrestricted Ports'
+      Parameters:
+        - pRuleUnrestrictedSsh
+        - pRuleUnrestrictedPorts
+        - pRuleUnrestictedPortsBlockedPort1
+        - pRuleUnrestictedPortsBlockedPort2
+        - pRuleUnrestictedPortsBlockedPort3
+        - pRuleUnrestictedPortsBlockedPort4
+        - pRuleUnrestictedPortsBlockedPort5
+    - Label:
+        default: 'Default Rules: EC2 Tag Check'
+      Parameters:
+        - pRuleRequiredTag
+        - pRuleRequiredTagToCheck
+    - Label:
+        default: 'Default Rules: Others'
+      Parameters:
+        - pRuleAmiCompliance
+        - pRuleAmiComplianceAmiList
+        - pRuleCloudtrailValidation
+        - pRuleCloudWatchLogValidation
+        - pRuleRootMfa
+    ParameterLabels:
+      pDeliveryFrequency:
+        default: AWS Config log delivery frequency
+      pConfigResourceTypes:
+        default: Resource types to monitor
+      pConfigBucket:
+        default: S3 Bucket for log storage
+      pCreateS3Bucket:
+        default: Should we create this bucket?
+      pS3Prefix:
+        default: Optional S3 prefix
+      pCreateSnsTopic:
+        default: Should we create a notification for alarms?
+      pSnsNotifyEmail:
+        default: Email address to notify if rules alarm
+      pExistingSnsTopic:
+        default: Arn of the existing SNS Topic
+      pRuleUnrestrictedSsh:
+        default: Monitor unrestricted SSH
+      pRuleUnrestrictedPorts:
+        default: Monitor for custom unrestricted ports
+      pRuleUnrestictedPortsBlockedPort1:
+        default: 1st port to monitor
+      pRuleUnrestictedPortsBlockedPort2:
+        default: 2nd port to monitor
+      pRuleUnrestictedPortsBlockedPort3:
+        default: 3rd port to monitor
+      pRuleUnrestictedPortsBlockedPort4:
+        default: 4th port to monitor
+      pRuleUnrestictedPortsBlockedPort5:
+        default: 5th port to monitor
+      pRuleAmiCompliance:
+        default: Monitor AMI compliance
+      pRuleAmiComplianceAmiList:
+        default: List of approved AMIs
+      pRuleCloudtrailValidation:
+        default: Monitor whether CloudTrail is enabled
+      pRuleCloudWatchLogValidation:
+        default: Monitor whether CloudWatch logs are encrypted
+      pRuleRootMfa:
+        default: Check root account MFA state
+      pRuleRequiredTag:
+        default: Monitor for required tags on instances
+      pRuleRequiredTagToCheck:
+        default: Required tag key to monitor for
+
+####
+#### Template input parameters
+####
+Parameters:
+  pDeliveryFrequency:
+    Type: String
+    Default: Three_Hours
+    Description: Log delivery will take place on the schedule determined here
+    AllowedValues:
+    - One_Hour
+    - Three_Hours
+    - Six_Hours
+    - Twelve_Hours
+    - TwentyFour_Hours
+  pConfigResourceTypes:
+    Type: String
+    Default: AllSupported
+    Description: This can be either 'AllSupported' or any comma-separated list of values from http://docs.aws.amazon.com/config/latest/developerguide/resource-config-reference.html#supported-resources
+  pConfigBucket:
+    Type: String
+    Description: Must be a DNS compliant bucket name
+  pS3Prefix:
+    Type: String
+    Description: The prefix (folder) to use for S3 log files
+  pCreateS3Bucket:
+    Type: String
+    Default: 'false'
+    Description: If set to true, we will create the named S3 bucket for you.
+    AllowedValues:
+    - 'true'
+    - 'false'
+  pCreateSnsTopic:
+    Type: String
+    Default: 'true'
+    Description: If set to true, we will create a new SNS topic for notifications.
+    AllowedValues:
+    - 'true'
+    - 'false'
+  pSnsNotifyEmail:
+    Description: Must be a single valid email address
+    Type: String
+  pExistingSnsTopic:
+    Description: Arn of an existing SNS Topic
+    Type: String
+  pRuleUnrestrictedSsh:
+    Type: String
+    Default: true
+    Description: This rule alarms if instances have unrestricted (internet) access to SSH port 22
+    AllowedValues:
+    - 'true'
+    - 'false'
+  pRuleUnrestrictedPorts:
+    Type: String
+    Description: This rule alarms if instances have unrestricted access to the defined list of ports
+    Default: 'true'
+    AllowedValues:
+    - 'true'
+    - 'false'
+  pRuleUnrestictedPortsBlockedPort1:
+    Type: String
+    Description: First port number to monitor for unrestricted access. This must be set if the unrestricted ports rule is used.
+  pRuleUnrestictedPortsBlockedPort2:
+    Type: String
+    Description: Second port number to monitor for unrestricted access.Leave blank if not used
+  pRuleUnrestictedPortsBlockedPort3:
+    Type: String
+    Description: Third port number to monitor for unrestricted access.Leave blank if not used
+  pRuleUnrestictedPortsBlockedPort4:
+    Type: String
+    Description: Fourth port number to monitor for unrestricted access.Leave blank if not used
+  pRuleUnrestictedPortsBlockedPort5:
+    Type: String
+    Description: Fifth port number to monitor for unrestricted access. Leave blank if not used
+  pRuleAmiCompliance:
+    Type: String
+    Description: This rule monitors whether all instances are using a pre-approved list of AMIs.  Requires Lambda
+    Default: 'true'
+    AllowedValues:
+    - 'true'
+    - 'false'
+  pRuleAmiComplianceAmiList:
+    Type: CommaDelimitedList
+    Description: A comma-delimited list of AMIs that must be used.  Required if the above rule is enabled.
+  pRuleCloudtrailValidation:
+    Type: String
+    Description: Rule that alarms if CloudTrail is ever disabled.  Requires Lambda
+    Default: 'true'
+    AllowedValues:
+    - 'true'
+    - 'false'
+  pRuleCloudWatchLogValidation:
+    Type: String
+    Description: Rule that alarms if CloudWatch logs are not encrypted.  Requires Lambda
+    Default: 'true'
+    AllowedValues:
+    - 'true'
+    - 'false'
+  pRuleRootMfa:
+    Type: String
+    Description: Alarms if the root account does not have MFA enabled
+    Default: 'true'
+    AllowedValues:
+    - 'true'
+    - 'false'
+  pRuleRequiredTag:
+    Type: String
+    Description: Monitors all instances so that a required tag must be set.  Monitors key only, not value.
+    Default: 'true'
+    AllowedValues:
+    - 'true'
+    - 'false'
+  pRuleRequiredTagToCheck:
+    Description: The tag key to check.  Must be set if using the required tags rule.
+    Type: String
+
+####
+#### Conditionals
+####
+Conditions:
+  # Is the template being run in GovCloud?
+  cIsGovCloud: !Equals [ !Ref 'AWS::Region', us-gov-west-1 ]
+
+  # Are we creating an S3 bucket and using a key prefix?
+  cCreateS3Bucket: !Equals [ !Ref 'pCreateS3Bucket', 'true' ]
+  cUseKeyPrefix: !Not [ !Equals [ !Ref 'pS3Prefix', '' ] ]
+
+  # Are we creating an SNS topic?
+  cCreateSnsTopic: !Equals [ !Ref pCreateSnsTopic, true ]
+
+  # Are we recording all supported resources?
+  cRecordAllSupported: !Equals [ !Ref pConfigResourceTypes, AllSupported ]
+
+  # Default rule conditions - determine which default rules to launch
+  cRuleUnrestrictedSsh: !Equals [ !Ref pRuleUnrestrictedSsh, true ]
+  cRuleUnrestrictedPorts: !Equals [ !Ref pRuleUnrestrictedPorts, true]
+  cRuleUnrestictedPortsBlockedPort2: !Not [ !Equals [ !Ref pRuleUnrestictedPortsBlockedPort2, '' ] ]
+  cRuleUnrestictedPortsBlockedPort3: !Not [ !Equals [ !Ref pRuleUnrestictedPortsBlockedPort3, '' ] ]
+  cRuleUnrestictedPortsBlockedPort4: !Not [ !Equals [ !Ref pRuleUnrestictedPortsBlockedPort4, '' ] ]
+  cRuleUnrestictedPortsBlockedPort5: !Not [ !Equals [ !Ref pRuleUnrestictedPortsBlockedPort5, '' ] ]
+  cRuleAmiCompliance: !Equals [ !Ref pRuleAmiCompliance, true]
+  cRuleCloudtrailValidation: !Equals [ !Ref pRuleCloudtrailValidation, true]
+  cRuleCloudWatchValidation: !Equals [ !Ref pRuleCloudWatchLogValidation, true]
+  cRuleRootMfa: !Equals [ !Ref pRuleRootMfa, true]
+  cRuleRequiredTag: !Equals [ !Ref pRuleRequiredTag, true]
+
+Resources:
+  ####
+  #### S3 Bucket resources
+  ####
+
+  # S3 bucket for log delivery - created if pCreateBucket is 'true'
+  rLoggingBucket:
+    Type: AWS::S3::Bucket
+    Condition: cCreateS3Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref pConfigBucket
+      VersioningConfiguration:
+        Status: Enabled
+  
+  # Bucket policy allows the AWS Config service to write to the S3 bucket
+  rLoggingBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Condition: cCreateS3Bucket
+    DeletionPolicy: Retain
+    Properties:
+      Bucket: !Ref rLoggingBucket
+      PolicyDocument:
+        Id: configPolicy
+        Version: '2012-10-17'
+        Statement:
+        - Sid: bucketPermissionsCheck
+          Effect: Allow
+          Action:
+          - s3:getBucketAcl
+          Principal:
+            Service: config.amazonaws.com
+          Resource: !Sub [ 'arn:${Partition}:s3:::${pConfigBucket}',
+            { Partition: !If [ cIsGovCloud, aws-us-gov, aws ] } ]
+        - Sid: allowLogDelivery
+          Effect: Allow
+          Principal:
+            Service: config.amazonaws.com
+          Action:
+          - s3:PutObject
+          Condition:
+            StringEquals:
+              s3:x-amz-acl: bucket-owner-full-control
+          Resource: !Sub [ 'arn:${Partition}:s3:::${pConfigBucket}/AWSLogs/${AWS::AccountId}/Config/*',
+            { Partition: !If [ cIsGovCloud, aws-us-gov, aws ] } ] 
+  
+  ####
+  #### Optional SNS configuration
+  ####
+
+  rSnsAlarmTopic:
+    Type: AWS::SNS::Topic
+    Condition: cCreateSnsTopic
+    Properties:
+        Subscription:
+          - Endpoint: !Ref pSnsNotifyEmail
+            Protocol: email
+
+  rSnsAlarmSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: cCreateSnsTopic
+    Properties:
+      Endpoint: !Ref pSnsNotifyEmail
+      Protocol: email
+      TopicArn: !Ref rSnsAlarmTopic
+
+  ####
+  #### Permissions for the AWS Config service
+  ####
+
+  # IAM Role for the AWS Config service
+  rIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          Sid: '1'
+          Effect: Allow
+          Principal:
+            Service: config.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSConfigRole
+
+  # IAM Policy for the role
+  rIamPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      Roles:
+      - !Ref 'rIamRole'
+      PolicyName: awsConfigPolicy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - s3:PutObject
+          Resource: !Sub ['arn:${Partition}:s3:::${pConfigBucket}/*',
+            { Partition: !If [ cIsGovCloud, aws-us-gov, aws ] } ]
+          Condition:
+            StringLike:
+              s3:x-amz-acl: bucket-owner-full-control
+        - Effect: Allow
+          Action:
+          - s3:GetBucketAcl
+          Resource: !Sub ['arn:${Partition}:s3:::${pConfigBucket}',
+            { Partition: !If [ cIsGovCloud, aws-us-gov, aws ] } ]
+
+  ####
+  #### AWS Config service setup
+  ####
+
+  # Delivery channel for AWS Config
+  rDeliveryChannel:
+    Type: AWS::Config::DeliveryChannel
+    DependsOn: rIamRole
+    Properties:
+      S3BucketName: !Ref pConfigBucket
+      S3KeyPrefix: !If [ cUseKeyPrefix, !Ref pS3Prefix, !Ref 'AWS::NoValue' ]
+      SnsTopicARN: !If [ cCreateSnsTopic, !Ref rSnsAlarmTopic, !Ref pExistingSnsTopic ]
+      ConfigSnapshotDeliveryProperties:
+        DeliveryFrequency: !Ref pDeliveryFrequency
+  
+  # Configuration Recorder for AWS Config
+  rConfigurationRecorder:
+    Type: AWS::Config::ConfigurationRecorder
+    DependsOn: rIamRole
+    Properties:
+      RoleARN: !GetAtt rIamRole.Arn
+      RecordingGroup:
+        AllSupported: !If [ cRecordAllSupported, true, !Ref 'AWS::NoValue' ]
+        IncludeGlobalResourceTypes: !If [ cRecordAllSupported, true, !Ref 'AWS::NoValue' ]
+        ResourceTypes: !If [ cRecordAllSupported, !Ref 'AWS::NoValue', !Ref pConfigResourceTypes ]
+  
+  ####
+  #### Execution role for Lambda-based default rules
+  #### 
+
+  # IAM role for Lambda to use
+  rConfigRulesLambdaRole:
+      Type: AWS::IAM::Role
+      Properties:
+          AssumeRolePolicyDocument:
+              Version: 2012-10-17
+              Statement:
+                - Effect: Allow
+                  Principal:
+                      Service:
+                        - lambda.amazonaws.com
+                  Action:
+                    - sts:AssumeRole
+          Path: /
+
+  # IAM policy for Lambda role
+  rConfigRulesLambdaPolicy:
+      Type: AWS::IAM::Policy
+      Properties:
+          PolicyName: configrules
+          PolicyDocument:
+              Version: 2012-10-17
+              Statement:
+                - Effect: Allow
+                  Action: '*'
+                  Resource: '*'
+          Roles:
+            - !Ref rConfigRulesLambdaRole
+
+  ####
+  #### Lambda functions for default rules
+  ####
+
+  # Function to execute for AMI compliance rule
+  rRuleAmiComplianceFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: rConfigRulesLambdaRole
+    Condition: cRuleAmiCompliance
+    Properties:
+        Code:
+            ZipFile: |
+                var aws = require('aws-sdk');
+                var config = new aws.ConfigService();
+
+                // Custom rule for evaluating pre-approved AMI use
+                function evaluateCompliance(configurationItem, ruleParameters, context) {
+                    if(configurationItem.resourceType !== 'AWS::EC2::Instance')
+                        return 'NOT_APPLICABLE';
+
+                    var amiIDs = ruleParameters.amiList.split(',');
+                    if (amiIDs.indexOf(configurationItem.configuration.imageId) > -1) {
+                        return 'COMPLIANT';
+                    }
+                    else return 'NON_COMPLIANT';
+                }
+
+                function isApplicable(configurationItem, event) {
+                    var status = configurationItem.configurationItemStatus;
+                    var eventLeftScope = event.eventLeftScope;
+                    return (status === 'OK' || status === 'ResourceDiscovered') && eventLeftScope === false;
+                }
+
+                exports.handler = function(event, context) {
+                    var invokingEvent = JSON.parse(event.invokingEvent);
+                    var ruleParameters = JSON.parse(event.ruleParameters);
+                    var compliance = 'NOT_APPLICABLE';
+
+                    if (isApplicable(invokingEvent.configurationItem, event))
+                        compliance = evaluateCompliance(invokingEvent.configurationItem, ruleParameters, context); // Invoke the compliance checking function.
+
+                    var putEvaluationsRequest = {
+                        Evaluations: [
+                            {
+                                ComplianceResourceType: invokingEvent.configurationItem.resourceType,
+                                ComplianceResourceId: invokingEvent.configurationItem.resourceId,
+                                ComplianceType: compliance,
+                                OrderingTimestamp: invokingEvent.configurationItem.configurationItemCaptureTime
+                            }
+                        ],
+                        ResultToken: event.resultToken
+                    };
+
+                    config.putEvaluations(putEvaluationsRequest, function (err, data) {
+                        if (err) {
+                            context.fail(err);
+                        } else {
+                            context.succeed(data);
+                        }
+                    });
+                };
+
+        Handler: index.handler
+        Runtime: nodejs8.10
+        Timeout: 30
+        Role: !GetAtt [ rConfigRulesLambdaRole, Arn ]
+  
+  # Provide permission for Config to call the AMI Compliance Lambda function
+  rRulePermissionToCallAmiCompliance:
+    Type: AWS::Lambda::Permission
+    Condition: cRuleAmiCompliance
+    Properties:
+        FunctionName: !GetAtt [ rRuleAmiComplianceFunction, Arn ]
+        Action: lambda:InvokeFunction
+        Principal: config.amazonaws.com
+  
+  # Lambda function to validate that CloudTrail is enabled
+  rRuleCloudtrailValidationFunction:
+    Type: AWS::Lambda::Function
+    DependsOn: rConfigRulesLambdaRole
+    Condition: cRuleCloudtrailValidation
+    Properties:
+        Code:
+            ZipFile: |
+                var aws = require('aws-sdk');
+                var config = new aws.ConfigService();
+
+                // Custom rule for evaluating CloudTrail configuration compliance
+                // 3 config parameters for Trail must be true: Multi-Region, Global Services Events, and Log File Validation
+                function evaluateCompliance(configurationItem, ruleParameters, context) {
+                    if(configurationItem.resourceType !== 'AWS::CloudTrail::Trail')
+                        return 'NOT_APPLICABLE';
+
+                    if((configurationItem.configuration.logFileValidationEnabled) && (configurationItem.configuration.includeGlobalServiceEvents) && (configurationItem.configuration.isMultiRegionTrail)) {
+                        return 'COMPLIANT';
+                    }
+                    else return 'NON_COMPLIANT';
+                }
+
+                function isApplicable(configurationItem, event) {
+                    var status = configurationItem.configurationItemStatus;
+                    var eventLeftScope = event.eventLeftScope;
+                    return (status === 'OK' || status === 'ResourceDiscovered') && eventLeftScope === false;
+                }
+
+                exports.handler = function(event, context) {
+                    var invokingEvent = JSON.parse(event.invokingEvent);
+                    var ruleParameters = JSON.parse(event.ruleParameters);
+                    var compliance = 'NOT_APPLICABLE';
+
+                    if (isApplicable(invokingEvent.configurationItem, event))
+                        compliance = evaluateCompliance(invokingEvent.configurationItem, ruleParameters, context); // Invoke the compliance checking function.
+
+                    var putEvaluationsRequest = {
+                        Evaluations: [
+                            {
+                                ComplianceResourceType: invokingEvent.configurationItem.resourceType,
+                                ComplianceResourceId: invokingEvent.configurationItem.resourceId,
+                                ComplianceType: compliance,
+                                OrderingTimestamp: invokingEvent.configurationItem.configurationItemCaptureTime
+                            }
+                        ],
+                        ResultToken: event.resultToken
+                    };
+                    config.putEvaluations(putEvaluationsRequest, function (err, data) {
+                        if (err) {
+                            context.fail(err);
+                        } else {
+                            context.succeed(data);
+                        }
+                    });
+                };
+
+        Handler: index.handler
+        Runtime: nodejs8.10
+        Timeout: 30
+        Role: !GetAtt [ rConfigRulesLambdaRole, Arn ]
+  
+  # Permission for config to call Lambda function to verify CloudTrail  
+  rRulePermissionToCallCloudtrailValidation:
+    Type: AWS::Lambda::Permission
+    Condition: cRuleCloudtrailValidation
+    Properties:
+        FunctionName: !GetAtt [ rRuleCloudtrailValidationFunction, Arn ]
+        Action: lambda:InvokeFunction
+        Principal: config.amazonaws.com
+  
+  # Permission for config to call Lambda function to verify CloudWatch logs are encrypted
+  rFunctionForEvaluateCloudWatchLogEncryptionRule:
+    Type: AWS::Lambda::Function
+    DependsOn: rConfigRulesLambdaRole
+    Condition: cRuleCloudWatchValidation
+    Properties:
+      FunctionName: EvaluateCloudWatchLogEncryption
+      Code:
+        ZipFile: |
+          #==================================================================================================
+          # Note: AWS config doesn't currently support cloudwatch logs, when it does lambda needs to be
+          # changed to, 
+
+          # def lambda_handler(event, context):
+          #     is_compliant = True #default
+          #     annotation = ''
+          #     current_log = {}
+          #     client = boto3.client('logs')
+          #     for logGroup in client.describe_log_groups()['logGroups']:
+          #         current_log = logGroup
+          #     # Log files encrypted?
+          #     if not 'KmsKeyId' in current_log:
+          #         is_compliant = False
+          #         annotation = annotation + ' CloudWatch log group is not encrypted.'
+          #     result_token = 'No token found.'
+          #     if 'resultToken' in event: result_token = event['resultToken']
+          #     evaluations = [
+          #         {
+          #             'ComplianceResourceType': 'AWS::Logs::LogGroup',
+          #             'ComplianceResourceId': current_log['logGroupName'],
+          #             'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+          #             'OrderingTimestamp': datetime.datetime.now()
+          #         }
+          #     ]
+          #     if annotation: evaluations[0]['Annotation'] = annotation
+          #     config = boto3.client('config')
+          #     config.put_evaluations(
+          #         Evaluations = evaluations,
+          #         ResultToken = result_token
+          #     )
+
+          # current solution is to show all unencrypt logGroups in the annotation.
+          #==================================================================================================
+          #==================================================================================================
+          # Function: EvaluateCloudWatchLogEncryption
+          # Purpose:  Evaluates whether CloudWatch Logs are encrypted
+          #==================================================================================================
+          import json
+          import boto3
+          import datetime
+          import time
+          def lambda_handler(event, context):
+              is_compliant = True #default
+              annotation = ''
+              logGroupWithoutKey = []
+              logGroupWithKey = []
+              current_log = {}
+              client = boto3.client('logs')
+              for logGroup in client.describe_log_groups()['logGroups']:
+                  current_log = logGroup
+                  # Log files encrypted?
+                  if 'kmsKeyId' not in current_log:
+                      is_compliant = False
+                      logGroupWithoutKey.append(current_log['logGroupName'])
+                  else:
+                      logGroupWithKey.append(current_log['logGroupName'])
+              #return {"logGroupWithoutKey": logGroupWithoutKey, "logGroupWithKey": logGroupWithKey}
+              print("logGroupWithoutKey is" + str(logGroupWithoutKey))
+              print("logGroupWithKey is" + str(logGroupWithKey))
+              annotation = annotation + 'Check Lambda Log for List of LogGroups'
+              
+              result_token = 'No token found.'
+              if 'resultToken' in event: result_token = event['resultToken']
+              evaluations = [
+                  {
+                      'ComplianceResourceType': 'AWS::Logs::LogGroup',
+                      'ComplianceResourceId': current_log['logGroupName'],
+                      'ComplianceType': 'COMPLIANT' if is_compliant else 'NON_COMPLIANT',
+                      'OrderingTimestamp': datetime.datetime.now()
+                  }
+              ]
+              if annotation: evaluations[0]['Annotation'] = annotation
+              config = boto3.client('config')
+              config.put_evaluations(
+                  Evaluations = evaluations,
+                  ResultToken = result_token
+              )
+      Description: Evaluates whether CloudWatch Logs are encrypted
+      Handler: index.lambda_handler
+      MemorySize: 1024
+      Role: !GetAtt [ rConfigRulesLambdaRole, Arn ]
+      Runtime: python3.6
+      Timeout: 30
+
+  # Permission for config to call Lambda function to verify CloudWatch 
+  rRulePermissionToCallCloudWatchValidation:
+    Type: AWS::Lambda::Permission
+    Condition: cRuleCloudWatchValidation
+    Properties:
+        FunctionName: !GetAtt [ rFunctionForEvaluateCloudWatchLogEncryptionRule, Arn ]
+        Action: lambda:InvokeFunction
+        Principal: config.amazonaws.com
+
+  ####
+  #### AWS Config default rules
+  ####
+
+  # Monitors for unrestricted SSH access
+  rConfigRuleForSSH:
+    Type: AWS::Config::ConfigRule
+    DependsOn:
+    - rDeliveryChannel
+    - rConfigurationRecorder
+    Condition: cRuleUnrestrictedSsh
+    Properties:
+        ConfigRuleName: check-for-unrestricted-ssh-access
+        Description: Checks whether security groups that are in use disallow unrestricted incoming SSH traffic.
+        Scope:
+            ComplianceResourceTypes:
+              - AWS::EC2::SecurityGroup
+        Source:
+            Owner: AWS
+            SourceIdentifier: INCOMING_SSH_DISABLED
+  
+  # Monitors for user-defined unrestricted ports
+  rConfigRuleForUnrestrictedPorts:
+      Type: AWS::Config::ConfigRule
+      DependsOn:
+      - rDeliveryChannel
+      - rConfigurationRecorder
+      Condition: cRuleUnrestrictedPorts
+      Properties:
+          ConfigRuleName: check-for-unrestricted-ports
+          Description: Checks whether security groups that are in use disallow unrestricted incoming TCP traffic to the specified ports.
+          InputParameters:
+              blockedPort1: !Ref pRuleUnrestictedPortsBlockedPort1
+              blockedPort2: !If [ cRuleUnrestictedPortsBlockedPort2, !Ref pRuleUnrestictedPortsBlockedPort2, !Ref 'AWS::NoValue' ]
+              blockedPort3: !If [ cRuleUnrestictedPortsBlockedPort3, !Ref pRuleUnrestictedPortsBlockedPort3, !Ref 'AWS::NoValue' ]
+              blockedPort4: !If [ cRuleUnrestictedPortsBlockedPort4, !Ref pRuleUnrestictedPortsBlockedPort4, !Ref 'AWS::NoValue' ]
+              blockedPort5: !If [ cRuleUnrestictedPortsBlockedPort5, !Ref pRuleUnrestictedPortsBlockedPort5, !Ref 'AWS::NoValue' ]
+          Scope:
+              ComplianceResourceTypes:
+                - AWS::EC2::SecurityGroup
+          Source:
+              Owner: AWS
+              SourceIdentifier: RESTRICTED_INCOMING_TRAFFIC
+
+  # Monitors that all instances must be made from a predefined approved AMI list
+  rConfigRuleForAMICompliance:
+    Type: AWS::Config::ConfigRule
+    DependsOn: 
+    - rRulePermissionToCallAmiCompliance
+    - rDeliveryChannel
+    - rConfigurationRecorder
+    Condition: cRuleAmiCompliance
+    Properties:
+        ConfigRuleName: check-for-ami-compliance
+        Description: Checks whether approved AMIs are used.
+        Scope:
+            ComplianceResourceTypes:
+              - AWS::EC2::Instance
+        InputParameters:
+            amiList: !Ref pRuleAmiComplianceAmiList
+        Source:
+            Owner: CUSTOM_LAMBDA
+            SourceDetails:
+              - EventSource: aws.config
+                MessageType: ConfigurationItemChangeNotification
+            SourceIdentifier: !GetAtt [ rRuleAmiComplianceFunction, Arn ]
+
+  # Monitors that CloudTrail stays enabled
+  rConfigRuleForCloudTrail:
+    Type: AWS::Config::ConfigRule
+    Condition: cRuleCloudtrailValidation
+    DependsOn:
+    - rRulePermissionToCallCloudtrailValidation
+    - rDeliveryChannel
+    - rConfigurationRecorder 
+    Properties:
+        ConfigRuleName: check-whether-cloudtrail-is-enabled
+        Description: Checks whether CloudTrail is enabled in this region.
+        Scope:
+            ComplianceResourceTypes:
+              - AWS::EC2::Instance
+        Source:
+            Owner: CUSTOM_LAMBDA
+            SourceDetails:
+              - EventSource: aws.config
+                MessageType: ConfigurationItemChangeNotification
+            SourceIdentifier: !GetAtt [ rRuleCloudtrailValidationFunction, Arn ]
+  
+  # Monitors that CloudWatch logs are encrypted
+  rConfigRuleForCloudWatch:
+    Type: AWS::Config::ConfigRule
+    Condition: cRuleCloudWatchValidation
+    DependsOn:
+    - rRulePermissionToCallCloudWatchValidation
+    - rDeliveryChannel
+    - rConfigurationRecorder 
+    Properties:
+        ConfigRuleName: check-whether-cloudwatch-log-is-encrypted
+        Description: Checks whether CloudWatch logs are encrypted.
+        Source:
+            Owner: CUSTOM_LAMBDA
+            SourceDetails:
+              - EventSource: aws.config
+                MessageType: ConfigurationItemChangeNotification
+            SourceIdentifier: !GetAtt [ rFunctionForEvaluateCloudWatchLogEncryptionRule, Arn ]
+
+  # Monitors the MFA status of the root account
+  rRuleRootMfa:
+    Type: AWS::Config::ConfigRule
+    Condition: cRuleRootMfa
+    DependsOn:
+    - rDeliveryChannel
+    - rConfigurationRecorder 
+    Properties:
+      ConfigRuleName: check-root-mfa
+      Description: Checks whether the root account has MFA enabled
+      Source:
+        Owner: AWS
+        SourceIdentifier: ROOT_ACCOUNT_MFA_ENABLED
+
+  # Monitors for the existence of tags on EC2 instances
+  rRuleCheckTag:
+    Type: AWS::Config::ConfigRule
+    Condition: cRuleRequiredTag
+    DependsOn:
+    - rDeliveryChannel
+    - rConfigurationRecorder 
+    Properties:
+      ConfigRuleName: check-ec2-for-required-tag-1
+      Description: !Sub 'Checks whether EC2 instances use the required tag key ${pRuleRequiredTagToCheck}'
+      InputParameters:
+        tag1Key: !Ref 'pRuleRequiredTagToCheck'
+      Scope:
+        ComplianceResourceTypes:
+        - AWS::EC2::Instance
+      Source:
+        Owner: AWS
+        SourceIdentifier: REQUIRED_TAGS
+
+  # Monitors for existence of S3 buckets without server side encryption
+  rS3BucketServerSideEncryptionEnabledConfigRule:
+    Type: AWS::Config::ConfigRule
+    DependsOn:
+    - rDeliveryChannel
+    - rConfigurationRecorder 
+    Properties:
+      ConfigRuleName: s3-bucket-server-side-encryption-enabled
+      Description: Checks for explicit denies on put-object requests without server side encryption.
+      InputParameters: {}
+      Scope:
+        ComplianceResourceTypes:
+          - AWS::S3::Bucket
+      Source:
+        Owner: AWS
+        SourceIdentifier: S3_BUCKET_PUBLIC_WRITE_PROHIBITED
+
+  # Monitors for existence of S3 buckets with public write access
+  rS3BucketPublicWriteProhibitedConfigRule:
+    Type: AWS::Config::ConfigRule
+    DependsOn:
+    - rDeliveryChannel
+    - rConfigurationRecorder
+    Properties:
+      ConfigRuleName: s3-bucket-public-write-prohibited
+      Description: Checks that your S3 buckets do not allow public write access. If
+        an S3 bucket policy or bucket ACL allows public write access, the bucket is
+        noncompliant.
+      InputParameters: {}
+      Scope:
+        ComplianceResourceTypes:
+          - AWS::S3::Bucket
+      Source:
+        Owner: AWS
+        SourceIdentifier: S3_BUCKET_PUBLIC_WRITE_PROHIBITED
+
+  # Monitors for existence of S3 buckets with public read access
+  rS3BucketPublicReadProhibitedConfigRule:
+    Type: AWS::Config::ConfigRule
+    DependsOn:
+    - rDeliveryChannel
+    - rConfigurationRecorder
+    Properties:
+      ConfigRuleName: s3-bucket-public-read-prohibited
+      Description: Checks that your S3 buckets do not allow public write access. If
+        an S3 bucket policy or bucket ACL allows public write access, the bucket is
+        noncompliant.
+      InputParameters: {}
+      Scope:
+        ComplianceResourceTypes:
+          - AWS::S3::Bucket
+      Source:
+        Owner: AWS
+        SourceIdentifier: S3_BUCKET_PUBLIC_READ_PROHIBITED
+
+
+####
+#### Output the most useful resources
+####
+Outputs:
+  oAwsConfigBucket:
+    Description: AWS Config logging bucket
+    Value: !If [ cCreateS3Bucket, rLoggingBucket, pConfigBucket ]

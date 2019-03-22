@@ -1,0 +1,486 @@
+---
+#=========================================================================================
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Detect and Remediate Unintended Permissions in Amazon S3 Object ACLs
+#=========================================================================================
+####
+#### CloudFormation Metadata - makes the parameter inputs look nice
+####
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: S3 Private Bucket
+      Parameters:
+        - pCreateS3PrivateBucket
+        - pS3PrivateBucketName
+        - pExistingPrivateBucketName
+    - Label:
+        default: S3 Object Trail
+      Parameters:
+        - pS3ObjectTrailBucketName
+        - pObjectCloudTrailName
+    - Label:
+        default: Lambda, CloudWatch Events, SNS Topic
+      Parameters:
+        - pLambdaFunctionName
+        - pEventsRuleName
+        - pLambdaExecutionRoleName
+        - pCreateSnsTopic
+        - pSlackChannelName
+        - pSlackHookUrl
+        - pExistingSnsTopic
+
+    ParameterLabels:
+      pCreateS3PrivateBucket:
+        default: Create new S3 private bucket
+      pS3PrivateBucketName:
+        default: S3 Bucket Name that should be private
+      pExistingPrivateBucketName:
+        default: Existing S3 Bucket Name that should be private
+      pS3ObjectTrailBucketName:
+        default: S3 Bucket Name for object level log trail
+      pObjectCloudTrailName:
+        default: S3 Object level cloudtrail name
+      pLambdaFunctionName:
+        default: Name of the Lambda Function
+      pEventsRuleName:
+        default: Name of the CloudWatch Events Rule
+      pLambdaExecutionRoleName:
+        default: Name of the lambda execution role
+      pCreateSnsTopic:
+        default: Create SNS Topic for notifications
+      pSlackChannelName:
+        default: Slack Channel Name
+      pSlackHookUrl:
+        default: Slack Channel Hook Url
+      pExistingSnsTopic:
+        default: Existing SNS Topic integrated with slack
+
+############################
+#### Template input parameters
+############################
+Parameters:
+  pCreateS3PrivateBucket:
+    Type: String
+    Default: 'false'
+    Description: If set to true, it will create an S3 bucket
+    AllowedValues:
+    - 'true'
+    - 'false'
+  pS3PrivateBucketName:
+    Type: String
+    Default: ''
+    Description: New bucket will be created
+  pExistingPrivateBucketName:
+    Type: String
+    Description: Input existing bucket if above option is set false
+    Default: ''
+  pS3ObjectTrailBucketName:
+    Type: String
+    Description: New object trail bucket will be created
+    Default: 'bucket-for-s3-object-trail-4'
+  pObjectCloudTrailName:
+    Type: String
+    Default: "s3-object-level-trail"
+    Description: S3 Object level cloudtrail name
+  pLambdaFunctionName:
+    Type: String
+    Default: "CheckAndCorrectObjectACL"
+    Description: Lambda Function Name
+  pEventsRuleName:
+    Type: String
+    Default: "S3ObjectACLAutoRemediate"
+    Description: CloudWatch Events rule
+  pLambdaExecutionRoleName:
+    Type: String
+    Default: "AllowLogsAndS3ACL"
+    Description: Lambda Execution Role
+  pCreateSnsTopic:
+    Type: String
+    Default: 'false'
+    Description: If set to true, it will create a new SNS topic for notifications
+    AllowedValues:
+    - 'true'
+    - 'false'
+  pSlackChannelName:
+    Type: String
+    Description: Slack Channel Name
+    Default: ''
+  pSlackHookUrl:
+    Type: String
+    Description: Slack Hook Url
+    Default: ''
+  pExistingSnsTopic:
+    Type: String
+    Description: Arn of existing SNS Topic with lambda to slack integration
+    Default: ''
+
+########################
+#### Conditions
+########################
+Conditions:
+  cCreateS3PrivateBucket: !Equals [ !Ref pCreateS3PrivateBucket, 'true' ]
+  cCreateSnsTopic: !Equals [ !Ref pCreateSnsTopic, 'true' ]
+
+####################################################
+#### S3 Bucket, CloudTrail, Lambda, Events Rule resources
+####################################################
+Resources:
+  ####### Step 1: Turn on object-level logging in CloudTrail for the S3 bucket
+  # S3 private bucket that has to be private - created if pCreateS3PrivateBucket is 'true'
+  # DeletionPolicy enabled in Production
+  rS3PrivateBucket:
+    Type: AWS::S3::Bucket
+    Condition: cCreateS3PrivateBucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref pS3PrivateBucketName
+      VersioningConfiguration:
+        Status: Enabled
+  # S3 Object level cloud trail bucket for log delivery
+  rS3ObjectTrailBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref pS3ObjectTrailBucketName
+      VersioningConfiguration:
+        Status: Enabled
+  # Bucket policy so that CloudTrail can deliver log files to the bucket
+  rS3ObjectTrailBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: rS3ObjectTrailBucket
+    DeletionPolicy: Retain
+    Properties:
+      Bucket: !Ref rS3ObjectTrailBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Id: "s3objecttrailbucketpolicy"
+        Statement:
+          - Sid: "bucketPermissionsCheck"
+            Effect: "Allow"
+            Action: "s3:GetBucketAcl"
+            Principal:
+              Service: "cloudtrail.amazonaws.com"
+            Resource: !Sub "arn:aws:s3:::${pS3ObjectTrailBucketName}"
+          - Sid: "allowLogDelivery"
+            Effect: "Allow"
+            Action: "s3:PutObject"
+            Principal:
+              Service: "cloudtrail.amazonaws.com"
+            Resource: !Sub "arn:aws:s3:::${pS3ObjectTrailBucketName}/AWSLogs/${AWS::AccountId}/*"
+            Condition:
+              StringEquals:
+                s3:x-amz-acl: "bucket-owner-full-control"
+  # Create Object Level CloudTrail
+  rObjectLevelCloudTrail:
+    Type: AWS::CloudTrail::Trail
+    DependsOn: rS3ObjectTrailBucketPolicy
+    Properties:
+      IncludeGlobalServiceEvents: true
+      IsMultiRegionTrail: false
+      IsLogging: true
+      S3BucketName: !Ref pS3ObjectTrailBucketName
+      TrailName: !Ref pObjectCloudTrailName
+      EventSelectors:
+        - DataResources:
+          - Type: AWS::S3::Object
+            Values:
+              - !Sub
+                - "arn:aws:s3:::${bucket}/"
+                - { bucket: !If [cCreateS3PrivateBucket, !Ref pS3PrivateBucketName, !Ref pExistingPrivateBucketName] }
+          IncludeManagementEvents: false
+          ReadWriteType: All
+  #################################################
+  ##### Optional SNS configuration
+  #################################################
+  rSnsAlarmTopic:
+    Type: AWS::SNS::Topic
+    Condition: cCreateSnsTopic
+    Properties:
+      DisplayName: "S3ObjectAutoRemediateSNS"
+      Subscription:
+        - Endpoint: !GetAtt rFunctionForSlackIntegration.Arn
+          Protocol: lambda
+  rSnsAlarmSubscription:
+    Type: AWS::SNS::Subscription
+    Condition: cCreateSnsTopic
+    Properties:
+      Endpoint: !GetAtt rFunctionForSlackIntegration.Arn
+      Protocol: lambda
+      TopicArn: !Ref rSnsAlarmTopic
+  ####### Step 2: Create the IAM execution role for the Lambda function
+  # IAM execution role for the Lambda function
+  rIAMLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref pLambdaExecutionRoleName
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "iamlambdaassumerole"
+            Effect: "Allow"
+            Principal:
+              Service: "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/servicerole/"
+      Policies:
+        -
+          PolicyName: "iam-s3-lambda-access-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: "allowS3ApiAccess"
+                Effect: "Allow"
+                Action:
+                  - "s3:GetObjectAcl"
+                  - "s3:PutObjectAcl"
+                Resource: !Sub
+                  - "arn:aws:s3:::${bucket}/*"
+                  - { bucket: !If [cCreateS3PrivateBucket, !Ref pS3PrivateBucketName, !Ref pExistingPrivateBucketName] }
+              - Sid: "allowLogGroupDelivery"
+                Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: !Sub "arn:aws:logs:*:${AWS::AccountId}:*"
+              - Sid: "allowSnsAccess"
+                Effect: "Allow"
+                Action:
+                  - "sns:Publish"
+                Resource: !If [cCreateSnsTopic, !Ref rSnsAlarmTopic, !Ref pExistingSnsTopic]
+  ####### Step 3: Create a Lambda function that processes the PutObjectAcl API call event
+  # Function to check whether the ACL on the S3 object needs to be changed
+  rFunctionToEvaluateS3ObjectAclPermissions:
+    Type: AWS::Lambda::Function
+    DependsOn: rIAMLambdaExecutionRole
+    Properties:
+      FunctionName: !Ref pLambdaFunctionName
+      Code:
+        ZipFile: |
+          #==================================================================================================
+          # Function: CheckAndCorrectObjectACL
+          # Purpose:  Evaluates whether the ACL on the S3 object needs to be changed
+          #==================================================================================================
+          from __future__ import print_function
+
+          import json
+          import boto3, time
+          import os
+          import datetime
+          from time import gmtime, strftime
+          #print('Loading function')
+          s3                 = boto3.client('s3')
+          bucket_of_interest = os.environ["S3_BUCKET"]
+          sns_topic_arn      = os.environ["TOPIC_ARN"]
+          date_fmt           = strftime("%d_%m_%Y_%H:%M:%S", gmtime())              #get to the current date
+
+          # For a PutObjectAcl API Event, gets the bucket and key name from the event
+          # If the object is not private, then it makes the object private by making a PutObjectAcl call.
+          def lambda_handler(event, context):
+              # Get bucket name from the event
+              bucket = event['detail']['requestParameters']['bucketName']
+              if (bucket != bucket_of_interest):
+                  print("Doing nothing for bucket = " + bucket)
+                  return
+              # Get key name from the event
+              key = event['detail']['requestParameters']['key']
+              # If object is not private then make it private
+              if not (is_private(bucket, key)):
+                  print("Object with key=" + key + " in bucket=" + bucket + " is not private!")
+                  make_private(bucket, key)
+              else:
+                  print("Object with key=" + key + " in bucket=" + bucket + " is already private.")
+
+          # Checks an object with given bucket and key is private
+          def is_private(bucket, key):
+              # Get the object ACL from S3
+              acl = s3.get_object_acl(Bucket=bucket, Key=key)
+              # Private object should have only one grant which is the owner of the object
+              if (len(acl['Grants']) > 1):
+                  return False
+              # If canonical owner and grantee ids do no match, then conclude that the object is not private
+              owner_id   = acl['Owner']['ID']
+              grantee_id = acl['Grants'][0]['Grantee']['ID']
+              if (owner_id != grantee_id):
+                  return False
+              return True
+
+          # Makes an object with given bucket and key private by calling the PutObjectAcl API.
+          def make_private(bucket, key):
+              s3.put_object_acl(Bucket=bucket, Key=key, ACL="private")
+              print("Object with key=" + key + " in bucket=" + bucket + " is marked as private.")
+              if (send_sns(bucket, key)):
+                  print("SNS sent to notify about the change")
+
+          # Section that sends notification to SNS topic on object made private
+          def send_sns(bucket, key):
+              sns_client       = boto3.client('sns')
+              subject          = 'AWS S3 Object ACL Change in bucket - ' + bucket + ' - ' + date_fmt
+              message_body     = '\n\n Object with key= ' + key + '  in bucket=' + bucket + '  is marked as private. \n'
+              resp_sns         = sns_client.publish(TopicArn=sns_topic_arn, Message=message_body, Subject=subject)
+              if resp_sns is not None:
+                  return True
+              else:
+                  return False
+
+      Description: Evaluates whether the ACL on the S3 object needs to be changed
+      Environment:
+        Variables:
+          S3_BUCKET: !If [cCreateS3PrivateBucket, !Ref pS3PrivateBucketName, !Ref pExistingPrivateBucketName]
+          TOPIC_ARN: !If [cCreateSnsTopic, !Ref rSnsAlarmTopic, !Ref pExistingSnsTopic]
+      Handler: index.lambda_handler
+      MemorySize: 1024
+      Role: !GetAtt [ rIAMLambdaExecutionRole, Arn ]
+      Runtime: python3.6
+      Timeout: 20
+  ####### Step 4: Create the CloudWatch Events rule
+  # CloudWatch Events rule that is triggered when an event is received from S3
+  rEventsRuleForS3AclChange:
+    Type: AWS::Events::Rule
+    DependsOn: [rFunctionToEvaluateS3ObjectAclPermissions]
+    Properties:
+      Name: !Ref pEventsRuleName
+      Description: "CloudWatch Events rule that is triggered when an event is received from S3"
+      EventPattern:
+        source:
+          - 'aws.s3'
+        detail-type:
+          - "AWS API Call via CloudTrail"
+        detail:
+          eventSource:
+            - "s3.amazonaws.com"
+          eventName:
+            - "PutObjectAcl"
+            - "PutObject"
+          requestParameters:
+            bucketName:
+              - !If [cCreateS3PrivateBucket, !Ref pS3PrivateBucketName, !Ref pExistingPrivateBucketName]
+      Targets:
+        - Id: '1'
+          Arn: !GetAtt [ rFunctionToEvaluateS3ObjectAclPermissions, Arn ]
+  # Provide permission to allow CloudWatch Events to invoke the Lambda function
+  rLambdaPermissionToCallCloudWatchEvents:
+    Type: AWS::Lambda::Permission
+    DependsOn: rEventsRuleForS3AclChange
+    Properties:
+        FunctionName: !GetAtt [ rFunctionToEvaluateS3ObjectAclPermissions, Arn ]
+        Action: "lambda:InvokeFunction"
+        Principal: "events.amazonaws.com"
+        SourceArn: !GetAtt [ rEventsRuleForS3AclChange, Arn ]
+  #################################################
+  ###### Lambda to Slack Integration
+  #################################################
+  rRoleForSlackIntegrationFunction:
+    Type: AWS::IAM::Role
+    Condition: cCreateSnsTopic
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service: [lambda.amazonaws.com]
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Path: /servicerole/
+  rFunctionForSlackIntegration:
+    Type: AWS::Lambda::Function
+    Condition: cCreateSnsTopic
+    Properties:
+      FunctionName: AWSSlackIntegration
+      Code:
+        ZipFile: |
+          #==================================================================================================
+          # Function: SlackIntegration
+          # Purpose:  Lambda to Slack Integration
+          #==================================================================================================
+          import boto3
+          import json
+          import logging
+          import os
+
+          from base64 import b64decode
+          from urllib.request import Request, urlopen
+          from urllib.error import URLError, HTTPError
+
+          slack_channel = os.environ['SLACK_CHANNEL']
+          slack_hook_url = os.environ['HOOK_URL']
+
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+              logger.info("Event: " + str(event))
+              message = event['Records'][0]['Sns']['Subject'] + '\n' + event['Records'][0]['Sns']['Message']
+              try:
+                  message = json.loads(message)
+              except Exception as e:
+                  print(e)
+              logger.info("Message: " + str(message))
+              slack_message = {
+                  'channel': slack_channel,
+                  'username': "S3ObjectPermissions",
+                  'text': message,
+                  'icon_emoji' : ":ghost:"
+              }
+              req = Request(slack_hook_url, json.dumps(slack_message).encode('utf-8'))
+              try:
+                  response = urlopen(req)
+                  response.read()
+                  logger.info("Message posted to %s", slack_message['channel'])
+              except HTTPError as e:
+                  logger.error("Request failed: %d %s", e.code, e.reason)
+              except URLError as e:
+                  logger.error("Server connection failed: %s", e.reason)
+      Description: Lambda for AWS Slack Integration
+      Environment:
+        Variables:
+          SLACK_CHANNEL: !Ref pSlackChannelName
+          HOOK_URL: !Ref pSlackHookUrl
+      Handler: slack_integration.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt rRoleForSlackIntegrationFunction.Arn
+      Runtime: python3.6
+      Timeout: 20
+  rLambdaPermissionForSlackIntegration:
+    Type: AWS::Lambda::Permission
+    Condition: cCreateSnsTopic
+    Properties:
+      FunctionName: !GetAtt rFunctionForSlackIntegration.Arn
+      Action: lambda:InvokeFunction
+      Principal: sns.amazonaws.com
+      SourceArn: !Ref rSnsAlarmTopic
+
+############################
+#### Output values
+############################
+Outputs:
+  oS3PrivateBucket:
+    Condition: cCreateS3PrivateBucket
+    Description: The S3 Bucket that should be private
+    Value: !GetAtt [ rS3PrivateBucket, Arn ]
+  oS3ObjectTrailBucket:
+    Description: The S3 Bucket for storing object level log trail
+    Value: !GetAtt [ rS3ObjectTrailBucket, Arn ]
+  oObjectLevelCloudTrail:
+    Description: The Object Level CloudTrail
+    Value: !GetAtt [ rObjectLevelCloudTrail, Arn ]
+  oIAMLambdaExecutionRole:
+    Description: The lambda execution role
+    Value: !GetAtt [ rIAMLambdaExecutionRole, Arn ]
+  oFunctionToEvaluateS3ObjectAclPermissions:
+    Description: The Lambda function that processes the PutObjectAcl API call event
+    Value: !GetAtt [ rFunctionToEvaluateS3ObjectAclPermissions, Arn ]
+  oEventsRuleForS3AclChange:
+    Description: The CloudWatch Events rule
+    Value: !GetAtt [ rEventsRuleForS3AclChange, Arn ]
+  oSNSTopic:
+    Condition: cCreateSnsTopic
+    Description: The SNS Notification Topic
+    Value: !Ref rSnsAlarmTopic

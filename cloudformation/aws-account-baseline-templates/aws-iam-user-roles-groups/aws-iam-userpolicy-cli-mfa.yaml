@@ -1,0 +1,163 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Initializes IAM User policy, enforce MFA to access resources.
+
+#==================================================================================
+# AWS Cloudformation template for establishing MFA for CLI and Console logins
+# It creates a 1) Developer Policy which has access to EC2, RDS, S3, Route53,
+# Cloudformation, elasticloadbalancing, autoscaling, kms; 2) Developer MFA Role;
+# 3) Developer Group to add users; 4) User Self Service Policy that allows user to manage
+# their IAM & MFA device permissions
+#==================================================================================
+
+Resources:
+
+# IAM Policy for developers to access Dev Resources
+  DeveloperAccessPolicy:
+    Type: "AWS::IAM::ManagedPolicy"
+    Properties:
+      Description: "A policy that allows Developers to access Dev Resources"
+      ManagedPolicyName: "aws-iam-userdeveloper-access-policy"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "UserDeveloperAccessAcl"
+            Effect: "Allow"
+            Action:
+              - "ec2:*"
+              - "rds:*"
+              - "s3:*"
+              - "route53:*"
+              - "cloudformation:*"
+              - "elasticloadbalancing:*"
+              - "autoscaling:*"
+              - "kms:*"
+            Resource: "*"
+            Condition:
+              StringEquals:
+                aws:RequestedRegion: ["eu-west-1", "eu-west-2", "eu-west-3", "us-east-1"]
+          - Sid: "DenyPublicCannedAcl"
+            Effect: "Deny"
+            Action:
+              - "s3:PutBucketAcl"
+              - "s3:PutObjectAcl"
+              - "s3:PutObjectVersionAcl"
+            Resource:
+              - "arn:aws:s3:::*"
+            Condition:
+              StringEquals:
+                "s3:x-amz-acl":
+                  - "public-read"
+                  - "public-read-write"
+                  - "authenticated-read"
+# Managed Policy for the Users to manage their personal mfa configuration
+  UserSelfServicePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: A policy that allows users to manage their personal credentials and MFA configuration
+      Groups:
+        - !Ref DeveloperMFAGroup
+      ManagedPolicyName: "aws-iam-user-selfservice-policy"
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Sid: AllowAllUsersToListAccounts
+          Effect: Allow
+          Action:
+          - iam:ListAccountAliases
+          - iam:ListUsers
+          - iam:GetAccountPasswordPolicy
+          - iam:GetAccountSummary
+          Resource: "*"
+        - Sid: AllowIndividualUserToSeeAndManageOnlyTheirOwnAccountInformation
+          Effect: Allow
+          Action:
+          - iam:ChangePassword
+          - iam:CreateAccessKey
+          - iam:CreateLoginProfile
+          - iam:DeleteAccessKey
+          - iam:DeleteLoginProfile
+          - iam:GetLoginProfile
+          - iam:ListAccessKeys
+          - iam:GetAccessKeyLastUsed
+          - iam:UpdateAccessKey
+          - iam:UpdateLoginProfile
+          - iam:ListSigningCertificates
+          - iam:DeleteSigningCertificate
+          - iam:UpdateSigningCertificate
+          - iam:UploadSigningCertificate
+          - iam:ListSSHPublicKeys
+          - iam:GetSSHPublicKey
+          - iam:DeleteSSHPublicKey
+          - iam:UpdateSSHPublicKey
+          - iam:UploadSSHPublicKey
+          - iam:ListUserPolicies
+          - iam:ListGroupsForUser
+          - iam:ListUserTags
+          - iam:ListServiceSpecificCredentials
+          Resource: !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':user/${aws:username}']]
+        - Sid: AllowIndividualUserToListOnlyTheirOwnMFA
+          Effect: Allow
+          Action:
+          - iam:ListVirtualMFADevices
+          - iam:ListMFADevices
+          Resource:
+          - !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':mfa/*']]
+          - !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':user/${aws:username}']]
+        - Sid: AllowIndividualUserToManageTheirOwnMFA
+          Effect: Allow
+          Action:
+          - iam:CreateVirtualMFADevice
+          - iam:DeleteVirtualMFADevice
+          - iam:EnableMFADevice
+          - iam:ResyncMFADevice
+          Resource:
+          - !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':mfa/${aws:username}']]
+          - !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':user/${aws:username}']]
+        - Sid: AllowIndividualUserToDeactivateOnlyTheirOwnMFAOnlyWhenUsingMFA
+          Effect: Allow
+          Action:
+          - iam:DeactivateMFADevice
+          Resource:
+          - !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':mfa/${aws:username}']]
+          - !Join ['', ['arn:aws:iam::', !Ref 'AWS::AccountId', ':user/${aws:username}']]
+          Condition:
+            Bool:
+              aws:MultiFactorAuthPresent: "true"
+# Role for the user to assume the policy permissions
+  DeveloperMFARole:
+    Type: AWS::IAM::Role
+    DependsOn:
+      - DeveloperAccessPolicy
+    Properties:
+      ManagedPolicyArns:
+        - !Ref DeveloperAccessPolicy
+      RoleName: DevRole
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: "AllowAssumeRoleIfMFAIsPresent"
+            # see http://docs.aws.amazon.com/cli/latest/userguide/cli-roles.html#cli-roles-mfa
+            Effect: "Allow"
+            Principal:
+              AWS: !Ref 'AWS::AccountId'
+            Action:
+              - "sts:AssumeRole"
+            Condition:
+              Bool:
+                aws:MultiFactorAuthPresent: true
+# Group which has the assume role permissions and the policy attached to it. Dev users can be
+# added to this group to gain access to only Dev resources
+  DeveloperMFAGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: DevMFAGroup
+      Policies:
+        - PolicyName: AllowDeveloperAssumeMFAPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              Sid: "AllowUserToAssumeMFARole"
+              Effect: "Allow"
+              Action: "sts:AssumeRole"
+              Resource: !GetAtt DeveloperMFARole.Arn
