@@ -80,7 +80,7 @@ resource "aws_elasticsearch_domain" "live" {
   elasticsearch_version = "6.4"
 
   cluster_config {
-    instance_type            = "m4.large.elasticsearch"
+    instance_type            = "m4.xlarge.elasticsearch"
     instance_count           = "4"
     dedicated_master_enabled = true
     dedicated_master_type    = "m4.large.elasticsearch"
@@ -90,7 +90,7 @@ resource "aws_elasticsearch_domain" "live" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp2"
-    volume_size = "512"
+    volume_size = "1024"
   }
 
   advanced_options {
@@ -114,7 +114,7 @@ resource "aws_elasticsearch_domain" "live_1" {
   elasticsearch_version = "6.4"
 
   cluster_config {
-    instance_type            = "m4.large.elasticsearch"
+    instance_type            = "m4.xlarge.elasticsearch"
     instance_count           = "4"
     dedicated_master_enabled = true
     dedicated_master_type    = "m4.large.elasticsearch"
@@ -124,7 +124,7 @@ resource "aws_elasticsearch_domain" "live_1" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp2"
-    volume_size = "512"
+    volume_size = "1024"
   }
 
   advanced_options {
