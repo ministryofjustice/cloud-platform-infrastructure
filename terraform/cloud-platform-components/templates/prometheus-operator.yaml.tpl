@@ -480,6 +480,9 @@ alertmanager:
 ##
 grafana:
   enabled: true
+  
+  rbac:
+    pspUseAppArmor: false
 
   ## Deploy default dashboards.
   ##
