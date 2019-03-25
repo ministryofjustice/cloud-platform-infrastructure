@@ -4,6 +4,7 @@ locals {
   cert_manager_dsd_zones = [
     "find-legal-advice.justice.gov.uk.",
     "checklegalaid.service.gov.uk.",
+    "service.justice.gov.uk.",
   ]
 }
 
