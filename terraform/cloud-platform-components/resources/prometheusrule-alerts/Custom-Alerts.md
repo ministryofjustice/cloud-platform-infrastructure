@@ -228,17 +228,17 @@ Check to see if the external-dns pod is running in the `kube-system` namespace:
 NginxIngressPodDown
 Severity: warning
 ```
-This alert is triggered when less than 3 nginx-ingress pods are running for 5 minutes.
+This alert is triggered when less than 6 nginx-ingress pods are running for 5 minutes.
 
 Expression:
 ```
-kube_deployment_status_replicas_available{deployment="nginx-ingress-controller"} <3
+kube_deployment_status_replicas_available{deployment="nginx-ingress-controller"} < 6
 for: 5m
 ```
 
 ### Action
 
-Check how many nginx-ingress pods are running. There should be at least 3 with the status `Running`.
+Check how many nginx-ingress pods are running. There should be at least 6 with the status `Running`.
 
 `$ kubectl get pods -n nginx-controllers`
 
