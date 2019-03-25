@@ -42,3 +42,12 @@ provider "aws" {
   profile = "moj-dsd"
   region  = "eu-west-1"
 }
+
+locals {
+  # This is the list of Route53 Hosted Zones in the DSD account that
+  # cert-manager and external-dns will be given access to.
+  dsd_zones = [
+    "find-legal-advice.justice.gov.uk.",
+    "checklegalaid.service.gov.uk.",
+  ]
+}

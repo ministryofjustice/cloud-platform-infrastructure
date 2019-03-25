@@ -40,8 +40,11 @@ resource "helm_release" "external_dns" {
   name      = "external-dns"
   chart     = "stable/external-dns"
   namespace = "kube-system"
+  version   = "1.7.0"
 
   values = [<<EOF
+image:
+  tag: v0.5.11
 sources:
   - service
   - ingress
@@ -55,6 +58,7 @@ rbac:
   create: true
   apiVersion: v1
   serviceAccountName: default
+txtPrefix: "_external_dns."
 logLevel: info
 podAnnotations:
   iam.amazonaws.com/role: "${aws_iam_role.external_dns.name}"
