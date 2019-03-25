@@ -146,14 +146,15 @@ resource "helm_release" "alertmanager_proxy" {
     ignore_changes = ["keyring"]
   }
 }
+
 resource "null_resource" "prometheus-customalerts" {
   depends_on = ["helm_release.prometheus_operator"]
 
-   provisioner "local-exec" {
+  provisioner "local-exec" {
     command = "kubectl apply -n monitoring -f ${path.module}/resources/prometheusrule-alerts/"
   }
 
-   provisioner "local-exec" {
+  provisioner "local-exec" {
     when    = "destroy"
     command = "kubectl delete -n monitoring -f ${path.module}/resources/prometheusrule-alerts/"
   }
