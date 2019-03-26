@@ -23,7 +23,9 @@ function (user, context, callback) {
       // Construct list of user's Github teams
       // The team slug is used, to normalise whitespace, capitalisation etc.
       var git_teams = JSON.parse(body).map(function (team) {
-        return "github:" + team.slug;
+        if (team.organization.login === "ministryofjustice") {
+          return "github:" + team.slug;
+        }
       });
 
       // Add team list to the user's JWT as a custom claim
