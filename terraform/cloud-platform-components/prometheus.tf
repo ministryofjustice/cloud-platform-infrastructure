@@ -60,7 +60,10 @@ resource "helm_release" "prometheus_operator" {
   depends_on = [
     "null_resource.deploy",
   ]
-
+  provisioner "local-exec" {
+    command = "kubectl apply -n monitoring -f ${path.module}/resources/prometheusrule-alerts/"
+  }
+  
   # Delete Prometheus leftovers
   # Ref: https://github.com/coreos/prometheus-operator#removal
   provisioner "local-exec" {
@@ -144,18 +147,5 @@ resource "helm_release" "alertmanager_proxy" {
 
   lifecycle {
     ignore_changes = ["keyring"]
-  }
-}
-
-resource "null_resource" "prometheus-customalerts" {
-  depends_on = ["helm_release.prometheus_operator"]
-
-  provisioner "local-exec" {
-    command = "kubectl apply -n monitoring -f ${path.module}/resources/prometheusrule-alerts/"
-  }
-
-  provisioner "local-exec" {
-    when    = "destroy"
-    command = "kubectl delete -n monitoring -f ${path.module}/resources/prometheusrule-alerts/"
   }
 }
