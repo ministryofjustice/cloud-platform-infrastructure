@@ -31,7 +31,9 @@ function (user, context, callback) {
       // SAML spec requires that the IDP identifier is included with each role
       // identifier, separated with a comma
       user.awsRole = JSON.parse(body).map(function (team) {
-        return role_base_arn + configuration.AWS_SAML_ROLE_PREFIX + team.slug + "," + idp_arn;
+        if (team.organization.login === "ministryofjustice") {
+          return role_base_arn + configuration.AWS_SAML_ROLE_PREFIX + team.slug + "," + idp_arn;
+        }
       });
 
       // Name for the user's login session, typically their username
