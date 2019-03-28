@@ -18,9 +18,14 @@ The list of [baseline-controls] (https://docs.google.com/document/d/1TWdeTmiMDbj
 
 This section provides the definition of baseline controls and list of templates that cover the baseline and governance guardrails that can be deployed to new accounts.
 
-## [GuardDuty](cloud-platform-infrastructure/terraform/global-resources/docs/GuardDutyREADME.md)
+## GuardDuty
 We want to leverage AWS’ commodity IDS solution to detect/protect from malicious or unauthorized behavior
 As baseline, we would want GuardDuty is enabled on all accounts, in all regions, all of the time
+
+Please refer the Help Document for further details - cloud-platform-infrastructure/terraform/global-resources/docs/GuardDutyREADME.md 
+
+NOTE -
+It is a terraform template
 
 ```
 git clone git@github.com:ministryofjustice/cloud-platform-infrastructure.git

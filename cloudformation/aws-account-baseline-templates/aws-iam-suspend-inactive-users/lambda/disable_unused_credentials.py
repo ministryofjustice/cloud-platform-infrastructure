@@ -147,12 +147,15 @@ def lambda_handler(event, context):
                 response = client.add_user_to_group(UserName = user['UserName'], GroupName = suspended_users_group)
                 return_value['SuspendedUsers'].append({'UserName': user['UserName']})
 
-    # SNS topic Section
-    sns_client       = boto3.client('sns',region_name='eu-west-1')
-    subject          = 'AWS Account - ' + account_id + ' Inactive User List ' + date_fmt
-    message_body     = '\n' + "DeletedPasswords are " + str(return_value['DeletedPasswords'])
-    message_body     += '\n' + "DisabledAccessKeys are " + str(return_value['DisabledAccessKeys'])
-    message_body     += '\n' + "SuspendedUsers are " + str(return_value['SuspendedUsers'])
-    sns_client.publish(TopicArn=sns_topic_arn, Message=message_body, Subject=subject)
+    if (return_value['DeletedPasswords'] == [] and return_value['DisabledAccessKeys'] == [] and return_value['SuspendedUsers'] == []):
+        print ("Nothing to do")
+    else:
+        # SNS topic Section
+        sns_client       = boto3.client('sns',region_name='eu-west-1')
+        subject          = 'AWS Account - ' + account_id + ' Inactive User List ' + date_fmt
+        message_body     = '\n' + "DeletedPasswords are " + str(return_value['DeletedPasswords'])
+        message_body     += '\n' + "DisabledAccessKeys are " + str(return_value['DisabledAccessKeys'])
+        message_body     += '\n' + "SuspendedUsers are " + str(return_value['SuspendedUsers'])
+        sns_client.publish(TopicArn=sns_topic_arn, Message=message_body, Subject=subject)
 
     return return_value

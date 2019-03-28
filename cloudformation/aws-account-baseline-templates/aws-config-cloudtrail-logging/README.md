@@ -1,5 +1,16 @@
+# AWS Config, Cloudtrail
+This section covers the setup of AWS Config, Cloudtrail Services and the S3 buckets to store the logs.
+
+* [AWS Config](#AWS-Config)
+* [AWS Cloudtrail](#AWS-Cloudtrail)
+* [How to Deploy the Templates](#How-to-Deploy-the-templates)
+* [Service Control Policy to deny changes to CloudTrail](#Service-Control-Policy-to-deny-changes-to-CloudTrail)
+
+
 # AWS Config
 AWS Config is a service that enables to assess, audit, and evaluate the configurations of the AWS resources. Config continuously monitors and records the AWS resource configurations and allows to automate the evaluation of recorded configurations against desired configurations.
+
+![alt text](./images/config.jpg "AWS Config Service")
 
 ## Config Rules
 The config rules that are implemented through the template are -
@@ -43,7 +54,7 @@ The template defines metric filters that monitor create, delete, and update oper
 * Unauthorized attempts
 * Console Sign-in or API activity without MFA
 
-![alt text](../images/cloudtrail-api-monitoring.png "cloudtrail-api-monitoring-process")
+![alt text](./images/cloudtrail-api-monitoring.png "cloudtrail-api-monitoring-process")
 
 When an API call occurs in the account, a metric filter monitors that API call. If the API call exceeds the thresholds that was specified,this triggers the alarm and CloudWatch sends a notification to the SNS Topic. The team that implements the stack is responsible to chose the suitable means to receive the alerts.
 

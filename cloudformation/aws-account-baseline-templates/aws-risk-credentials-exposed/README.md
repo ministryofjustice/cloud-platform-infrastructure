@@ -6,7 +6,7 @@ AWS proactively monitors popular code repository sites for exposed AWS Identity 
 
 This repository contains sample code for all the Lambda functions depicted in the diagram below as well as an AWS CloudFormation template for creating the functions and related resources.
 
-![screenshot for instruction](images/Architecture.png)
+![screenshot for instruction](./images/Architecture.png)
 
 ### Walkthrough of the Architecture
 1. An IAM Access Key is inadvertently uploaded to one of the popular code repositories monitored by AWS.
@@ -16,6 +16,7 @@ This repository contains sample code for all the Lambda functions depicted in th
     * Summarize recent API activity for the user from CloudTrail.
     * Send security notification message containing summary to `SecurityNotificationTopic` SNS Topic. If there was an error in the first step the notify security that error occurred and incident requires manual inspection and intervention.
 
+![screenshot for instruction](./images/VisualWorkflow.png)
 
 ## How to Deploy
  
@@ -52,8 +53,11 @@ cd cloudformation/aws-account-baseline-templates/aws-risk-credentials-exposed/
 #package the template
 aws cloudformation package --region $REGION --s3-bucket $S3BUCKETNAME --template risk_credentials_exposed.serverless.yaml --output-template-file risk_credentials_exposed.output.yaml --profile $AWS_PROFILE
 
+#validate the template
+aws cloudformation validate-template --template-body file://risk_credentials_exposed.output.yaml --profile $AWS_PROFILE
+
 #deploy the stack with the resulting yaml (`risk_credentials_exposed.output.yaml`) through the CloudFormation Console or command line:
-aws cloudformation deploy --region $REGION --template-file risk_credentials_exposed.output.yaml --stack-name $STACKNAME --capabilities CAPABILITY_NAMED_IAM  --profile $AWS_PROFILE
+aws cloudformation deploy --region $REGION --template-file risk_credentials_exposed.output.yaml --stack-name $STACKNAME --parameter-overrides pCreateSnsTopic=false pExistingSnsTopic={existing_sns_topic_arn} --tags Owner={account_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production --capabilities CAPABILITY_NAMED_IAM  --profile $AWS_PROFILE
 ```
 
 

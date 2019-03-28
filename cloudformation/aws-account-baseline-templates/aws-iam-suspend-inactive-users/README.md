@@ -1,3 +1,10 @@
+# AWS IAM Suspend Inactive Users
+This section explains how to deploy the template to continuosly monitor for inactive IAM users in the AWS account
+
+* [Check Inactive IAM Users in AWS Account](#Check-Inactive-IAM-Users-in-AWS-Account)
+* [How to Deploy](#How-to-Deploy)
+
+
 # Check Inactive IAM Users in AWS Account
 
 ## Description

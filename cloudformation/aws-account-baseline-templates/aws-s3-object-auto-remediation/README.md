@@ -1,10 +1,15 @@
 # Auto Remediate Unintended Permissions change on S3 Objects
+If the number of objects and users in your AWS account is large, ensuring that you have attached correctly configured ACLs to your objects can be a challenge. Or, what if a user were to call the PutObject with the optional Acl parameter set to public-read, therefore uploading a confidential file as publicly readable? This section explains the solution that uses Amazon CloudWatch Events to detect PutObject and PutObjectAcl API calls in near real time and helps ensure that the objects remain private by making automatic PutObjectAcl calls, when necessary.
+
+* [How to Deploy the templates](#How to Deploy)
+* [IAM User Policy to prevent Public Permissions](#IAM User Policy to prevent Public Permissions)
+
 
 ## Background
 AWS S3 buckets are often accidentally left public, resulting in the accidental disclosure of confidential data to everyone. Also if the number of objects and users in the AWS account are large, ensuring that the ACLs are correctly configured to the objects can be a challenge. 
-We want to ensure that public access to AWS S3 storage is intentional, to avoid the unintended update with public permissions. The template is a reactive approach in situations where the change on the ACL is accidental and must be fixed.
+We want to ensure that public access to AWS S3 storage is intentional, to avoid the unintended update with public permissions. The template is a *reactive* approach in situations where the change on the ACL is accidental and must be fixed.
 
-![alt text](../images/auto-remediation-process.png "Overview")
+![alt text](./images/auto-remediation-process.png "Overview")
 
 References - 
 * https://aws.amazon.com/blogs/security/how-to-use-bucket-policies-and-apply-defense-in-depth-to-help-secure-your-amazon-s3-data/
@@ -40,7 +45,7 @@ aws cloudformation create-stack --stack-name aws-s3-object-auto-remediate --temp
 
 
 ## IAM User Policy to prevent Public Permissions
-The proactive approach is to restrict user permissions from having the access to update to public permissions. The IAM policy is set with conditions to force the users to put objects with private access.
+The *proactive* approach is to restrict user permissions from having the access to update to public permissions. The IAM policy is set with conditions to force the users to put objects with private access.
 
 Note-
 The policy can restrict changes to private objects with public permissions only from the AWS CLI. However the Console allows the user to update private object to public permissions. This is due to the way AWS handles the request headers on the console. A work around would be to Block the permissions on the bucket level following the [blog](https://aws.amazon.com/blogs/aws/amazon-s3-block-public-access-another-layer-of-protection-for-your-accounts-and-buckets/)

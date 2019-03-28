@@ -1,3 +1,14 @@
+# AWS IAM User Roles And Groups
+This section explains how to create different IAM User Roles, Groups, implement Region Restrictions, enforce MFA from CLI and Console, EC2 instance profiles, non-admin IAM user self-service policy, Explicit Deny Policy
+
+* [IAM Policy to Restrict Regions and Enforce MFA](#iam-policy-to-restrict-regions-and-enforce-mfa)
+* [User Profiles](#user-profiles)
+* [EC2 Instance Profiles](#ec2-instance-profiles)
+* [Service Control Policy to Limit API access](#service-control-policy-to-limit-api-access-for-users-and-services-to-eu-region-only)
+* [Deny Policy for Non-Admin IAM Users](#deny-policy)
+* [User Self Service policy](#non-admin-user-self-service-policy)
+* [How To Deploy](#how-to-deploy)
+
 # IAM Policy to Restrict Regions and Enforce MFA
 
 ## Background
@@ -8,10 +19,9 @@ AWS has few global resources like IAM, Cloudfront, ACM which work from us-east-1
 Also the Region restriction policy cannot be implemeted at Organisational Unit in the master AWS Account. Currently it has to be restricted through the user IAM policy by adding the condition - aws:RequestedRegion.
 
 Reference -
-* AWS Global Condition Context Keys - aws:RequestedRegion
-https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html
-* Easier way to control access to AWS regions using IAM policies
-https://aws.amazon.com/blogs/security/easier-way-to-control-access-to-aws-regions-using-iam-policies/
+* [AWS Global Condition Context Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html) - aws:RequestedRegion
+
+* Easier way to control access to [AWS regions using IAM policies](https://aws.amazon.com/blogs/security/easier-way-to-control-access-to-aws-regions-using-iam-policies/)
 
 
 The non-admin user IAM Policy with MFA and Region restriction looks like -
@@ -55,6 +65,7 @@ The non-admin user IAM Policy with MFA and Region restriction looks like -
 ## Description
 The templates are standalone and do not depend on other templates for deployment. The parameters are declared in the templates and have to be provided as per the implementation
 
+### User Profiles
 The templates aws-iam-adminandgroups.yaml, aws-iam-adminandroles.yaml implement assume role permissionns for a group of aws accounts. The roles and groups created by the templates are -
   - IAMAdminRole
   - BillingAdminRole
@@ -73,6 +84,7 @@ The templates aws-iam-adminandgroups.yaml, aws-iam-adminandroles.yaml implement 
 
 The template aws-iam-userpolicy-cli-mfa.yaml creates a user group, user role and attaches user self service iam policy to manage their MFA devices. The users can authenticate the mfa from cli when they assume the DevRole. The user policy consists of region restriction and is attached to the user role. New users will be added to the group and the user-self-service-policy will be inherited. They can perform IAM settings & MFA device updates without having to assume the role.
 
+### EC2 Instance Profiles
 The template aws-iam-instanceprofiles.yaml has a list of IAM roles for the instances to use
   - rSysAdminRole-inst
   - rIAMAdminRole-inst
@@ -81,10 +93,8 @@ The template aws-iam-instanceprofiles.yaml has a list of IAM roles for the insta
   - rReadOnlyAdminRole-inst
 
 Reference -
-* Switching to an IAM Role (AWS CLI)
-https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-cli.html
-* Switching to a Role (Console)
-https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-console.html
+* Switching to an IAM Role [AWS CLI](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-cli.html)
+* Switching to a Role [Console](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-console.html)
 
 NOTE - To run AWS CLI commands using MFA authentication
 Please refer to the steps in the link to generate the temporary session tokens, based on the MFA code. The temporary session token can be used as the 2FA 
@@ -92,7 +102,7 @@ Reference -
 https://aws.amazon.com/premiumsupport/knowledge-center/authenticate-mfa-cli/
 
 
-## Service Control Policy to Limit API access for users and services to EU-Region-only
+# Service Control Policy to Limit API access for users and services to EU-Region-only
 When there is support for conditions in the Service Control Policy (SCP), the below policy can be applied at the Organisational Unit in the master AWS Account
 
 ```
