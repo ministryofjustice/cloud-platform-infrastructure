@@ -23,14 +23,14 @@ defaultRules:
   rules:
     alertmanager: true
     etcd: true
-    general: true
+    general: false
     k8s: true
     kubeApiserver: true
     kubePrometheusNodeAlerting: true
     kubePrometheusNodeRecording: true
     kubeScheduler: true
     kubernetesAbsent: true
-    kubernetesApps: true
+    kubernetesApps: false
     kubernetesResources: true
     kubernetesStorage: true
     kubernetesSystem: true
