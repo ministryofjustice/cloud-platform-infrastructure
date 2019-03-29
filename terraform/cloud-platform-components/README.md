@@ -237,21 +237,18 @@ spec:
 
 ### Pod Security Policies
 
-A Pod Security Policy is a cluster-level resource that controls security sensitive aspects of the pod specification. The PodSecurityPolicy objects define a set of conditions that a pod must run with in order to be accepted into the system, as well as defaults for the related fields.
+A Pod Security Policy is a cluster-level resource that controls security sensitive aspects of the pod specification.  
+The PodSecurityPolicy objects define a set of conditions that a pod must run with in order to be accepted into the system, as well as defaults for the related fields. 
 
 The admission controller is enabled in all new Cloud Platform clusters, whcih means we must define the rules for `restricted` and `priviledged` containers. This is done in `psp.tf`
 
+ #### Restricted  
 
 The restricted policy is the default one for anyone on the cluster. Unless a team or serviceaccount has been exclusively granted higher privileged, it will be impossible to :
- - Run any container as the root user - this is the default user the container is going to start as.
- - Escalate Privilege to root : Even if the user the container starts as is not root, this prevents any escalation to root.
- - Mount any kind volume that are not of type ConfigMap, Secret, PVC, or similar. 
-
-
-
-Running as non-root also means that access to privileged port will not be allowed. 
-If an application used to server port 80 or 443, or any other port <1024 on live-0, it will have to be reconfigured to work on live-1.
-
+ - Run any container as the root user, which is usually the default user. 
+ - Escalate Privilege to root 
+ - Mount any kind volume that are not of type ConfigMap, Secret, PVC, or similar.  
+ 
 
 ```yaml
 apiVersion: extensions/v1beta1
@@ -302,7 +299,19 @@ spec:
   readOnlyRootFilesystem: false
   ```
 
-In other words, if a namespace/environment is created the restricted policy is automatically applied to it.
+In other words, when a namespace/environment is created, the restricted policy is automatically applied to it. 
+
+
+##### NGINX and Networking 
+
+Running as non-root also means that access to privileged port will not be allowed.  
+If an application used to server port 80 or 443, or any other port <1024 on live-0, it will have to be reconfigured to work on live-1.
+This is an issue for regular nginx images, that defaults to a privileged user and ports.  
+
+This section will be updated when the a proper workarounf for nginx has been found. 
+
+
+#### Privileged  
 
 The privileged policy allows all of the above, but needs to be speciffically assign to a specific namespace.
 For example, the logging and monitoring namespaces, amongst others, are both allowed to run root container.
@@ -337,6 +346,28 @@ spec:
     rule: 'RunAsAny'
 ```
 
+#### How to become privileged ? 
+
+Being allowed to use the _privileged_ policy means binding it to the default serviceaccount of a namespace. 
+
+A simple RoleBinding resource needs to be created, as described below : 
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: PrivilegedRoleBinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: psp:privileged
+subjects:
+- kind: Group
+  name: system:serviceaccounts:<MY_NAMESPACE>
+  apiGroup: rbac.authorization.k8s.io
+```
+
+You may have to re-login to the cluster for this change to take effect.
 
 
 ### RBAC
