@@ -313,8 +313,8 @@ This section will be updated when the a proper workarounf for nginx has been fou
 
 #### Privileged  
 
-The privileged policy allows all of the above, but needs to be speciffically assign to a specific namespace.
-For example, the logging and monitoring namespaces, amongst others, are both allowed to run root container.
+The privileged policy allows all of the above, but needs to be specifically assigned to a namespace.
+For example, the logging and monitoring namespaces, amongst others, are both allowed to run root containers.
 
 ```yaml
 apiVersion: extensions/v1beta1
@@ -366,6 +366,7 @@ subjects:
   name: system:serviceaccounts:<MY_NAMESPACE>
   apiGroup: rbac.authorization.k8s.io
 ```
+
 
 You may have to re-login to the cluster for this change to take effect.
 
