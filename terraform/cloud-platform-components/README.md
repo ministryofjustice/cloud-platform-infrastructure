@@ -244,10 +244,10 @@ The admission controller is enabled in all new Cloud Platform clusters, whcih me
 
  #### Restricted  
 
-The restricted policy is the default one for anyone on the cluster. Unless a team or serviceaccount has been exclusively granted higher privileged, it will be impossible to :
+The restricted policy is the default one for anyone on the cluster. Unless a team or serviceaccount has been specifically granted higher privileges, it will be impossible to :
  - Run any container as the root user, which is usually the default user. 
  - Escalate Privilege to root 
- - Mount any kind volume that are not of type ConfigMap, Secret, PVC, or similar.  
+ - Mount any volumes that are not of type ConfigMap, Secret, PVC, or similar.  
  
 
 ```yaml
@@ -304,11 +304,11 @@ In other words, when a namespace/environment is created, the restricted policy i
 
 ##### NGINX and Networking 
 
-Running as non-root also means that access to privileged port will not be allowed.  
-If an application used to server port 80 or 443, or any other port <1024 on live-0, it will have to be reconfigured to work on live-1.
-This is an issue for regular nginx images, that defaults to a privileged user and ports.  
+Running as non-root also means that access to privileged ports will not be allowed.  
+If an application used to listen on port 80 or 443, or any other port <1024 on live-0, it will have to be reconfigured to work on live-1.
+This is an issue for regular nginx images, that default to a privileged user and ports.  
 
-This section will be updated when the a proper workarounf for nginx has been found. 
+This section will be updated when a proper workaround for nginx has been found. 
 
 
 #### Privileged  
