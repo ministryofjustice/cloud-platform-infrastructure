@@ -95,6 +95,9 @@ alertmanager:
       receiver: 'null'
       routes:
       - match:
+          alertname: KubeQuotaExceeded
+        receiver: 'null'
+      - match:
           alertname: CPUThrottlingHigh
         receiver: 'null'
       - match:

@@ -9,7 +9,7 @@ spec:
   groups:
   - name: kubernetes-apps
     rules:
-    - alert: KubeQuotaExceeded
+    - alert: KubeQuota-Exceeded
       annotations:
         message: Namespace {{ $labels.namespace }} is using {{ printf "%0.0f" $value
           }}% of its {{ $labels.resource }} quota.
