@@ -31,7 +31,7 @@ data "template_file" "prometheus_operator" {
 
   vars {
     alertmanager_ingress                     = "https://alertmanager.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
-    grafana_ingress                          = "grafana.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
+    grafana_ingress                          = "${terraform.workspace == "live-1" ? "grafana.cloud-platform.service.justice.gov.uk" : format("%s.%s","grafana.apps",data.terraform_remote_state.cluster.cluster_domain_name) }"
     grafana_root                             = "https://grafana.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
     pagerduty_config                         = "${ var.pagerduty_config }"
     slack_config                             = "${ var.slack_config }"
@@ -88,7 +88,7 @@ data "template_file" "prometheus_proxy" {
 
   vars {
     upstream      = "http://prometheus-operator-prometheus:9090"
-    hostname      = "prometheus.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    hostname      = "${terraform.workspace == "live-1" ? "prometheus.cloud-platform.service.justice.gov.uk" : format("%s.%s","prometheus.apps",data.terraform_remote_state.cluster.cluster_domain_name)}"
     exclude_paths = "^/-/healthy$"
     issuer_url    = "${data.terraform_remote_state.cluster.oidc_issuer_url}"
     client_id     = "${data.terraform_remote_state.cluster.oidc_components_client_id}"
@@ -122,7 +122,7 @@ data "template_file" "alertmanager_proxy" {
 
   vars {
     upstream      = "http://prometheus-operator-alertmanager:9093"
-    hostname      = "alertmanager.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    hostname      = "${terraform.workspace == "live-1" ? "alertmanager.cloud-platform.service.justice.gov.uk" : format("%s.%s","alertmanager.apps",data.terraform_remote_state.cluster.cluster_domain_name)}"
     exclude_paths = "^/-/healthy$"
     issuer_url    = "${data.terraform_remote_state.cluster.oidc_issuer_url}"
     client_id     = "${data.terraform_remote_state.cluster.oidc_components_client_id}"
