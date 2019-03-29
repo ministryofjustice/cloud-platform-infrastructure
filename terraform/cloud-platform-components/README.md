@@ -236,9 +236,108 @@ spec:
 ```
 
 ### Pod Security Policies
+
 A Pod Security Policy is a cluster-level resource that controls security sensitive aspects of the pod specification. The PodSecurityPolicy objects define a set of conditions that a pod must run with in order to be accepted into the system, as well as defaults for the related fields.
 
 The admission controller is enabled in all new Cloud Platform clusters, whcih means we must define the rules for `restricted` and `priviledged` containers. This is done in `psp.tf`
+
+
+The restricted policy is the default one for anyone on the cluster. Unless a team or serviceaccount has been exclusively granted higher privileged, it will be impossible to :
+ - Run any container as the root user - this is the default user the container is going to start as.
+ - Escalate Privilege to root : Even if the user the container starts as is not root, this prevents any escalation to root.
+ - Mount any kind volume that are not of type ConfigMap, Secret, PVC, or similar. 
+
+
+
+Running as non-root also means that access to privileged port will not be allowed. 
+If an application used to server port 80 or 443, or any other port <1024 on live-0, it will have to be reconfigured to work on live-1.
+
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: restricted
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default'
+    seccomp.security.alpha.kubernetes.io/defaultProfileName:  'docker/default'
+spec:
+  privileged: false
+  # Required to prevent escalations to root.
+  allowPrivilegeEscalation: false
+  # This is redundant with non-root + disallow privilege escalation,
+  # but we can provide it for defense in depth.
+  requiredDropCapabilities:
+    - ALL
+  # Allow core volume types.
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    # Assume that persistentVolumes set up by the cluster admin are safe to use.
+    - 'persistentVolumeClaim'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    # Require the container to run without root privileges.
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    # This policy assumes the nodes are using AppArmor rather than SELinux.
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      # Forbid adding the root group.
+      - min: 1
+        max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      # Forbid adding the root group.
+      - min: 1
+        max: 65535
+  readOnlyRootFilesystem: false
+  ```
+
+In other words, if a namespace/environment is created the restricted policy is automatically applied to it.
+
+The privileged policy allows all of the above, but needs to be speciffically assign to a specific namespace.
+For example, the logging and monitoring namespaces, amongst others, are both allowed to run root container.
+
+```yaml
+apiVersion: extensions/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: privileged
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: "*"
+spec:
+  privileged: true
+  allowPrivilegeEscalation: true
+  allowedCapabilities:
+  - "*"
+  volumes:
+  - "*"
+  hostNetwork: true
+  hostPorts:
+  - min: 0
+    max: 65535
+  hostIPC: true
+  hostPID: true
+  runAsUser:
+    rule: 'RunAsAny'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+```
+
+
 
 ### RBAC
 Role-based access control (RBAC) is a method of regulating access to computer or network resources based on the roles of individual users within an enterprise.
