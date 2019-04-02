@@ -9,8 +9,8 @@ terraform {
 }
 
 provider "aws" {
-  profile = "moj-cp"
-  region  = "eu-west-2"
+  profile = "moj-pi"
+  region  = "eu-west-1"
 }
 
 provider "kubernetes" {}
@@ -49,5 +49,6 @@ locals {
   dsd_zones = [
     "find-legal-advice.justice.gov.uk.",
     "checklegalaid.service.gov.uk.",
+    "helpwithchildarrangements.service.justice.gov.uk",
   ]
 }
