@@ -30,9 +30,9 @@ data "template_file" "prometheus_operator" {
   template = "${file("${ path.module }/templates/prometheus-operator.yaml.tpl")}"
 
   vars {
-    alertmanager_ingress                     = "https://alertmanager.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
-    grafana_ingress                          = "${terraform.workspace == "live-1" ? list("grafana.cloud-platform.service.justice.gov.uk", format("%s.%s","grafana.apps",data.terraform_remote_state.cluster.cluster_domain_name)) : format("%s.%s","grafana.apps",data.terraform_remote_state.cluster.cluster_domain_name) }"
-    grafana_root                             = "https://grafana.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
+    alertmanager_ingress                     = "${terraform.workspace == local.live_workspace ? format("%s.%s", "https://alertmanager", local.live_domain) : format("%s.%s", "https://alertmanager.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
+    grafana_ingress                          = "${terraform.workspace == local.live_workspace ? format("%s.%s", "grafana", local.live_domain) : format("%s.%s", "grafana.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
+    grafana_root                             = "${terraform.workspace == local.live_workspace ? format("%s.%s", "https://grafana", local.live_domain) : format("%s.%s", "https://grafana.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
     pagerduty_config                         = "${ var.pagerduty_config }"
     slack_config                             = "${ var.slack_config }"
     slack_config_apply-for-legal-aid-prod    = "${var.slack_config_apply-for-legal-aid-prod}"
@@ -40,7 +40,7 @@ data "template_file" "prometheus_operator" {
     slack_config_apply-for-legal-aid-uat     = "${var.slack_config_apply-for-legal-aid-uat}"
     slack_config_laa-cla-fala                = "${var.slack_config_laa-cla-fala}"
     slack_config_prisoner-money              = "${var.slack_config_prisoner-money}"
-    prometheus_ingress                       = "https://prometheus.apps.${ data.terraform_remote_state.cluster.cluster_domain_name }"
+    prometheus_ingress                       = "${terraform.workspace == local.live_workspace ? format("%s.%s", "https://prometheus", local.live_domain) : format("%s.%s", "https://prometheus.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
     random_username                          = "${ random_id.username.hex }"
     random_password                          = "${ random_id.password.hex }"
   }
@@ -88,6 +88,7 @@ data "template_file" "prometheus_proxy" {
 
   vars {
     upstream      = "http://prometheus-operator-prometheus:9090"
+    hostname      = "${terraform.workspace == local.live_workspace ? format("%s.%s", "prometheus", local.live_domain) : format("%s.%s", "prometheus.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
     exclude_paths = "^/-/healthy$"
     issuer_url    = "${data.terraform_remote_state.cluster.oidc_issuer_url}"
     client_id     = "${data.terraform_remote_state.cluster.oidc_components_client_id}"
@@ -106,11 +107,6 @@ resource "helm_release" "prometheus_proxy" {
     "${data.template_file.prometheus_proxy.rendered}",
   ]
 
-  set {
-    name  = "hostnames"
-    value = "${terraform.workspace == "live-1" ? format("{%s,%s.%s}","prometheus.cloud-platform.service.justice.gov.uk","prometheus.apps", data.terraform_remote_state.cluster.cluster_domain_name) : format("%s.%s", "prometheus.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
-  }
-
   depends_on = [
     "null_resource.deploy",
     "random_id.session_secret",
@@ -126,6 +122,7 @@ data "template_file" "alertmanager_proxy" {
 
   vars {
     upstream      = "http://prometheus-operator-alertmanager:9093"
+    hostname      = "${terraform.workspace == local.live_workspace ? format("%s.%s", "prometheus", local.live_domain) : format("%s.%s", "prometheus.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
     exclude_paths = "^/-/healthy$"
     issuer_url    = "${data.terraform_remote_state.cluster.oidc_issuer_url}"
     client_id     = "${data.terraform_remote_state.cluster.oidc_components_client_id}"
@@ -143,8 +140,6 @@ resource "helm_release" "alertmanager_proxy" {
   values = [
     "${data.template_file.alertmanager_proxy.rendered}",
   ]
-
-
 
   depends_on = [
     "null_resource.deploy",

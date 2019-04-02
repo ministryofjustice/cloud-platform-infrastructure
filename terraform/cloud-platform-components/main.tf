@@ -50,4 +50,7 @@ locals {
     "find-legal-advice.justice.gov.uk.",
     "checklegalaid.service.gov.uk.",
   ]
+
+  live_workspace = "test-1"
+  live_domain    = "cloud-platform.service.justice.gov.uk"
 }

@@ -514,11 +514,7 @@ grafana:
     hosts:
     - "${ grafana_ingress }"
 
-    ## TLS configuration for prometheus Ingress
-    ## Secret must be manually created in the namespace
-    ##
     tls:
-    - secretName: prometheus-general-tls
       hosts:
       - "${ grafana_ingress }"
 

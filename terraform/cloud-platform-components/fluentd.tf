@@ -5,12 +5,12 @@ resource "helm_release" "fluentd_es" {
 
   set {
     name  = "fluent_elasticsearch_host"
-    value = "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
+    value = "${terraform.workspace == local.live_workspace ? "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com" : "search-test-yuq2c7ziybjvpmr2tllkghh6va.eu-west-2.es.amazonaws.com"}"
   }
 
   set {
     name  = "fluent_elasticsearch_audit_host"
-    value = "search-cloud-platform-audit-dq5bdnjokj4yt7qozshmifug6e.eu-west-2.es.amazonaws.com"
+    value = "${terraform.workspace == local.live_workspace ? "search-cloud-platform-audit-dq5bdnjokj4yt7qozshmifug6e.eu-west-2.es.amazonaws.com" : "search-test-yuq2c7ziybjvpmr2tllkghh6va.eu-west-2.es.amazonaws.com"}"
   }
 
   set {
