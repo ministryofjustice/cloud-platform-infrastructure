@@ -29,7 +29,7 @@ ingress:
   enabled: true
   path: /
   hosts:
-    - "${hostname}" 
+    - "${hostname}"
   tls:
     - hosts:
       - "${hostname}"
