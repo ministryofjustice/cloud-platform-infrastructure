@@ -515,8 +515,8 @@ grafana:
     - "${ grafana_ingress }"
 
     tls:
-      hosts:
-      - "${ grafana_ingress }"
+      - hosts:
+        - "${ grafana_ingress }"
 
   env:
     GF_SERVER_ROOT_URL: "${ grafana_root }"

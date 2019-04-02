@@ -122,7 +122,7 @@ data "template_file" "alertmanager_proxy" {
 
   vars {
     upstream      = "http://prometheus-operator-alertmanager:9093"
-    hostname      = "${terraform.workspace == local.live_workspace ? format("%s.%s", "prometheus", local.live_domain) : format("%s.%s", "prometheus.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
+    hostname      = "${terraform.workspace == local.live_workspace ? format("%s.%s", "alertmanager", local.live_domain) : format("%s.%s", "alertmanager.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
     exclude_paths = "^/-/healthy$"
     issuer_url    = "${data.terraform_remote_state.cluster.oidc_issuer_url}"
     client_id     = "${data.terraform_remote_state.cluster.oidc_components_client_id}"

@@ -29,10 +29,10 @@ ingress:
   enabled: true
   path: /
   hosts:
-    {{- range .Values.hostnames }} 
+    - "${hostname}" 
   tls:
     - hosts:
-      {{- range .Values.hostnames }}
+      - "${hostname}"
 
   # annotations:
   #   kubernetes.io/ingress.class: nginx
@@ -42,10 +42,8 @@ ingress:
   #   kubernetes.io/ingress.class: nginx
   #   kubernetes.io/tls-acme: "true"
   tls:
-    # Secrets must be manually created in the namespace.
-    - secretName: oauth2-tls
-      hosts:
-        {{- range .Values.hostnames }}
+    - hosts:
+      - "${hostname}"
 
 resources: {}
   # limits:

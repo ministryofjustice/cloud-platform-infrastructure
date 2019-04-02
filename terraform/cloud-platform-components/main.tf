@@ -30,6 +30,17 @@ data "terraform_remote_state" "cluster" {
   }
 }
 
+data "terraform_remote_state" "global" {
+  backend = "s3"
+
+  config {
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "global-resources/terraform.tfstate"
+    profile = "moj-cp"
+  }
+}
+
 // This is the kubernetes role that node hosts are assigned.
 data "aws_iam_role" "nodes" {
   name = "nodes.${data.terraform_remote_state.cluster.cluster_domain_name}"
@@ -51,6 +62,6 @@ locals {
     "checklegalaid.service.gov.uk.",
   ]
 
-  live_workspace = "test-1"
+  live_workspace = "live-1"
   live_domain    = "cloud-platform.service.justice.gov.uk"
 }

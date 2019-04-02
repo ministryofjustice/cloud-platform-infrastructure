@@ -42,6 +42,9 @@ locals {
   cluster_base_domain_name = "${local.cluster_name}.cloud-platform.service.justice.gov.uk"
   auth0_tenant_domain      = "justice-cloud-platform.eu.auth0.com"
   oidc_issuer_url          = "https://${local.auth0_tenant_domain}/"
+
+  live_workspace = "live-1"
+  live_domain    = "cloud-platform.service.justice.gov.uk"
 }
 
 # Modules
@@ -122,12 +125,15 @@ resource "auth0_client" "components" {
 
   callbacks = [
     "https://prometheus.apps.${local.cluster_base_domain_name}/oauth2/callback",
+    "${terraform.workspace == local.live_workspace ? format("https://prometheus.%s/oauth2/callback", local.live_domain) : ""}",
     "https://alertmanager.apps.${local.cluster_base_domain_name}/oauth2/callback",
+    "${terraform.workspace == local.live_workspace ? format("https://alertmanager.%s/oauth2/callback", local.live_domain) : ""}",
     "https://prometheus.apps.${local.cluster_base_domain_name}/redirect_uri",
     "https://alertmanager.apps.${local.cluster_base_domain_name}/redirect_uri",
     "https://concourse.apps.${local.cluster_base_domain_name}/sky/issuer/callback",
     "https://kibana.apps.${local.cluster_base_domain_name}/oauth2/callback",
     "https://grafana.apps.${local.cluster_base_domain_name}/login/generic_oauth",
+    "${terraform.workspace == local.live_workspace ? format("https://grafana.%s/login/generic_oauth", local.live_domain) : ""}",
   ]
 
   custom_login_page_on = true
