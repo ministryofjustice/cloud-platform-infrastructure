@@ -16,11 +16,12 @@ resource "aws_iam_role" "external_dns" {
 
 data "aws_iam_policy_document" "external_dns" {
   statement {
-    actions   = ["route53:ChangeResourceRecordSets"]
+    actions = ["route53:ChangeResourceRecordSets"]
+
     resources = [
       "arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.hosted_zone_id}",
-      "${terraform.workspace == local.live_workspace ? format("%s/%s", "arn:aws:route53:::hostedzone", data.terraform_remote_state.global.cp_zone_id) : "arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.hosted_zone_id}"}"
-      ]
+      "${terraform.workspace == local.live_workspace ? format("%s/%s", "arn:aws:route53:::hostedzone", data.terraform_remote_state.global.cp_zone_id) : "arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.hosted_zone_id}"}",
+    ]
   }
 
   statement {
