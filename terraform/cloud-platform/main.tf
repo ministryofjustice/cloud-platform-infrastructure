@@ -131,7 +131,9 @@ resource "auth0_client" "components" {
     "https://prometheus.apps.${local.cluster_base_domain_name}/redirect_uri",
     "https://alertmanager.apps.${local.cluster_base_domain_name}/redirect_uri",
     "https://concourse.apps.${local.cluster_base_domain_name}/sky/issuer/callback",
+    "${terraform.workspace == local.live_workspace ? format("https://concourse.%s/sky/issuer/callback", local.live_domain) : ""}",
     "https://kibana.apps.${local.cluster_base_domain_name}/oauth2/callback",
+    "${terraform.workspace == local.live_workspace ? format("https://kibana.%s/oauth2/callback", local.live_domain) : ""}",
     "https://grafana.apps.${local.cluster_base_domain_name}/login/generic_oauth",
     "${terraform.workspace == local.live_workspace ? format("https://grafana.%s/login/generic_oauth", local.live_domain) : ""}",
   ]
