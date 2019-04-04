@@ -15,3 +15,7 @@ spec:
         provider: route53-cloud-platform
       domains:
       - '${common_name}'
+      ${alt_name}
+  dnsNames:
+    - '${common_name}'
+    ${alt_name}

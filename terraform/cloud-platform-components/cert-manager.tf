@@ -20,8 +20,12 @@ resource "aws_iam_role" "cert_manager" {
 
 data "aws_iam_policy_document" "cert_manager" {
   statement {
-    actions   = ["route53:ChangeResourceRecordSets"]
-    resources = ["arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.hosted_zone_id}"]
+    actions = ["route53:ChangeResourceRecordSets"]
+
+    resources = ["${compact(list(
+      "arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.hosted_zone_id}",
+      "${terraform.workspace == local.live_workspace ? format("%s/%s", "arn:aws:route53:::hostedzone", data.terraform_remote_state.global.cp_zone_id) : ""}",
+    ))}"]
   }
 
   statement {

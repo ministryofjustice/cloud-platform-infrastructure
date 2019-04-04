@@ -30,7 +30,7 @@ controller:
 
   service:
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: "*.apps.${data.terraform_remote_state.cluster.cluster_domain_name},apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+      external-dns.alpha.kubernetes.io/hostname: "*.apps.${data.terraform_remote_state.cluster.cluster_domain_name},apps.${data.terraform_remote_state.cluster.cluster_domain_name}${terraform.workspace == local.live_workspace ? format(",*.%s", local.live_domain) : ""}"
       service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
 
     externalTrafficPolicy: "Local"
@@ -59,6 +59,7 @@ data "template_file" "nginx_ingress_default_certificate" {
 
   vars {
     common_name = "*.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    alt_name    = "${terraform.workspace == local.live_workspace ? format("- '*.%s'", local.live_domain) : ""}"
   }
 }
 

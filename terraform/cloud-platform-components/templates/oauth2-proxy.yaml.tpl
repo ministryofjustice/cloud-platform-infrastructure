@@ -42,10 +42,8 @@ ingress:
   #   kubernetes.io/ingress.class: nginx
   #   kubernetes.io/tls-acme: "true"
   tls:
-    # Secrets must be manually created in the namespace.
-    - secretName: oauth2-tls
-      hosts:
-        - "${hostname}"
+    - hosts:
+      - "${hostname}"
 
 resources: {}
   # limits:

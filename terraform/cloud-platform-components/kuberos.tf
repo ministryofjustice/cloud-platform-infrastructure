@@ -6,12 +6,12 @@ resource "helm_release" "kuberos" {
 
   set {
     name  = "ingress.host"
-    value = "login.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    value = "${terraform.workspace == local.live_workspace ? format("%s.%s", "login", local.live_domain) : format("%s.%s", "login.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
   }
 
   set {
     name  = "ingress.tls.secretName.host"
-    value = "login.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
+    value = "${terraform.workspace == local.live_workspace ? format("%s.%s", "login", local.live_domain) : format("%s.%s", "login.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
   }
 
   set {

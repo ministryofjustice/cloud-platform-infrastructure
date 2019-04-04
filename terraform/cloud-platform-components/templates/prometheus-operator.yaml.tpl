@@ -267,7 +267,7 @@ alertmanager:
         {{ range .Alerts }}
             *Alert:* {{ .Annotations.message}}
             *Details:*
-            {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+            {{ range .Labels.SortedPairs }} - *{{ .Name }}:* `{{ .Value }}`
             {{ end }}
             *-----*
           {{ end }}
@@ -359,7 +359,7 @@ alertmanager:
   ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#alertmanagerspec
   ##
   alertmanagerSpec:
-    ## Standard object’s metadata. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/api-conventions.md#metadata
+    ## Standard object's metadata. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/api-conventions.md#metadata
     ## Metadata Labels and Annotations gets propagated to the Alertmanager pods.
     ##
     podMetadata: {}
@@ -517,13 +517,9 @@ grafana:
     hosts:
     - "${ grafana_ingress }"
 
-    ## TLS configuration for prometheus Ingress
-    ## Secret must be manually created in the namespace
-    ##
     tls:
-    - secretName: prometheus-general-tls
-      hosts:
-      - "${ grafana_ingress }"
+      - hosts:
+        - "${ grafana_ingress }"
 
   env:
     GF_SERVER_ROOT_URL: "${ grafana_root }"
@@ -1088,7 +1084,7 @@ prometheus:
     ##
     routePrefix: /
 
-    ## Standard object’s metadata. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/api-conventions.md#metadata
+    ## Standard object's metadata. More info: https://github.com/kubernetes/community/blob/master/contributors/devel/api-conventions.md#metadata
     ## Metadata Labels and Annotations gets propagated to the prometheus pods.
     ##
     podMetadata: {}
