@@ -16,3 +16,6 @@ spec:
       domains:
       - '${common_name}'
       ${alt_name}
+  dnsNames:
+    - '${common_name}'
+    ${alt_name}

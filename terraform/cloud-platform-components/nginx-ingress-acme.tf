@@ -59,7 +59,7 @@ data "template_file" "nginx_ingress_default_certificate" {
 
   vars {
     common_name = "*.apps.${data.terraform_remote_state.cluster.cluster_domain_name}"
-    alt_name    = "${terraform.workspace == local.live_workspace ? format("- *.%s", local.live_domain) : ""}"
+    alt_name    = "${terraform.workspace == local.live_workspace ? format("- '*.%s'", local.live_domain) : ""}"
   }
 }
 

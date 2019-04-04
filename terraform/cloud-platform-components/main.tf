@@ -60,6 +60,7 @@ locals {
   dsd_zones = [
     "find-legal-advice.justice.gov.uk.",
     "checklegalaid.service.gov.uk.",
+    "helpwithchildarrangements.service.justice.gov.uk.",
   ]
 
   live_workspace = "live-1"
