@@ -105,7 +105,10 @@ resource "auth0_client" "kubernetes" {
   description = "Cloud Platform kubernetes"
   app_type    = "regular_web"
 
-  callbacks = ["https://login.apps.${local.cluster_base_domain_name}/ui"]
+  callbacks = [
+    "https://login.apps.${local.cluster_base_domain_name}/ui",
+    "${terraform.workspace == local.live_workspace ? format("https://login.%s/ui", local.live_domain) : ""}",
+  ]
 
   custom_login_page_on = true
   is_first_party       = true
