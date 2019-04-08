@@ -4,13 +4,13 @@
 # The 'opa' key embeds an OPA configuration file. See
 # https://www.openpolicyagent.org/docs/configuration.html for more details.
 opa:
-  services:
-    controller:
-      url: "https://www.openpolicyagent.org"
-  bundle:
-    service: controller
-    name: "helm-kubernetes-quickstart"
-  default_decision: "/helm_kubernetes_quickstart/main"
+  # services:
+  #   controller:
+  #     url: "https://www.openpolicyagent.org"
+  # bundle:
+  #   service: controller
+  #   name: "helm-kubernetes-quickstart"
+  # default_decision: "/helm_kubernetes_quickstart/main"
 
 # To enforce mutating policies, change to MutatingWebhookConfiguration.
 admissionControllerKind: ValidatingWebhookConfiguration
@@ -58,19 +58,19 @@ authz:
 
 # Docker image and tag to deploy.
 image: openpolicyagent/opa
-imageTag: 0.10.5
+imageTag: ${opa_image_tag}
 imagePullPolicy: IfNotPresent
 
 mgmt:
   enabled: true
   image: openpolicyagent/kube-mgmt
-  imageTag: 0.8
+  imageTag: ${kube_mgmt_image_tag}
   imagePullPolicy: IfNotPresent
   extraArgs: []
   resources: {}
   configmapPolicies:
-    enabled: false
-    namespaces: [opa, kube-federation-scheduling-policy]
+    enabled: true
+    namespaces: [opa] # kube-mgmt automatically discovers policies stored in ConfigMaps,created in a namespace listed here.
     requireLabel: true
   replicate:
 # NOTE IF you use these, remember to update the RBAC rules above to allow
