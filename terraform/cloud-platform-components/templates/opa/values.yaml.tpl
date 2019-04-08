@@ -23,10 +23,10 @@ admissionControllerFailurePolicy: Ignore
 # policy checks, see the settings below. By default, all resources and
 # operations are subject to OPA policy checks.
 admissionControllerRules:
-  - operations: ["*"]
-    apiGroups: ["*"]
+  - operations: ["CREATE", "UPDATE"]
+    apiGroups: ["extensions", ""]
     apiVersions: ["*"]
-    resources: ["*"]
+    resources: ["ingresses","namespaces"]
 
 # Controls a PodDisruptionBudget for the OPA pod. Suggested use if having opa
 # always running for admission control is important
@@ -75,10 +75,10 @@ mgmt:
   replicate:
 # NOTE IF you use these, remember to update the RBAC rules above to allow
 #      permissions to replicate these things
-    cluster: []
-#     - [group/]version/resource
-    namespace: []
-#     - [group/]version/resource
+    cluster:
+      - "v1/namespaces"
+    namespace:
+      - "extensions/v1beta1/ingresses"
     path: kubernetes
 
 # Log level for OPA ('debug', 'info', 'error') (app default=info)
@@ -109,15 +109,34 @@ rbac:
   #
   create: true
   rules:
-    cluster: []
-    # - apiGroups:
-    #     - ""
-    #   resources:
-    #   - namespaces
-    #   verbs:
-    #   - get
-    #   - list
-    #   - watch
+    cluster:
+    - apiGroups:
+        - ""
+      resources:
+      - configmaps
+      verbs:
+      - update
+      - patch
+      - get
+      - list
+      - watch
+    - apiGroups:
+        - ""
+      resources:
+      - namespaces
+      verbs:
+      - get
+      - list
+      - watch
+    - apiGroups:
+        - extensions
+      resources:
+      - ingresses
+      verbs:
+      - get
+      - list
+      - watch
+      - patch
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
