@@ -26,6 +26,7 @@ resource "helm_release" "open-policy-agent" {
 
 resource "null_resource" "open-policy-agent_policies" {
   depends_on = ["helm_release.open-policy-agent"]
+
   provisioner "local-exec" {
     command = "kubectl apply -n opa -f ${path.module}/resources/opa/"
   }
