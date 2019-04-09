@@ -1,6 +1,6 @@
 # Cloud Platform - Logging with Fluentd to Elasticsearch
 
-This chart deploys Fluentd on a Cloud Platform cluster.
+This chart deploys Fluentd on a Cloud Platform cluster; source of inspiration was https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/fluentd-elasticsearch
 
 ## Configuration
 
@@ -8,8 +8,8 @@ The following table lists the configurable parameters of the Fluentd chart and t
 
 | Parameter | Description | Default |
 | - | - | - |
-| image.repository | Docker image repository for the `kuberos` image | `926803513772.dkr.ecr.eu-west-1.amazonaws.com/cloud-platform/kuberos` |
-| image.tag | Docker image tag | `latest` |
+| image.repository | Docker image repository for the `fluentd` image | `gcr.io/fluentd-elasticsearch/fluentd` |
+| image.tag | Docker image tag | `v2.5.1` |
 | fluent_elasticsearch_host  | Elasticsearch host URL | `-` |
 | fluent_elasticsearch_audit_host  | Elasticsearch audit host URL | `-` |
 | fluent_kubernetes_cluster_name  | The name of the Cloud Platform cluster you are deploying to | `-` |
