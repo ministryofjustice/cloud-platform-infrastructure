@@ -92,29 +92,32 @@ We utilise [opa-helm-chart](https://github.com/helm/charts/tree/master/stable/op
 In Kubernetes, Admission Controllers enforce semantic validation of objects during create, update, and delete operations. With OPA we can enforce custom policies on Kubernetes objects without recompiling or reconfiguring the Kubernetes API server. Please see the following documentation by opa on Kubernetes Admission Control 
 https://www.openpolicyagent.org/docs/kubernetes-admission-control.html
 
-To restrict the kinds of operations and resources that are subject to OPA policy checks, see the below example. (Configured in templates/opa/values.yaml.tpl under admissionControllerRules:)
+To restrict the kinds of operations and resources that are subject to OPA policy checks, see the below example. Configured in templates/opa/values.yaml.tpl under admissionControllerRules:
 
-admissionControllerRules:
-  - operations: ["CREATE", "UPDATE"]
-    apiGroups: ["extensions", ""]
-    apiVersions: ["v1beta1”, “v1”]
-    resources: ["ingresses", "namespaces"]
-
+```yaml
+    admissionControllerRules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["extensions", ""]
+        apiVersions: ["v1beta1”, “v1”]
+        resources: ["ingresses", "namespaces"]
+```
 The admissionControllerRules the operations and resources that the webhook will validate. Intercept API requests when a ingress or a namespace is CREATED or UPDATED, so apiGroups and apiVersions are filled out accordingly (extensions/v1beta1 for ingresses, v1 for namespaces). We can use wildcards (*) for these fields as well.
 
  ### kube-mgmt
 
 kube-mgmt manages instances of the Open Policy Agent on top of kubernetes. Use kube-mgmt to:
-	•	Load policies into OPA via kubernetes.
-	•	Replicate kubernetes resources including CustomResourceDefinitions (CRDs) into OPA.
+
+    - Load policies into OPA via kubernetes.
+    - Replicate kubernetes resources including CustomResourceDefinitions (CRDs) into OPA.
 
  ### OPA-Policies
 
 Policies are written in a high-level declarative language and can be loaded into OPA via the filesystem or well-defined APIs.
 
 kube-mgmt automatically discovers policies stored in ConfigMaps in kubernetes and loads them into OPA. kube-mgmt assumes a ConfigMap contains policies if the ConfigMap is:
-	•	Created in a namespace listed in the --policies option. (Configured in templates/opa/values.yaml.tpl under mgmt/configmapPolicies/namespaces:)
-	•	Labelled with openpolicyagent.org/policy=rego.
+
+    - Created in a namespace listed in the --policies option. Configured in templates/opa/values.yaml.tpl under mgmt/configmapPolicies/namespaces:
+	  - Labelled with openpolicyagent.org/policy=rego.
 
 When a policy has been successfully loaded into OPA, the openpolicyagent.org/policy-status annotation is set to {"status": "ok"}.
 If loading fails for some reason (e.g., because of a parse error), the openpolicyagent.org/policy-status annotation is set to {"status": "error", "error": ...} where the error field contains details about the failure.
@@ -131,9 +134,10 @@ Rego was inspired by Datalog, which is a well understood, decades old query lang
 Rego queries are assertions on data stored in OPA. These queries can be used to define policies that enumerate instances of data that violate the expected state of the system.
 
 In Rego, policies are defined inside modules. Modules consist of:
-	•	Exactly one Package declaration.
-	•	Zero or more Import statements.
-	•	Zero or more Rule definitions.
+
+    - Exactly one Package declaration.
+    - Zero or more Import statements.
+    - Zero or more Rule definitions.
 
 Please see the following documentation by opa on how to write Policies https://www.openpolicyagent.org/docs/how-do-i-write-policies.html
 
@@ -141,48 +145,51 @@ Please see the following documentation by opa on how to write Policies https://w
 
 Additionally, kube-mgmt is configured to periodically pull resource metadata that might be needed by the opa service to correctly evaluate API server events, in the case that the event does not contain all the needed data for the logic defined in the evaluation policy. The resources that kube-mgmt scans are configured in templates/opa/values.yaml.tpl under mgmt/replicate:
 
-  group/version/resource			  # namespace scoped
-  group/version/resource        # cluster scoped
-
-	<replicate-path> is configurable (via path) and defaults to kubernetes.
+  ```yaml
+    group/version/resource			  # namespace scoped
+    group/version/resource        # cluster scoped
+  ```
+    <replicate-path> is configurable (via path) and defaults to kubernetes.
 
 The example below would replicate namespaces and ingress into OPA:
 
+```yaml
     cluster:
       - "v1/namespaces"
     namespace:
       - "extensions/v1beta1/ingresses"
     path: kubernetes
-
+```
 
 NOTE: IF we use replicate: remember to update the RBAC rules as below to allow permissions to replicate these things
 
- ### OPA-RBAC-resources
+ ### opa-rbac-resources
 
-RBAC provides a simple, coarse-grained way of granting permissions by groupings. Determining whether to allow requests under RBAC involves identifying whether the caller has been associated with a role that grants permission to the perform the operation. This can be configured in (templates/opa/values.yaml.tpl under rbac:)
+RBAC provides a simple, coarse-grained way of granting permissions by groupings. Determining whether to allow requests under RBAC involves identifying whether the caller has been associated with a role that grants permission to the perform the operation. This can be configured in templates/opa/values.yaml.tpl under rbac:
 
-rbac:
-  create: true
-  rules:
-    cluster:
-    - apiGroups:
-        - ""
-      resources:
-      - namespaces
-      verbs:
-      - get
-      - list
-      - watch
-    - apiGroups:
-        - extensions
-      resources:
-      - ingresses
-      verbs:
-      - get
-      - list
-      - watch
-      - patch
-  
+```yaml
+  rbac:
+    create: true
+    rules:
+      cluster:
+      - apiGroups:
+          - ""
+        resources:
+        - namespaces
+        verbs:
+        - get
+        - list
+        - watch
+      - apiGroups:
+          - extensions
+        resources:
+        - ingresses
+        verbs:
+        - get
+        - list
+        - watch
+        - patch
+```  
 
 ## Prometheus
 We utilise [Prometheus-Operator](https://github.com/helm/charts/tree/master/stable/prometheus-operator) to deploy Prometheus onto the Cloud Platform. Once installed a `DaemonSet` of exporters is deployed scraping metrics from across the cluster. Grafana and AlertManager are also deployed as part of this chart along with relevant proxies. 
