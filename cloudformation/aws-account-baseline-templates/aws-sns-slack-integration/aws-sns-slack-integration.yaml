@@ -1,7 +1,7 @@
 ---
 #=========================================================================================
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Detect and Remediate Unintended Permissions in Amazon S3 Object ACLs
+Description: Creates function to integrate AWS SNS and Slack
 #=========================================================================================
 ####
 #### CloudFormation Metadata - makes the parameter inputs look nice

@@ -1,20 +1,14 @@
 # Auto Remediate Unintended Permissions change on S3 Objects
 If the number of objects and users in your AWS account is large, ensuring that you have attached correctly configured ACLs to your objects can be a challenge. Or, what if a user were to call the PutObject with the optional Acl parameter set to public-read, therefore uploading a confidential file as publicly readable? This section explains the solution that uses Amazon CloudWatch Events to detect PutObject and PutObjectAcl API calls in near real time and helps ensure that the objects remain private by making automatic PutObjectAcl calls, when necessary.
 
-* [How to Deploy the templates](#How to Deploy)
-* [IAM User Policy to prevent Public Permissions](#IAM User Policy to prevent Public Permissions)
-
+* [How to Deploy the templates](#How-to-Deploy)
+* [IAM User Policy to prevent Public Permissions](#IAM-User-Policy-to-prevent-Public-Permissions)
 
 ## Background
 AWS S3 buckets are often accidentally left public, resulting in the accidental disclosure of confidential data to everyone. Also if the number of objects and users in the AWS account are large, ensuring that the ACLs are correctly configured to the objects can be a challenge. 
 We want to ensure that public access to AWS S3 storage is intentional, to avoid the unintended update with public permissions. The template is a *reactive* approach in situations where the change on the ACL is accidental and must be fixed.
 
 ![alt text](./images/auto-remediation-process.png "Overview")
-
-References - 
-* https://aws.amazon.com/blogs/security/how-to-use-bucket-policies-and-apply-defense-in-depth-to-help-secure-your-amazon-s3-data/
-* https://aws.amazon.com/blogs/security/how-to-detect-and-automatically-remediate-unintended-permissions-in-amazon-s3-object-acls-with-cloudwatch-events/
-
 
 ## How to Deploy
 Parameters -
@@ -82,4 +76,6 @@ The policy can restrict changes to private objects with public permissions only 
 ```
 
 Further Reading -
-https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+* https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html
+* https://aws.amazon.com/blogs/security/how-to-use-bucket-policies-and-apply-defense-in-depth-to-help-secure-your-amazon-s3-data/
+* https://aws.amazon.com/blogs/security/how-to-detect-and-automatically-remediate-unintended-permissions-in-amazon-s3-object-acls-with-cloudwatch-events/

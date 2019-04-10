@@ -36,11 +36,11 @@ for user in client.get_group(GroupName = suspended_users_group)['Users']:
         return_value['DeletedUsers'].append({'UserName': user['UserName'], 'CreateDate': str(user_created_date)})
 
 if (return_value['DeletedUsers'] == []):
-    print ("Nothing to do")
+    print ("Nothing to SNS")
 else:
     # SNS topic Section
     sns_client       = boto3.client('sns',region_name='eu-west-1')
-    subject          = 'AWS Account - ' + account_id + ' Users Deleted from SuspendedUserGroup ' + date_fmt
+    subject          = '\n\n AWS Account - ' + account_id + ' Users Deleted from SuspendedUserGroup ' + date_fmt
     message_body     = '\n' + "Deleted Users are " + str(return_value['DeletedUsers']) + ' \n '
     sns_client.publish(TopicArn=sns_topic_arn, Message=message_body, Subject=subject)
 

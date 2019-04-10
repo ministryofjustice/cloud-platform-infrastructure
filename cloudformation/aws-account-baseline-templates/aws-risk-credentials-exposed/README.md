@@ -185,7 +185,7 @@ The following sections explain all of the resources created by the CloudFormatio
 
 
 ## Reference
-This solution is forked from the [original solution](https://github.com/aws/aws-health-tools/tree/master/automated-actions/AWS_RISK_CREDENTIALS_EXPOSED) from AWS
+This solution has been customized based on the [original solution](https://github.com/aws/aws-health-tools/tree/master/automated-actions/AWS_RISK_CREDENTIALS_EXPOSED) from AWS
 
 
 ## License

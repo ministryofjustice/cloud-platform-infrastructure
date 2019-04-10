@@ -64,15 +64,15 @@ By default, most of the filters in the template trigger an alarm when a monitore
 # How to Deploy the templates
 Deploy the templates under aws-config-cloudtrail-logging into the aws accounts through Cloudformation as individual stacks.
 
-Step 1 - Run the aws-cloudtrail-create-bucket.yaml template to create the below S3 Buckets
+Step 1 - Run the [aws-cloudtrail-create-bucket.yaml](#aws-cloudtrail-create-bucket.yaml) template to create the below S3 Buckets
 - Bucket for Cloudtrail logs
 - Bucket for storing Config logs
 - Bucket for Access Logs
 
-Step 2 - Run the aws-config-enable-rules.yaml template to enable config service and create config rules
+Step 2 - Run the [aws-config-enable-rules.yaml](#aws-config-enable-rules.yaml) template to enable config service and create config rules
 Use the bucket created in Step 1 for Config logs in the parameter pConfigBucket
 
-Step 3 - Run the aws-cloudtrail-log-monitoring.yaml template to implement cloudtrail log monitoring metrics and alarms
+Step 3 - Run the [aws-cloudtrail-log-monitoring.yaml](#aws-cloudtrail-log-monitoring.yaml) template to implement cloudtrail log monitoring metrics and alarms
 Use the bucket created in Step 1 for the Cloudtrail logs in the parameter pCloudtrailBucket
 
 ## aws-cloudtrail-create-bucket.yaml

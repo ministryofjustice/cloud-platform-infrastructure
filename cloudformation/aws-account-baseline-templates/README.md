@@ -6,15 +6,15 @@ As an organization expands its use of AWS services, there is often a conversatio
 
 The list of [baseline-controls] (https://docs.google.com/document/d/1TWdeTmiMDbjcEnOzEXizr6254fGsZ6Wc77tKygCi4Ng/edit#heading=h.9j1uay34xjpw) for AWS accounts are -
 
-* Guardduty
-* Cloudtrail
-* Config Service
-* Tagging
-* Regions
-* Identity and Access Management
-* Encryption
-* Leaky Bucket Problem
-* SecurityHub
+* [Guardduty](#Guardduty)
+* [Cloudtrail](#Cloudtrail)
+* [Config Service](#Config)
+* [Tagging](#Tagging)
+* [Regions](#Regions)
+* [Identity and Access Management](#Identity-and-Access-Management)
+* [S3 Encryption](#S3-Encryption)
+* [Leaky Bucket Problem](#Leaky-Bucket-Problem)
+* [SecurityHub](#SecurityHub)
 
 This section provides the definition of baseline controls and list of templates that cover the baseline and governance guardrails that can be deployed to new accounts.
 
@@ -43,7 +43,7 @@ AWS Config is a service that enables to assess, audit, and evaluate the configur
 Amazon Web Services (AWS) allows to assign metadata to the AWS resources in the form of tags. Each tag is a simple label consisting of a customer-defined key and an optional value that can make it easier to manage, search for, and filter resources. Although there are no inherent types of tags, it enables to categorize resources by purpose, owner, environment, or other criteria. This section describes commonly used tagging categories and strategies to help implement a consistent and effective tagging strategy.
 
 ## [Regions](aws-iam-user-roles-groups/README.md)
-We do not wish to use non-EU AWS regions for strategic compliance and performance reasons
+We do not wish to use non-EU AWS regions for strategic compliance and performance reasons. More on example Organisational [Service Control Policies](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_example-scps.html)
 
 ## [Identity and Access Management](aws-iam-user-roles-groups/README.md)
 AWS Identity and Access Management (IAM) enables to manage access to AWS services and resources securely. Using IAM, we can create and manage AWS users and groups, and use permissions to allow and deny their access to AWS resources. 
@@ -52,8 +52,11 @@ Note -
 [Inactive User Check](aws-iam-suspend-inactive-users/README.md)
 To increase the security of the AWS account, we need to remove IAM user credentials (passwords and access keys) that are not needed. This section provides template to deploy lambda functions to monitor and remove inactive users and credentials.
 
-## [Encryption](aws-config-cloudtrail-logging/README.md)
+## S3 Encryption
 Amazon S3 default encryption provides a way to set the default encryption behavior for an S3 bucket. Default encryption can be set on a bucket so that all objects are encrypted when they are stored in the bucket. The objects are encrypted using server-side encryption with either Amazon S3-managed keys (SSE-S3) or AWS KMS-managed keys (SSE-KMS).
+
+* [Monitor the encryption status of S3 buckets using Config Rule](aws-config-cloudtrail-logging/README.md)
+* [Apply the Default Encryption for S3 buckets](aws-s3-enable-encryption-block-public-access/README.md)
 
 ## [Leaky Bucket Problem](aws-s3-object-auto-remediation/README.md)
 If the number of objects and users in the AWS account is large, ensuring that we have attached correctly configured ACLs to the objects can be a challenge. This section provides a solution that uses Amazon CloudWatch Events to detect changes in S3 object permissions in near real time and helps ensure that the objects remain private by making automatic API calls when necessary.
@@ -65,3 +68,4 @@ AWS Security Hub aggregates, organizes, and prioritizes the security alerts, or 
 Reference -
 * https://docs.google.com/document/d/1TWdeTmiMDbjcEnOzEXizr6254fGsZ6Wc77tKygCi4Ng/edit#heading=h.9j1uay34xjpw
 * https://aws.amazon.com/answers/security/aws-secure-account-setup/
+* https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scp.html

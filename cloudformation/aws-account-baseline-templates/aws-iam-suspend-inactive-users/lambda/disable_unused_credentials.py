@@ -148,11 +148,11 @@ def lambda_handler(event, context):
                 return_value['SuspendedUsers'].append({'UserName': user['UserName']})
 
     if (return_value['DeletedPasswords'] == [] and return_value['DisabledAccessKeys'] == [] and return_value['SuspendedUsers'] == []):
-        print ("Nothing to do")
+        print ("Nothing to SNS")
     else:
         # SNS topic Section
         sns_client       = boto3.client('sns',region_name='eu-west-1')
-        subject          = 'AWS Account - ' + account_id + ' Inactive User List ' + date_fmt
+        subject          = '\n\n AWS Account - ' + account_id + ' Inactive User List ' + date_fmt
         message_body     = '\n' + "DeletedPasswords are " + str(return_value['DeletedPasswords'])
         message_body     += '\n' + "DisabledAccessKeys are " + str(return_value['DisabledAccessKeys'])
         message_body     += '\n' + "SuspendedUsers are " + str(return_value['SuspendedUsers'])

@@ -10,11 +10,14 @@ This section explains how to deploy the template to continuosly monitor for inac
 ## Description
 To increase the security of the AWS account, we need to remove IAM user credentials (that is, passwords and access keys) that are not needed. For example, when users leave the organization or no longer need AWS access, we need to ensure their credentials are no longer operational. Ideally, the credentials should be deleted, if they are no longer needed. The accounts can be recreated at a later date if the need arises. At the very least, we need to delete the password and deactivate the access keys, so that the former users no longer have access.
 
-The template deactivates unused credentials, if they have not been used for 120days and then moves the user accounts to the SuspendedUsersGroup. The SuspendedUsersGroup will have DenyAll IAM policy and the user will have no access to AWS services. The users in SuspendedUsersGroup will be checked and deleted after 10days of being in the group. Also recently created user profile or access key that has not been used for more than 7 days, are deactivated.
+The template deactivates unused credentials, if they have not been used for *120days* and then moves the user accounts to the SuspendedUsersGroup. The SuspendedUsersGroup will have DenyAll IAM policy and the user will have no access to AWS services. The users in SuspendedUsersGroup will be checked and deleted after *10days* of being in the group. Also recently created user profile or access key that has not been used for more than 7 days, are deactivated.
 
-There are three lambda functions which carry out the task. 
+There are three lambda functions which carry out the task.
+
 Lambda1 - DisableUnusedCredentials will run everyday Monday-friday 9AM UTC and checks if the user accounts have not been used. It moves inactive user accounts (inactive console login and inactive access keys) to the SuspendedUsersGroup. It sends sns notification of DeletedPasswords, InactiveAccessKeys, users moved to SuspendedUsersGroup
+
 Lambda2 - DeleteUsersInSuspendedUsersGroup deletes user accounts from the SuspendedUserAccounts. It sends sns notification of user accounts deleted from the SuspendedUsersGroup
+
 Lambda3 - Slack Integration which outputs the result of Lambda1 and Lambda2 execution to the slack
 
 EXCEPTION - Users with Admin privileges obtained through AWS Managed Policy are not checked for inactive status. Users with Admin privileges obtained through Inline Policy will be checked for inactive status.
@@ -37,7 +40,6 @@ The IAM user or the access key is made Inactive if they have not logged in or us
 A New IAM user or a New access key is not checked for inactive status for CREATE_DATE_AGE_THRESHOLD_IN_DAYS which is currently set as 7 days
 
 ### Package the template 
-
 The script package_template.sh uses AWS CLI commands to package the lambda and the template
 
 ```
