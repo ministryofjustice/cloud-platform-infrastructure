@@ -8,12 +8,16 @@ When rotating the `git-crypt` symmetric key, you should follow the steps below:
 
 2. Make a list of the current users:
   ```
-  ls .git-crypt/keys/default/0/*.gpg | sed -E 's/^.+\/([A-Z0-9]{40}).gpg$/\1/' > git-crypt-users
+  # for every file found, extract its filename minus the suffix,
+  # which corresponds to the user's key id
+  ls .git-crypt/keys/default/0/*.gpg | xargs -I{} -- basename {} .gpg > git-crypt-users
   ```
 
 2. Make a list of the encrypted files:
   ```
-  git-crypt status -e | sed -E 's/^.+encrypted:[[:space:]]+([^[:space:]]+)$/\1/' > git-crypt-files
+  # for every currently encrypted file, extract its path, relative
+  # to the root of the repository
+  git-crypt status -e | awk '{ print $2; }' > git-crypt-files
   ```
 
 3. Remove `git-crypt` configuration:
@@ -38,7 +42,7 @@ When rotating the `git-crypt` symmetric key, you should follow the steps below:
 5. Re-encrypt all the secrets: the list of secrets was extracted in `git-crypt-files` (see step 2). Since the master encryption key is being rotated, all of the secrets that have been encrypted with it *must* be rotated. Once finished, you can add the files to the index
 
   ```
-  cat git-crypt-files | xargs -I{} git add
+  cat git-crypt-files | xargs git add
   ```
 
 6. Commit your changes. One way to check that the files in the git index are properly encrypted before you commit your changes is like so:
