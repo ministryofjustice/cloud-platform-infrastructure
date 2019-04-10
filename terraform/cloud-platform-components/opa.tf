@@ -8,11 +8,11 @@ data "template_file" "values" {
 }
 
 resource "helm_release" "open-policy-agent" {
-  name          = "opa"
-  namespace     = "opa"
-  repository    = "stable"
-  chart         = "opa"
-  version       = "1.3.2"
+  name       = "opa"
+  namespace  = "opa"
+  repository = "stable"
+  chart      = "opa"
+  version    = "1.3.2"
 
   values = [
     "${data.template_file.values.rendered}",
