@@ -13,7 +13,6 @@ resource "helm_release" "open-policy-agent" {
   repository    = "stable"
   chart         = "opa"
   version       = "1.3.2"
-  recreate_pods = true
 
   values = [
     "${data.template_file.values.rendered}",

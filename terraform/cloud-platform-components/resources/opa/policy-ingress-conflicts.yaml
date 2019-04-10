@@ -15,7 +15,7 @@ data:
 
     deny[msg] {
         input.request.kind.kind = "Ingress"
-        input.request.operation = "CREATE"
+        re_match("(CREATE|PUT|PATCH)", input.request.operation)
         host = input.request.object.spec.rules[_].host
         ingress = ingresses[other_ns][other_ingress]
         other_ns != input.request.namespace

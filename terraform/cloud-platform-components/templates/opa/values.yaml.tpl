@@ -17,16 +17,16 @@ admissionControllerKind: ValidatingWebhookConfiguration
 
 # To _fail closed_ on failures, change to Fail. During initial testing, we
 # recommend leaving the failure policy as Ignore.
-admissionControllerFailurePolicy: Ignore
+admissionControllerFailurePolicy: Fail
 
 # To restrict the kinds of operations and resources that are subject to OPA
 # policy checks, see the settings below. By default, all resources and
 # operations are subject to OPA policy checks.
 admissionControllerRules:
   - operations: ["CREATE", "UPDATE"]
-    apiGroups: ["extensions", ""]
+    apiGroups: ["extensions"]
     apiVersions: ["*"]
-    resources: ["ingresses","namespaces"]
+    resources: ["ingresses"]
 
 # Controls a PodDisruptionBudget for the OPA pod. Suggested use if having opa
 # always running for admission control is important
@@ -136,7 +136,6 @@ rbac:
       - get
       - list
       - watch
-      - patch
 
 serviceAccount:
   # Specifies whether a ServiceAccount should be created
