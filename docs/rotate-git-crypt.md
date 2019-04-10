@@ -51,5 +51,6 @@ When rotating the `git-crypt` symmetric key, you should follow the steps below:
   ```
   where `<path-to-file>` is either absolute from the base of the git repo or relative (eg.: `git show:./my-secret-file.yaml`)
 
-Note: If you need to `checkout` an older commit, branch, tag etc., make sure to `git-crypt lock` your repository before in order to avoid a broken local working directory. Once you've locked and checked out the desired revision, you can `git-crypt unlock`.
+  You should see binary output which begins with `^@GITCRYPT^@`.
 
+Note: If you need to `checkout` an older commit, branch, tag etc., make sure to `git-crypt lock` your repository before in order to avoid a broken local working directory. Once you've locked and checked out the desired revision, you can `git-crypt unlock`.
