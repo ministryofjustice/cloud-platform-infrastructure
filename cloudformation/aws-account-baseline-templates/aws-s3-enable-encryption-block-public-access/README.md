@@ -54,13 +54,14 @@ This sections explains how to deploy the templates,
 * List of S3 Bucket Names to be skip the default encryption check (optional)
 
 ### Package and Deploy the Template
-```
+```bash
 AWS_PROFILE={aws_profile_name}
-S3BUCKETNAME={existing_s3_bucket_in_the_aws_account}
+EXISTING_S3BUCKETNAME={existing_s3_bucket_in_the_aws_account}
 EXISTING_SNS_TOPIC_ARN={existing_sns_topic_arn}
 S3_BUCKETS_TO_SKIP_ENCRYPTION={optional-list-of-s3-bucketnames}
 ACCOUNT_EMAIL={account_email}
 AGENCY_NAME={agency_name}
+
 export AWS_PROFILE
 export S3BUCKETNAME
 export EXISTING_SNS_TOPIC_ARN
@@ -68,7 +69,7 @@ export ACCOUNT_EMAIL
 export AGENCY_NAME
 
 # package the template
-aws cloudformation package --template-file aws-s3-enable-encryption-and-block-public-access.yaml --s3-bucket $S3BUCKETNAME --output-template-file aws-s3-enable-encryption-and-block-public-access-output.yaml --profile $AWS_PROFILE
+aws cloudformation package --template-file aws-s3-enable-encryption-and-block-public-access.yaml --s3-bucket $EXISTING_S3BUCKETNAME --output-template-file aws-s3-enable-encryption-and-block-public-access-output.yaml --profile $AWS_PROFILE
 
 # validate the template
 aws cloudformation validate-template --template-body file://aws-s3-enable-encryption-and-block-public-access-output.yaml --profile $AWS_PROFILE
@@ -77,21 +78,21 @@ aws cloudformation validate-template --template-body file://aws-s3-enable-encryp
 aws cloudformation deploy --template-file aws-s3-enable-encryption-and-block-public-access-output.yaml --stack-name aws-s3-enable-encryption-and-block-public-access --parameter-overrides pCreateSnsTopic=false pExistingSnsTopic=$EXISTING_SNS_TOPIC_ARN pS3PublicAccessBlockPermissions=true pS3BucketEncryption=true pS3BucketsToSkipEncryption=$S3_BUCKETS_TO_SKIP_ENCRYPTION  --tags Owner=$ACCOUNT_EMAIL AgencyName=$AGENCY_NAME ApplicationID=aws-s3 Environment=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 ```
 
-### Update the Latest Version of Boto3 to Lambda
+### Update the Latest Version of Boto3 to S3 Bucket Public Access Block Lambda
 NOTE - This section is only for the S3 Bucket Public Access Block Lambda Function. Skip this section if you have created only *S3BucketEncryption* lambda function
 
 The following set of commands explains how to update the latest version of Boto3 to the Lambda Function. The API commands put-access-block and get-public-access-block are supported in the boto3 version 1.9.123 and hence the version has to be updated as a Layer to the lambda.
 For further reading on updating lamda layer, please refer to the [link](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html#configuration-layers-using)
 
 update the lambda function *S3BucketBlockPublicAccess* with updated version of boto3 layer
-```
+```bash
 cd boto3_layer
 
 aws lambda publish-layer-version --layer-name python27-boto3-layer --zip-file fileb://python27-boto3-layer.zip --compatible-runtimes python3.6 --description "This Layer Supports boto3 1.9.123" --profile $AWS_PROFILE | grep "LayerVersionArn"
 ```
 
 The sample output from above command to publish layer version will be -
-```
+```bash
 {
     "Content": {
         "CodeSize": 14909144,
@@ -107,7 +108,7 @@ The sample output from above command to publish layer version will be -
 ```
 
 Please note the value of the LayerVersionArn and use it as value for the --layers attribute, 
-```
+```bash
 # response from above command will have the arn of the layer which is used in the below command
 aws lambda update-function-configuration --function-name S3BucketBlockPublicAccess --layers {layerversionarn-from-above-command} --profile $AWS_PROFILE
 
@@ -124,7 +125,7 @@ The following section explains the commands to invoke the lambda function, in ot
 
 If you want to invoke them immediately, the following commands can be run from the aws cli -
 
-```
+```bash
 # To invoke the lambda function - S3BucketBlockPublicAccess - Applies Public Access Block permissions to ALL of the existing S3 Buckets
 aws lambda invoke --function-name S3BucketBlockPublicAccess --invocation-type RequestResponse --log-type Tail --payload '{}'  outfile   --profile $AWS_PROFILE
 
@@ -136,7 +137,7 @@ aws lambda invoke --function-name S3BucketEncryption --invocation-type RequestRe
 ### Disable the Events Rule
 Disables the specified Events Rule. A disabled rule won't match any events, and won't self-trigger if it has a schedule expression.
 
-```
+```bash
 # Disable Events Rule
 aws events disable-rule --name "name-of-the-events-rule" --profile $AWS_PROFILE 
 ```

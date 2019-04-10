@@ -43,21 +43,32 @@ Clone the repository
 git clone https://github.com/ministryofjustice/cloud-platform-infrastructure.git
 
 #Set environment variables for later commands to use:
-S3BUCKETNAME=[REPLACE_WITH_AN_EXISTING_BUCKET_IN_THE_ACCOUNT]
-REGION=[REPLACE_WITH_THE_REGION]
+EXISTING_S3BUCKETNAME={replace_with_ann_existing_bucket_in_the_account}
+REGION={replace_with_region}
 STACKNAME=aws-risk-credentials-exposed
-AWS_PROFILE=[REPLACE_WITH_AWS_PROFILE]
+EXISTING_SNS_TOPIC_ARN={existing_sns_topic_arn}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+AWS_PROFILE={aws_profile_name}
+
+export S3BUCKETNAME
+export REGION
+export STACKNAME
+export EXISTING_SNS_TOPIC_ARN
+export ACCOUNT_EMAIL
+export AGENCY_NAME
+export AWS_PROFILE
 
 cd cloudformation/aws-account-baseline-templates/aws-risk-credentials-exposed/
 
 #package the template
-aws cloudformation package --region $REGION --s3-bucket $S3BUCKETNAME --template risk_credentials_exposed.serverless.yaml --output-template-file risk_credentials_exposed.output.yaml --profile $AWS_PROFILE
+aws cloudformation package --region $REGION --s3-bucket $EXISTING_S3BUCKETNAME --template risk_credentials_exposed.serverless.yaml --output-template-file risk_credentials_exposed.output.yaml --profile $AWS_PROFILE
 
 #validate the template
 aws cloudformation validate-template --template-body file://risk_credentials_exposed.output.yaml --profile $AWS_PROFILE
 
 #deploy the stack with the resulting yaml (`risk_credentials_exposed.output.yaml`) through the CloudFormation Console or command line:
-aws cloudformation deploy --region $REGION --template-file risk_credentials_exposed.output.yaml --stack-name $STACKNAME --parameter-overrides pCreateSnsTopic=false pExistingSnsTopic={existing_sns_topic_arn} --tags Owner={account_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production --capabilities CAPABILITY_NAMED_IAM  --profile $AWS_PROFILE
+aws cloudformation deploy --region $REGION --template-file risk_credentials_exposed.output.yaml --stack-name $STACKNAME --parameter-overrides pCreateSnsTopic=false pExistingSnsTopic=$EXISTING_SNS_TOPIC_ARN --tags Owner=$ACCOUNT_EMAIL AgencyName=$AGENCY_NAME ApplicationID=aws-iam Environment=Production --capabilities CAPABILITY_NAMED_IAM  --profile $AWS_PROFILE
 ```
 
 

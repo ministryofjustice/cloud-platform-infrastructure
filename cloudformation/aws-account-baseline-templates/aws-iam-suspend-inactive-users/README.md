@@ -27,7 +27,7 @@ EXCEPTION - Users with Admin privileges obtained through AWS Managed Policy are 
 ### Prerequisites
 Install [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html) and [configure the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) access keys using the below commands:
 
-```
+```bash
 sudo apt-get install -y python-dev python-pip
 sudo pip install awscli
 aws --version
@@ -42,13 +42,14 @@ A New IAM user or a New access key is not checked for inactive status for CREATE
 ### Package the template 
 The script package_template.sh uses AWS CLI commands to package the lambda and the template
 
-```
+```bash
 #!/bin/bash
 set +x
 
 # parameters
 AWS_PROFILE={aws_profile_name}
-S3BUCKETNAME={new_bucket_name} 
+S3BUCKETNAME={new_bucket_name}
+
 export AWS_PROFILE
 export S3BUCKETNAME
 

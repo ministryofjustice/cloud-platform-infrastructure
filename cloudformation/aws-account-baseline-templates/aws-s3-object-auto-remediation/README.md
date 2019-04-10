@@ -24,16 +24,35 @@ Create New Bucket parameter or Provide Existing bucket name
 Provide S3 bucket name for storing object level log
 Create SNS Topic parameter, Slack URL, Slack channel name or provide arn of the existing SNS topic
 
-```
+```bash
 # parameters
 AWS_PROFILE={aws_profile_name}
+EXISTING_BUCKETNAME={existing-s3-bucket-name-that-needs-to-be-private}
+OBJECT_TRAIL_BUCKETNAME={bucket-to be created-for-the-object-trail}
+OBJECT_CLOUDTRAIL_NAME=s3-object-level-trail
+LAMBDA_FUNCTIONNAME=CheckAndCorrectS3ObjectACL
+EVENTS_RULENAME=S3ObjectACLAutoRemediate
+LAMBDA_ROLENAME=AllowLogsAndS3ACL
+EXISTING_SNS_TOPIC_ARN={existing_sns_topic_arn}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+
 export AWS_PROFILE
+export EXISTING_BUCKETNAME
+export OBJECT_TRAIL_BUCKETNAME
+export OBJECT_CLOUDTRAIL_NAME
+export LAMBDA_FUNCTIONNAME
+export EVENTS_RULENAME
+export LAMBDA_ROLENAME
+export EXISTING_SNS_TOPIC_ARN
+export ACCOUNT_EMAIL
+export AGENCY_NAME
 
 # validate the template
 aws cloudformation validate-template --template-body file://aws-s3-object-auto-remediation.yaml --profile $AWS_PROFILE
 
 # deploy the template
-aws cloudformation create-stack --stack-name aws-s3-object-auto-remediate --template-body file://aws-s3-object-auto-remediation.yaml --parameters ParameterKey=pCreateS3PrivateBucket,ParameterValue=false ParameterKey=pS3PrivateBucketName,ParameterValue= ParameterKey=pExistingPrivateBucketName,ParameterValue={existing-s3-bucket-name} ParameterKey=pS3ObjectTrailBucketName,ParameterValue={bucket-to be created-for-the-object-trail} ParameterKey=pObjectCloudTrailName,ParameterValue=s3-object-level-trail ParameterKey=pLambdaFunctionName,ParameterValue=CheckAndCorrectS3ObjectACL ParameterKey=pEventsRuleName,ParameterValue=S3ObjectACLAutoRemediate ParameterKey=pLambdaExecutionRoleName,ParameterValue=AllowLogsAndS3ACL ParameterKey=pCreateSnsTopic,ParameterValue=false ParameterKey=pSlackChannelName,ParameterValue= ParameterKey=pSlackHookUrl,ParameterValue= ParameterKey=pExistingSnsTopic,ParameterValue={existing-sns-topic-arn}  --tags Key=Owner,Value={team-email} Key=AgencyName,Value={agency-name} Key=ApplicationID,Value=aws-s3-object-check Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
+aws cloudformation create-stack --stack-name aws-s3-object-auto-remediate --template-body file://aws-s3-object-auto-remediation.yaml --parameters ParameterKey=pCreateS3PrivateBucket,ParameterValue=false ParameterKey=pS3PrivateBucketName,ParameterValue= ParameterKey=pExistingPrivateBucketName,ParameterValue=$EXISTING_BUCKETNAME ParameterKey=pS3ObjectTrailBucketName,ParameterValue=$OBJECT_TRAIL_BUCKETNAME ParameterKey=pObjectCloudTrailName,ParameterValue=$OBJECT_CLOUDTRAIL_NAME ParameterKey=pLambdaFunctionName,ParameterValue=$LAMBDA_FUNCTIONNAME ParameterKey=pEventsRuleName,ParameterValue=$EVENTS_RULENAME ParameterKey=pLambdaExecutionRoleName,ParameterValue=$LAMBDA_ROLENAME ParameterKey=pCreateSnsTopic,ParameterValue=false ParameterKey=pSlackChannelName,ParameterValue= ParameterKey=pSlackHookUrl,ParameterValue= ParameterKey=pExistingSnsTopic,ParameterValue=$EXISTING_SNS_TOPIC_ARN  --tags Key=Owner,Value=$ACCOUNT_EMAIL Key=AgencyName,Value=$AGENCY_NAME Key=ApplicationID,Value=aws-s3-object-check Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 
 ```
 

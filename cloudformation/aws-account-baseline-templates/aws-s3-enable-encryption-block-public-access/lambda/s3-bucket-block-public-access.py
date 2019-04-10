@@ -88,7 +88,7 @@ def lambda_handler(event, context):
         else:
             # SNS topic Section
             sns_client       = boto3.client('sns',region_name='eu-west-1')
-            subject          = '\n\n AWS Account - ' + account_id + ' S3 Bucket Status ' + date_fmt
+            subject          = 'AWS Account - ' + account_id + ' S3 Bucket Status ' + date_fmt
             message_body     = '\n' + "S3 Private Buckets updated with Public Access Block permissions " + str(private_buckets)
             sns_client.publish(TopicArn=sns_topic_arn, Message=message_body, Subject=subject)
         

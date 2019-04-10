@@ -55,7 +55,7 @@ def lambda_handler(event, context):
         else:
             # SNS topic Section
             sns_client       = boto3.client('sns',region_name='eu-west-1')
-            subject          = '\n\n AWS Account - ' + account_id + ' S3 Bucket Encryption Status ' + date_fmt
+            subject          = 'AWS Account - ' + account_id + ' S3 Bucket Encryption Status ' + date_fmt
             message_body     = '\n' + "Encryption applied to S3 buckets are " + str(buckets)
             sns_client.publish(TopicArn=sns_topic_arn, Message=message_body, Subject=subject)
     

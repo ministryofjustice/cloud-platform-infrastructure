@@ -321,60 +321,82 @@ Reference - https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_
 * [Create User Policy for enforcing CLI MFA](#aws-iam-userpolicy-cli-mfa.yaml)
 
 ## aws-iam-adminandgroups.yaml
-Parameters -
-No Parameters needed to deploy the template
 
-```
+```bash
 AWS_PROFILE={aws_profile}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+
+export AWS_PROFILE
+export ACCOUNT_EMAIL
+export AGENCY_NAME
 
 # Validate template
 aws cloudformation validate-template --template-body file://aws-iam-adminandgroups.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation create-stack --template-body file://aws-iam-adminandgroups.yaml --stack-name aws-iam-adminandgroups --tags Key=Owner,Value={team-email} Key=AgencyName,Value={agency-name} Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
+aws cloudformation create-stack --template-body file://aws-iam-adminandgroups.yaml --stack-name aws-iam-adminandgroups --tags Key=Owner,Value=$ACCOUNT_EMAIL Key=AgencyName,Value=$AGENCY_NAME Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 ```
 
 ## aws-iam-adminandroles.yaml
 Parameters -
 CrossAccountId - The cross account ID of the AWS account from which the users need to switch the roles
 
-```
+```bash
+#parameters
 AWS_PROFILE={aws_profile}
+CROSSACCOUNT_ID={cross-account-id}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+
+export AWS_PROFILE
+export CROSSACCOUNT_ID
+export ACCOUNT_EMAIL
+export AGENCY_NAME
 
 # Validate template
 aws cloudformation validate-template --template-body file://aws-iam-adminandroles.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation create-stack --template-body file://aws-iam-adminandroles.yaml --stack-name aws-iam-adminandroles --parameters ParameterKey=CrossAccountId,ParameterValue={cross-account-id} --tags Key=Owner,Value={team-email} Key=AgencyName,Value={agency-name} Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
+aws cloudformation create-stack --template-body file://aws-iam-adminandroles.yaml --stack-name aws-iam-adminandroles --parameters ParameterKey=CrossAccountId,ParameterValue=$CROSSACCOUNT_ID --tags Key=Owner,Value=$ACCOUNT_EMAIL Key=AgencyName,Value=$AGENCY_NAME Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 ```
 
 ## aws-iam-instanceprofiles.yaml
-Parameters -
-No Parameters needed to deploy the template
 
-```
+```bash
+#parameters
 AWS_PROFILE={aws_profile}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+
+export AWS_PROFILE
+export ACCOUNT_EMAIL
+export AGENCY_NAME
 
 # Validate template
 aws cloudformation validate-template --template-body file://aws-iam-instanceprofiles.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation create-stack --template-body file://aws-iam-instanceprofiles.yaml --stack-name aws-iam-instanceprofiles --tags Key=Owner,Value={team-email} Key=AgencyName,Value={agency-name} Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
+aws cloudformation create-stack --template-body file://aws-iam-instanceprofiles.yaml --stack-name aws-iam-instanceprofiles --tags Key=Owner,Value=$ACCOUNT_EMAIL Key=AgencyName,Value=$AGENCY_NAME Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 ```
 
 ## aws-iam-userpolicy-cli-mfa.yaml
-Parameters -
-No Parameters needed to deploy the template
 
-```
-GIT_DIR={git_dir}
+```bash
+#parameters
 AWS_PROFILE={aws_profile}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+
+export AWS_PROFILE
+export ACCOUNT_EMAIL
+export AGENCY_NAME
 
 # Validate template
 aws cloudformation validate-template --template-body file://aws-iam-userpolicy-cli-mfa.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation create-stack --template-body file://aws-iam-userpolicy-cli-mfa.yaml --stack-name aws-iam-userpolicy-cli-mfa --tags Key=Owner,Value={team-email} Key=AgencyName,Value={agency-name} Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
+aws cloudformation create-stack --template-body file://aws-iam-userpolicy-cli-mfa.yaml --stack-name aws-iam-userpolicy-cli-mfa --tags Key=Owner,Value=$ACCOUNT_EMAIL Key=AgencyName,Value=$AGENCY_NAME Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 ```
 
 # Further Reading

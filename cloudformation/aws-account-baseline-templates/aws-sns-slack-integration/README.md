@@ -10,15 +10,26 @@ Lambda Function Name
 Slack Webhook Url
 Slack Channel Name
 
-```
+```bash
 # parameters
 AWS_PROFILE={aws_profile_name}
+LAMBDA_FUCTIONNAME=AWSSlackSNSFunction
+SLACK_CHANNELNAME={existing_slack_channel_name}
+SLACK_HOOK_URL={existing-slack-channel-webhook-url}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+
 export AWS_PROFILE
+export LAMBDA_FUCTIONNAME
+export SLACK_CHANNELNAME
+export SLACK_HOOK_URL
+export ACCOUNT_EMAIL
+export AGENCY_NAME
 
 # validate the template
 aws cloudformation validate-template --template-body file://aws-sns-slack-integration.yaml --profile $AWS_PROFILE
 
 # deploy the template
-aws cloudformation create-stack --stack-name aws-sns-slack-integration --template-body file://aws-sns-slack-integration.yaml --parameters ParameterKey=pLambdaFunctionName,ParameterValue=AWSSlackSNSFunction ParameterKey=pSlackChannelName,ParameterValue={existing_slack_channel_name} ParameterKey=pSlackHookUrl,ParameterValue={existing-slack-channel-webhook-url}  --tags Key=Owner,Value={team-email} Key=AgencyName,Value={agency-name} Key=ApplicationID,Value=aws-sns Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
+aws cloudformation create-stack --stack-name aws-sns-slack-integration --template-body file://aws-sns-slack-integration.yaml --parameters ParameterKey=pLambdaFunctionName,ParameterValue= ParameterKey=pSlackChannelName,ParameterValue=SLACK_CHANNELNAME ParameterKey=pSlackHookUrl,ParameterValue=SLACK_HOOK_URL  --tags Key=Owner,Value=$ACCOUNT_EMAIL Key=AgencyName,Value=$AGENCY_NAME Key=ApplicationID,Value=aws-sns Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 
 ```

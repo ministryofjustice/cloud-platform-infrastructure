@@ -227,4 +227,13 @@ Resources:
     #
     #   -----------------------
 
-Outputs: {}
+Outputs:
+  oCloudTrailBucket:
+    Description: Arn of CloudTrail Bucket
+    Value: !Ref CloudTrailBucket
+  oConfigBucket:
+    Description: Arn of Config Bucket
+    Value: !Ref ConfigBucket
+  oAccessLogsBucket:
+    Description: Arn of AccessLogs Bucket
+    Value: !Ref AccessLogsBucket

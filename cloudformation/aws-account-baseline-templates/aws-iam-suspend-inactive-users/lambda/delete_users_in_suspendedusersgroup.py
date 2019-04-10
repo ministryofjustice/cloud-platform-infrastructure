@@ -40,7 +40,7 @@ if (return_value['DeletedUsers'] == []):
 else:
     # SNS topic Section
     sns_client       = boto3.client('sns',region_name='eu-west-1')
-    subject          = '\n\n AWS Account - ' + account_id + ' Users Deleted from SuspendedUserGroup ' + date_fmt
+    subject          = 'AWS Account - ' + account_id + ' Users Deleted from SuspendedUserGroup ' + date_fmt
     message_body     = '\n' + "Deleted Users are " + str(return_value['DeletedUsers']) + ' \n '
     sns_client.publish(TopicArn=sns_topic_arn, Message=message_body, Subject=subject)
 
