@@ -58,13 +58,13 @@ authz:
 
 # Docker image and tag to deploy.
 image: openpolicyagent/opa
-imageTag: ${opa_image_tag}
+imageTag: 0.10.5
 imagePullPolicy: IfNotPresent
 
 mgmt:
   enabled: true
   image: openpolicyagent/kube-mgmt
-  imageTag: ${kube_mgmt_image_tag}
+  imageTag: 0.8
   imagePullPolicy: IfNotPresent
   extraArgs: []
   resources: {}
