@@ -1,4 +1,4 @@
-# This YAML applies a ConfigMap that contains the main OPA policy and default response. 
+# This YAML applies a ConfigMap that contains the main OPA policy and default response.
 # This policy is used as an entry-point for policy evaluations and returns allowed:true if policies are not matched to inbound data.
 
 kind: ConfigMap
@@ -29,6 +29,6 @@ data:
             "reason": reason,
         },
     } {
-        reason = concat(", ", admission.deny)
+        reason := concat(", ", deny)
         reason != ""
     }
