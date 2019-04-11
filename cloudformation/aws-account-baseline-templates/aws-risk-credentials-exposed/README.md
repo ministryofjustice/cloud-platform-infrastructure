@@ -6,7 +6,7 @@ AWS proactively monitors popular code repository sites for exposed AWS Identity 
 
 This repository contains sample code for all the Lambda functions depicted in the diagram below as well as an AWS CloudFormation template for creating the functions and related resources.
 
-![screenshot for instruction](images/Architecture.png)
+![screenshot for instruction](./images/Architecture.png)
 
 ### Walkthrough of the Architecture
 1. An IAM Access Key is inadvertently uploaded to one of the popular code repositories monitored by AWS.
@@ -16,6 +16,7 @@ This repository contains sample code for all the Lambda functions depicted in th
     * Summarize recent API activity for the user from CloudTrail.
     * Send security notification message containing summary to `SecurityNotificationTopic` SNS Topic. If there was an error in the first step the notify security that error occurred and incident requires manual inspection and intervention.
 
+![screenshot for instruction](./images/VisualWorkflow.png)
 
 ## How to Deploy
  
@@ -42,18 +43,32 @@ Clone the repository
 git clone https://github.com/ministryofjustice/cloud-platform-infrastructure.git
 
 #Set environment variables for later commands to use:
-S3BUCKETNAME=[REPLACE_WITH_AN_EXISTING_BUCKET_IN_THE_ACCOUNT]
-REGION=[REPLACE_WITH_THE_REGION]
+EXISTING_S3BUCKETNAME={replace_with_ann_existing_bucket_in_the_account}
+REGION={replace_with_region}
 STACKNAME=aws-risk-credentials-exposed
-AWS_PROFILE=[REPLACE_WITH_AWS_PROFILE]
+EXISTING_SNS_TOPIC_ARN={existing_sns_topic_arn}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+AWS_PROFILE={aws_profile_name}
+
+export S3BUCKETNAME
+export REGION
+export STACKNAME
+export EXISTING_SNS_TOPIC_ARN
+export ACCOUNT_EMAIL
+export AGENCY_NAME
+export AWS_PROFILE
 
 cd cloudformation/aws-account-baseline-templates/aws-risk-credentials-exposed/
 
 #package the template
-aws cloudformation package --region $REGION --s3-bucket $S3BUCKETNAME --template risk_credentials_exposed.serverless.yaml --output-template-file risk_credentials_exposed.output.yaml --profile $AWS_PROFILE
+aws cloudformation package --region $REGION --s3-bucket $EXISTING_S3BUCKETNAME --template risk_credentials_exposed.serverless.yaml --output-template-file risk_credentials_exposed.output.yaml --profile $AWS_PROFILE
+
+#validate the template
+aws cloudformation validate-template --template-body file://risk_credentials_exposed.output.yaml --profile $AWS_PROFILE
 
 #deploy the stack with the resulting yaml (`risk_credentials_exposed.output.yaml`) through the CloudFormation Console or command line:
-aws cloudformation deploy --region $REGION --template-file risk_credentials_exposed.output.yaml --stack-name $STACKNAME --capabilities CAPABILITY_NAMED_IAM  --profile $AWS_PROFILE
+aws cloudformation deploy --region $REGION --template-file risk_credentials_exposed.output.yaml --stack-name $STACKNAME --parameter-overrides pCreateSnsTopic=false pExistingSnsTopic=$EXISTING_SNS_TOPIC_ARN --tags Owner=$ACCOUNT_EMAIL AgencyName=$AGENCY_NAME ApplicationID=aws-iam Environment=Production --capabilities CAPABILITY_NAMED_IAM  --profile $AWS_PROFILE
 ```
 
 
@@ -181,7 +196,7 @@ The following sections explain all of the resources created by the CloudFormatio
 
 
 ## Reference
-This solution is forked from the [original solution](https://github.com/aws/aws-health-tools/tree/master/automated-actions/AWS_RISK_CREDENTIALS_EXPOSED) from AWS
+This solution has been customized based on the [original solution](https://github.com/aws/aws-health-tools/tree/master/automated-actions/AWS_RISK_CREDENTIALS_EXPOSED) from AWS
 
 
 ## License

@@ -1,3 +1,17 @@
+# AWS IAM User Roles And Groups
+This section explains how to create different IAM User Roles, Groups, implement Region Restrictions, enforce MFA from CLI and Console, EC2 instance profiles, non-admin IAM user self-service policy, Explicit Deny Policy
+
+* [IAM Policy to Restrict Regions and Enforce MFA](#iam-policy-to-restrict-regions-and-enforce-mfa)
+* [User Profiles](#user-profiles)
+* [EC2 Instance Profiles](#ec2-instance-profiles)
+* [Switching to an IAM Role](#Switching-to-an-IAM-Role)
+* [Service Control Policy to Limit API access](#service-control-policy-to-limit-api-access-for-users-and-services-to-eu-region-only)
+* [Deny Policy for Non-Admin IAM Users](#deny-policy)
+* [User Self Service policy](#non-admin-user-self-service-policy)
+* [How To Deploy](#how-to-deploy)
+* [Further Reading](#Further-Reading)
+
+
 # IAM Policy to Restrict Regions and Enforce MFA
 
 ## Background
@@ -8,11 +22,8 @@ AWS has few global resources like IAM, Cloudfront, ACM which work from us-east-1
 Also the Region restriction policy cannot be implemeted at Organisational Unit in the master AWS Account. Currently it has to be restricted through the user IAM policy by adding the condition - aws:RequestedRegion.
 
 Reference -
-* AWS Global Condition Context Keys - aws:RequestedRegion
-https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html
-* Easier way to control access to AWS regions using IAM policies
-https://aws.amazon.com/blogs/security/easier-way-to-control-access-to-aws-regions-using-iam-policies/
-
+* [AWS Global Condition Context Keys](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html) - aws:RequestedRegion
+* Easier way to control access to [AWS regions using IAM policies](https://aws.amazon.com/blogs/security/easier-way-to-control-access-to-aws-regions-using-iam-policies/)
 
 The non-admin user IAM Policy with MFA and Region restriction looks like -
 ```
@@ -53,8 +64,13 @@ The non-admin user IAM Policy with MFA and Region restriction looks like -
 ```
 
 ## Description
-The templates are standalone and do not depend on other templates for deployment. The parameters are declared in the templates and have to be provided as per the implementation
+The templates are standalone and do not depend on other templates for deployment. The parameter for the template is the Cross Account Id from which the users need to switch to the role and gain the correct permissions. For further details on how the IAM roles work, please refer the [link](https://aws.amazon.com/blogs/security/how-to-enable-cross-account-access-to-the-aws-management-console/)
 
+* [User Profiles](#User-Profiles)
+* [EC2 Instance Profiles](#EC2-Instance-Profiles)
+* [Switching to an IAM Role](#Switching-to-an-IAM-Role)
+
+### User Profiles
 The templates aws-iam-adminandgroups.yaml, aws-iam-adminandroles.yaml implement assume role permissionns for a group of aws accounts. The roles and groups created by the templates are -
   - IAMAdminRole
   - BillingAdminRole
@@ -71,8 +87,11 @@ The templates aws-iam-adminandgroups.yaml, aws-iam-adminandroles.yaml implement 
   - LZReadOnlyAccess - The policy that provides read only access to DBA, Tester, Dev & Live Support users
   - user-malicious-activity-deny-policy - The policy restricts the user roles, DBA, Test, Dev users from creating/modifying ec2, cloudtrail, iam, billing, kms resources
 
+To know more about assume roles, please refer to the [link](https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html)
+
 The template aws-iam-userpolicy-cli-mfa.yaml creates a user group, user role and attaches user self service iam policy to manage their MFA devices. The users can authenticate the mfa from cli when they assume the DevRole. The user policy consists of region restriction and is attached to the user role. New users will be added to the group and the user-self-service-policy will be inherited. They can perform IAM settings & MFA device updates without having to assume the role.
 
+### EC2 Instance Profiles
 The template aws-iam-instanceprofiles.yaml has a list of IAM roles for the instances to use
   - rSysAdminRole-inst
   - rIAMAdminRole-inst
@@ -80,20 +99,23 @@ The template aws-iam-instanceprofiles.yaml has a list of IAM roles for the insta
   - rInstanceOpsProfile-inst
   - rReadOnlyAdminRole-inst
 
-Reference -
-* Switching to an IAM Role (AWS CLI)
-https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-cli.html
-* Switching to a Role (Console)
-https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-console.html
+![alt text](./images/roles-usingrole-ec2roleinstance.png "How Do Roles for EC2 Instances Work?")
 
-NOTE - To run AWS CLI commands using MFA authentication
-Please refer to the steps in the link to generate the temporary session tokens, based on the MFA code. The temporary session token can be used as the 2FA 
-Reference -
-https://aws.amazon.com/premiumsupport/knowledge-center/authenticate-mfa-cli/
+To know more about how roles work for EC2 Instances, please refer to this [link](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html)
+
+### Switching to an IAM Role
+When a role is created for cross-account access, it establishes trust from the account that owns the role and the resources (trusting account) to the account that contains the users (trusted account). To do this, the trusted account number is specified as the Principal in the role's trust policy. That allows potentially any user in the trusted account to assume the role. To complete the configuration, the administrator of the trusted account must give specific groups or users in that account permission to switch to the role.
+
+To grant a user permission to switch to a role, a new policy for the user is created or an existing policy ca be edited to add the required elements. The user uses the AWS account ID number or account alias that contains the role and the role name. The user then goes to the Switch Role page and adds the details manually. For details on how a user switches roles, please refer below links
+
+* Switching to an IAM Role [AWS CLI](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-cli.html)
+* Switching to a Role [Console](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-console.html)
+* To run AWS commands from [CLI using MFA authentication](https://aws.amazon.com/premiumsupport/knowledge-center/authenticate-mfa-cli/)
+Please refer to the steps in the link to generate the temporary session tokens, based on the MFA code. The temporary session token can be used as the 2FA
 
 
-## Service Control Policy to Limit API access for users and services to EU-Region-only
-When there is support for conditions in the Service Control Policy (SCP), the below policy can be applied at the Organisational Unit in the master AWS Account
+# Service Control Policy to Limit API access for users and services to EU-Region-only
+Conditions are now supported in the Organisational Service Control Policy (SCP), the below policy to be applied at the Organisational Unit in the master AWS Account
 
 ```
 {
@@ -293,59 +315,90 @@ Reference - https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_
 
 # How to Deploy
 
+* [Create Admin Groups](#aws-iam-adminandgroups.yaml)
+* [Create Admin Roles](#aws-iam-adminandroles.yaml)
+* [Create Instace Profiles](#aws-iam-instanceprofiles.yaml)
+* [Create User Policy for enforcing CLI MFA](#aws-iam-userpolicy-cli-mfa.yaml)
+
 ## aws-iam-adminandgroups.yaml
-```
+
+```bash
 AWS_PROFILE={aws_profile}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+
+export AWS_PROFILE
+export ACCOUNT_EMAIL
+export AGENCY_NAME
 
 # Validate template
 aws cloudformation validate-template --template-body file://aws-iam-adminandgroups.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation deploy --template-file aws-iam-adminandgroups.yaml --stack-name aws-iam-adminandgroups \\
---tags Owner={team_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production \\
---capabilities CAPABILITY_NAMED_IAM \\
---profile $AWS_PROFILE
+aws cloudformation create-stack --template-body file://aws-iam-adminandgroups.yaml --stack-name aws-iam-adminandgroups --tags Key=Owner,Value=$ACCOUNT_EMAIL Key=AgencyName,Value=$AGENCY_NAME Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 ```
 
 ## aws-iam-adminandroles.yaml
-```
+Parameters -
+CrossAccountId - The cross account ID of the AWS account from which the users need to switch the roles
+
+```bash
+#parameters
 AWS_PROFILE={aws_profile}
+CROSSACCOUNT_ID={cross-account-id}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+
+export AWS_PROFILE
+export CROSSACCOUNT_ID
+export ACCOUNT_EMAIL
+export AGENCY_NAME
 
 # Validate template
 aws cloudformation validate-template --template-body file://aws-iam-adminandroles.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation deploy --template-file aws-iam-adminandroles.yaml --stack-name aws-iam-adminandroles \\
---tags Owner={team_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production \\
---capabilities CAPABILITY_NAMED_IAM \\
---profile $AWS_PROFILE
+aws cloudformation create-stack --template-body file://aws-iam-adminandroles.yaml --stack-name aws-iam-adminandroles --parameters ParameterKey=CrossAccountId,ParameterValue=$CROSSACCOUNT_ID --tags Key=Owner,Value=$ACCOUNT_EMAIL Key=AgencyName,Value=$AGENCY_NAME Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 ```
 
 ## aws-iam-instanceprofiles.yaml
-```
+
+```bash
+#parameters
 AWS_PROFILE={aws_profile}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+
+export AWS_PROFILE
+export ACCOUNT_EMAIL
+export AGENCY_NAME
 
 # Validate template
 aws cloudformation validate-template --template-body file://aws-iam-instanceprofiles.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation deploy --template-file aws-iam-instanceprofiles.yaml --stack-name aws-iam-instanceprofiles
---tags Owner={team_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production \\
---capabilities CAPABILITY_NAMED_IAM \\
---profile $AWS_PROFILE
+aws cloudformation create-stack --template-body file://aws-iam-instanceprofiles.yaml --stack-name aws-iam-instanceprofiles --tags Key=Owner,Value=$ACCOUNT_EMAIL Key=AgencyName,Value=$AGENCY_NAME Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 ```
 
 ## aws-iam-userpolicy-cli-mfa.yaml
-```
-GIT_DIR={git_dir}
+
+```bash
+#parameters
 AWS_PROFILE={aws_profile}
+ACCOUNT_EMAIL={account_email}
+AGENCY_NAME={agency_name}
+
+export AWS_PROFILE
+export ACCOUNT_EMAIL
+export AGENCY_NAME
 
 # Validate template
 aws cloudformation validate-template --template-body file://aws-iam-userpolicy-cli-mfa.yaml --profile $AWS_PROFILE
 
 # Deploy the template
-aws cloudformation deploy --template-file aws-iam-userpolicy-cli-mfa.yaml --stack-name aws-iam-userpolicy-cli-mfa \\
---tags Owner={team_email} AgencyName={agency_name} ApplicationID=aws-iam Environment=Production \\
---capabilities CAPABILITY_NAMED_IAM \\
---profile $AWS_PROFILE
+aws cloudformation create-stack --template-body file://aws-iam-userpolicy-cli-mfa.yaml --stack-name aws-iam-userpolicy-cli-mfa --tags Key=Owner,Value=$ACCOUNT_EMAIL Key=AgencyName,Value=$AGENCY_NAME Key=ApplicationID,Value=aws-iam Key=Environment,Value=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 ```
+
+# Further Reading
+* https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_aws-accounts.html
+* https://docs.aws.amazon.com/IAM/latest/UserGuide/tutorial_cross-account-with-roles.html

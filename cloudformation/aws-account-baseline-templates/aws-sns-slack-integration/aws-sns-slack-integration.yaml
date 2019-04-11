@@ -1,0 +1,147 @@
+---
+#=========================================================================================
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Creates function to integrate AWS SNS and Slack
+#=========================================================================================
+####
+#### CloudFormation Metadata - makes the parameter inputs look nice
+####
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+    - Label:
+        default: Lambda, CloudWatch Events, SNS Topic
+      Parameters:
+        - pLambdaFunctionName
+        - pSlackChannelName
+        - pSlackHookUrl
+
+    ParameterLabels:
+      pLambdaFunctionName:
+        default: Name of the Lambda Function
+      pSlackChannelName:
+        default: Slack Channel Name
+      pSlackHookUrl:
+        default: Slack Channel Hook Url
+
+Parameters:
+  pLambdaFunctionName:
+    Type: String
+    Default: "AWSSlackSNSFunction"
+    Description: Lambda Function Name
+  pSlackChannelName:
+    Type: String
+    Description: Slack Channel Name
+    Default: ''
+  pSlackHookUrl:
+    Type: String
+    Description: Slack WebHook Url
+    Default: ''
+
+Resources:
+  ####### Creates the IAM execution role for the Lambda function #######
+  rRoleForSlackIntegrationFunction:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service: [lambda.amazonaws.com]
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Path: /servicerole/
+  rFunctionForSlackIntegration:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Ref pLambdaFunctionName
+      Code:
+        ZipFile: |
+          #==================================================================================================
+          # Function: SlackIntegration
+          # Purpose:  Lambda to Slack Integration
+          #==================================================================================================
+          import boto3
+          import json
+          import logging
+          import os
+
+          from base64 import b64decode
+          from urllib.request import Request, urlopen
+          from urllib.error import URLError, HTTPError
+
+          slack_channel = os.environ['SLACK_CHANNEL']
+          slack_hook_url = os.environ['HOOK_URL']
+
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+              logger.info("Event: " + str(event))
+              message = event['Records'][0]['Sns']['Subject'] + '\n' + event['Records'][0]['Sns']['Message']
+              try:
+                  message = json.loads(message)
+              except Exception as e:
+                  print(e)
+              logger.info("Message: " + str(message))
+              slack_message = {
+                  'channel': slack_channel,
+                  'username': "AWSSlack",
+                  'text': message,
+                  'icon_emoji' : ":ghost:"
+              }
+              req = Request(slack_hook_url, json.dumps(slack_message).encode('utf-8'))
+              try:
+                  response = urlopen(req)
+                  response.read()
+                  logger.info("Message posted to %s", slack_message['channel'])
+              except HTTPError as e:
+                  logger.error("Request failed: %d %s", e.code, e.reason)
+              except URLError as e:
+                  logger.error("Server connection failed: %s", e.reason)
+      Description: Lambda for AWS Slack Integration
+      Environment:
+        Variables:
+          SLACK_CHANNEL: !Ref pSlackChannelName
+          HOOK_URL: !Ref pSlackHookUrl
+      Handler: index.lambda_handler
+      MemorySize: 128
+      Role: !GetAtt rRoleForSlackIntegrationFunction.Arn
+      Runtime: python3.6
+      Timeout: 20
+  rLambdaPermissionForSlackIntegration:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt rFunctionForSlackIntegration.Arn
+      Action: lambda:InvokeFunction
+      Principal: sns.amazonaws.com
+      SourceArn: !Ref rSnsAlarmTopic
+  ####### SNS Endpoint #######
+  rSnsAlarmTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: "AWS-Slack-SNS-Topic"
+      Subscription:
+        - Endpoint: !GetAtt rFunctionForSlackIntegration.Arn
+          Protocol: lambda
+  rSnsAlarmSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Endpoint: !GetAtt rFunctionForSlackIntegration.Arn
+      Protocol: lambda
+      TopicArn: !Ref rSnsAlarmTopic
+
+############################
+#### Output values
+############################
+Outputs:
+  oFunctionForSlackIntegration:
+    Description: Lambda for AWS Slack Integration
+    Value: !GetAtt [ rFunctionForSlackIntegration, Arn ]
+  oSNSTopic:
+    Description: The SNS Notification Topic
+    Value: !Ref rSnsAlarmTopic
