@@ -1,10 +1,14 @@
 # AWS Account Baseline Templates
 The lowest acceptable common denominator of security-related promises, capabilities and configurations of MOJ AWS accounts.
 
+## Baseline
+
+The [baseline for Amazon Web Services accounts](https://ministryofjustice.github.io/security-guidance/standards/baseline-aws-accounts/#baseline-for-amazon-web-services-accounts) is formally published as part of the [Security Guidance](https://ministryofjustice.github.io/security-guidance/) from the MOJ Digital & Technology Security & Privacy team.
+
 ## Background
 As an organization expands its use of AWS services, there is often a conversation about the need to create multiple AWS accounts to ensure separation of business processes or for security, compliance, and billing. We tend to use separate AWS accounts for each business unit so that it can meet the different needs of the organization. Although creating multiple accounts has simplified operational issues and provided benefits like security and resource isolation, a smaller blast radius, and simplified billing, it results in widely varying security posture across the accounts and there is the need to align all of these accounts to a baseline secure standard. 
 
-The list of [baseline-controls] (https://docs.google.com/document/d/1TWdeTmiMDbjcEnOzEXizr6254fGsZ6Wc77tKygCi4Ng/edit#heading=h.9j1uay34xjpw) for AWS accounts are -
+The [baseline controls](https://ministryofjustice.github.io/security-guidance/standards/baseline-aws-accounts/#baseline-for-amazon-web-services-accounts) for AWS accounts are:
 
 * [Guardduty](#Guardduty)
 * [Cloudtrail](#Cloudtrail)
@@ -66,6 +70,6 @@ AWS Security Hub aggregates, organizes, and prioritizes the security alerts, or 
 
 
 Reference -
-* https://docs.google.com/document/d/1TWdeTmiMDbjcEnOzEXizr6254fGsZ6Wc77tKygCi4Ng/edit#heading=h.9j1uay34xjpw
+* https://ministryofjustice.github.io/security-guidance/standards/baseline-aws-accounts/#baseline-for-amazon-web-services-accounts
 * https://aws.amazon.com/answers/security/aws-secure-account-setup/
 * https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scp.html
