@@ -106,8 +106,7 @@ resource "auth0_client" "kubernetes" {
   app_type    = "regular_web"
 
   callbacks = [
-    "https://login.apps.${local.cluster_base_domain_name}/ui",
-    "${terraform.workspace == local.live_workspace ? format("https://login.%s/ui", local.live_domain) : ""}",
+    "${terraform.workspace == local.live_workspace ? format("https://login.%s/ui", local.live_domain) : "https://login.apps.${local.cluster_base_domain_name}/ui"}",
   ]
 
   custom_login_page_on = true
@@ -127,18 +126,13 @@ resource "auth0_client" "components" {
   app_type    = "regular_web"
 
   callbacks = [
-    "https://prometheus.apps.${local.cluster_base_domain_name}/oauth2/callback",
-    "${terraform.workspace == local.live_workspace ? format("https://prometheus.%s/oauth2/callback", local.live_domain) : ""}",
-    "https://alertmanager.apps.${local.cluster_base_domain_name}/oauth2/callback",
-    "${terraform.workspace == local.live_workspace ? format("https://alertmanager.%s/oauth2/callback", local.live_domain) : ""}",
+    "${terraform.workspace == local.live_workspace ? format("https://prometheus.%s/oauth2/callback", local.live_domain) : "https://prometheus.apps.${local.cluster_base_domain_name}/oauth2/callback"}",
+    "${terraform.workspace == local.live_workspace ? format("https://alertmanager.%s/oauth2/callback", local.live_domain) : "https://alertmanager.apps.${local.cluster_base_domain_name}/oauth2/callback"}",
     "https://prometheus.apps.${local.cluster_base_domain_name}/redirect_uri",
     "https://alertmanager.apps.${local.cluster_base_domain_name}/redirect_uri",
-    "https://concourse.apps.${local.cluster_base_domain_name}/sky/issuer/callback",
-    "${terraform.workspace == local.live_workspace ? format("https://concourse.%s/sky/issuer/callback", local.live_domain) : ""}",
-    "https://kibana.apps.${local.cluster_base_domain_name}/oauth2/callback",
-    "${terraform.workspace == local.live_workspace ? format("https://kibana.%s/oauth2/callback", local.live_domain) : ""}",
-    "https://grafana.apps.${local.cluster_base_domain_name}/login/generic_oauth",
-    "${terraform.workspace == local.live_workspace ? format("https://grafana.%s/login/generic_oauth", local.live_domain) : ""}",
+    "${terraform.workspace == local.live_workspace ? format("https://concourse.%s/sky/issuer/callback", local.live_domain) : "https://concourse.apps.${local.cluster_base_domain_name}/sky/issuer/callback"}",
+    "${terraform.workspace == local.live_workspace ? format("https://kibana.%s/oauth2/callback", local.live_domain) : "https://kibana.apps.${local.cluster_base_domain_name}/oauth2/callback"}",
+    "${terraform.workspace == local.live_workspace ? format("https://grafana.%s/login/generic_oauth", local.live_domain) : "https://grafana.apps.${local.cluster_base_domain_name}/login/generic_oauth"}",
   ]
 
   custom_login_page_on = true
