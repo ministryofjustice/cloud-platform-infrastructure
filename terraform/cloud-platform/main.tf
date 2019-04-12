@@ -24,7 +24,7 @@ provider "aws" {
 #
 provider "auth0" {
   version = "0.1.18"
-  domain = "${local.auth0_tenant_domain}"
+  domain  = "${local.auth0_tenant_domain}"
 }
 
 data "terraform_remote_state" "global" {
