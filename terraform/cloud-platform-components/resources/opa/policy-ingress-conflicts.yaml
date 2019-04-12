@@ -1,0 +1,22 @@
+# This policy prevents Ingress objects in different namespaces from sharing the same hostname.
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: policy-ingress-conflicts
+  namespace: opa
+  labels:
+    openpolicyagent.org/policy: rego
+data:
+  ingress-conflicts.rego: |
+    package cloud_platform.admission
+
+    import data.kubernetes.ingresses
+
+    deny[msg] {
+       input.request.kind.kind == "Ingress"
+       host := input.request.object.spec.rules[_].host
+       other_hosts := data.kubernetes.ingresses[namespace][name].spec.rules[_].host
+       host == other_hosts
+       msg := sprintf("ingress host (%v) conflicts with ingress %v/%v", [host, namespace, name])
+    }
