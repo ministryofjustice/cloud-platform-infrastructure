@@ -23,6 +23,7 @@ provider "aws" {
 # the AWS providr credentials are handled.
 #
 provider "auth0" {
+  version = "0.1.18"
   domain = "${local.auth0_tenant_domain}"
 }
 
