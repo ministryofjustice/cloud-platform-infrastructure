@@ -127,13 +127,13 @@ resource "auth0_client" "components" {
   app_type    = "regular_web"
 
   callbacks = [
-    "${terraform.workspace == local.live_workspace ? format("https://prometheus.%s/oauth2/callback", local.live_domain) : "https://prometheus.apps.${local.cluster_base_domain_name}/oauth2/callback"}",
-    "${terraform.workspace == local.live_workspace ? format("https://alertmanager.%s/oauth2/callback", local.live_domain) : "https://alertmanager.apps.${local.cluster_base_domain_name}/oauth2/callback"}",
+    "${format("https://prometheus.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
+    "${format("https://alertmanager.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
     "https://prometheus.apps.${local.cluster_base_domain_name}/redirect_uri",
     "https://alertmanager.apps.${local.cluster_base_domain_name}/redirect_uri",
-    "${terraform.workspace == local.live_workspace ? format("https://concourse.%s/sky/issuer/callback", local.live_domain) : "https://concourse.apps.${local.cluster_base_domain_name}/sky/issuer/callback"}",
-    "${terraform.workspace == local.live_workspace ? format("https://kibana.%s/oauth2/callback", local.live_domain) : "https://kibana.apps.${local.cluster_base_domain_name}/oauth2/callback"}",
-    "${terraform.workspace == local.live_workspace ? format("https://grafana.%s/login/generic_oauth", local.live_domain) : "https://grafana.apps.${local.cluster_base_domain_name}/login/generic_oauth"}",
+    "${format("https://concourse.%s/sky/issuer/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
+    "${format("https://kibana.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
+    "${format("https://grafana.%s/login/generic_oauth", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
   ]
 
   custom_login_page_on = true
