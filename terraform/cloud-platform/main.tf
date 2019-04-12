@@ -129,8 +129,6 @@ resource "auth0_client" "components" {
   callbacks = [
     "${format("https://prometheus.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
     "${format("https://alertmanager.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
-    "https://prometheus.apps.${local.cluster_base_domain_name}/redirect_uri",
-    "https://alertmanager.apps.${local.cluster_base_domain_name}/redirect_uri",
     "${format("https://concourse.%s/sky/issuer/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
     "${format("https://kibana.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
     "${format("https://grafana.%s/login/generic_oauth", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
