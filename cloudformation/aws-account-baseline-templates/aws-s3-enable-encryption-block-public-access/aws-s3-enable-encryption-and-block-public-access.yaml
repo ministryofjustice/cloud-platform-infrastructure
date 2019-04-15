@@ -15,6 +15,7 @@ Metadata:
         default: Choose fuction
       Parameters:
         - pS3PublicAccessBlockPermissions
+        - pS3BucketsToSkipPublicAccessBlock
         - pS3BucketEncryption
         - pS3BucketsToSkipEncryption
     ParameterLabels:
@@ -24,6 +25,8 @@ Metadata:
         default: Existing SNS Topic
       pS3PublicAccessBlockPermissions:
         default: Check S3 Private buckets and apply Public Access Block permissions
+      pS3BucketsToSkipPublicAccessBlock:
+        default: List of S3 Buckets to Skip Public Access Block permissions
       pS3BucketEncryption:
         default: Check ALL S3 Buckets and apply default encryption (SSE)
       pS3BucketsToSkipEncryption:
@@ -48,6 +51,10 @@ Parameters:
     AllowedValues:
     - 'true'
     - 'false'
+  pS3BucketsToSkipPublicAccessBlock:
+    Type: String
+    Description: List of S3 Buckets to Skip Public Access Block permissions
+    Default: ''
   pS3BucketEncryption:
     Type: String
     Description: Select true to apply default encryption to all S3 buckets
@@ -57,7 +64,7 @@ Parameters:
     - 'false'
   pS3BucketsToSkipEncryption:
     Type: String
-    Description: List of S3 buckets that need to be skipped check
+    Description: List of S3 Buckets to Skip Encryption
     Default: ''
 
 Conditions:
@@ -117,6 +124,7 @@ Resources:
       Environment:
         Variables:
           TOPIC_ARN: !If [cCreateSnsTopic, !Ref SnsAlarmTopic, !Ref pExistingSnsTopic]
+          S3_EXCEPTION: !Ref pS3BucketsToSkipPublicAccessBlock
       Handler: s3-bucket-block-public-access.lambda_handler
       MemorySize: 256
       Role: !GetAtt RoleForS3BucketBlockPublicAccessFunction.Arn

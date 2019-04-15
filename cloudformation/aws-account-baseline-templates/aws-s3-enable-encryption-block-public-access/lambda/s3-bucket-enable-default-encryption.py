@@ -34,7 +34,7 @@ def lambda_handler(event, context):
                 try:
                     bucket_encryption_response = s3client.get_bucket_encryption(Bucket=bucket_dictionary['Name'])
                     for rules in bucket_encryption_response['ServerSideEncryptionConfiguration']['Rules']:
-                        for value in rules['ApplyServerSideEncryptionByDefault'].items():
+                        for key, value in rules['ApplyServerSideEncryptionByDefault'].items():
                             if (str(value) in ('AES256','aws:kms')):
                                 print ("\n{0} is already encrypted".format(bucket_dictionary['Name']))
                     #buckets['Already_Encrypted'].append(bucket_dictionary['Name'])
