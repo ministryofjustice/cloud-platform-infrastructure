@@ -29,6 +29,6 @@ data:
             "reason": reason,
         },
     } {
-        reason := concat(", ", deny)
+        reason := concat(", ", admission.deny)
         reason != ""
     }
