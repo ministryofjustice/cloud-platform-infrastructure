@@ -110,14 +110,6 @@ kube-mgmt manages instances of the Open Policy Agent on top of kubernetes. Use k
   - Load policies into OPA via kubernetes.
   - Replicate kubernetes resources including CustomResourceDefinitions (CRDs) into OPA.
 
-kube-mgmt scans are configured in templates/opa/values.yaml.tpl under mgmt/replicate:
-
-  ```yaml
-    group/version/resource			  # namespace scoped
-    group/version/resource        # cluster scoped
-  ```
-    <replicate-path> is configurable (via path) and defaults to kubernetes.
-
 The example below would replicate namespaces and ingress into OPA:
 
 ```yaml
@@ -135,20 +127,18 @@ NOTE: IF we use replicate: remember to update the RBAC rules to allow permission
 kube-mgmt automatically discovers policies stored in ConfigMaps in kubernetes and loads them into OPA. kube-mgmt assumes a ConfigMap contains policies if the ConfigMap is :
 
   - Created in a namespace listed in the --policies option. Configured in templates/opa/values.yaml.tpl under mgmt/configmapPolicies/namespaces:
-	- Labelled with openpolicyagent.org/policy=rego.
+  - Labelled with openpolicyagent.org/policy=rego.
 
 
 When a policy has been successfully loaded into OPA, the openpolicyagent.org/policy-status annotation is set to
 ```json
-{"status": "ok"}.
+{"status": "ok"}
 ```
-If loading fails for some reason (e.g., because of a parse error), the openpolicyagent.org/policy-status annotation is set to 
+If loading fails for some reason (e.g., because of a parse error), the openpolicyagent.org/policy-status annotation is set as below, where the error field contains details about the failure. 
 ```json
-{"status": "error", "error": ...} where the error field contains details about the failure.
-```
-IMP NOTE:  Apply a ConfigMap that contains the main OPA policy and default response. This policy is used as an entry-point for policy evaluations and returns allowed:true if policies are not matched to inbound data.
-
-Please see the last part of admission-controller.yaml in https://www.openpolicyagent.org/docs/kubernetes-admission-control.html  which contains the main OPA policy 
+{"status": "error", "error": ...}
+``` 
+IMP NOTE: This [opa-default-system-main.yaml](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/opa/opa-default-system-main.yaml) applies a ConfigMap that contains the main OPA policy and default response. This policy is used as an entry-point for policy evaluations and returns allowed:true if policies are not matched to inbound data.
 
  ### How to write Policies
 
