@@ -18,9 +18,7 @@ data "aws_iam_policy_document" "external_dns" {
   statement {
     actions = ["route53:ChangeResourceRecordSets"]
 
-    resources = ["${compact(list(
-      "${terraform.workspace == local.live_workspace ? "arn:aws:route53:::hostedzone/*" : format("%s/%s", "arn:aws:route53:::hostedzone", data.terraform_remote_state.cluster.hosted_zone_id)}",
-          ))}"]
+    resources = ["${format("arn:aws:route53:::hostedzone/%s", terraform.workspace == local.live_workspace ? "*" : data.terraform_remote_state.cluster.hosted_zone_id)}"]
   }
 
   statement {
