@@ -58,6 +58,7 @@ This sections explains how to deploy the templates,
 AWS_PROFILE={aws_profile_name}
 EXISTING_S3BUCKETNAME={existing_s3_bucket_in_the_aws_account}
 EXISTING_SNS_TOPIC_ARN={existing_sns_topic_arn}
+S3_BUCKETS_TO_SKIP_PUBLIC_ACCESS_BLOCK={optional-list-of-s3-bucketnames}
 S3_BUCKETS_TO_SKIP_ENCRYPTION={optional-list-of-s3-bucketnames}
 ACCOUNT_EMAIL={account_email}
 AGENCY_NAME={agency_name}
@@ -75,7 +76,7 @@ aws cloudformation package --template-file aws-s3-enable-encryption-and-block-pu
 aws cloudformation validate-template --template-body file://aws-s3-enable-encryption-and-block-public-access-output.yaml --profile $AWS_PROFILE
 
 # deploy the template
-aws cloudformation deploy --template-file aws-s3-enable-encryption-and-block-public-access-output.yaml --stack-name aws-s3-enable-encryption-and-block-public-access --parameter-overrides pCreateSnsTopic=false pExistingSnsTopic=$EXISTING_SNS_TOPIC_ARN pS3PublicAccessBlockPermissions=true pS3BucketEncryption=true pS3BucketsToSkipEncryption=$S3_BUCKETS_TO_SKIP_ENCRYPTION  --tags Owner=$ACCOUNT_EMAIL AgencyName=$AGENCY_NAME ApplicationID=aws-s3 Environment=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
+aws cloudformation deploy --template-file aws-s3-enable-encryption-and-block-public-access-output.yaml --stack-name aws-s3-enable-encryption-and-block-public-access --parameter-overrides pCreateSnsTopic=false pExistingSnsTopic=$EXISTING_SNS_TOPIC_ARN pS3PublicAccessBlockPermissions=true pS3BucketsToSkipPublicAccessBlock=$S3_BUCKETS_TO_SKIP_PUBLIC_ACCESS_BLOCK pS3BucketEncryption=true pS3BucketsToSkipEncryption=$S3_BUCKETS_TO_SKIP_ENCRYPTION  --tags Owner=$ACCOUNT_EMAIL AgencyName=$AGENCY_NAME ApplicationID=aws-s3 Environment=Production --capabilities CAPABILITY_NAMED_IAM --profile $AWS_PROFILE
 ```
 
 ### Update the Latest Version of Boto3 to S3 Bucket Public Access Block Lambda
