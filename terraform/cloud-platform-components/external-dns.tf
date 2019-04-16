@@ -18,10 +18,7 @@ data "aws_iam_policy_document" "external_dns" {
   statement {
     actions = ["route53:ChangeResourceRecordSets"]
 
-    resources = ["${compact(list(
-      "arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.hosted_zone_id}",
-      "${terraform.workspace == local.live_workspace ? format("%s/%s", "arn:aws:route53:::hostedzone", data.terraform_remote_state.global.cp_zone_id) : ""}",
-    ))}"]
+    resources = ["${format("arn:aws:route53:::hostedzone/%s", terraform.workspace == local.live_workspace ? "*" : data.terraform_remote_state.cluster.hosted_zone_id)}"]
   }
 
   statement {
@@ -57,8 +54,7 @@ aws:
   region: eu-west-2
   zoneType: public
 domainFilters:
-  - "${data.terraform_remote_state.cluster.cluster_domain_name}"
-  ${terraform.workspace == local.live_workspace ? format("- %s", local.live_domain) : ""}
+  ${terraform.workspace == local.live_workspace ? "" : format("- %s", data.terraform_remote_state.cluster.cluster_domain_name)}
 rbac:
   create: true
   apiVersion: v1

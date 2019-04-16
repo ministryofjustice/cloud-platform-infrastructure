@@ -22,10 +22,7 @@ data "aws_iam_policy_document" "cert_manager" {
   statement {
     actions = ["route53:ChangeResourceRecordSets"]
 
-    resources = ["${compact(list(
-      "arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.hosted_zone_id}",
-      "${terraform.workspace == local.live_workspace ? format("%s/%s", "arn:aws:route53:::hostedzone", data.terraform_remote_state.global.cp_zone_id) : ""}",
-    ))}"]
+    resources = ["${format("arn:aws:route53:::hostedzone/%s", terraform.workspace == local.live_workspace ? "*" : data.terraform_remote_state.cluster.hosted_zone_id)}"]
   }
 
   statement {
@@ -85,7 +82,7 @@ ingressShim:
   defaultIssuerName: letsencrypt-production
   defaultIssuerKind: ClusterIssuer
   defaultACMEChallengeType: dns01
-  defaultACMEDNS01ChallengeProvider: route53
+  defaultACMEDNS01ChallengeProvider: route53-cloud-platform
 
 securityContext:
   enabled: false
