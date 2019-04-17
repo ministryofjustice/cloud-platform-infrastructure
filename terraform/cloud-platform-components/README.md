@@ -11,6 +11,7 @@ This directory contains application layer components that essentially bootstrap 
 - [Kuberos](#kuberos)
 - [Metrics-server](#metrics-server)
 - [Nginx-ingress](#nginx-ingress)
+- [Open-Policy-Agent](#Open-Policy-Agent)
 - [Prometheus](#prometheus)
 - [Pod Security Policies](#pod-security-policies)
 - [RBAC](#rbac)
@@ -81,6 +82,67 @@ Metrics-server allows us to perform resource queries against the cluster. Comman
 
 ## Nginx-ingress
 A vital component in the cluster. The Nginx-ingress controller is a daemon, deployed as a Kubernetes Pod, that watches the apiserver's /ingresses endpoint for updates to the Ingress resource. Its job is to satisfy requests for Ingresses.
+
+## Open-Policy-Agent
+
+[Open Policy Agent](https://www.openpolicyagent.org/)(OPA) is a lightweight general-purpose policy engine that can be co-located with our service. Services offload policy decisions to OPA by executing queries. OPA evaluates policies and data to produce query results (which are sent back to the client).  
+
+We utilise [opa-helm-chart](https://github.com/helm/charts/tree/master/stable/opa) to deploy opa onto the Cloud Platform. This helm chart installs OPA as a Kubernetes admission controller. In our case we are using validating admission controller. The helm Chart will automatically generate a CA and server certificate for the OPA. 
+
+In Kubernetes, Admission Controllers enforce semantic validation of objects during create, update, and delete operations. With OPA we can enforce custom policies on Kubernetes objects without recompiling or reconfiguring the Kubernetes API server. Please see the following documentation by opa on Kubernetes Admission Control 
+https://www.openpolicyagent.org/docs/kubernetes-admission-control.html
+
+To restrict the kinds of operations and resources that are subject to OPA policy checks, see the below example. Configured in templates/opa/values.yaml.tpl under admissionControllerRules:
+
+```yaml
+    admissionControllerRules:
+      - operations: ["CREATE", "UPDATE"]
+        apiGroups: ["extensions", ""]
+        apiVersions: ["v1beta1”, “v1”]
+        resources: ["ingresses", "namespaces"]
+```
+The admissionControllerRules defines the operations and resources that the webhook will validate. Intercept API requests when a ingress or a namespace is CREATED or UPDATED, so apiGroups and apiVersions are filled out accordingly (extensions/v1beta1 for ingresses, v1 for namespaces). We can use wildcards (*) for these fields as well.
+
+ ### kube-mgmt
+
+kube-mgmt manages instances of the Open Policy Agent on top of kubernetes. Use kube-mgmt to:
+
+  - Load policies into OPA via kubernetes.
+  - Replicate kubernetes resources including CustomResourceDefinitions (CRDs) into OPA.
+
+The example below would replicate namespaces and ingress into OPA:
+
+```yaml
+    cluster:
+      - "v1/namespaces"
+    namespace:
+      - "extensions/v1beta1/ingresses"
+    path: kubernetes
+```
+
+NOTE: IF we use replicate: remember to update the RBAC rules to allow permissions to replicate these things
+
+ ### opa-policies
+
+kube-mgmt automatically discovers policies stored in ConfigMaps in kubernetes and loads them into OPA. kube-mgmt assumes a ConfigMap contains policies if the ConfigMap is :
+
+  - Created in a namespace listed in the --policies option. Configured in templates/opa/values.yaml.tpl under mgmt/configmapPolicies/namespaces:
+  - Labelled with openpolicyagent.org/policy=rego.
+
+
+When a policy has been successfully loaded into OPA, the openpolicyagent.org/policy-status annotation is set to
+```json
+{"status": "ok"}
+```
+If loading fails for some reason (e.g., because of a parse error), the openpolicyagent.org/policy-status annotation is set as below, where the error field contains details about the failure. 
+```json
+{"status": "error", "error": ...}
+``` 
+IMP NOTE: This [opa-default-system-main.yaml](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/opa/opa-default-system-main.yaml) applies a ConfigMap that contains the main OPA policy and default response. This policy is used as an entry-point for policy evaluations and returns allowed:true if policies are not matched to inbound data.
+
+ ### How to write Policies
+
+Please see the following documentation by opa on how to write Policies https://www.openpolicyagent.org/docs/how-do-i-write-policies.html
 
 ## Prometheus
 We utilise [Prometheus-Operator](https://github.com/helm/charts/tree/master/stable/prometheus-operator) to deploy Prometheus onto the Cloud Platform. Once installed a `DaemonSet` of exporters is deployed scraping metrics from across the cluster. Grafana and AlertManager are also deployed as part of this chart along with relevant proxies. 
