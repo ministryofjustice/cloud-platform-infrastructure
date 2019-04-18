@@ -223,7 +223,7 @@ resource "aws_elasticsearch_domain" "audit" {
   elasticsearch_version = "6.4"
 
   cluster_config {
-    instance_type  = "m4.large.elasticsearch"
+    instance_type  = "m4.xlarge.elasticsearch"
     instance_count = "3"
   }
 
@@ -254,7 +254,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
   elasticsearch_version = "6.4"
 
   cluster_config {
-    instance_type  = "m4.large.elasticsearch"
+    instance_type  = "m4.xlarge.elasticsearch"
     instance_count = "3"
   }
 
