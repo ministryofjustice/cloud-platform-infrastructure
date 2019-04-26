@@ -71,7 +71,7 @@ The templates are standalone and do not depend on other templates for deployment
 * [Switching to an IAM Role](#Switching-to-an-IAM-Role)
 
 ### User Profiles
-The templates aws-iam-adminandgroups.yaml, aws-iam-adminandroles.yaml implement assume role permissionns for a group of aws accounts. The roles and groups created by the templates are -
+The templates aws-iam-adminandgroups.yaml, aws-iam-adminandroles.yaml implement assume role permissions for a group of aws accounts. The roles and groups created by the templates are -
   - IAMAdminRole
   - BillingAdminRole
   - InfraAdminRole
