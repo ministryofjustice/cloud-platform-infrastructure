@@ -14,9 +14,11 @@ data:
     import data.kubernetes.ingresses
 
     deny[msg] {
-       input.request.kind.kind == "Ingress"
-       host := input.request.object.spec.rules[_].host
-       other_hosts := data.kubernetes.ingresses[namespace][name].spec.rules[_].host
-       host == other_hosts
-       msg := sprintf("ingress host (%v) conflicts with ingress %v/%v", [host, namespace, name])
+        input.request.kind.kind == "Ingress"
+        input.request.operation == "CREATE"
+        host := input.request.object.spec.rules[_].host
+        ingress := ingresses[other_ns][other_ingress]
+        ingress.spec.rules[_].host == host
+        msg := sprintf("invalid ingress host %q (conflicts with %v/%v)", [host, other_ns, other_ingress])
     }
+    
