@@ -3,7 +3,7 @@
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: {{  template "fluentd-es.fullname" . }}-config
+  name: {{ template "fluentd-es.fullname" . }}-config
   labels:
     app: {{ .Release.Name }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
@@ -11,7 +11,7 @@ metadata:
     release: {{ .Release.Name }}
     addonmanager.kubernetes.io/mode: Reconcile
 data:
-{{ (.Files.Glob "config/**").AsConfig | indent 2 }}
+{{ tpl (.Files.Glob "config/**").AsConfig . | indent 2 }}
   index-template.json: |-
     {
       "template": "logstash-*",
