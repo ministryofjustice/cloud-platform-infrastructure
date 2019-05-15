@@ -280,18 +280,21 @@ resource "aws_elasticsearch_domain" "audit_1" {
 }
 
 resource "aws_elasticsearch_domain" "test" {
-  domain_name = "cloud-platform-test"
+  domain_name           = "cloud-platform-test"
   provider              = "aws.cloud-platform"
   elasticsearch_version = "6.5"
+
   cluster_config {
     instance_type  = "r5.xlarge.elasticsearch"
     instance_count = "1"
   }
+
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp2"
     volume_size = "128"
   }
+
   access_policies = <<TESTPOLICY
 {
   "Version": "2012-10-17",
