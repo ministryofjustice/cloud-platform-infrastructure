@@ -10,7 +10,7 @@ resource "helm_release" "fluentd_es" {
 
   set {
     name  = "fluent_elasticsearch_audit_host"
-    value = "${replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-audit-dq5bdnjokj4yt7qozshmifug6e.eu-west-2.es.amazonaws.com" : "search-cloud-platform-test-zradqd7twglkaydvgwhpuypzy4.eu-west-2.es.amazonaws.com"}"
+    value = "${replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-audit-dq5bdnjokj4yt7qozshmifug6e.eu-west-2.es.amazonaws.com" : ""}"
   }
 
   set {
