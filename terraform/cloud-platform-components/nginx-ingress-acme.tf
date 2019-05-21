@@ -47,7 +47,6 @@ controller:
       "real_ip": "$the_real_ip",
       "remote_addr": "$remote_addr",
       "remote_user": "$remote_user",
-      "request": "$request",
       "request_id": "$req_id",
       "request_length": "$request_length",
       "request_method": "$request_method",
