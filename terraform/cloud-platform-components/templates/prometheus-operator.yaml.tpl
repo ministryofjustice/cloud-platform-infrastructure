@@ -483,7 +483,7 @@ alertmanager:
 ##
 grafana:
   enabled: true
-  
+
   rbac:
     pspUseAppArmor: false
 
