@@ -18,7 +18,7 @@ Once you have the data, in the `opa` command line (`opa run`) you can simply set
 data.kubernetes = <json-document>
 ```
 
-The `input` to the policies would be an `AdmissionRequest` whose schema you can find [here][admission-request-type]
+The `input` to the policies would be an `AdmissionReview` whose schema you can find [here][admission-review-type]
 
-[admission-request-type]: https://github.com/kubernetes/api/blob/master/admission/v1beta1/types.go#L29
+[admission-review-type]: https://github.com/kubernetes/api/blob/master/admission/v1beta1/types.go#L29
 
