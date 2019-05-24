@@ -68,7 +68,7 @@ test_ingress_update_new_host {
 }
 
 test_ingress_update_existing_host {
-  not denied
+  denied
     with input as new_admission_review("ns-0", "ing-0", "ing-1.example.com", "UPDATE")
     with data.kubernetes.ingresses as {
       "ns-0": {
