@@ -36,12 +36,13 @@ Parameters:
   # Slack web hook URL
   SlackHookURL:
     Type: String
+    Default: 'limit_monitor_slack_webhook'
     Description: 'SSM parameter key for incoming Slack web hook URL. Leave blank if you do not wish to receive Slack notifications.'
 
   # Slack channel name
   SlackChannel:
     Type: String
-    Default: 'lower-priority-alarms'
+    Default: 'limit_monitor_slack_channel'
     Description: 'SSM parameter key for the Slack channel. Leave blank if you do not wish to receive Slack notifications.'
 
 Metadata:
