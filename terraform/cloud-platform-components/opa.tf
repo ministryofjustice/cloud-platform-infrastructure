@@ -18,15 +18,32 @@ resource "helm_release" "open-policy-agent" {
   }
 }
 
-resource "null_resource" "open-policy-agent_policies" {
-  depends_on = ["helm_release.open-policy-agent"]
+resource "kubernetes_config_map" "policy_default" {
+  metadata {
+    name      = "policy-default"
+    namespace = "${helm_release.open-policy-agent.namespace}"
 
-  provisioner "local-exec" {
-    command = "kubectl apply -n opa -f ${path.module}/resources/opa/"
+    labels {
+      "openpolicyagent.org/policy" = "rego"
+    }
   }
 
-  provisioner "local-exec" {
-    when    = "destroy"
-    command = "kubectl delete -n opa --ignore-not-found -f ${path.module}/resources/opa/"
+  data {
+    main.rego = "${file("${path.module}/resources/opa/policies/main.rego")}"
+  }
+}
+
+resource "kubernetes_config_map" "policy_ingress_clash" {
+  metadata {
+    name      = "policy-ingress-clash"
+    namespace = "${helm_release.open-policy-agent.namespace}"
+
+    labels {
+      "openpolicyagent.org/policy" = "rego"
+    }
+  }
+
+  data {
+    main.rego = "${file("${path.module}/resources/opa/policies/ingress_clash.rego")}"
   }
 }
