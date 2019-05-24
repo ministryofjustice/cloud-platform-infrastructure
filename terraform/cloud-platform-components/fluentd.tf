@@ -18,7 +18,7 @@ resource "helm_release" "fluentd_es" {
     value = "${terraform.workspace}"
   }
 
-  depends_on = ["null_resource.deploy"]
+  depends_on = ["null_resource.deploy", "null_resource.priority_classes"]
 
   lifecycle {
     ignore_changes = ["keyring"]
