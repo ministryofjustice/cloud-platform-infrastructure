@@ -131,6 +131,7 @@ resource "auth0_client" "components" {
     "${format("https://alertmanager.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
     "${format("https://concourse.%s/sky/issuer/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
     "${format("https://kibana.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
+    "${format("https://kibana-audit.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
     "${format("https://grafana.%s/login/generic_oauth", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
   ]
 
