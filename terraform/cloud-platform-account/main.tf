@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket               = "cloud-platform-terraform-state"
-    region               = "eu-west-2"
+    region               = "eu-west-1"
     key                  = "terraform.tfstate"
     workspace_key_prefix = "cloud-platform-account"
     profile              = "moj-cp"
