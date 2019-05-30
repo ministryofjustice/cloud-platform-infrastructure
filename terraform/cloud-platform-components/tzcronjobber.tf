@@ -1,5 +1,4 @@
 resource "null_resource" "tzcronjobber" {
-
   provisioner "local-exec" {
     command = "kubectl apply -n kube-system -f ${path.module}/resources/tzcronjobber/"
   }
