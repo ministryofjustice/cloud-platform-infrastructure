@@ -26,7 +26,7 @@ spec:
           type: Directory
       containers:
       - name: cronjobber
-        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tzcronjobber:latest
+        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tzcronjobber:0.2.0
         resources:
           requests:
             cpu: 50m
