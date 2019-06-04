@@ -1,4 +1,4 @@
-package cloud_platform.admission.ingress
+package cloud_platform.admission
 
 import data.kubernetes.ingresses
 

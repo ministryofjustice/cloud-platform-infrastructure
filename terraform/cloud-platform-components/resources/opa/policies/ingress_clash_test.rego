@@ -1,4 +1,4 @@
-package cloud_platform.admission.ingress
+package cloud_platform.admission
 
 # generates a redacted Ingress spec
 new_ingress(namespace, name, host) = {
