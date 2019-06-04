@@ -13,6 +13,6 @@ default response = {"allowed": true}
 response = {
     "allowed": false,
     "status": {
-        "reason": admission.ingress.denied_msg,
+        "reason": admission.denied_msg,
     },
-} { admission.ingress.denied }
+} { admission.denied }
