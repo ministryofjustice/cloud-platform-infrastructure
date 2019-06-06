@@ -31,6 +31,10 @@ resource "kubernetes_config_map" "policy_default" {
   data {
     main.rego = "${file("${path.module}/resources/opa/policies/main.rego")}"
   }
+
+  lifecycle {
+    ignore_changes = ["metadata.0.annotations"]
+  }
 }
 
 resource "kubernetes_config_map" "policy_ingress_clash" {
@@ -45,5 +49,9 @@ resource "kubernetes_config_map" "policy_ingress_clash" {
 
   data {
     main.rego = "${file("${path.module}/resources/opa/policies/ingress_clash.rego")}"
+  }
+
+  lifecycle {
+    ignore_changes = ["metadata.0.annotations"]
   }
 }
