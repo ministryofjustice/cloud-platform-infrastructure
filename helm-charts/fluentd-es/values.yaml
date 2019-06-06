@@ -1,7 +1,7 @@
 image:
-  repository: "k8s.gcr.io/fluentd-elasticsearch"
-  tag: v2.2.0
+  repository: "gcr.io/fluentd-elasticsearch/fluentd"
+  tag: v2.5.2
 
-fluent_elasticsearch_host: 
-fluent_elasticsearch_audit_host: 
+fluent_elasticsearch_host:
+fluent_elasticsearch_audit_host:
 fluent_kubernetes_cluster_name:
