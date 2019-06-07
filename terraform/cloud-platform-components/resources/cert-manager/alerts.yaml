@@ -1,0 +1,21 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: certificate-expiry
+  namespace: cert-manager
+spec:
+  groups:
+  - name: cert-manager
+    rules:
+    - alert: CertificateExpiresSoon
+      # cert-manager will renew certificates when they have 30 days left by default,
+      # as per ACME recommendation. When a certificate has less than 25 days left,
+      # this indicates a problem.
+      expr: certmanager_certificate_expiration_timestamp_seconds - time() < 25 * 24 * 3600
+      for: 1d
+      labels:
+        severity: warning
+      annotations:
+        message: A certificate managed by cert-manager will expire in 25 days.
+        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/README.md
