@@ -216,7 +216,7 @@ alertmanager:
     - name: 'slack-cica-dev-team'
       slack_configs:
       - api_url: "${slack_config_cica-dev-team}"
-        channel: "#inf_alerts"
+        channel: "#cica_inf_alerts"
         send_resolved: True
         title: '{{ template "slack.cp.title" . }}'
         text: '{{ template "slack.cp.text" . }}'
