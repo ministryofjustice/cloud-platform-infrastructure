@@ -3,8 +3,8 @@ module "cloudwatch_slack" {
 
   sns_topic_name = "slack-lower-priority-alarms"
 
-  slack_channel  = "lower-priority-alarms"
-  slack_username = "reporter"
+  slack_channel     = "lower-priority-alarms"
+  slack_username    = "reporter"
   slack_webhook_url = "${ var.slack_config_cloudwatch_lp }"
 }
 
@@ -32,6 +32,7 @@ PATTERN
     "module.cloudwatch_slack",
   ]
 }
+
 resource "aws_cloudwatch_event_target" "dlm_sns" {
   rule      = "${aws_cloudwatch_event_rule.dlm_state.name}"
   target_id = "SendToSNS"
