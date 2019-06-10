@@ -3,9 +3,10 @@ module "cloudwatch_slack" {
 
   sns_topic_name = "slack-lower-priority-alarms"
 
-  slack_channel     = "lower-priority-alarms"
-  slack_username    = "reporter"
-  slack_webhook_url = "${ var.slack_config_cloudwatch_lp }"
+  slack_channel        = "lower-priority-alarms"
+  slack_username       = "reporter"
+  slack_webhook_url    = "${ var.slack_config_cloudwatch_lp }"
+  lambda_function_name = "cloudwatch_to_slack_lp"
 }
 
 resource "aws_cloudwatch_event_rule" "dlm_state" {
