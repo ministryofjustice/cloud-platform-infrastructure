@@ -128,6 +128,9 @@ alertmanager:
           severity: cica-dev-team
         receiver: slack-cica-dev-team
       - match:
+          severity: form-builder
+        receiver: slack-form-builder
+      - match:
           severity: laa-cla-fala
         receiver: slack-laa-cla-fala
       - match:
@@ -217,6 +220,24 @@ alertmanager:
       slack_configs:
       - api_url: "${slack_config_cica-dev-team}"
         channel: "#cica_inf_alerts"
+        send_resolved: True
+        title: '{{ template "slack.cp.title" . }}'
+        text: '{{ template "slack.cp.text" . }}'
+        footer: ${ alertmanager_ingress }
+        actions:
+        - type: button
+          text: 'Runbook :blue_book:'
+          url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+        - type: button
+          text: 'Query :mag:'
+          url: '{{ (index .Alerts 0).GeneratorURL }}'
+        - type: button
+          text: 'Silence :no_bell:'
+          url: '{{ template "__alert_silence_link" . }}'
+    - name: 'slack-form-builder'
+      slack_configs:
+      - api_url: "${slack_config_form-builder}"
+        channel: "#form-builder-alerts"
         send_resolved: True
         title: '{{ template "slack.cp.title" . }}'
         text: '{{ template "slack.cp.text" . }}'
