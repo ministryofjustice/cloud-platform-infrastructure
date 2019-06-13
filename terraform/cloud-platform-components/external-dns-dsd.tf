@@ -1,31 +1,34 @@
 data "aws_route53_zone" "external_dns_dsd" {
-  provider = "aws.dsd"
-  count    = "${length(local.dsd_zones)}"
-  name     = "${local.dsd_zones[count.index]}"
+  provider = aws.dsd
+  count    = length(local.dsd_zones)
+  name     = local.dsd_zones[count.index]
 }
 
 resource "aws_iam_user" "external_dns_dsd" {
-  provider = "aws.dsd"
-  name     = "external-dns.${data.terraform_remote_state.cluster.cluster_domain_name}"
+  provider = aws.dsd
+  name     = "external-dns.${data.terraform_remote_state.cluster.outputs.cluster_domain_name}"
   path     = "/cloud-platform/"
 }
 
 resource "aws_iam_access_key" "external_dns_dsd" {
-  provider = "aws.dsd"
-  user     = "${aws_iam_user.external_dns_dsd.name}"
+  provider = aws.dsd
+  user     = aws_iam_user.external_dns_dsd.name
 }
 
 resource "aws_iam_user_policy" "external_dns_dsd" {
-  provider = "aws.dsd"
+  provider = aws.dsd
   name     = "route53-hostedzones"
-  policy   = "${data.aws_iam_policy_document.external_dns_dsd.json}"
-  user     = "${aws_iam_user.external_dns_dsd.name}"
+  policy   = data.aws_iam_policy_document.external_dns_dsd.json
+  user     = aws_iam_user.external_dns_dsd.name
 }
 
 data "aws_iam_policy_document" "external_dns_dsd" {
   statement {
-    actions   = ["route53:ChangeResourceRecordSets"]
-    resources = ["${formatlist("arn:aws:route53:::hostedzone/%s", data.aws_route53_zone.external_dns_dsd.*.zone_id)}"]
+    actions = ["route53:ChangeResourceRecordSets"]
+    resources = formatlist(
+      "arn:aws:route53:::hostedzone/%s",
+      data.aws_route53_zone.external_dns_dsd.*.zone_id,
+    )
   }
 
   statement {
@@ -40,7 +43,8 @@ resource "helm_release" "external_dns_dsd" {
   namespace = "kube-system"
   version   = "1.7.0"
 
-  values = [<<EOF
+  values = [
+    <<EOF
 image:
   tag: v0.5.11
 sources:
@@ -61,11 +65,13 @@ rbac:
 txtPrefix: "_external_dns."
 logLevel: info
 EOF
-  ]
+,
+]
 
-  depends_on = ["null_resource.deploy"]
+depends_on = [null_resource.deploy]
 
-  lifecycle {
-    ignore_changes = ["keyring"]
-  }
+lifecycle {
+ignore_changes = [keyring]
 }
+}
+

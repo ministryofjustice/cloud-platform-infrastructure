@@ -1,5 +1,5 @@
 data "template_file" "values" {
-  template = "${file("${path.module}/templates/opa/values.yaml.tpl")}"
+  template = file("${path.module}/templates/opa/values.yaml.tpl")
 }
 
 resource "helm_release" "open-policy-agent" {
@@ -10,26 +10,26 @@ resource "helm_release" "open-policy-agent" {
   version    = "1.3.2"
 
   values = [
-    "${data.template_file.values.rendered}",
+    data.template_file.values.rendered,
   ]
 
   lifecycle {
-    ignore_changes = ["keyring"]
+    ignore_changes = [keyring]
   }
 }
 
 resource "kubernetes_config_map" "policy_default" {
   metadata {
     name      = "policy-default"
-    namespace = "${helm_release.open-policy-agent.namespace}"
+    namespace = helm_release.open-policy-agent.namespace
 
-    labels {
+    labels = {
       "openpolicyagent.org/policy" = "rego"
     }
   }
 
-  data {
-    main.rego = "${file("${path.module}/resources/opa/policies/main.rego")}"
+  data = {
+    main.rego = file("${path.module}/resources/opa/policies/main.rego")
   }
 
   lifecycle {
@@ -40,18 +40,19 @@ resource "kubernetes_config_map" "policy_default" {
 resource "kubernetes_config_map" "policy_ingress_clash" {
   metadata {
     name      = "policy-ingress-clash"
-    namespace = "${helm_release.open-policy-agent.namespace}"
+    namespace = helm_release.open-policy-agent.namespace
 
-    labels {
+    labels = {
       "openpolicyagent.org/policy" = "rego"
     }
   }
 
-  data {
-    main.rego = "${file("${path.module}/resources/opa/policies/ingress_clash.rego")}"
+  data = {
+    main.rego = file("${path.module}/resources/opa/policies/ingress_clash.rego")
   }
 
   lifecycle {
     ignore_changes = ["metadata.0.annotations"]
   }
 }
+

@@ -1,31 +1,34 @@
 data "aws_route53_zone" "cert_manager_dsd" {
-  provider = "aws.dsd"
-  count    = "${length(local.dsd_zones)}"
-  name     = "${local.dsd_zones[count.index]}"
+  provider = aws.dsd
+  count    = length(local.dsd_zones)
+  name     = local.dsd_zones[count.index]
 }
 
 resource "aws_iam_user" "cert_manager_dsd" {
-  provider = "aws.dsd"
-  name     = "cert-manager.${data.terraform_remote_state.cluster.cluster_domain_name}"
+  provider = aws.dsd
+  name     = "cert-manager.${data.terraform_remote_state.cluster.outputs.cluster_domain_name}"
   path     = "/cloud-platform/"
 }
 
 resource "aws_iam_access_key" "cert_manager_dsd" {
-  provider = "aws.dsd"
-  user     = "${aws_iam_user.cert_manager_dsd.name}"
+  provider = aws.dsd
+  user     = aws_iam_user.cert_manager_dsd.name
 }
 
 resource "aws_iam_user_policy" "cert_manager_dsd" {
-  provider = "aws.dsd"
+  provider = aws.dsd
   name     = "route53-hostedzones"
-  policy   = "${data.aws_iam_policy_document.cert_manager_dsd.json}"
-  user     = "${aws_iam_user.cert_manager_dsd.name}"
+  policy   = data.aws_iam_policy_document.cert_manager_dsd.json
+  user     = aws_iam_user.cert_manager_dsd.name
 }
 
 data "aws_iam_policy_document" "cert_manager_dsd" {
   statement {
-    actions   = ["route53:ChangeResourceRecordSets"]
-    resources = ["${formatlist("arn:aws:route53:::hostedzone/%s", data.aws_route53_zone.cert_manager_dsd.*.zone_id)}"]
+    actions = ["route53:ChangeResourceRecordSets"]
+    resources = formatlist(
+      "arn:aws:route53:::hostedzone/%s",
+      data.aws_route53_zone.cert_manager_dsd.*.zone_id,
+    )
   }
 
   statement {
@@ -47,8 +50,9 @@ resource "kubernetes_secret" "cert_manager_dsd" {
     namespace = "cert-manager"
   }
 
-  data {
-    access_key_id     = "${aws_iam_access_key.cert_manager_dsd.id}"
-    secret_access_key = "${aws_iam_access_key.cert_manager_dsd.secret}"
+  data = {
+    access_key_id     = aws_iam_access_key.cert_manager_dsd.id
+    secret_access_key = aws_iam_access_key.cert_manager_dsd.secret
   }
 }
+

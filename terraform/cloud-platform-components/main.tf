@@ -13,16 +13,18 @@ provider "aws" {
   region  = "eu-west-2"
 }
 
-provider "kubernetes" {}
+provider "kubernetes" {
+}
 
 provider "helm" {
-  kubernetes {}
+  kubernetes {
+  }
 }
 
 data "terraform_remote_state" "cluster" {
   backend = "s3"
 
-  config {
+  config = {
     bucket  = "cloud-platform-terraform-state"
     region  = "eu-west-1"
     key     = "cloud-platform/${terraform.workspace}/terraform.tfstate"
@@ -33,7 +35,7 @@ data "terraform_remote_state" "cluster" {
 data "terraform_remote_state" "global" {
   backend = "s3"
 
-  config {
+  config = {
     bucket  = "cloud-platform-terraform-state"
     region  = "eu-west-1"
     key     = "global-resources/terraform.tfstate"
@@ -43,10 +45,11 @@ data "terraform_remote_state" "global" {
 
 // This is the kubernetes role that node hosts are assigned.
 data "aws_iam_role" "nodes" {
-  name = "nodes.${data.terraform_remote_state.cluster.cluster_domain_name}"
+  name = "nodes.${data.terraform_remote_state.cluster.outputs.cluster_domain_name}"
 }
 
-data "aws_caller_identity" "current" {}
+data "aws_caller_identity" "current" {
+}
 
 provider "aws" {
   alias   = "dsd"
@@ -66,3 +69,4 @@ locals {
   live_workspace = "live-1"
   live_domain    = "cloud-platform.service.justice.gov.uk"
 }
+

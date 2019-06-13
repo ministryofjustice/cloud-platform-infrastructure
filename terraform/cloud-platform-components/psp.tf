@@ -4,7 +4,8 @@ resource "null_resource" "pod_security_policy" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "kubectl delete --ignore-not-found -f ${path.module}/resources/psp/pod-security-policy.yaml"
   }
 }
+
