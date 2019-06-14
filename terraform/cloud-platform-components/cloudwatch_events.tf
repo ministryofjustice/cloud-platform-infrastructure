@@ -1,5 +1,5 @@
 module "cloudwatch_slack" {
-  source = "terraform-aws-modules/notify-slack/aws"
+  source  = "terraform-aws-modules/notify-slack/aws"
   version = "~> 1.0"
 
   sns_topic_name = "slack-lower-priority-alarms"
