@@ -30,3 +30,6 @@ variable "slack_config_prisoner-money" {
   description = "Add Slack webhook API URL and channel for integration with slack."
 }
 
+variable "github_client_id" {}
+variable "github_client_secret" {}
+variable "github_secret_key" {}
