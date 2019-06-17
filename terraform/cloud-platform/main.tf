@@ -62,6 +62,7 @@ module "cluster_ssl" {
 }
 
 module "cluster_vpc" {
+  version              = "1.66.0"
   source               = "terraform-aws-modules/vpc/aws"
   name                 = "${local.cluster_name}"
   cidr                 = "${var.vpc_cidr}"
