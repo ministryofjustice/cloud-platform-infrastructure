@@ -33,3 +33,7 @@ variable "slack_config_laa-cla-fala" {
 variable "slack_config_prisoner-money" {
   description = "Add Slack webhook API URL and channel for integration with slack."
 }
+
+variable "slack_config_cloudwatch_lp" {
+  description = "Add Slack webhook API URL for integration with slack."
+}
