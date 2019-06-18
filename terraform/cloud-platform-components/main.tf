@@ -9,6 +9,7 @@ terraform {
 }
 
 provider "aws" {
+  version = ">= 1.0.0, < 2.0.0"
   profile = "moj-cp"
   region  = "eu-west-2"
 }
