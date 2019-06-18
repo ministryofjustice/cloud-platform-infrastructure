@@ -1190,7 +1190,15 @@ prometheus:
     ## The scrape configuraiton example below will find master nodes, provided they have the name .*mst.*, relabel the
     ## port to 2379 and allow etcd scraping provided it is running on all Kubernetes master nodes
     ##
-    additionalScrapeConfigs: []
+    additionalScrapeConfigs:
+      - job_name: cloudwatch_exporter
+        scrape_interval: 60s
+        scrape_timeout:  30s
+        metrics_path: "/metrics"
+        static_configs:
+        - targets: ['cloudwatch-exporter-prometheus-cloudwatch-exporter:9106']
+          labels:
+            app: prometheus-cloudwatch_exporter
     # - job_name: kube-etcd
     #   kubernetes_sd_configs:
     #     - role: node
