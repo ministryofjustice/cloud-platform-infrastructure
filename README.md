@@ -27,7 +27,7 @@ Terraform resources are split into four directories with matching state objects 
 - `global-resources` contains 'global' AWS resources that are not part of specific clusters or platform environments - e.g. elasticsearch and s3.
 - `cloud-platform` contains resources for the Cloud Platform environments - e.g. bastion hosts and kops.
 - `cloud-platform-account` contains account specifics like cloud-trail. We decided to seperate account level Terraform and global "run once" as we're currently running from multiple AWS accounts.
-- `cloud-platform-components` contains appications required to bootstrap a cluster i.e. getting a Cloud Platform cluster into a functional state.  
+- `cloud-platform-components` contains appications required to bootstrap a cluster i.e. getting a Cloud Platform cluster into a functional state.
 
 As all four resources are defined with separate state backends, `terraform plan` and `apply` must be run separately:
 
