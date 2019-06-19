@@ -17,8 +17,8 @@ resource "random_id" "id" {
 }
 
 resource "aws_s3_bucket" "cloudtrail_bucket" {
-  bucket        = "${var.cloudtrail_bucket_name}-${random_id.id.hex}"
-  force_destroy = true
+  provider = "aws.ireland"
+  bucket   = "${var.cloudtrail_bucket_name}-${random_id.id.hex}"
 
   tags {
     business-unit          = "${var.business_unit}"
@@ -41,6 +41,15 @@ resource "aws_s3_bucket" "cloudtrail_bucket" {
       days = 365
     }
   }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
 
   policy = <<POLICY
 {
