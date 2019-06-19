@@ -52,7 +52,6 @@ resource "aws_s3_bucket" "cloudtrail_bucket" {
     }
   }
 
-
   policy = <<POLICY
 {
     "Version": "2012-10-17",
