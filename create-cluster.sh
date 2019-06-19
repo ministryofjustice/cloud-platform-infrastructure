@@ -72,7 +72,7 @@ install_components() {
 }
 
 wait_for_kops_validate() {
-  local readonly max_tries=15
+  local readonly max_tries=30
   local validated=0
 
   for attempt in $(seq 1 $max_tries); do
