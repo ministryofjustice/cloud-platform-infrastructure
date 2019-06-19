@@ -43,11 +43,11 @@ run_kops() {
   kops create -f kops/${cluster_name}.yaml
 
   # This is a throwaway SSH key which we never need again.
-  rm -rf /tmp/${CLUSTER_NAME}*
-  ssh-keygen -b 4096 -P '' -f /tmp/${CLUSTER_NAME}
+  rm -rf /tmp/${cluster_name}*
+  ssh-keygen -b 4096 -P '' -f /tmp/${cluster_name}
 
-  kops create secret --name ${CLUSTER_NAME}.${CLUSTER_SUFFIX} sshpublickey admin -i /tmp/${CLUSTER_NAME}.pub
-  kops update cluster ${CLUSTER_NAME}.${CLUSTER_SUFFIX} --yes --alsologtostderr
+  kops create secret --name ${cluster_name}.${CLUSTER_SUFFIX} sshpublickey admin -i /tmp/${cluster_name}.pub
+  kops update cluster ${cluster_name}.${CLUSTER_SUFFIX} --yes --alsologtostderr
 
   wait_for_kops_validate
 }
