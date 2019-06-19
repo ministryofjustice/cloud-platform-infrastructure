@@ -24,6 +24,7 @@ main() {
   get_sudo
 
   create_cluster ${cluster_name}
+  sleep 5 # we need a small delay here, to ensure that the kops/${cluster_name}.yaml file has been written
   run_kops ${cluster_name}
   install_components ${cluster_name}
 
