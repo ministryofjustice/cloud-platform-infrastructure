@@ -1,4 +1,6 @@
 resource "aws_cloudtrail" "cloud-platform_cloudtrail" {
+  provider = "aws.ireland"
+
   name                          = "cloud-platform-cloudtrail"
   s3_bucket_name                = "${aws_s3_bucket.cloudtrail_bucket.id}"
   include_global_service_events = true
