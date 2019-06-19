@@ -16,3 +16,7 @@ variable "infrastructure_support" {
 variable "cloudtrail_bucket_name" {
   default = "cloud-platform-cloudtrail"
 }
+
+variable "slack_config_cloudwatch_lp" {
+  description = "Add Slack webhook API URL for integration with slack."
+}
