@@ -45,7 +45,7 @@ run_kops() {
   kops create -f kops/${cluster_name}.yaml
 
   # This is a throwaway SSH key which we never need again.
-  rm -rf /tmp/${cluster_name}*
+  rm -f /tmp/${cluster_name} /tmp/${cluster_name}.pub
   ssh-keygen -b 4096 -P '' -f /tmp/${cluster_name}
 
   kops create secret --name ${cluster_name}.${CLUSTER_SUFFIX} sshpublickey admin -i /tmp/${cluster_name}.pub
