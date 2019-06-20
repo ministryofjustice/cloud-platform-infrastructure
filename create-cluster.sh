@@ -126,6 +126,7 @@ check_env_vars() {
   test $KOPS_STATE_STORE
 }
 
+# https://stackoverflow.com/a/677212/794111 <-- explains 'hash' vs. 'which'
 check_software_installed() {
   hash git-crypt
   hash terraform
