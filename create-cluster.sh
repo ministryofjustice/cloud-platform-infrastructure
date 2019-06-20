@@ -24,7 +24,6 @@ main() {
   get_sudo
 
   create_cluster ${cluster_name}
-  sleep 5 # we need a small delay here, to ensure that the kops/${cluster_name}.yaml file has been written
   run_kops ${cluster_name}
   install_components ${cluster_name}
 
@@ -33,9 +32,11 @@ main() {
 
 create_cluster() {
   local readonly cluster_name=$1
-  cd terraform/cloud-platform
-  switch_terraform_workspace ${cluster_name}
-  terraform apply -auto-approve
+  (
+    cd terraform/cloud-platform
+    switch_terraform_workspace ${cluster_name}
+    terraform apply -auto-approve
+  )
 }
 
 run_kops() {
