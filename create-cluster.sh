@@ -63,6 +63,13 @@ install_components() {
   cd terraform/cloud-platform-components
   switch_terraform_workspace ${cluster_name}
 
+  # Ensure we have the latest helm charts for all the required components
+  helm repo update
+  # Without this step, you may get errors like this:
+  #
+  #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
+  #
+
   if terraform apply -auto-approve
   then
     echo "Cluster components installed."
