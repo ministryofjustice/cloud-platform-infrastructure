@@ -10,6 +10,7 @@ image:
   pullPolicy: IfNotPresent
 
 aws:
+  role:
   # The name of a pre-created secret in which AWS credentials are stored. When
   # set, aws_access_key_id is assumed to be in a field called access_key,
   # aws_secret_access_key is assumed to be in a field called secret_key, and the
@@ -17,7 +18,7 @@ aws:
   # security_token
   # Secret deployed from monitoring namespace in environments
   secret:
-    name: "cloudwatch-prometheus-secret"
+    name: 
     includesSessionToken: false
 
 config: |-
