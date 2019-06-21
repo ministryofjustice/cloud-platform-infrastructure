@@ -246,6 +246,18 @@ resource "aws_elasticsearch_domain" "audit" {
   tags {
     Domain = "${local.audit_domain}"
   }
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = ""
+    enabled                  = false
+    log_type                 = "ES_APPLICATION_LOGS"
+  }
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = ""
+    enabled                  = false
+    log_type                 = "INDEX_SLOW_LOGS"
+  }
 }
 
 resource "aws_elasticsearch_domain" "audit_1" {
@@ -324,4 +336,10 @@ resource "aws_elasticsearch_domain" "test" {
   ]
 }
 TESTPOLICY
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = ""
+    enabled                  = false
+    log_type                 = "ES_APPLICATION_LOGS"
+  }
 }
