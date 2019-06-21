@@ -263,11 +263,12 @@ resource "aws_elasticsearch_domain" "audit" {
 resource "aws_elasticsearch_domain" "audit_1" {
   domain_name           = "${local.audit_domain}"
   provider              = "aws.cloud-platform"
-  elasticsearch_version = "6.4"
+  elasticsearch_version = "6.5"
 
   cluster_config {
-    instance_type  = "m4.xlarge.elasticsearch"
-    instance_count = "3"
+    instance_type          = "m4.xlarge.elasticsearch"
+    instance_count         = "3"
+    zone_awareness_enabled = true
   }
 
   ebs_options {
