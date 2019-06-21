@@ -34,6 +34,7 @@ create_cluster() {
   local readonly cluster_name=$1
   (
     cd terraform/cloud-platform
+    rm -rf .terraform
     switch_terraform_workspace ${cluster_name}
     terraform apply -auto-approve
   )
@@ -61,6 +62,7 @@ run_kops() {
 install_components() {
   local readonly cluster_name=$1
   cd terraform/cloud-platform-components
+  rm -rf .terraform
   switch_terraform_workspace ${cluster_name}
 
   # Ensure we have the latest helm charts for all the required components
