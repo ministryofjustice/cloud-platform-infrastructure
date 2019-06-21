@@ -3,7 +3,7 @@
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "guardduty" {
-  provider                     = "aws.cloud-platform"
+  provider                     = "aws.cloud-platform-ireland"
   enable                       = true
   finding_publishing_frequency = "FIFTEEN_MINUTES"
 }
@@ -13,7 +13,7 @@ resource "aws_guardduty_detector" "guardduty" {
 # -----------------------------------------------------------
 
 resource "aws_s3_bucket" "security" {
-  provider      = "aws.cloud-platform"
+  provider      = "aws.cloud-platform-ireland"
   bucket_prefix = "${var.bucket_prefix}"
   acl           = "private"
   region        = "${var.aws_region}"
@@ -26,7 +26,7 @@ resource "aws_s3_bucket" "security" {
 }
 
 resource "aws_s3_bucket_object" "ip_list" {
-  provider     = "aws.cloud-platform"
+  provider     = "aws.cloud-platform-ireland"
   key          = "iplist.txt"
   bucket       = "${aws_s3_bucket.security.id}"
   source       = "${path.module}/resources/iplist.txt"
@@ -39,7 +39,7 @@ resource "aws_s3_bucket_object" "ip_list" {
 # -----------------------------------------------------------
 
 resource "aws_iam_policy" "enable_guardduty" {
-  provider    = "aws.cloud-platform"
+  provider    = "aws.cloud-platform-ireland"
   name        = "enable-guardduty"
   path        = "/"
   description = "Allows setup and configuration of GuardDuty"
@@ -81,7 +81,7 @@ EOF
 }
 
 resource "aws_iam_policy" "use_security_bucket" {
-  provider    = "aws.cloud-platform"
+  provider    = "aws.cloud-platform-ireland"
   name        = "access-security-bucket"
   path        = "/security/"
   description = "Allows full access to the contents of the security bucket"
@@ -104,37 +104,37 @@ EOF
 }
 
 resource "aws_iam_group" "guardduty" {
-  provider = "aws.cloud-platform"
+  provider = "aws.cloud-platform-ireland"
   name     = "${var.group_name}"
   path     = "/"
 }
 
 resource "aws_iam_group_policy_attachment" "enable" {
-  provider   = "aws.cloud-platform"
+  provider   = "aws.cloud-platform-ireland"
   group      = "${aws_iam_group.guardduty.name}"
   policy_arn = "${aws_iam_policy.enable_guardduty.arn}"
 }
 
 resource "aws_iam_group_policy_attachment" "useS3bucket" {
-  provider   = "aws.cloud-platform"
+  provider   = "aws.cloud-platform-ireland"
   group      = "${aws_iam_group.guardduty.name}"
   policy_arn = "${aws_iam_policy.use_security_bucket.arn}"
 }
 
 resource "aws_iam_group_policy_attachment" "access" {
-  provider   = "aws.cloud-platform"
+  provider   = "aws.cloud-platform-ireland"
   group      = "${aws_iam_group.guardduty.name}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonGuardDutyFullAccess"
 }
 
 resource "aws_iam_group_policy_attachment" "s3readonly" {
-  provider   = "aws.cloud-platform"
+  provider   = "aws.cloud-platform-ireland"
   group      = "${aws_iam_group.guardduty.name}"
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
 
 resource "aws_iam_group_membership" "guardduty" {
-  provider = "aws.cloud-platform"
+  provider = "aws.cloud-platform-ireland"
   name     = "guardduty-admin-members"
   group    = "${aws_iam_group.guardduty.name}"
   users    = "${var.users}"
@@ -146,7 +146,7 @@ resource "aws_iam_group_membership" "guardduty" {
 # -----------------------------------------------------------
 
 resource "aws_cloudwatch_event_rule" "main" {
-  provider      = "aws.cloud-platform"
+  provider      = "aws.cloud-platform-ireland"
   name          = "guardduty-finding-events"
   description   = "AWS GuardDuty event findings"
   event_pattern = "${file("${path.module}/resources/event-pattern.json")}"
@@ -157,7 +157,7 @@ resource "aws_cloudwatch_event_rule" "main" {
 # -----------------------------------------------------------
 
 resource "aws_cloudwatch_event_target" "main" {
-  provider  = "aws.cloud-platform"
+  provider  = "aws.cloud-platform-ireland"
   rule      = "${aws_cloudwatch_event_rule.main.name}"
   target_id = "send-to-sns"
   arn       = "${aws_sns_topic.GuardDuty-notifications.arn}"
@@ -168,12 +168,12 @@ resource "aws_cloudwatch_event_target" "main" {
 # -----------------------------------------------------------
 
 resource "aws_sns_topic" "GuardDuty-notifications" {
-  provider = "aws.cloud-platform"
+  provider = "aws.cloud-platform-ireland"
   name     = "GuardDuty-notifications"
 }
 
 resource "aws_sns_topic_subscription" "GuardDuty-notifications_sns_subscription" {
-  provider               = "aws.cloud-platform"
+  provider               = "aws.cloud-platform-ireland"
   topic_arn              = "${aws_sns_topic.GuardDuty-notifications.arn}"
   protocol               = "https"
   endpoint               = "${var.endpoint}"
@@ -205,7 +205,7 @@ resource "aws_guardduty_detector" "member" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member" {
-  provider           = "aws.cloud-platform"
+  provider           = "aws.cloud-platform-ireland"
   account_id         = "${aws_guardduty_detector.member.account_id}"
   detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member_email}"
@@ -238,7 +238,7 @@ resource "aws_guardduty_detector" "member1" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member1" {
-  provider           = "aws.cloud-platform"
+  provider           = "aws.cloud-platform-ireland"
   account_id         = "${aws_guardduty_detector.member1.account_id}"
   detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member1_email}"
@@ -271,7 +271,7 @@ resource "aws_guardduty_detector" "member2" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member2" {
-  provider           = "aws.cloud-platform"
+  provider           = "aws.cloud-platform-ireland"
   account_id         = "${aws_guardduty_detector.member2.account_id}"
   detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member2_email}"
@@ -304,7 +304,7 @@ resource "aws_guardduty_detector" "member3" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member3" {
-  provider           = "aws.cloud-platform"
+  provider           = "aws.cloud-platform-ireland"
   account_id         = "${aws_guardduty_detector.member3.account_id}"
   detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member3_email}"
@@ -337,7 +337,7 @@ resource "aws_guardduty_detector" "member4" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member4" {
-  provider           = "aws.cloud-platform"
+  provider           = "aws.cloud-platform-ireland"
   account_id         = "${aws_guardduty_detector.member4.account_id}"
   detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member4_email}"
@@ -370,7 +370,7 @@ resource "aws_guardduty_detector" "member5" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member5" {
-  provider           = "aws.cloud-platform"
+  provider           = "aws.cloud-platform-ireland"
   account_id         = "${aws_guardduty_detector.member5.account_id}"
   detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member5_email}"
@@ -403,7 +403,7 @@ resource "aws_guardduty_detector" "member6" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member6" {
-  provider           = "aws.cloud-platform"
+  provider           = "aws.cloud-platform-ireland"
   account_id         = "${aws_guardduty_detector.member6.account_id}"
   detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member6_email}"
@@ -436,7 +436,7 @@ resource "aws_guardduty_detector" "member7" {
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member7" {
-  provider           = "aws.cloud-platform"
+  provider           = "aws.cloud-platform-ireland"
   account_id         = "${aws_guardduty_detector.member7.account_id}"
   detector_id        = "${aws_guardduty_detector.guardduty.id}"
   email              = "${var.member7_email}"
@@ -445,7 +445,7 @@ resource "aws_guardduty_member" "member7" {
 }
 
 resource "aws_guardduty_ipset" "guardduty" {
-  provider    = "aws.cloud-platform"
+  provider    = "aws.cloud-platform-ireland"
   activate    = true
   detector_id = "${aws_guardduty_detector.guardduty.id}"
   format      = "TXT"

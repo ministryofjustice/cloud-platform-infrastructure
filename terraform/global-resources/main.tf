@@ -29,6 +29,12 @@ provider "aws" {
   profile = "moj-cp"
 }
 
+provider "aws" {
+  region  = "eu-west-1"
+  alias   = "cloud-platform-ireland"
+  profile = "moj-cp"
+}
+
 data "aws_caller_identity" "cloud-platform" {
   provider = "aws.cloud-platform"
 }
