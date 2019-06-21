@@ -1,6 +1,16 @@
 # Prometheus operator
 # Ref: https://github.com/helm/charts/tree/master/stable/prometheus-operator
 
+resource "kubernetes_namespace" "monitoring" {
+  metadata {
+    name = "monitoring"
+
+    annotations {
+      "iam.amazonaws.com/permitted" = ".*"
+    }
+  }
+}
+
 resource "kubernetes_secret" "grafana_secret" {
   metadata {
     name      = "grafana-env"
@@ -151,20 +161,4 @@ resource "helm_release" "alertmanager_proxy" {
   lifecycle {
     ignore_changes = ["keyring"]
   }
-}
-
-resource "helm_release" "cloudwatch_exporter" {
-  name      = "cloudwatch-exporter"
-  count     = "${terraform.workspace == local.live_workspace ? 1 : 0}"
-  namespace = "monitoring"
-  chart     = "stable/prometheus-cloudwatch-exporter"
-
-  values = [
-    "${file("./resources/cloudwatch-exporter.yaml")}",
-  ]
-
-  depends_on = [
-    "null_resource.deploy",
-    "helm_release.prometheus_operator",
-  ]
 }
