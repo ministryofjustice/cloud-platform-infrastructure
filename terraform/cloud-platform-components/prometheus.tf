@@ -155,6 +155,7 @@ resource "helm_release" "alertmanager_proxy" {
 
 resource "helm_release" "cloudwatch_exporter" {
   name      = "cloudwatch-exporter"
+  count     = "${terraform.workspace == local.live_workspace ? 1 : 0}"
   namespace = "monitoring"
   chart     = "stable/prometheus-cloudwatch-exporter"
 
