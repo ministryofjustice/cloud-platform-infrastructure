@@ -152,3 +152,18 @@ resource "helm_release" "alertmanager_proxy" {
     ignore_changes = ["keyring"]
   }
 }
+
+resource "helm_release" "cloudwatch_exporter" {
+  name      = "cloudwatch-exporter"
+  namespace = "monitoring"
+  chart     = "stable/prometheus-cloudwatch-exporter"
+
+  values = [
+    "${file("./resources/cloudwatch-exporter.yaml")}",
+  ]
+
+  depends_on = [
+    "null_resource.deploy",
+    "helm_release.prometheus_operator",
+  ]
+}
