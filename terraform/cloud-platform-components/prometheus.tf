@@ -1,7 +1,7 @@
 # Prometheus operator
 # Ref: https://github.com/helm/charts/tree/master/stable/prometheus-operator
 
-resoure "kubernetes_namespace" "monitoring" {
+resource "kubernetes_namespace" "monitoring" {
   metadata {
     name = "monitoring"
   }
