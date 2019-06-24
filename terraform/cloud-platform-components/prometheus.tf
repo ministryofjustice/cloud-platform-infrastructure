@@ -1,7 +1,15 @@
 # Prometheus operator
 # Ref: https://github.com/helm/charts/tree/master/stable/prometheus-operator
 
+resource "kubernetes_namespace" "monitoring" {
+  metadata {
+    name = "monitoring"
+  }
+}
+
 resource "kubernetes_secret" "grafana_secret" {
+  depends_on = ["kubernetes_namespace.monitoring"]
+
   metadata {
     name      = "grafana-env"
     namespace = "monitoring"
@@ -61,6 +69,7 @@ resource "helm_release" "prometheus_operator" {
   # Depends on Helm being installed
   depends_on = [
     "null_resource.deploy",
+    "kubernetes_secret.grafana_secret",
   ]
 
   provisioner "local-exec" {

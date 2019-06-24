@@ -34,6 +34,7 @@ create_cluster() {
   local readonly cluster_name=$1
   (
     cd terraform/cloud-platform
+    rm -rf .terraform
     switch_terraform_workspace ${cluster_name}
     terraform apply -auto-approve
   )
@@ -61,7 +62,15 @@ run_kops() {
 install_components() {
   local readonly cluster_name=$1
   cd terraform/cloud-platform-components
+  rm -rf .terraform
   switch_terraform_workspace ${cluster_name}
+
+  # Ensure we have the latest helm charts for all the required components
+  helm repo update
+  # Without this step, you may get errors like this:
+  #
+  #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
+  #
 
   if terraform apply -auto-approve
   then
