@@ -45,7 +45,7 @@ resource "helm_release" "cloudwatch_exporter" {
   ]
 
   set {
-    name  = "aws.secret.role"
+    name  = "aws.role"
     value = "${aws_iam_role.cloudwatch_exporter.name}"
   }
 
