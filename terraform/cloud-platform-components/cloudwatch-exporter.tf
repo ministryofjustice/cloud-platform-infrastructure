@@ -14,7 +14,7 @@ data "aws_iam_policy_document" "cloudwatch_export_assume" {
 
 resource "aws_iam_role" "cloudwatch_exporter" {
   name               = "cloudwatch.${data.terraform_remote_state.cluster.cluster_domain_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.external_dns_assume.json}"
+  assume_role_policy = "${data.aws_iam_policy_document.cloudwatch_export_assume.json}"
 }
 
 data "aws_iam_policy_document" "cloudwatch_exporter" {
