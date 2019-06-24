@@ -20,3 +20,8 @@ provider "aws" {
   region  = "eu-west-2"
   profile = "${lookup(local.workspace_to_profile, terraform.workspace)}"
 }
+
+provider "aws" {
+  region = "eu-west-1"
+  alias  = "ireland"
+}

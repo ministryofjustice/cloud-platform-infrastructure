@@ -12,8 +12,7 @@ Here you'll also find instruction on how to operate a Cloud Platform cluster.
   - [Cloud Platform environments](#cloud-platform-environments)
   - [Terraform modules](#terraform-modules)
   - [How to add your examples](#how-to-add-your-examples)
-  - [How to create a new cluster](#how-to-create-a-new-cluster)
-  - [How to delete a cluster](#how-to-delete-a-cluster)
+  - [Create/Delete a cluster](#createdelete-a-cluster)
   - [Disaster recovery](docs/disaster-recovery/README.md)
   - [Prometheus config and install](https://github.com/ministryofjustice/cloud-platform-prometheus#cloud-platform-prometheus)
   - [Logging](docs/logging/README.md)
@@ -27,7 +26,7 @@ Terraform resources are split into four directories with matching state objects 
 - `global-resources` contains 'global' AWS resources that are not part of specific clusters or platform environments - e.g. elasticsearch and s3.
 - `cloud-platform` contains resources for the Cloud Platform environments - e.g. bastion hosts and kops.
 - `cloud-platform-account` contains account specifics like cloud-trail. We decided to seperate account level Terraform and global "run once" as we're currently running from multiple AWS accounts.
-- `cloud-platform-components` contains appications required to bootstrap a cluster i.e. getting a Cloud Platform cluster into a functional state.  
+- `cloud-platform-components` contains appications required to bootstrap a cluster i.e. getting a Cloud Platform cluster into a functional state.
 
 As all four resources are defined with separate state backends, `terraform plan` and `apply` must be run separately:
 
@@ -207,96 +206,6 @@ $ kops cluster rolling-update
 $ kops cluster rolling-update --yes
 ```
 
-## How to create a new cluster
+### Create/Delete a cluster
 
-0. Before you begin, there are a few pre-reqs:
-
-- Your GPG key must be added to the repo so you are able to  `git-crypt unlock` before you make any changes
-
-- You must ensure your local `helm` version is => `2.11`. Also, `helm repo update` or you might see some failures at step 6.
-
-- The Auth0 Terraform provider isn't listed in the official Terraform repository. You must download the provider using the instructions here:
-https://github.com/yieldr/terraform-provider-auth0#using-the-provider
-For the auth0 provider, setup the following environment variables locally:
-```
-  AUTH0_DOMAIN="justice-cloud-platform.eu.auth0.com"
-  AUTH0_CLIENT_ID="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  AUTH0_CLIENT_SECRET="yyyyyyyyyyyyyyyyyyyyyyyyyyyy"
-```
-The values are from the `terraform-provider-auth0` app on https://manage.auth0.com/#/applications
-
-1. To create a new cluster, you must create a new terraform workspace and apply the `cloud-platform` resources. Ensure at all times that you are in the correct workspace with `$ terraform workspace list`.
-```bash
-$ export AWS_PROFILE=moj-cp
-$ cd terraform/cloud-platform
-$ terraform init
-$ terraform workspace new <clusterName e.g. cloud-platform-test-3>
-$ terraform plan
-$ terraform apply
-```
-2. Set more environment variables.
-```bash
-$ export KOPS_STATE_STORE="s3://$(terraform output kops_state_store)"
-$ export CLUSTER_NAME=$(terraform output cluster_name)
-```
-3. Terraform creates a `kops/${CLUSTER_NAME}.yaml` file in your local directory. K8s release should track the version supported by Kops, check https://github.com/kubernetes/kops/releases. Use `kops` to create your cluster.
-```bash
-$ kops create -f ../../kops/${CLUSTER_NAME}.yaml
-```
-4. Create SSH public key in kops state store.
-```bash
-$ kops create secret --name ${CLUSTER_NAME}.cloud-platform.service.justice.gov.uk sshpublickey admin -i ~/.ssh/id_rsa.pub
-```
-5. Create cluster resources in AWS.
-aka update cluster in AWS according to the yaml specification:
-```bash
-kops update cluster ${CLUSTER_NAME}.cloud-platform.service.justice.gov.uk --yes
-```
-When complete (takes a few minutes), you can check the progress with:
-```bash
-$ kops validate cluster
-```
-Once it reports Your cluster `${CLUSTER_NAME}.cloud-platform.service.justice.gov.uk is ready` you can proceed to use kubectl to interact with the cluster.
-
-6. Now you need to install the `cloud-platform-components`.
-```bash
-$ cd ../cloud-platform-components
-$ terraform init
-$ terraform workspace new <clusterName e.g. cloud-platform-test-3>
-$ terraform plan
-$ terraform apply
-```
-*Warning* a failure while installing `tiller` will make `helm` downgrade itself to v2.9, and nothing will work from there, doublecheck with
-```
-$ helm version
-Client: &version.Version{SemVer:"v2.11.0", GitCommit:"2e55dbe1fdb5fdb96b75ff144a339489417b146b", GitTreeState:"clean"}
-Server: &version.Version{SemVer:"v2.11.0", GitCommit:"2e55dbe1fdb5fdb96b75ff144a339489417b146b", GitTreeState:"clean"}
-```
-fix / destroy / apply again if the values don't match.
-
-### How to delete a cluster
-
-1. To delete a cluster you must first export the following:
-```
-$ export AWS_PROFILE=moj-cp
-$ export KOPS_STATE_STORE=s3://cloud-platform-kops-state
-```
-2. After changing directory, run the following command which will destroy all cluster components.
-```bash
-$ cd terraform/cloud-platform-components
-$ terraform init
-$ terraform workspace select <clusterName e.g. cloud-platform-test-3>
-$ terraform destroy
-```
-3. Then run the following `kops` command (this will not delete the cluster). Append it with `--yes` to confirm deletion.
-```
-$ kops delete cluster --name <clusterName>
-```
-4. Change directories and perform the following, destroying the cluster essentials.
-```bash
-$ cd ../cloud-platform
-$ terraform init
-$ terraform workspace select <clusterName e.g. cloud-platform-test-3>
-$ terraform destroy
-```
-5. Additional cleanup (optional): ensure all references to `<clusterName>` are gone from `KOPS_STATE_STORE`, `terraform workspace delete <clusterName>`
+See [the runbooks site](https://runbooks.cloud-platform.service.justice.gov.uk)
