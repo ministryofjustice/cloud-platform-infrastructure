@@ -16,10 +16,6 @@ aws:
   # aws_secret_access_key is assumed to be in a field called secret_key, and the
   # session token, if it exists, is assumed to be in a field called
   # security_token
-  # Secret deployed from monitoring namespace in environments
-  secret:
-    name: 
-    includesSessionToken: false
 
 config: |-
   # To add additional Cloudwatch metrics, please append this config list.
