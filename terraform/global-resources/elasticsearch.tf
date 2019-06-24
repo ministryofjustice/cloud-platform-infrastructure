@@ -115,10 +115,11 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   cluster_config {
     instance_type            = "m4.xlarge.elasticsearch"
-    instance_count           = "4"
+    instance_count           = "6"
     dedicated_master_enabled = true
     dedicated_master_type    = "m4.large.elasticsearch"
     dedicated_master_count   = "3"
+    zone_awareness_enabled   = true
   }
 
   ebs_options {
