@@ -4,6 +4,10 @@
 resource "kubernetes_namespace" "monitoring" {
   metadata {
     name = "monitoring"
+
+    annotations {
+      "iam.amazonaws.com/permitted" = ".*"
+    }
   }
 }
 
