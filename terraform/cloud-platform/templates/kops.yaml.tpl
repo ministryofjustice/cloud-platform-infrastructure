@@ -390,6 +390,7 @@ spec:
   machineType: r5.xlarge
   maxSize: 15
   minSize: ${cluster_node_min_size}
+  rootVolumeSize: 256
   nodeLabels:
     kops.k8s.io/instancegroup: nodes
   cloudLabels:
