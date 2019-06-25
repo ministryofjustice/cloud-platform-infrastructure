@@ -7,4 +7,8 @@ resource "null_resource" "pod_security_policy" {
     when    = "destroy"
     command = "kubectl delete --ignore-not-found -f ${path.module}/resources/psp/pod-security-policy.yaml"
   }
+
+  triggers {
+    content = "${sha1(file("${path.module}/resources/psp/pod-security-policy.yaml"))}"
+  }
 }
