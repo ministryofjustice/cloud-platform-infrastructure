@@ -72,3 +72,6 @@ server:
 
   prometheus:
     port: 9621
+
+psp:
+  create: true
