@@ -114,7 +114,7 @@ resource "helm_release" "kiam" {
   name          = "kiam"
   chart         = "stable/kiam"
   namespace     = "kiam"
-  version       = "2.0.0-rc3"
+  version       = "2.4.0"
   recreate_pods = "true"
 
   values = [
