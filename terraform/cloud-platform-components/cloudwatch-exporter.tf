@@ -53,4 +53,8 @@ resource "helm_release" "cloudwatch_exporter" {
     "null_resource.deploy",
     "helm_release.prometheus_operator",
   ]
+
+  lifecycle {
+    ignore_changes = ["keyring"]
+  }
 }
