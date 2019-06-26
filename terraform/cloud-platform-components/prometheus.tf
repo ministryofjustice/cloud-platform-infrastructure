@@ -51,6 +51,7 @@ data "template_file" "prometheus_operator" {
     slack_config_apply-for-legal-aid-staging = "${var.slack_config_apply-for-legal-aid-staging}"
     slack_config_apply-for-legal-aid-uat     = "${var.slack_config_apply-for-legal-aid-uat}"
     slack_config_cica-dev-team               = "${var.slack_config_cica-dev-team}"
+    slack_config_family-justice              = "${var.slack_config_family-justice}"
     slack_config_form-builder                = "${var.slack_config_form-builder}"
     slack_config_laa-cla-fala                = "${var.slack_config_laa-cla-fala}"
     slack_config_prisoner-money              = "${var.slack_config_prisoner-money}"
