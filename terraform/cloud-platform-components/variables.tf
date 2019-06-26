@@ -22,6 +22,10 @@ variable "slack_config_cica-dev-team" {
   description = "Add Slack webhook API URL and channel for integration with slack."
 }
 
+variable "slack_config_family-justice" {
+  description = "Add family-justice Slack webhook API URL and channel for integration with slack."
+}
+
 variable "slack_config_form-builder" {
   description = "Add form-builder Slack webhook API URL and channel for integration with slack."
 }
