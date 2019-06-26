@@ -128,6 +128,9 @@ alertmanager:
           severity: cica-dev-team
         receiver: slack-cica-dev-team
       - match:
+          severity: family-justice
+        receiver: slack-family-justice
+      - match:
           severity: form-builder
         receiver: slack-form-builder
       - match:
@@ -220,6 +223,24 @@ alertmanager:
       slack_configs:
       - api_url: "${slack_config_cica-dev-team}"
         channel: "#cica_inf_alerts"
+        send_resolved: True
+        title: '{{ template "slack.cp.title" . }}'
+        text: '{{ template "slack.cp.text" . }}'
+        footer: ${ alertmanager_ingress }
+        actions:
+        - type: button
+          text: 'Runbook :blue_book:'
+          url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
+        - type: button
+          text: 'Query :mag:'
+          url: '{{ (index .Alerts 0).GeneratorURL }}'
+        - type: button
+          text: 'Silence :no_bell:'
+          url: '{{ template "__alert_silence_link" . }}'
+    - name: 'slack-family-justice'
+      slack_configs:
+      - api_url: "${slack_config_family-justice}"
+        channel: "#cross_justice_team"
         send_resolved: True
         title: '{{ template "slack.cp.title" . }}'
         text: '{{ template "slack.cp.text" . }}'
