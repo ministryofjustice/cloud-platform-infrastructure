@@ -38,26 +38,24 @@ resource "random_id" "password" {
   byte_length = 8
 }
 
+locals {
+  alertmanager_ingress = "${terraform.workspace == local.live_workspace ? format("%s.%s", "https://alertmanager", local.live_domain) : format("%s.%s", "https://alertmanager.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
+  grafana_ingress      = "${terraform.workspace == local.live_workspace ? format("%s.%s", "grafana", local.live_domain) : format("%s.%s", "grafana.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
+  grafana_root         = "${terraform.workspace == local.live_workspace ? format("%s.%s", "https://grafana", local.live_domain) : format("%s.%s", "https://grafana.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
+  prometheus_ingress   = "${terraform.workspace == local.live_workspace ? format("%s.%s", "https://prometheus", local.live_domain) : format("%s.%s", "https://prometheus.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
+}
+
 data "template_file" "prometheus_operator" {
   template = "${file("${ path.module }/templates/prometheus-operator.yaml.tpl")}"
 
   vars {
-    alertmanager_ingress                     = "${terraform.workspace == local.live_workspace ? format("%s.%s", "https://alertmanager", local.live_domain) : format("%s.%s", "https://alertmanager.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
-    grafana_ingress                          = "${terraform.workspace == local.live_workspace ? format("%s.%s", "grafana", local.live_domain) : format("%s.%s", "grafana.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
-    grafana_root                             = "${terraform.workspace == local.live_workspace ? format("%s.%s", "https://grafana", local.live_domain) : format("%s.%s", "https://grafana.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
-    pagerduty_config                         = "${ var.pagerduty_config }"
-    slack_config                             = "${ var.slack_config }"
-    slack_config_apply-for-legal-aid-prod    = "${var.slack_config_apply-for-legal-aid-prod}"
-    slack_config_apply-for-legal-aid-staging = "${var.slack_config_apply-for-legal-aid-staging}"
-    slack_config_apply-for-legal-aid-uat     = "${var.slack_config_apply-for-legal-aid-uat}"
-    slack_config_cica-dev-team               = "${var.slack_config_cica-dev-team}"
-    slack_config_family-justice              = "${var.slack_config_family-justice}"
-    slack_config_form-builder                = "${var.slack_config_form-builder}"
-    slack_config_laa-cla-fala                = "${var.slack_config_laa-cla-fala}"
-    slack_config_prisoner-money              = "${var.slack_config_prisoner-money}"
-    prometheus_ingress                       = "${terraform.workspace == local.live_workspace ? format("%s.%s", "https://prometheus", local.live_domain) : format("%s.%s", "https://prometheus.apps", data.terraform_remote_state.cluster.cluster_domain_name)}"
-    random_username                          = "${ random_id.username.hex }"
-    random_password                          = "${ random_id.password.hex }"
+    alertmanager_ingress = "${local.alertmanager_ingress}"
+    grafana_ingress      = "${local.grafana_ingress}"
+    grafana_root         = "${local.grafana_root}"
+    pagerduty_config     = "${ var.pagerduty_config }"
+    prometheus_ingress   = "${local.prometheus_ingress}"
+    random_username      = "${ random_id.username.hex }"
+    random_password      = "${ random_id.password.hex }"
   }
 }
 
