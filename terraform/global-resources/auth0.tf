@@ -5,13 +5,6 @@ resource "auth0_rule" "whitelist-github-orgs" {
   enabled = true
 }
 
-resource "auth0_rule" "whitelist-github-teams" {
-  name    = "whitelist-github-teams"
-  script  = "${file("${path.module}/resources/auth0-rules/whitelist-github-teams.js")}"
-  order   = 20
-  enabled = true
-}
-
 resource "auth0_rule" "add-github-teams-to-oidc-group-claim" {
   name    = "add-github-teams-to-oidc-group-claim"
   script  = "${file("${path.module}/resources/auth0-rules/add-github-teams-to-oidc-group-claim.js")}"

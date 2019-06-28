@@ -115,10 +115,11 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   cluster_config {
     instance_type            = "m4.xlarge.elasticsearch"
-    instance_count           = "4"
+    instance_count           = "6"
     dedicated_master_enabled = true
     dedicated_master_type    = "m4.large.elasticsearch"
     dedicated_master_count   = "3"
+    zone_awareness_enabled   = true
   }
 
   ebs_options {
@@ -246,16 +247,29 @@ resource "aws_elasticsearch_domain" "audit" {
   tags {
     Domain = "${local.audit_domain}"
   }
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = ""
+    enabled                  = false
+    log_type                 = "ES_APPLICATION_LOGS"
+  }
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = ""
+    enabled                  = false
+    log_type                 = "INDEX_SLOW_LOGS"
+  }
 }
 
 resource "aws_elasticsearch_domain" "audit_1" {
   domain_name           = "${local.audit_domain}"
   provider              = "aws.cloud-platform"
-  elasticsearch_version = "6.4"
+  elasticsearch_version = "6.5"
 
   cluster_config {
-    instance_type  = "m4.xlarge.elasticsearch"
-    instance_count = "3"
+    instance_type          = "m4.xlarge.elasticsearch"
+    instance_count         = "3"
+    zone_awareness_enabled = true
   }
 
   ebs_options {
@@ -324,4 +338,10 @@ resource "aws_elasticsearch_domain" "test" {
   ]
 }
 TESTPOLICY
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = ""
+    enabled                  = false
+    log_type                 = "ES_APPLICATION_LOGS"
+  }
 }
