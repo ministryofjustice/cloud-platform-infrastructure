@@ -103,7 +103,7 @@ To restrict the kinds of operations and resources that are subject to OPA policy
 ```
 The admissionControllerRules defines the operations and resources that the webhook will validate. Intercept API requests when a ingress or a namespace is CREATED or UPDATED, so apiGroups and apiVersions are filled out accordingly (extensions/v1beta1 for ingresses, v1 for namespaces). We can use wildcards (*) for these fields as well.
 
- ### kube-mgmt
+### kube-mgmt
 
 kube-mgmt manages instances of the Open Policy Agent on top of kubernetes. Use kube-mgmt to:
 
@@ -171,72 +171,17 @@ Once within the app settings, select 'Incoming Webhooks' in the 'Features' secti
 Scroll to the bottom of the page and click on 'Add New Webhook to Workspace' and choose the 'channel' you want the alerts to go to.
 Once complete, make a note of the new Webhook for use within the Prometheus configuration.
 
-
 #### 2. Add webhook to `terraform.tfvars` file
 ```yaml
-slack_config_<team_name> = "https://hooks.slack.com/services/xxxxxx/xxxxxx/xxxxxx"
-```
-
-#### 3. Add new entries to `prometheus-operator.yaml.tpl`
-
-`alertmanager:config:routes`
-
-`alertmanager:config:receivers`
-
-```yaml
-alertmanager:
-  config:
-    global:
-      resolve_timeout: 5m
-    route:
-      group_by: ['job']
-      group_wait: 30s
-      group_interval: 5m
-      repeat_interval: 12h
-      receiver: 'null'
-      routes:
-      - match:
-          severity: <team_name>
-        receiver: slack-<team_name>
-    receivers:
-    - name: 'slack-<team_name>'
-      slack_configs:
-      - api_url: "${slack_config_<team_name>}"
-        channel: "#<channel_name>"
-        send_resolved: True
-        title: '{{ template "slack.cp.title" . }}'
-        text: '{{ template "slack.cp.text" . }}'
-        footer: ${ alertmanager_ingress }
-        actions:
-        - type: button
-          text: 'Runbook :blue_book:'
-          url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
-        - type: button
-          text: 'Query :mag:'
-          url: '{{ (index .Alerts 0).GeneratorURL }}'
-        - type: button
-          text: 'Silence :no_bell:'
-          url: '{{ template "__alert_silence_link" . }}'
-```
-
-Note: For alerts into multiple slack channels, add a second entry for `api_url` and `channel` under `slack_configs` 
-#### Add a new vars entry in `prometheus.tf` in the following data config:
-
-```yaml
-data "template_file" "prometheus_operator" {
-  template = "${file("${ path.module }/templates/prometheus-operator.yaml.tpl")}"
-
-  vars {
-    slack_config_<team_name> = "${var.slack_config_<team_name>}"
-  }
-}
-```
-#### Add a new variable in `variables.tf`
-
-```yaml
-variable "slack_config_<teamn_name>" {
-  description = "Add Slack webhook API URL and channel for integration with slack."
-}
+alertmanager_slack_receivers = [
+  ...
+  {
+    severity = "<team_name>"
+    webhook  = "https://hooks.slack.com/services/xxxxxx/xxxxxx/xxxxxx"
+    channel  = "#<channel_name>"
+  },
+  ...
+]
 ```
 
 All alerts are routed using the `severity` label. Provide the development team the severity label created for each route (default is team_name),
