@@ -33,8 +33,16 @@ locals {
   }
 }
 
-data "aws_region" "current" {}
-data "aws_caller_identity" "current" {}
+data "aws_region" "moj-dsd" {}
+data "aws_caller_identity" "moj-dsd" {}
+
+data "aws_region" "moj-cp" {
+  provider = "aws.cloud-platform"
+}
+
+data "aws_caller_identity" "moj-cp" {
+  provider = "aws.cloud-platform"
+}
 
 data "aws_iam_policy_document" "live" {
   statement {
@@ -43,7 +51,7 @@ data "aws_iam_policy_document" "live" {
     ]
 
     resources = [
-      "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${local.live_domain}/*",
+      "arn:aws:es:${data.aws_region.moj-dsd.name}:${data.aws_caller_identity.moj-dsd.account_id}:domain/${local.live_domain}/*",
     ]
 
     principals {
@@ -69,7 +77,7 @@ data "aws_iam_policy_document" "live_1" {
     ]
 
     resources = [
-      "arn:aws:es:*:*:domain/${local.live_domain}/*",
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.live_domain}/*",
     ]
 
     principals {
@@ -175,7 +183,7 @@ data "aws_iam_policy_document" "audit" {
     ]
 
     resources = [
-      "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${local.audit_domain}/*",
+      "arn:aws:es:${data.aws_region.moj-dsd.name}:${data.aws_caller_identity.moj-dsd.account_id}:domain/${local.audit_domain}/*",
     ]
 
     principals {
@@ -213,7 +221,7 @@ data "aws_iam_policy_document" "audit_1" {
     ]
 
     resources = [
-      "arn:aws:es:*:*:domain/${local.audit_domain}/*",
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.audit_domain}/*",
     ]
 
     principals {
@@ -313,7 +321,7 @@ data "aws_iam_policy_document" "test" {
     ]
 
     resources = [
-      "arn:aws:es:*:*:domain/${local.test_domain}/*",
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.test_domain}/*",
     ]
 
     principals {
