@@ -5,7 +5,7 @@ resource "helm_release" "fluentd_es" {
 
   set {
     name  = "fluent_elasticsearch_host"
-    value = "${replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com" : "${helm.helm_release.dummy_elasticsearch.name}-elasticsearch-client.logging.svc"}"
+    value = "${replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com" : "${helm_release.dummy_elasticsearch.name}-elasticsearch-client.logging.svc"}"
   }
 
   set {
