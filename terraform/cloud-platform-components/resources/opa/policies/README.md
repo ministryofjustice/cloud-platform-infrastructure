@@ -34,4 +34,18 @@ Output should be:
 
 (or whatever the number of tests is, when you run them)
 
+Or, using verbose mode:
+
+```
+$ opa test -v .
+data.cloud_platform.admission.test_ingress_create_allowed: PASS (911.945µs)
+data.cloud_platform.admission.test_ingress_create_conflict: PASS (650.541µs)
+data.cloud_platform.admission.test_ingress_update_same_host: PASS (742.035µs)
+data.cloud_platform.admission.test_ingress_update_new_host: PASS (596.796µs)
+data.cloud_platform.admission.test_ingress_update_existing_host: PASS (736.885µs)
+data.cloud_platform.admission.test_ingress_update_existing_host_other_namespace: PASS (1.151801ms)
+--------------------------------------------------------------------------------
+PASS: 6/6
+```
+
 [opa]: https://www.openpolicyagent.org/docs/latest/get-started
