@@ -18,10 +18,33 @@ locals {
   allowed_audit_ips = "${local.allowed_live_ips}"
 
   allowed_audit_1_ips = "${local.allowed_live_1_ips}"
+
+  test_domain = "cloud-platform-test"
+
+  allowed_test_ips = {
+    "81.134.202.29/32"   = "?"
+    "18.130.193.254/32"  = "?"
+    "18.130.140.174/32"  = "?"
+    "3.9.1.230/32"       = "?"
+    "88.98.227.149/32"   = "?"
+    "35.177.135.226/32"  = "?"
+    "18.130.212.151/32"  = "?"
+    "35.178.89.175/32"   = "?"
+    "213.121.161.124/32" = "102PFWifi"
+    "81.134.202.29/32"   = "MoJDigital"
+  }
 }
 
-data "aws_region" "current" {}
-data "aws_caller_identity" "current" {}
+data "aws_region" "moj-dsd" {}
+data "aws_caller_identity" "moj-dsd" {}
+
+data "aws_region" "moj-cp" {
+  provider = "aws.cloud-platform"
+}
+
+data "aws_caller_identity" "moj-cp" {
+  provider = "aws.cloud-platform"
+}
 
 data "aws_iam_policy_document" "live" {
   statement {
@@ -30,7 +53,7 @@ data "aws_iam_policy_document" "live" {
     ]
 
     resources = [
-      "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${local.live_domain}/*",
+      "arn:aws:es:${data.aws_region.moj-dsd.name}:${data.aws_caller_identity.moj-dsd.account_id}:domain/${local.live_domain}/*",
     ]
 
     principals {
@@ -56,7 +79,7 @@ data "aws_iam_policy_document" "live_1" {
     ]
 
     resources = [
-      "arn:aws:es:*:*:domain/${local.live_domain}/*",
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.live_domain}/*",
     ]
 
     principals {
@@ -162,7 +185,7 @@ data "aws_iam_policy_document" "audit" {
     ]
 
     resources = [
-      "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${local.audit_domain}/*",
+      "arn:aws:es:${data.aws_region.moj-dsd.name}:${data.aws_caller_identity.moj-dsd.account_id}:domain/${local.audit_domain}/*",
     ]
 
     principals {
@@ -200,7 +223,7 @@ data "aws_iam_policy_document" "audit_1" {
     ]
 
     resources = [
-      "arn:aws:es:*:*:domain/${local.audit_domain}/*",
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.audit_domain}/*",
     ]
 
     principals {
@@ -293,6 +316,32 @@ resource "aws_elasticsearch_domain" "audit_1" {
   }
 }
 
+data "aws_iam_policy_document" "test" {
+  statement {
+    actions = [
+      "es:*",
+    ]
+
+    resources = [
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.test_domain}/*",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+
+      values = [
+        "${keys(merge(local.allowed_live_1_ips, local.allowed_test_ips))}",
+      ]
+    }
+  }
+}
+
 resource "aws_elasticsearch_domain" "test" {
   domain_name           = "cloud-platform-test"
   provider              = "aws.cloud-platform"
@@ -309,35 +358,7 @@ resource "aws_elasticsearch_domain" "test" {
     volume_size = "128"
   }
 
-  access_policies = <<TESTPOLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "*"
-      },
-      "Action": "es:*",
-      "Resource": "arn:aws:es:eu-west-2:754256621582:domain/cloud-platform-test/*",
-      "Condition": {
-        "IpAddress": {
-          "aws:SourceIp": [
-            "81.134.202.29",
-            "18.130.193.254",
-            "18.130.140.174",
-            "3.9.1.230",
-            "88.98.227.149",
-            "35.177.135.226",
-            "18.130.212.151",
-            "35.178.89.175"
-          ]
-        }
-      }
-    }
-  ]
-}
-TESTPOLICY
+  access_policies = "${data.aws_iam_policy_document.test.json}"
 
   log_publishing_options {
     cloudwatch_log_group_arn = ""
