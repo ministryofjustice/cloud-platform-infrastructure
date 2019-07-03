@@ -80,7 +80,7 @@ install_components() {
   else
     echo "Initial components install reported errors. Sleeping and retrying..."
     sleep 120
-    terraform apply -auto-approve -var 'DUMMY_ELASTICSEARCH=$DUMMY_ELASTICSEARCH' 
+    terraform apply -auto-approve -var "DUMMY_ELASTICSEARCH=$DUMMY_ELASTICSEARCH"
   fi
 }
 
