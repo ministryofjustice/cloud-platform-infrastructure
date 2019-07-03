@@ -12,6 +12,7 @@ readonly MAX_CLUSTER_NAME_LENGTH=12
 readonly CLUSTER_SUFFIX=cloud-platform.service.justice.gov.uk
 # TODO: use the right dns flush command, depending on the architecture of the local machine
 readonly DNS_FLUSH_COMMAND='sudo killall -HUP mDNSResponder' # Mac OSX Mojave
+readonly DUMMY_ELASTICSEARCH=1
 
 set -euo pipefail
 
@@ -72,13 +73,14 @@ install_components() {
   #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
   #
 
-  if terraform apply -auto-approve
+  if terraform apply -auto-approve -var DUMMY_ELASTICSEARCH=1 
+
   then
     echo "Cluster components installed."
   else
     echo "Initial components install reported errors. Sleeping and retrying..."
     sleep 120
-    terraform apply -auto-approve
+    terraform apply -auto-approve -var 'DUMMY_ELASTICSEARCH=$DUMMY_ELASTICSEARCH' 
   fi
 }
 
