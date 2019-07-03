@@ -22,3 +22,16 @@ The `input` to the policies would be an `AdmissionReview` whose schema you can f
 
 [admission-review-type]: https://github.com/kubernetes/api/blob/master/admission/v1beta1/types.go#L29
 
+## Running the tests
+
+* Install [opa]
+* `cd terraform/cloud-platform-components/resources/opa/policies/`
+* `opa test .`
+
+Output should be:
+
+`PASS: 6/6`
+
+(or whatever the number of tests is, when you run them)
+
+[opa]: https://www.openpolicyagent.org/docs/latest/get-started
