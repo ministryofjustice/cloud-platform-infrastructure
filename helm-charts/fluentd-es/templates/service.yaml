@@ -15,10 +15,10 @@ metadata:
 spec:
   ports:
   - name: metrics
-    port: 24231
+    port: {{ .Values.service.port }}
     protocol: TCP
-    targetPort: 24231
+    targetPort: {{ .Values.service.port }}
   selector:
     app: {{ .Release.Name }}
     version: {{ .Values.image.tag }}
-  type: ClusterIP
+  type: {{ .Values.service.type }}

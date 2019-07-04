@@ -2,6 +2,10 @@ image:
   repository: "gcr.io/fluentd-elasticsearch/fluentd"
   tag: v2.5.2
 
+service:
+  type: ClusterIP
+  port: 24231
+
 fluent_elasticsearch_host:
 fluent_elasticsearch_audit_host:
 fluent_kubernetes_cluster_name:
