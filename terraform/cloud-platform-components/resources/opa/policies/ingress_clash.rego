@@ -2,11 +2,6 @@ package cloud_platform.admission
 
 import data.kubernetes.ingresses
 
-# concatenated messages produced by the deny rule
-denied_msg = concat(", ", deny)
-
-denied = denied_msg != ""
-
 deny[msg] {
   input.request.kind.kind == "Ingress"
   id := concat("/", [input.request.object.metadata.namespace, input.request.object.metadata.name])
