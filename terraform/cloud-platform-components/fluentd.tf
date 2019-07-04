@@ -18,6 +18,11 @@ resource "helm_release" "fluentd_es" {
     value = "${terraform.workspace}"
   }
 
+  set {
+    name  = "serviceMonitor.enabled"
+    value = true
+  }
+
   depends_on = ["null_resource.deploy", "null_resource.priority_classes"]
 
   lifecycle {
