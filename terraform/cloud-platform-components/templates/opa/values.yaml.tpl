@@ -27,6 +27,10 @@ admissionControllerRules:
     apiGroups: ["extensions"]
     apiVersions: ["*"]
     resources: ["ingresses"]
+  - operations: ["CREATE", "UPDATE"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["services"]
 
 # Controls a PodDisruptionBudget for the OPA pod. Suggested use if having opa
 # always running for admission control is important
