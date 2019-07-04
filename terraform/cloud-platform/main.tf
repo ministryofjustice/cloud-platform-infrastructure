@@ -44,8 +44,8 @@ locals {
   auth0_tenant_domain      = "justice-cloud-platform.eu.auth0.com"
   oidc_issuer_url          = "https://${local.auth0_tenant_domain}/"
 
-  live_domain     = "cloud-platform.service.justice.gov.uk"
-  is_live_cluster = "${terraform.workspace == "live-1"}"
+  is_live_cluster      = "${terraform.workspace == "live-1"}"
+  services_base_domain = "${local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"}"
 }
 
 # Modules
@@ -107,9 +107,7 @@ resource "auth0_client" "kubernetes" {
   description = "Cloud Platform kubernetes"
   app_type    = "regular_web"
 
-  callbacks = [
-    "${local.is_live_cluster ? format("https://login.%s/ui", local.live_domain) : "https://login.apps.${local.cluster_base_domain_name}/ui"}",
-  ]
+  callbacks = ["${format("https://login.%s/ui", local.services_base_domain)}"]
 
   custom_login_page_on = true
   is_first_party       = true
@@ -128,12 +126,12 @@ resource "auth0_client" "components" {
   app_type    = "regular_web"
 
   callbacks = [
-    "${format("https://prometheus.%s/oauth2/callback", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
-    "${format("https://alertmanager.%s/oauth2/callback", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
-    "${format("https://concourse.%s/sky/issuer/callback", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
-    "${format("https://kibana.%s/oauth2/callback", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
-    "${format("https://kibana-audit.%s/oauth2/callback", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
-    "${format("https://grafana.%s/login/generic_oauth", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
+    "${format("https://prometheus.%s/oauth2/callback", local.services_base_domain)}",
+    "${format("https://alertmanager.%s/oauth2/callback", local.services_base_domain)}",
+    "${format("https://concourse.%s/sky/issuer/callback", local.services_base_domain)}",
+    "${format("https://kibana.%s/oauth2/callback", local.services_base_domain)}",
+    "${format("https://kibana-audit.%s/oauth2/callback", local.services_base_domain)}",
+    "${format("https://grafana.%s/login/generic_oauth", local.services_base_domain)}",
   ]
 
   custom_login_page_on = true
