@@ -1,5 +1,4 @@
-#This file deploys a configMap that supports the main fluentd-es file. Apart from this comment and the line directly below, the pther comments are there by default from the original template.
-
+---
 kind: ConfigMap
 apiVersion: v1
 metadata:
