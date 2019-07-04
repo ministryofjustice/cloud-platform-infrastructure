@@ -12,7 +12,7 @@ data "template_file" "kops" {
 
   vars {
     cluster_domain_name                  = "${local.cluster_base_domain_name}"
-    cluster_node_min_size                = "${var.cluster_node_min_size}"
+    cluster_node_count                   = "${var.cluster_node_count}"
     kops_state_store                     = "${data.terraform_remote_state.global.cloud_platform_kops_state}"
     oidc_issuer_url                      = "${local.oidc_issuer_url}"
     oidc_client_id                       = "${auth0_client.kubernetes.client_id}"

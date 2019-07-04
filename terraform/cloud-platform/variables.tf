@@ -21,7 +21,7 @@ variable "availability_zones" {
   default     = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 }
 
-variable "cluster_node_min_size" {
-  description = "min number of worker node in kops manifest"
-  default     = 15
+variable "cluster_node_count" {
+  description = "The number of worker node in the cluster"
+  default     = "18"
 }
