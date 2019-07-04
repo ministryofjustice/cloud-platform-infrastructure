@@ -12,7 +12,6 @@ readonly MAX_CLUSTER_NAME_LENGTH=12
 readonly CLUSTER_SUFFIX=cloud-platform.service.justice.gov.uk
 # TODO: use the right dns flush command, depending on the architecture of the local machine
 readonly DNS_FLUSH_COMMAND='sudo killall -HUP mDNSResponder' # Mac OSX Mojave
-readonly ELASTICSEARCH_ENABLED=false
 
 set -euo pipefail
 
