@@ -44,8 +44,8 @@ locals {
   auth0_tenant_domain      = "justice-cloud-platform.eu.auth0.com"
   oidc_issuer_url          = "https://${local.auth0_tenant_domain}/"
 
-  live_workspace = "live-1"
-  live_domain    = "cloud-platform.service.justice.gov.uk"
+  live_domain     = "cloud-platform.service.justice.gov.uk"
+  is_live_cluster = "${terraform.workspace == "live-1"}"
 }
 
 # Modules
@@ -108,7 +108,7 @@ resource "auth0_client" "kubernetes" {
   app_type    = "regular_web"
 
   callbacks = [
-    "${terraform.workspace == local.live_workspace ? format("https://login.%s/ui", local.live_domain) : "https://login.apps.${local.cluster_base_domain_name}/ui"}",
+    "${local.is_live_cluster ? format("https://login.%s/ui", local.live_domain) : "https://login.apps.${local.cluster_base_domain_name}/ui"}",
   ]
 
   custom_login_page_on = true
@@ -128,12 +128,12 @@ resource "auth0_client" "components" {
   app_type    = "regular_web"
 
   callbacks = [
-    "${format("https://prometheus.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
-    "${format("https://alertmanager.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
-    "${format("https://concourse.%s/sky/issuer/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
-    "${format("https://kibana.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
-    "${format("https://kibana-audit.%s/oauth2/callback", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
-    "${format("https://grafana.%s/login/generic_oauth", terraform.workspace == local.live_workspace ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
+    "${format("https://prometheus.%s/oauth2/callback", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
+    "${format("https://alertmanager.%s/oauth2/callback", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
+    "${format("https://concourse.%s/sky/issuer/callback", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
+    "${format("https://kibana.%s/oauth2/callback", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
+    "${format("https://kibana-audit.%s/oauth2/callback", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
+    "${format("https://grafana.%s/login/generic_oauth", local.is_live_cluster ? local.live_domain : "apps.${local.cluster_base_domain_name}")}",
   ]
 
   custom_login_page_on = true
