@@ -31,7 +31,7 @@ resource "null_resource" "deploy" {
   ]
 
   provisioner "local-exec" {
-    command = "helm init --wait --service-account tiller; sleep 60"
+    command = "helm init --wait --service-account tiller"
   }
 
   provisioner "local-exec" {
