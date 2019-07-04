@@ -7,7 +7,7 @@ variable "alertmanager_slack_receivers" {
   type        = "list"
 }
 
-variable "DUMMY_ELASTICSEARCH" {
-  description = "In case the cluster doesn't need to connect to an actual ES cluster, enable this var"
-  default     = 0
+variable "elasticsearch_enabled" {
+  description = "if false, fluentd won't try to connect to the existing ES cluster"
+  default     = false
 }
