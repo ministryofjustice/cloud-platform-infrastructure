@@ -1,0 +1,34 @@
+{{- if and ( .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" ) ( .Values.serviceMonitor.enabled ) }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "prometheus-ecr-exporter.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "prometheus-ecr-exporter.name" . }}
+    helm.sh/chart: {{ include "prometheus-ecr-exporter.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- if .Values.serviceMonitor.labels }}
+{{ toYaml .Values.serviceMonitor.labels | indent 4}}
+{{- end }}
+spec:
+  endpoints:
+  - targetPort: {{ .Values.service.port }}
+{{- if .Values.serviceMonitor.interval }}
+    interval: {{ .Values.serviceMonitor.interval }}
+{{- end }}
+{{- if .Values.serviceMonitor.telemetryPath }}
+    path: {{ .Values.serviceMonitor.path }}
+{{- end }}
+{{- if .Values.serviceMonitor.timeout }}
+    scrapeTimeout: {{ .Values.serviceMonitor.scapeTimeout }}
+{{- end }}
+  jobLabel: {{ template "prometheus-ecr-exporter.fullname" . }}
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "prometheus-ecr-exporter.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
