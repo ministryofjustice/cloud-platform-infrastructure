@@ -132,6 +132,7 @@ resource "auth0_client" "components" {
     "${format("https://kibana.%s/oauth2/callback", local.services_base_domain)}",
     "${format("https://kibana-audit.%s/oauth2/callback", local.services_base_domain)}",
     "${format("https://grafana.%s/login/generic_oauth", local.services_base_domain)}",
+    "${format("https://kube-ops.%s/login/authorized", local.services_base_domain)}",
   ]
 
   custom_login_page_on = true
