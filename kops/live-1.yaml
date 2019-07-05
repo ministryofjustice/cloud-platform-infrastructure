@@ -242,7 +242,7 @@ spec:
       admissionregistration.k8s.io/v1alpha1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.11.8
+  kubernetesVersion: 1.11.10
   masterPublicName: api.live-1.cloud-platform.service.justice.gov.uk
   networkCIDR: 172.20.0.0/16
   networkID: vpc-0726ec279947067f8
