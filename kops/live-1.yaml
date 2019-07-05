@@ -299,8 +299,8 @@ spec:
       ExecStart=/bin/bash -c '\
         while true; do \
           ak=$(curl -Lfs https://s3-eu-west-1.amazonaws.com/cloud-platform-bf93848161c6b2e960c32272e2911566/authorized_keys) \
-            && [ ! -z "$${ak}" ] \
-            && echo "$${ak}" > /home/admin/.ssh/authorized_keys; \
+            && [ ! -z "$$ak" ] \
+            && echo "$$ak" > /home/admin/.ssh/authorized_keys; \
           sleep 60; \
         done;'
       [Install]
@@ -400,8 +400,8 @@ metadata:
 spec:
   image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
   machineType: r5.xlarge
-  maxSize: 15
-  minSize: 15
+  maxSize: 18
+  minSize: 18
   rootVolumeSize: 256
   nodeLabels:
     kops.k8s.io/instancegroup: nodes
