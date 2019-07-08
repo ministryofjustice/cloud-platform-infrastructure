@@ -13,24 +13,24 @@ new_service(namespace, name, type) = {
   }
 }
 
-new_namespace(name, has_annotation) = {
+new_namespace(name, annotation) = {
   "apiVersion": "v1",
   "kind": "Namespace",
   "metadata": {
     "name": name
   }
-} { not has_annotation }
+} { not annotation }
 
-new_namespace(name, has_annotation) = {
+new_namespace(name, annotation) = {
   "apiVersion": "v1",
   "kind": "Namespace",
   "metadata": {
     "name": name,
     "annotations": {
-      "cloud-platform.justice.gov.uk/can-use-loadbalancer-services": ""
+      "cloud-platform.justice.gov.uk/can-use-loadbalancer-services": annotation
     }
   }
-} { has_annotation }
+} { annotation }
 
 test_service_create_allowed {
   not denied
@@ -52,6 +52,14 @@ test_service_create_allowed_by_annotation {
   not denied
     with input as new_admission_review("CREATE", new_service("ns-0", "svc-0", "LoadBalancer"), null)
     with data.kubernetes.namespaces as {
-      "ns-0": new_namespace("ns-0", true)
+      "ns-0": new_namespace("ns-0", "")
+    }
+}
+
+test_service_create_allowed_by_annotation_with_value {
+  not denied
+    with input as new_admission_review("CREATE", new_service("ns-0", "svc-0", "LoadBalancer"), null)
+    with data.kubernetes.namespaces as {
+      "ns-0": new_namespace("ns-0", "foobar")
     }
 }
