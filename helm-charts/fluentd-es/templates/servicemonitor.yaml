@@ -4,16 +4,18 @@ kind: ServiceMonitor
 metadata:
   name: {{ template "fluentd-es.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "fluentd-es.name" . }}
-    helm.sh/chart: {{ include "fluentd-es.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    k8s-app: fluentd-es
+    version: {{ .Values.image.tag }}
+    app: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
 {{- if .Values.serviceMonitor.labels }}
 {{ toYaml .Values.serviceMonitor.labels | indent 4}}
 {{- end }}
 spec:
   endpoints:
-  - targetPort: {{ .Values.service.port }}
+  - port: metrics
 {{- if .Values.serviceMonitor.interval }}
     interval: {{ .Values.serviceMonitor.interval }}
 {{- end }}
@@ -31,4 +33,3 @@ spec:
     matchLabels:
       release: {{ .Release.Name }}
 {{- end }}
-
