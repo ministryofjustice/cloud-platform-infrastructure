@@ -1,3 +1,24 @@
+resource "kubernetes_namespace" "ingress_controllers" {
+  metadata {
+    name = "ingress-controllers"
+
+    labels {
+      "name"                                           = "ingress-controllers"
+      "component"                                      = "ingress-controllers"
+      "cloud-platform.justice.gov.uk/environment-name" = "production"
+      "cloud-platform.justice.gov.uk/is-production"    = "true"
+    }
+
+    annotations {
+      "cloud-platform.justice.gov.uk/application"                   = "Kubernetes Ingress Controllers"
+      "cloud-platform.justice.gov.uk/business-unit"                 = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"                         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"                   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+      "cloud-platform.justice.gov.uk/can-use-loadbalancer-services" = ""
+    }
+  }
+}
+
 resource "helm_release" "nginx_ingress_acme" {
   name      = "nginx-ingress-acme"
   chart     = "stable/nginx-ingress"
