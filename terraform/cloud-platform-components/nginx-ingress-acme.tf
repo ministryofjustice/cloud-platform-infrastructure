@@ -14,7 +14,7 @@ resource "kubernetes_namespace" "ingress_controllers" {
       "cloud-platform.justice.gov.uk/business-unit"                 = "cloud-platform"
       "cloud-platform.justice.gov.uk/owner"                         = "Cloud Platform: platforms@digital.justice.gov.uk"
       "cloud-platform.justice.gov.uk/source-code"                   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
-      "cloud-platform.justice.gov.uk/can-use-loadbalancer-services" = ""
+      "cloud-platform.justice.gov.uk/can-use-loadbalancer-services" = "true"
     }
   }
 }
