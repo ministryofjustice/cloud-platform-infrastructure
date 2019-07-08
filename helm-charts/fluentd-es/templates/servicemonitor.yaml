@@ -29,7 +29,6 @@ spec:
     - {{ .Release.Namespace }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "fluentd-es.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      release: {{ .Release.Name }}
 {{- end }}
 
