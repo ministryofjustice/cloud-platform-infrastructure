@@ -40,6 +40,41 @@ def create_cluster(cluster_name)
   execute "cd #{dir}; terraform apply -auto-approve"
 end
 
+def run_kops(cluster_name)
+  execute "kops create -f kops/#{cluster_name}.yaml"
+
+  # This is a throwaway SSH key which we never need again.
+  execute("rm -f /tmp/#{cluster_name} /tmp/#{cluster_name}.pub")
+  execute("ssh-keygen -b 4096 -P '' -f /tmp/#{cluster_name}")
+
+  execute "kops create secret --name #{cluster_name}.#{CLUSTER_SUFFIX} sshpublickey admin -i /tmp/#{cluster_name}.pub"
+  execute "kops update cluster #{cluster_name}.#{CLUSTER_SUFFIX} --yes --alsologtostderr"
+
+  wait_for_kops_validate
+end
+
+def wait_for_kops_validate
+  max_tries = 30
+  validated = false
+
+  (1..max_tries).each do |attempt|
+    puts "Validate cluster, attempt #{attempt} of #{max_tries}..."
+
+    if system("kops validate cluster")
+      puts "Cluster validated."
+      validated = true
+      break
+    else
+      puts "Flushing DNS and sleeping before retry..."
+      system(DNS_FLUSH_COMMAND)
+      sleep 60
+    end
+  end
+
+  raise "ERROR Failed to validate cluster after $max_tries attempts." unless validated
+end
+
+
 def switch_terraform_workspace(dir, name)
   execute "cd #{dir}; terraform init"
   # The workspace might already exist, so the workspace new is allowed to fail
