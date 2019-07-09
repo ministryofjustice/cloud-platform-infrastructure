@@ -53,6 +53,33 @@ def run_kops(cluster_name)
   wait_for_kops_validate
 end
 
+# TODO: figure out this problem, and fix it.
+# For some reason, the first terraform apply sometimes fails with an error "could not find a ready tiller pod"
+# This seems to be quite misleading, since adding a delay after 'helm init' makes no difference.
+# A second run of the terraform apply usually works correctly.
+def install_components(cluster_name)
+  dir = "terraform/cloud-platform-components"
+  execute "cd #{dir}; rm -rf .terraform"
+  switch_terraform_workspace(dir, cluster_name)
+
+  # Ensure we have the latest helm charts for all the required components
+  execute "helm repo update"
+  # Without this step, you may get errors like this:
+  #
+  #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
+  #
+
+
+  cmd = "cd #{dir}; terraform apply -auto-approve"
+  if system(cmd)
+    puts "Cluster components installed."
+  else
+    puts "Initial components install reported errors. Sleeping and retrying..."
+    sleep 120
+    system(cmd)
+  end
+end
+
 def wait_for_kops_validate
   max_tries = 30
   validated = false
