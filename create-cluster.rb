@@ -7,9 +7,7 @@
 #
 #   ./create-cluster.rb [cluster-name]
 #
-
 require "fileutils"
-require "open3"
 
 MAX_CLUSTER_NAME_LENGTH = 12
 CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
