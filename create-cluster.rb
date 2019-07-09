@@ -25,10 +25,10 @@ def main(cluster_name)
   get_sudo
 
   create_cluster(cluster_name)
-  # run_kops(cluster_name)
-  # install_components(cluster_name)
+  run_kops(cluster_name)
+  install_components(cluster_name)
 
-  # kubectl cluster-info
+  run_and_output "kubectl cluster-info"
 end
 
 def create_cluster(cluster_name)
