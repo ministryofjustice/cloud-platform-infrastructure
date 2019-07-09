@@ -37,18 +37,18 @@ def create_cluster(cluster_name)
   FileUtils.rm_rf("terraform/cloud-platform/.terraform")
   dir = "terraform/cloud-platform"
   switch_terraform_workspace(dir, cluster_name)
-  execute "cd #{dir}; terraform apply -auto-approve"
+  run_and_output "cd #{dir}; terraform apply -auto-approve"
 end
 
 def run_kops(cluster_name)
-  execute "kops create -f kops/#{cluster_name}.yaml"
+  run_and_output "kops create -f kops/#{cluster_name}.yaml"
 
   # This is a throwaway SSH key which we never need again.
   execute("rm -f /tmp/#{cluster_name} /tmp/#{cluster_name}.pub")
   execute("ssh-keygen -b 4096 -P '' -f /tmp/#{cluster_name}")
 
-  execute "kops create secret --name #{cluster_name}.#{CLUSTER_SUFFIX} sshpublickey admin -i /tmp/#{cluster_name}.pub"
-  execute "kops update cluster #{cluster_name}.#{CLUSTER_SUFFIX} --yes --alsologtostderr"
+  run_and_output "kops create secret --name #{cluster_name}.#{CLUSTER_SUFFIX} sshpublickey admin -i /tmp/#{cluster_name}.pub"
+  run_and_output "kops update cluster #{cluster_name}.#{CLUSTER_SUFFIX} --yes --alsologtostderr"
 
   wait_for_kops_validate
 end
@@ -76,11 +76,11 @@ end
 
 
 def switch_terraform_workspace(dir, name)
-  execute "cd #{dir}; terraform init"
+  run_and_output "cd #{dir}; terraform init"
   # The workspace might already exist, so the workspace new is allowed to fail
   # but the workspace select must succeed
-  execute "cd #{dir}; terraform workspace new #{name}", can_fail: true
-  execute "cd #{dir}; terraform workspace select #{name}"
+  run_and_output "cd #{dir}; terraform workspace new #{name}", can_fail: true
+  run_and_output "cd #{dir}; terraform workspace select #{name}"
 end
 
 
@@ -132,6 +132,10 @@ def execute(cmd, can_fail: false)
   result = `#{cmd}` # TODO: Use open3
   raise "Command: #{cmd} failed." unless (can_fail || $?.success?)
   result
+end
+
+def run_and_output(cmd, opts = {})
+  puts execute(cmd, opts)
 end
 
 def get_sudo
