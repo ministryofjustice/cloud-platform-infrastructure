@@ -713,7 +713,7 @@ prometheusOperator:
   ##
   image:
     repository: quay.io/coreos/prometheus-operator
-    tag: v0.27.0
+    tag: v0.29.0
     pullPolicy: IfNotPresent
 
   ## Configmap-reload image to use for reloading configmaps
@@ -726,13 +726,13 @@ prometheusOperator:
   ##
   prometheusConfigReloaderImage:
     repository: quay.io/coreos/prometheus-config-reloader
-    tag: v0.27.0
+    tag: v0.29.0
 
   ## Hyperkube image to use when cleaning up
   ##
   hyperkubeImage:
     repository: k8s.gcr.io/hyperkube
-    tag: v1.11.7
+    tag: v1.12.1
     pullPolicy: IfNotPresent
 
 ## Deploy a Prometheus instance
