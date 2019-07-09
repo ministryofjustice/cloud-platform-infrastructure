@@ -17,7 +17,7 @@ CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
 DNS_FLUSH_COMMAND = 'sudo killall -HUP mDNSResponder' # Mac OSX Mojave
 
 REQUIRED_ENV_VARS = %w( AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE )
-REQUIRED_EXECUTABLES = %w( git-crypt terraform helm aws kops )
+REQUIRED_EXECUTABLES = %w( git-crypt terraform helm aws kops ssh-keygen )
 REQUIRED_AWS_PROFILES = %w( moj-cp moj-dsd )
 
 def main(cluster_name)
