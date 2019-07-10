@@ -71,12 +71,12 @@ def install_components(cluster_name)
 
 
   cmd = "cd #{dir}; terraform apply -auto-approve"
-  if system(cmd)
-    puts "Cluster components installed."
+  if cmd_successful?(cmd)
+    log "Cluster components installed."
   else
-    puts "Initial components install reported errors. Sleeping and retrying..."
+    log "Initial components install reported errors. Sleeping and retrying..."
     sleep 120
-    system(cmd)
+    cmd_successful?(cmd)
   end
 end
 
@@ -85,15 +85,15 @@ def wait_for_kops_validate
   validated = false
 
   (1..max_tries).each do |attempt|
-    puts "Validate cluster, attempt #{attempt} of #{max_tries}..."
+    log "Validate cluster, attempt #{attempt} of #{max_tries}..."
 
-    if system("kops validate cluster")
-      puts "Cluster validated."
+    if cmd_successful?("kops validate cluster")
+      log "Cluster validated."
       validated = true
       break
     else
-      puts "Flushing DNS and sleeping before retry..."
-      system(DNS_FLUSH_COMMAND)
+      log "Flushing DNS and sleeping before retry..."
+      cmd_successful?(DNS_FLUSH_COMMAND)
       sleep 60
     end
   end
@@ -155,7 +155,7 @@ def check_name_length(cluster_name)
 end
 
 def execute(cmd, can_fail: false)
-  puts cmd
+  log cmd
   result = `#{cmd}` # TODO: Use open3
   raise "Command: #{cmd} failed." unless (can_fail || $?.success?)
   result
@@ -172,6 +172,15 @@ end
 def usage
   puts "USAGE: #{$0} cluster-name"
   exit 1
+end
+
+def log(msg)
+  puts [Time.now.strftime("%Y-%m-%d %H:%M:%S"), msg].join(" ")
+end
+
+def cmd_successful?(cmd)
+  log cmd
+  system cmd
 end
 
 ############################################################
