@@ -129,7 +129,10 @@ resource "helm_release" "kiam" {
 }
 
 resource "kubernetes_service" "server-metrics" {
-  depends_on = ["helm_release.kiam"]
+  depends_on = [
+    "helm_release.kiam",
+    "helm_release.open-policy-agent",
+  ]
 
   metadata {
     name      = "kiam-server-metrics"
@@ -156,7 +159,10 @@ resource "kubernetes_service" "server-metrics" {
 }
 
 resource "kubernetes_service" "agent-metrics" {
-  depends_on = ["helm_release.kiam"]
+  depends_on = [
+    "helm_release.kiam",
+    "helm_release.open-policy-agent",
+  ]
 
   metadata {
     name      = "kiam-agent-metrics"

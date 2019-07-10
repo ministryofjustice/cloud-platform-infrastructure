@@ -9,6 +9,10 @@ resource "helm_release" "open-policy-agent" {
   chart      = "opa"
   version    = "1.3.2"
 
+  depends_on = [
+    "null_resource.deploy",
+  ]
+
   values = [
     "${data.template_file.values.rendered}",
   ]
