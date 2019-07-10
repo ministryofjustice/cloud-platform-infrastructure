@@ -118,7 +118,7 @@ EOF
   // certificate issued, it's not a hard dependency and will resort to using a
   // self-signed certificate until the proper one becomes available. This
   // dependency is not captured here.
-  depends_on = ["null_resource.deploy"]
+  depends_on = ["null_resource.deploy", "kubernetes_namespace.ingress_controllers"]
 
   lifecycle {
     ignore_changes = ["keyring"]
