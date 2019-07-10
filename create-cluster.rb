@@ -19,6 +19,8 @@ REQUIRED_EXECUTABLES = %w( git-crypt terraform helm aws kops ssh-keygen )
 REQUIRED_AWS_PROFILES = %w( moj-cp moj-dsd )
 
 def main(cluster_name)
+  usage if cluster_name.nil?
+
   check_prerequisites(cluster_name)
 
   execute "git-crypt unlock"
@@ -165,6 +167,11 @@ end
 
 def get_sudo
   execute "sudo true"
+end
+
+def usage
+  puts "USAGE: #{$0} cluster-name"
+  exit 1
 end
 
 ############################################################
