@@ -121,7 +121,10 @@ resource "helm_release" "kiam" {
     "${data.template_file.kiam.rendered}",
   ]
 
-  depends_on = ["null_resource.deploy"]
+  depends_on = [
+    "null_resource.deploy",
+    "helm_release.open-policy-agent",
+  ]
 
   lifecycle {
     ignore_changes = ["keyring"]
