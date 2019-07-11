@@ -41,7 +41,6 @@ config: |-
   - aws_namespace: AWS/RDS
     aws_metric_name: FreeStorageSpace
     aws_dimensions: [DBInstanceIdentifier]
-    aws_statistics: [Average]
   
   - aws_namespace: AWS/RDS
     aws_metric_name: ReadIOPS
