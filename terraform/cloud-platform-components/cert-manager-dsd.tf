@@ -40,6 +40,10 @@ data "aws_iam_policy_document" "cert_manager_dsd" {
 }
 
 resource "kubernetes_secret" "cert_manager_dsd" {
+  depends_on = [
+    "helm_release.cert-manager",
+  ]
+
   type = "Opaque"
 
   metadata {

@@ -92,7 +92,11 @@ podAnnotations:
 EOF
   ]
 
-  depends_on = ["null_resource.deploy", "null_resource.cert-manager-crds"]
+  depends_on = [
+    "null_resource.deploy",
+    "null_resource.cert-manager-crds",
+    "helm_release.open-policy-agent",
+  ]
 
   lifecycle {
     ignore_changes = ["keyring"]
