@@ -201,6 +201,7 @@ resource "helm_release" "alertmanager_proxy" {
   depends_on = [
     "null_resource.deploy",
     "random_id.session_secret",
+    "helm_release.open-policy-agent",
   ]
 
   lifecycle {
