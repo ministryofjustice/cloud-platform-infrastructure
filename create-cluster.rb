@@ -125,10 +125,9 @@ def check_env_vars
   end
 end
 
-# https://stackoverflow.com/a/677212/794111 <-- explains 'hash' vs. 'which'
 def check_software_installed
   REQUIRED_EXECUTABLES.each do |exe|
-    raise "ERROR Required executable #{exe} not found." unless system("hash #{exe}")
+    raise "ERROR Required executable #{exe} not found." unless system("which #{exe}")
   end
   check_terraform_auth0
 end
