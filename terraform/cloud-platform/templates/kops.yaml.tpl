@@ -306,7 +306,7 @@ metadata:
   name: master-eu-west-2a
 spec:
   image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
-  machineType: c4.xlarge
+  machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
   nodeLabels:
@@ -333,7 +333,7 @@ metadata:
   name: master-eu-west-2b
 spec:
   image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
-  machineType: c4.xlarge
+  machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
   nodeLabels:
@@ -360,7 +360,7 @@ metadata:
   name: master-eu-west-2c
 spec:
   image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
-  machineType: c4.xlarge
+  machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
   nodeLabels:
