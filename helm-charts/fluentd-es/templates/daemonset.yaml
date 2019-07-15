@@ -45,7 +45,7 @@ spec:
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         env:
         - name: FLUENTD_ARGS
-          value: --no-supervisor
+          value: --no-supervisor -q
         - name:  FLUENT_ELASTICSEARCH_HOST
           value: {{ .Values.fluent_elasticsearch_host }}
         - name:  FLUENT_ELASTICSEARCH_AUDIT_HOST
