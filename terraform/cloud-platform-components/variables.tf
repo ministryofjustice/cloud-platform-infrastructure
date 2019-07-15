@@ -6,3 +6,8 @@ variable "alertmanager_slack_receivers" {
   description = "A list of configuration values for Slack receivers"
   type        = "list"
 }
+
+variable "logging_enabled" {
+  description = "used as a flag to enable or disable the installation of the logging namespace on the cluster"
+  default     = true
+}
