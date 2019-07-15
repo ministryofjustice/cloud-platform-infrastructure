@@ -7,7 +7,7 @@ resource "helm_release" "fluentd_es_live" {
   namespace = "logging"
 
   values = [
-    "${file("environments/live/values.yaml")}"
+    "${file("environments/live/values.yaml")}",
   ]
 
   lifecycle {
@@ -25,7 +25,7 @@ resource "helm_release" "fluentd_es_test" {
   namespace = "logging"
 
   values = [
-    "${var.LOCAL_ELASTICSEARCH ? file("${path.module}/charts/fluentd-es/environments/local/values.yaml") : file("${path.module}/charts/fluentd-es/environments/test/values.yaml")}"
+    "${var.LOCAL_ELASTICSEARCH ? file("${path.module}/charts/fluentd-es/environments/local/values.yaml") : file("${path.module}/charts/fluentd-es/environments/test/values.yaml")}",
   ]
 
   depends_on = ["helm_release.local_elasticsearch"]
