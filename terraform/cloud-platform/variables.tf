@@ -23,5 +23,5 @@ variable "availability_zones" {
 
 variable "cluster_node_count" {
   description = "The number of worker node in the cluster"
-  default     = "18"
+  default     = "40"
 }
