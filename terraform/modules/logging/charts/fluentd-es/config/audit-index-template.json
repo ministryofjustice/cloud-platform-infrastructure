@@ -1,0 +1,20 @@
+{
+  "template": "logstash-*",
+  "mappings": {
+    "fluentd": {
+      "dynamic_templates": [
+        {
+          "default_no_index": {
+            "path_match": "^.*$",
+            "path_unmatch": "^(@timestamp|kubernetes_cluster|auditID|level|stage|requestURI|sourceIPs|metadata|objectRef|user|verb)(\\..+)?$",
+            "match_pattern": "regex",
+            "mapping": {
+              "index": false,
+              "enabled": false
+            }
+          }
+        }
+      ]
+    }
+  }
+}

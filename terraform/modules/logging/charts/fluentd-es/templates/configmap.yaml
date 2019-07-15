@@ -1,0 +1,13 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ template "fluentd-es.fullname" . }}-config
+  labels:
+    app: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    addonmanager.kubernetes.io/mode: Reconcile
+data:
+{{ tpl (.Files.Glob "config/**").AsConfig . | indent 2 }}

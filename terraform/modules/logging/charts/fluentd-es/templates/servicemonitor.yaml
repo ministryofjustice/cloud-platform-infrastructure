@@ -1,0 +1,35 @@
+{{- if and ( .Capabilities.APIVersions.Has "monitoring.coreos.com/v1" ) ( .Values.serviceMonitor.enabled ) }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ template "fluentd-es.fullname" . }}
+  labels:
+    k8s-app: fluentd-es
+    version: {{ .Values.image.tag }}
+    app: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+{{- if .Values.serviceMonitor.labels }}
+{{ toYaml .Values.serviceMonitor.labels | indent 4}}
+{{- end }}
+spec:
+  endpoints:
+  - port: metrics
+{{- if .Values.serviceMonitor.interval }}
+    interval: {{ .Values.serviceMonitor.interval }}
+{{- end }}
+{{- if .Values.serviceMonitor.telemetryPath }}
+    path: {{ .Values.serviceMonitor.path }}
+{{- end }}
+{{- if .Values.serviceMonitor.timeout }}
+    scrapeTimeout: {{ .Values.serviceMonitor.scapeTimeout }}
+{{- end }}
+  jobLabel: {{ template "fluentd-es.fullname" . }}
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      release: {{ .Release.Name }}
+{{- end }}

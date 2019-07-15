@@ -1,0 +1,24 @@
+image:
+  repository: "quay.io/fluentd_elasticsearch/fluentd"
+  tag: v2.5.2
+
+service:
+  type: ClusterIP
+  port: 24231
+
+fluent_elasticsearch_host: "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
+ : "placeholder-elasticsearch"
+fluent_elasticsearch_audit_host: "search-cloud-platform-audit-dq5bdnjokj4yt7qozshmifug6e.eu-west-2.es.amazonaws.com"
+fluent_kubernetes_cluster_name: ""
+
+serviceMonitor:
+  # When set true then use a ServiceMonitor to configure scraping
+  enabled: false
+  # Set how frequently Prometheus should scrape
+  # interval: 30s
+  # Set path to cloudwatch-exporter telemtery-path
+  # path: /metrics
+  # Set labels for the ServiceMonitor, use this to define your scrape label for Prometheus Operator
+  # labels:
+  # Set timeout for scrape
+  # timeout: 10s
