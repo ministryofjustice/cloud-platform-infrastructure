@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-errors
+  labels:
+    app.kubernetes.io/name: nginx-errors
+    app.kubernetes.io/part-of: ingress-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nginx-errors
+      app.kubernetes.io/part-of: ingress-nginx
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nginx-errors
+        app.kubernetes.io/part-of: ingress-nginx
+    spec:
+      containers:
+      - name: nginx-error-server
+        image: ministryofjustice/cloud-platform-custom-error-pages:0.3
+        ports:
+        - containerPort: 8080
+        # Setting the environment variable DEBUG we can see the headers sent
+        # by the ingress controller to the backend in the client response.
+        env:
+        - name: DEBUG
+          value: "true"
