@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: nginx-error-server
-        image: ministryofjustice/cloud-platform-custom-error-pages:0.2
+        image: ministryofjustice/cloud-platform-custom-error-pages:0.3
         ports:
         - containerPort: 8080
         # Setting the environment variable DEBUG we can see the headers sent
