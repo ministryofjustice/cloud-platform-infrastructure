@@ -184,7 +184,7 @@ resource "null_resource" "nginx_ingress_servicemonitor" {
 }
 
 resource "null_resource" "nginx_ingress_errors_deployment" {
-  depends_on = ["helm_release.prometheus_operator"]
+  depends_on = ["helm_release.nginx_ingress_acme"]
 
   provisioner "local-exec" {
     command = "kubectl apply -n ingress-controllers -f ${path.module}/resources/nginx-ingress/nginx-errors-deployment.yaml"
@@ -201,7 +201,7 @@ resource "null_resource" "nginx_ingress_errors_deployment" {
 }
 
 resource "null_resource" "nginx_ingress_errors_service" {
-  depends_on = ["helm_release.prometheus_operator"]
+  depends_on = ["helm_release.nginx_ingress_acme"]
 
   provisioner "local-exec" {
     command = "kubectl apply -n ingress-controllers -f ${path.module}/resources/nginx-ingress/nginx-errors-service.yaml"
