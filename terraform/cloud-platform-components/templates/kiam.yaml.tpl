@@ -4,7 +4,7 @@ agent:
   image:
     tag: ${ kiam_version }
 
-  gatewayTimeoutCreation: 500ms
+  gatewayTimeoutCreation: 5000ms
 
   ## Host networking settings
   ##
