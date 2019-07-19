@@ -39,6 +39,7 @@ resource "kubernetes_cron_job" "cluster-backup-checker-cronjob" {
   metadata {
     name      = "cluster-backup-checker-cronjob"
     namespace = "monitoring"
+    annotations = iam.amazonaws.com/role: cluster_backup_checker
   }
 
   spec {
