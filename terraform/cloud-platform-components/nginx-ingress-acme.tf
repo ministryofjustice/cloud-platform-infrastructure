@@ -32,7 +32,7 @@ controller:
   electionID: ingress-controller-leader-acme
 
   config:
-    custom-http-errors: 400,403,404,502,504
+    custom-http-errors: 400,403,404,413,502,504
     generate-request-id: "true"
     proxy-buffer-size: "16k"
     proxy-body-size: "50m"
