@@ -124,7 +124,7 @@ EOF
     "null_resource.deploy",
     "kubernetes_namespace.ingress_controllers",
     "helm_release.open-policy-agent",
-    "null_resource.nginx_ingress_errors_service"
+    "null_resource.nginx_ingress_errors_service",
   ]
 
   lifecycle {
