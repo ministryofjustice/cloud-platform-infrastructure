@@ -1,5 +1,7 @@
 # Cluster backup snapshots checker
-# KIAM role creation
+# KIAM role and policy creation
+# Cronjob to schedule the job every day @7.45 GMT to run the script mentioned in the image
+# Image - Ruby script added to Cloud platform ECR Repository
 data "aws_iam_policy_document" "cluster_backup_checker_assume" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -33,35 +35,6 @@ resource "aws_iam_role_policy" "cluster_backup_checker" {
   policy = "${data.aws_iam_policy_document.cluster_backup_checker.json}"
 }
 
-# resource "kubernetes_pod" "cluster_backup_pod" {
-#   metadata {
-#     name      = "cluster-backup-checker-pod"
-#     namespace = "monitoring"
-
-#     annotations {
-#       "iam.amazonaws.com/role" = "cluster-checker.pk-test-2.cloud-platform.service.justice.gov.uk"
-#     }
-#   }
-
-#   spec {
-#     container {
-#       image = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cp-team/cp-poornima-dev-module:8.1"
-#       name  = "snapshot-checker"
-
-#       env {
-#         name  = "SLACK_WEBHOOK"
-#         value = "${var.slack_webhook}"
-#         name  = "KUBERNETES_CLUSTER"
-#         value = "live-1.cloud-platform.service.justice.gov.uk"
-#         name  = "AWS_PROFILE"
-#         value = "moj-cp"
-#         name  = "AWS_REGION"
-#         value = "eu-west-2"
-#       }
-#     }
-#   }
-# }
-
 resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
   metadata {
     name      = "cluster-backup-checker-cronjob"
@@ -69,7 +42,7 @@ resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
   }
 
   spec {
-    schedule = "*/1 * * * *"
+    schedule = "45 7 * * *"
 
     job_template {
       metadata = {}
@@ -84,17 +57,17 @@ resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
 
           spec {
             container {
-              image = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cp-team/cp-poornima-dev-module:9.0"
+              image = "${var.aws_master_account_id}.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/cluster-backup-checker:latest"
               name  = "snapshot-checker"
 
               env {
                 name  = "SLACK_WEBHOOK"
-                value = "https://hooks.slack.com/services/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"
+                value = "${var.cloud_platform_slack_webhook}"
               }
 
               env {
                 name  = "KUBERNETES_CLUSTER"
-                value = "live-1.cloud-platform.service.justice.gov.uk"
+                value = "${format("%s.%s", local.live_workspace, local.live_domain)}"
               }
 
               env {

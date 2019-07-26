@@ -1,0 +1,23 @@
+--- 
+apiVersion: batch/v1beta1
+aws: 
+  role: 
+kind: CronJob
+metadata: 
+  name: cluster-snapshot-checker-cronjob
+  namespace: monitoring
+spec: 
+  jobTemplate: 
+    spec: 
+      template: 
+        spec: 
+          containers: 
+            - 
+              env: 
+                - 
+                  name: AWS_ACCESS_KEY_ID
+                  value: access_key
+              image: "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cp-team/cp-poornima-dev-module:cluster-backup-checker-7.0"
+              name: snapshot-checker
+          restartPolicy: OnFailure
+  schedule: "* * * * *"

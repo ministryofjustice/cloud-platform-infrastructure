@@ -1,0 +1,21 @@
+--- 
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata: 
+  name: cluster-backup-checker-cronjob
+spec: 
+  jobTemplate:
+    spec: 
+      template:
+        metadata:
+          annotations: 
+            iam.amazonaws.com/role: cluster-checker.pk-test-2.cloud-platform.service.justice.gov.uk
+        spec: 
+          containers: 
+            - name: snapshot-checker
+              image: "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cp-team/cp-poornima-dev-module:8.1"
+              env: 
+                - name: SLACK_WEBHOOK
+                  value: "https://hooks.slack.com/services/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"
+          restartPolicy: OnFailure
+  schedule: "*/1 * * * *"
