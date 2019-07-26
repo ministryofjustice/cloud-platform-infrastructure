@@ -19,8 +19,6 @@ resource "aws_iam_role" "cluster_backup_checker" {
 data "aws_iam_policy_document" "cluster_backup_checker" {
   statement {
     actions = [
-      "ec2:CreateSnapshot",
-      "ec2:DeleteSnapshot",
       "ec2:DescribeVolumes",
       "ec2:DescribeSnapshots",
     ]
@@ -35,50 +33,85 @@ resource "aws_iam_role_policy" "cluster_backup_checker" {
   policy = "${data.aws_iam_policy_document.cluster_backup_checker.json}"
 }
 
-resource "kubernetes_cron_job" "cluster-backup-checker-cronjob" {
+# resource "kubernetes_pod" "cluster_backup_pod" {
+#   metadata {
+#     name      = "cluster-backup-checker-pod"
+#     namespace = "monitoring"
+
+#     annotations {
+#       "iam.amazonaws.com/role" = "cluster-checker.pk-test-2.cloud-platform.service.justice.gov.uk"
+#     }
+#   }
+
+#   spec {
+#     container {
+#       image = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cp-team/cp-poornima-dev-module:8.1"
+#       name  = "snapshot-checker"
+
+#       env {
+#         name  = "SLACK_WEBHOOK"
+#         value = "${var.slack_webhook}"
+#         name  = "KUBERNETES_CLUSTER"
+#         value = "live-1.cloud-platform.service.justice.gov.uk"
+#         name  = "AWS_PROFILE"
+#         value = "moj-cp"
+#         name  = "AWS_REGION"
+#         value = "eu-west-2"
+#       }
+#     }
+#   }
+# }
+
+resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
   metadata {
     name      = "cluster-backup-checker-cronjob"
     namespace = "monitoring"
-    annotations = iam.amazonaws.com/role: cluster_backup_checker
   }
 
   spec {
-    concurrency_policy            = "Replace"
-    failed_jobs_history_limit     = 5
-    schedule                      = "*/1 * * * *"
-    starting_deadline_seconds     = 10
-    successful_jobs_history_limit = 10
-    suspend                       = true
+    schedule = "*/1 * * * *"
 
     job_template {
       metadata = {}
 
       spec {
-        backoff_limit = 2
-
         template {
-          metadata = {}
+          metadata = {
+            annotations {
+              "iam.amazonaws.com/role" = "${aws_iam_role.cluster_backup_checker.name}"
+            }
+          }
 
           spec {
             container {
-              image = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cp-team/cp-poornima-dev-module:cluster-backup-checker-7.0"
+              image = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cp-team/cp-poornima-dev-module:9.0"
               name  = "snapshot-checker"
 
               env {
-                name  = "AWS_ACCESS_KEY_ID"
-                value = "${var.access_key}"
-                name  = "AWS_SECRET_ACCESS_KEY"
-                value = "${var.secret_key}"
                 name  = "SLACK_WEBHOOK"
-                value = "${var.slack_webhook}"
+                value = "https://hooks.slack.com/services/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"
+              }
+
+              env {
                 name  = "KUBERNETES_CLUSTER"
                 value = "live-1.cloud-platform.service.justice.gov.uk"
+              }
+
+              env {
                 name  = "AWS_REGION"
                 value = "eu-west-2"
               }
-            }
 
-            restart_policy = "OnFailure"
+              env {
+                name  = "ROLE_NAME"
+                value = "${aws_iam_role.cluster_backup_checker.name}"
+              }
+
+              env {
+                name  = "ACCOUNT_ID"
+                value = "${var.aws_master_account_id}"
+              }
+            }
           }
         }
       }
