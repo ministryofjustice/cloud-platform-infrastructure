@@ -26,6 +26,7 @@ resource "aws_iam_role" "cluster_backup_checker" {
 data "aws_iam_policy_document" "cluster_backup_checker" {
   statement {
     actions = [
+      "sts:AssumeRole",
       "ec2:DescribeSnapshots",
     ]
 
@@ -46,7 +47,7 @@ resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
   }
 
   spec {
-    schedule = "45 7 * * *"
+    schedule = "*/1 * * * *"
 
     job_template {
       metadata = {}
@@ -61,7 +62,7 @@ resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
 
           spec {
             container {
-              image = "${var.aws_master_account_id}.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/cluster-backup-checker:9.1"
+              image = "${var.aws_master_account_id}.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/cluster-backup-checker:9.5"
               name  = "snapshot-checker"
 
               env {
