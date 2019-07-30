@@ -62,7 +62,7 @@ resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
 
           spec {
             container {
-              image = "${var.aws_master_account_id}.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/cluster-backup-checker:1.0"
+              image = "${var.aws_master_account_id}.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/cluster-backup-checker:1.1"
               name  = "snapshot-checker"
 
               env {
