@@ -88,19 +88,19 @@ data "template_file" "prometheus_operator" {
   template = "${file("${ path.module }/templates/prometheus-operator.yaml.tpl")}"
 
   vars {
-    alertmanager_ingress   = "${local.alertmanager_ingress}"
-    grafana_ingress        = "${local.grafana_ingress}"
-    grafana_root           = "${local.grafana_root}"
-    pagerduty_config       = "${ var.pagerduty_config }"
+    alertmanager_ingress                     = "${local.alertmanager_ingress}"
+    grafana_ingress                          = "${local.grafana_ingress}"
+    grafana_root                             = "${local.grafana_root}"
+    pagerduty_config                         = "${ var.pagerduty_config }"
     slack_config                             = "${ var.slack_config }"
     slack_config_apply-for-legal-aid-prod    = "${var.slack_config_apply-for-legal-aid-prod}"
     slack_config_apply-for-legal-aid-staging = "${var.slack_config_apply-for-legal-aid-staging}"
     slack_config_apply-for-legal-aid-uat     = "${var.slack_config_apply-for-legal-aid-uat}"
-    alertmanager_routes    = "${join("", data.template_file.alertmanager_routes.*.rendered)}"
-    alertmanager_receivers = "${join("", data.template_file.alertmanager_receivers.*.rendered)}"
-    prometheus_ingress     = "${local.prometheus_ingress}"
-    random_username        = "${ random_id.username.hex }"
-    random_password        = "${ random_id.password.hex }"
+    alertmanager_routes                      = "${join("", data.template_file.alertmanager_routes.*.rendered)}"
+    alertmanager_receivers                   = "${join("", data.template_file.alertmanager_receivers.*.rendered)}"
+    prometheus_ingress                       = "${local.prometheus_ingress}"
+    random_username                          = "${ random_id.username.hex }"
+    random_password                          = "${ random_id.password.hex }"
   }
 }
 
