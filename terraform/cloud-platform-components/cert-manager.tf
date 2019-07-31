@@ -126,66 +126,30 @@ EOF
   }
 }
 
-data "template_file" "cert_manager_clusterissuer_production" {
-  template = "${file("${path.module}/templates/cert-manager/letsencrypt-production.yaml")}"
-
-  vars {
-    dsd_key_id      = "${aws_iam_access_key.cert_manager_dsd.id}"
-    dsd_secret_name = "${kubernetes_secret.cert_manager_dsd.metadata.0.name}"
-  }
-}
-
-data "template_file" "cert_manager_clusterissuer_staging" {
-  template = "${file("${path.module}/templates/cert-manager/letsencrypt-staging.yaml")}"
-
-  vars {
-    dsd_key_id      = "${aws_iam_access_key.cert_manager_dsd.id}"
-    dsd_secret_name = "${kubernetes_secret.cert_manager_dsd.metadata.0.name}"
-  }
-}
-
 resource "null_resource" "cert_manager_issuers" {
   depends_on = ["helm_release.cert-manager"]
 
   provisioner "local-exec" {
-    command = <<EOS
-kubectl apply -n cert-manager -f - <<EOF
-${data.template_file.cert_manager_clusterissuer_production.rendered}
-EOF
-EOS
+    command = "kubectl apply -n cert-manager -f ${path.module}/templates/cert-manager/letsencrypt-production.yaml"
   }
 
   provisioner "local-exec" {
-    command = <<EOS
-kubectl apply -n cert-manager -f - <<EOF
-${data.template_file.cert_manager_clusterissuer_staging.rendered}
-EOF
-EOS
+    command = "kubectl apply -n cert-manager -f ${path.module}/templates/cert-manager/letsencrypt-staging.yaml"
   }
 
   provisioner "local-exec" {
-    when = "destroy"
-
-    command = <<EOS
-kubectl delete -n cert-manager -f - <<EOF
-${data.template_file.cert_manager_clusterissuer_production.rendered}
-EOF
-EOS
+    when    = "destroy"
+    command = "kubectl delete -n cert-manager -f ${path.module}/templates/cert-manager/letsencrypt-production.yaml"
   }
 
   provisioner "local-exec" {
-    when = "destroy"
-
-    command = <<EOS
-kubectl delete -n cert-manager -f - <<EOF
-${data.template_file.cert_manager_clusterissuer_staging.rendered}
-EOF
-EOS
+    when    = "destroy"
+    command = "kubectl delete -n cert-manager -f ${path.module}/templates/cert-manager/letsencrypt-staging.yaml"
   }
 
   triggers {
-    contents_production = "${sha1(data.template_file.cert_manager_clusterissuer_production.rendered)}"
-    contents_staging    = "${sha1(data.template_file.cert_manager_clusterissuer_staging.rendered)}"
+    contents_production = "${sha1(file("${path.module}/templates/cert-manager/letsencrypt-staging.yaml"))}"
+    contents_staging    = "${sha1(file("${path.module}/templates/cert-manager/letsencrypt-staging.yaml"))}"
   }
 }
 
