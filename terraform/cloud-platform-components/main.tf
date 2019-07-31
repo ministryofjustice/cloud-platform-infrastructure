@@ -55,14 +55,6 @@ provider "aws" {
 }
 
 locals {
-  # This is the list of Route53 Hosted Zones in the DSD account that
-  # cert-manager and external-dns will be given access to.
-  dsd_zones = [
-    "find-legal-advice.justice.gov.uk.",
-    "checklegalaid.service.gov.uk.",
-    "helpwithchildarrangements.service.justice.gov.uk.",
-  ]
-
   live_workspace = "live-1"
   live_domain    = "cloud-platform.service.justice.gov.uk"
 }
