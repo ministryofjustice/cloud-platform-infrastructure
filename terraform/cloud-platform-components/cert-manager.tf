@@ -2,6 +2,28 @@ locals {
   cert-manager-version = "v0.6.6"
 }
 
+resource "kubernetes_namespace" "cert_manager" {
+  metadata {
+    name = "cert-manager"
+
+    labels {
+      "name"                                           = "cert-manager"
+      "component"                                      = "cert-manager"
+      "cloud-platform.justice.gov.uk/environment-name" = "production"
+      "cloud-platform.justice.gov.uk/is-production"    = "true"
+    }
+
+    annotations {
+      "cloud-platform.justice.gov.uk/application"                   = "cert-manager"
+      "cloud-platform.justice.gov.uk/business-unit"                 = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"                         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"                   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+      "cloud-platform.justice.gov.uk/can-use-loadbalancer-services" = "true"
+      "iam.amazonaws.com/permitted"                                 = "${aws_iam_role.cert_manager.name}"
+    }
+  }
+}
+
 data "aws_iam_policy_document" "cert_manager_assume" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -95,6 +117,7 @@ EOF
   depends_on = [
     "null_resource.deploy",
     "null_resource.cert-manager-crds",
+    "kubernetes_namespace.cert_manager",
     "helm_release.open-policy-agent",
   ]
 
@@ -164,14 +187,6 @@ EOS
     contents_production = "${sha1(data.template_file.cert_manager_clusterissuer_production.rendered)}"
     contents_staging    = "${sha1(data.template_file.cert_manager_clusterissuer_staging.rendered)}"
   }
-}
-
-resource "null_resource" "cert_manager_kiam_annotation" {
-  provisioner "local-exec" {
-    command = "kubectl annotate --overwrite namespace cert-manager 'iam.amazonaws.com/permitted=${aws_iam_role.cert_manager.name}'"
-  }
-
-  depends_on = ["helm_release.cert-manager"]
 }
 
 // This is likely not needed beyond the 0.6 upgrade, see:
