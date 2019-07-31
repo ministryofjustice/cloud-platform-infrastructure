@@ -2,6 +2,29 @@ locals {
   cert-manager-version = "v0.6.6"
 }
 
+resource "kubernetes_namespace" "cert_manager" {
+  metadata {
+    name = "cert-manager"
+
+    labels {
+      "name"                                           = "cert-manager"
+      "component"                                      = "cert-manager"
+      "cloud-platform.justice.gov.uk/environment-name" = "production"
+      "cloud-platform.justice.gov.uk/is-production"    = "true"
+      "certmanager.k8s.io/disable-validation"          = "true"
+    }
+
+    annotations {
+      "cloud-platform.justice.gov.uk/application"                   = "cert-manager"
+      "cloud-platform.justice.gov.uk/business-unit"                 = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"                         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"                   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+      "cloud-platform.justice.gov.uk/can-use-loadbalancer-services" = "true"
+      "iam.amazonaws.com/permitted"                                 = "${aws_iam_role.cert_manager.name}"
+    }
+  }
+}
+
 data "aws_iam_policy_document" "cert_manager_assume" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -95,6 +118,7 @@ EOF
   depends_on = [
     "null_resource.deploy",
     "null_resource.cert-manager-crds",
+    "kubernetes_namespace.cert_manager",
     "helm_release.open-policy-agent",
   ]
 
@@ -103,75 +127,31 @@ EOF
   }
 }
 
-data "template_file" "cert_manager_clusterissuer_production" {
-  template = "${file("${path.module}/templates/cert-manager/letsencrypt-production.yaml")}"
-
-  vars {
-    dsd_key_id      = "${aws_iam_access_key.cert_manager_dsd.id}"
-    dsd_secret_name = "${kubernetes_secret.cert_manager_dsd.metadata.0.name}"
-  }
-}
-
-data "template_file" "cert_manager_clusterissuer_staging" {
-  template = "${file("${path.module}/templates/cert-manager/letsencrypt-staging.yaml")}"
-
-  vars {
-    dsd_key_id      = "${aws_iam_access_key.cert_manager_dsd.id}"
-    dsd_secret_name = "${kubernetes_secret.cert_manager_dsd.metadata.0.name}"
-  }
-}
-
 resource "null_resource" "cert_manager_issuers" {
   depends_on = ["helm_release.cert-manager"]
 
   provisioner "local-exec" {
-    command = <<EOS
-kubectl apply -n cert-manager -f - <<EOF
-${data.template_file.cert_manager_clusterissuer_production.rendered}
-EOF
-EOS
+    command = "kubectl apply -n cert-manager -f ${path.module}/templates/cert-manager/letsencrypt-production.yaml"
   }
 
   provisioner "local-exec" {
-    command = <<EOS
-kubectl apply -n cert-manager -f - <<EOF
-${data.template_file.cert_manager_clusterissuer_staging.rendered}
-EOF
-EOS
+    command = "kubectl apply -n cert-manager -f ${path.module}/templates/cert-manager/letsencrypt-staging.yaml"
   }
 
   provisioner "local-exec" {
-    when = "destroy"
-
-    command = <<EOS
-kubectl delete -n cert-manager -f - <<EOF
-${data.template_file.cert_manager_clusterissuer_production.rendered}
-EOF
-EOS
+    when    = "destroy"
+    command = "kubectl delete -n cert-manager -f ${path.module}/templates/cert-manager/letsencrypt-production.yaml"
   }
 
   provisioner "local-exec" {
-    when = "destroy"
-
-    command = <<EOS
-kubectl delete -n cert-manager -f - <<EOF
-${data.template_file.cert_manager_clusterissuer_staging.rendered}
-EOF
-EOS
+    when    = "destroy"
+    command = "kubectl delete -n cert-manager -f ${path.module}/templates/cert-manager/letsencrypt-staging.yaml"
   }
 
   triggers {
-    contents_production = "${sha1(data.template_file.cert_manager_clusterissuer_production.rendered)}"
-    contents_staging    = "${sha1(data.template_file.cert_manager_clusterissuer_staging.rendered)}"
+    contents_production = "${sha1(file("${path.module}/templates/cert-manager/letsencrypt-staging.yaml"))}"
+    contents_staging    = "${sha1(file("${path.module}/templates/cert-manager/letsencrypt-staging.yaml"))}"
   }
-}
-
-resource "null_resource" "cert_manager_kiam_annotation" {
-  provisioner "local-exec" {
-    command = "kubectl annotate --overwrite namespace cert-manager 'iam.amazonaws.com/permitted=${aws_iam_role.cert_manager.name}'"
-  }
-
-  depends_on = ["helm_release.cert-manager"]
 }
 
 // This is likely not needed beyond the 0.6 upgrade, see:

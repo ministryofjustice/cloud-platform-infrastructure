@@ -19,10 +19,3 @@ spec:
       - name: route53-cloud-platform
         route53:
           region: eu-west-2
-      - name: route53-dsd
-        route53:
-          region: eu-west-1
-          accessKeyID: ${dsd_key_id}
-          secretAccessKeySecretRef:
-            name: ${dsd_secret_name}
-            key: secret_access_key
