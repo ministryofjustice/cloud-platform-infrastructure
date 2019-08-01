@@ -109,7 +109,6 @@ controller:
 
   extraArgs:
     default-ssl-certificate: ingress-controllers/default-certificate
-    default-backend-service: ingress-controllers/nginx-errors
 
 rbac:
   create: true
@@ -124,7 +123,6 @@ EOF
     "null_resource.deploy",
     "kubernetes_namespace.ingress_controllers",
     "helm_release.open-policy-agent",
-    "null_resource.nginx_ingress_errors_service",
   ]
 
   lifecycle {
@@ -184,36 +182,3 @@ resource "null_resource" "nginx_ingress_servicemonitor" {
   }
 }
 
-resource "null_resource" "nginx_ingress_errors_deployment" {
-  depends_on = ["null_resource.nginx_ingress_errors_service"]
-
-  provisioner "local-exec" {
-    command = "kubectl apply -n ingress-controllers -f ${path.module}/resources/nginx-ingress/nginx-errors-deployment.yaml"
-  }
-
-  provisioner "local-exec" {
-    when    = "destroy"
-    command = "kubectl delete -n ingress-controllers -f ${path.module}/resources/nginx-ingress/nginx-errors-deployment.yaml"
-  }
-
-  triggers {
-    contents = "${sha1(file("${path.module}/resources/nginx-ingress/nginx-errors-deployment.yaml"))}"
-  }
-}
-
-resource "null_resource" "nginx_ingress_errors_service" {
-  depends_on = ["kubernetes_namespace.ingress_controllers"]
-
-  provisioner "local-exec" {
-    command = "kubectl apply -n ingress-controllers -f ${path.module}/resources/nginx-ingress/nginx-errors-service.yaml"
-  }
-
-  provisioner "local-exec" {
-    when    = "destroy"
-    command = "kubectl delete -n ingress-controllers -f ${path.module}/resources/nginx-ingress/nginx-errors-service.yaml"
-  }
-
-  triggers {
-    contents = "${sha1(file("${path.module}/resources/nginx-ingress/nginx-errors-service.yaml"))}"
-  }
-}
