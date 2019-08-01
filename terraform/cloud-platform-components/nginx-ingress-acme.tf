@@ -194,4 +194,3 @@ resource "null_resource" "nginx_ingress_servicemonitor" {
     contents = "${sha1(file("${path.module}/resources/nginx-ingress/servicemonitor.yaml"))}"
   }
 }
-
