@@ -110,6 +110,19 @@ controller:
   extraArgs:
     default-ssl-certificate: ingress-controllers/default-certificate
 
+defaultBackend:
+  enabled: true
+
+  name: default-backend
+  image:
+    repository: ministryofjustice/cloud-platform-custom-error-pages
+    tag: "0.3"
+    pullPolicy: IfNotPresent
+
+  extraArgs: {}
+
+  port: 8080
+
 rbac:
   create: true
 EOF
