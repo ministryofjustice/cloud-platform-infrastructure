@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ingress-smoketest-app
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ingress-smoketest-app
+    spec:
+      containers:
+      - name: nginx
+        image: bitnami/nginx
+        ports:
+        - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: ingress-smoketest-svc
+  labels:
+    app: ingress-smoketest-svc
+spec:
+  ports:
+  - port: 80
+    name: http
+    targetPort: 8080
+  selector:
+    app: ingress-smoketest-app
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-smoketest-app-ing
+spec:
+  tls:
+  - hosts:
+    - <%= host %>
+  rules:
+  - host: <%= host %>
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ingress-smoketest-svc
+          servicePort: 80
+
