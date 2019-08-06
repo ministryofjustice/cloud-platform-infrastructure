@@ -1,4 +1,4 @@
-IMAGE := ministryofjustice/cloud-platform-smoke-tests:1.0
+IMAGE := ministryofjustice/cloud-platform-smoke-tests:1.1
 KUBE_CONFIG := ~/.kube/config
 
 build:
