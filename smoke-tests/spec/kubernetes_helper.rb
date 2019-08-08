@@ -60,7 +60,11 @@ end
 def create_job(namespace, yaml_file, args)
   job_name = args.fetch(:job_name)
   search_url = args[:search_url]
-
+  role = args.fetch(:role)
+  account_id = args.fetch(:account_id)
+  kubernetes_cluster = args.fetch(:kubernetes_cluster)
+  aws_region = args.fetch(:aws_region)
+  slack_webhook = args.fetch(:slack_webhook)
   apply_template_file(namespace: namespace, file: yaml_file, binding: binding)
   wait_for_job_to_start(namespace, job_name)
 end
@@ -92,4 +96,3 @@ end
 def get_pod_name(namespace, index)
   `kubectl get pods -n #{namespace} | awk 'FNR == #{index + 1} {print $1}'`.chomp
 end
-
