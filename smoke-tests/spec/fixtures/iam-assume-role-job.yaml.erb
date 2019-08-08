@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: <%= job_name %>
+spec:
+  backoffLimit: 4
+  template:
+    metadata:
+      annotations: 
+        iam.amazonaws.com/role: <%= role %>
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: iam-assume-role-ctr
+        image: <%= account_id %>.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/cluster-backup-checker:1.1
+        env:
+        - name: KUBERNETES_CLUSTER
+          value: <%= kubernetes_cluster %>
+        - name: ACCOUNT_ID
+          value: "<%= account_id %>"
+        - name: AWS_REGION
+          value: <%= aws_region %>
+        - name: ROLE_NAME
+          value: <%= role %>
+        - name: SLACK_WEBHOOK
+          value: <%= slack_webhook %>
+    
