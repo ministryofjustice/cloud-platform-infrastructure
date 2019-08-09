@@ -64,7 +64,6 @@ def create_job(namespace, yaml_file, args)
   account_id = args.fetch(:account_id)
   kubernetes_cluster = args.fetch(:kubernetes_cluster)
   aws_region = args.fetch(:aws_region)
-  slack_webhook = args.fetch(:slack_webhook)
   apply_template_file(namespace: namespace, file: yaml_file, binding: binding)
   wait_for_job_to_start(namespace, job_name)
 end
@@ -95,4 +94,42 @@ end
 # Get the name of the Nth pod in the namespace
 def get_pod_name(namespace, index)
   `kubectl get pods -n #{namespace} | awk 'FNR == #{index + 1} {print $1}'`.chomp
+end
+
+def create_iam_with_assumerole(rolename)
+  role = "aws iam create-role --role-name test-kiam-iam-role --assume-role-policy-document file://spec/fixtures/test-kiam-assume-role-policy-document.json"
+  cmd = `#{role}`
+  sleep 60
+  policy = "aws iam put-role-policy --role-name test-kiam-iam-role --policy-name test-kiam-with-policy --policy-document file://spec/fixtures/test-kiam-policy-with-assumerole.json"
+  cmd = `#{policy}`
+  sleep 60
+end
+
+def create_iam_without_assumerole(rolename)
+  role = "aws iam create-role --role-name test-kiam-iam-role --assume-role-policy-document file://spec/fixtures/test-kiam-assume-role-policy-document.json"
+  cmd = `#{role}`
+  sleep 60
+  policy = "aws iam put-role-policy --role-name test-kiam-iam-role --policy-name test-kiam-without-policy --policy-document file://spec/fixtures/test-kiam-policy-without-assumerole.json"
+  cmd = `#{policy}`
+  sleep 60
+end
+
+
+def delete_iam_with_assumerole(rolename)
+  policy = "aws iam delete-role-policy --role-name test-kiam-iam-role --policy-name test-kiam-with-policy"
+  cmd = `#{policy}`
+  cmd = "aws iam delete-role --role-name test-kiam-iam-role"
+  role = `#{cmd}`
+  
+  role
+end
+
+
+def delete_iam_without_assumerole(rolename)
+  policy = "aws iam delete-role-policy --role-name test-kiam-iam-role --policy-name test-kiam-without-policy"
+  cmd = `#{policy}`
+  cmd = "aws iam delete-role --role-name test-kiam-iam-role"
+  role = `#{cmd}`
+  
+  role
 end

@@ -12,40 +12,34 @@ require "spec_helper"
 
 
 describe "kiam" do
-  let(:role) { ENV.fetch('ROLE_NAME') }
+  #let(:role) { ENV.fetch('ROLE_NAME') }
   let(:namespace) { "integrationtest-kiam-#{Time.now.to_i}" }
   let(:account_id) { ENV.fetch('ACCOUNT_ID') }
   let(:aws_region) { ENV.fetch('AWS_REGION') }
   let(:kubernetes_cluster) { ENV.fetch('KUBERNETES_CLUSTER') }
-#   before(:all) do
-#     create_iam_role(role)
-#   end
-
-#   after(:all) do
-#     delete_iam_role(role)
-#   end
-
-  before do
-    create_namespace(namespace)
-    sleep 10
-    apply_template_file(
-      namespace: namespace,
-      file: "spec/fixtures/namespace-annotations.yaml.erb",
-      binding: binding
-    )
-  end
-
-  after do
-    delete_namespace(namespace)
-  end
 
   context "when pod is allowed to assume role" do
-    let(:pod_role_whitelist) { role }
-
+    let(:rolename) { "test-kiam-iam-role" }
+    before do
+      create_namespace(namespace)
+      sleep 10
+      apply_template_file(
+        namespace: namespace,
+        file: "spec/fixtures/namespace-annotations.yaml.erb",
+        binding: binding
+      )
+      create_iam_with_assumerole(rolename)
+      sleep 60
+    end
+  
+    after do
+      #delete_namespace(namespace)
+      delete_iam_with_assumerole(rolename)
+    end
     context "when namespace whitelists *" do
       it "can assume role" do
-        result = try_to_assume_role(pod_role_whitelist)
-        expect(result).to be(true)
+        result = try_to_assume_role(rolename)
+        expect(result).to match(/SUCCESS: Pod able to AssumeRole/)
       end
     end
   end
@@ -61,14 +55,15 @@ describe "kiam" do
 #       end
 #     end
 
-    context "when namespace whitelists other roles" do
-      let(:pod_role_whitelist) { "foo" }
+    # context "when namespace whitelists other roles" do
+    #   let(:pod_role_whitelist) { "foo" }
 
-      it "cannot assume role" do
-        result = try_to_assume_role(pod_role_whitelist)
-        expect(result).to be(false)
-      end
-    end
+    #   it "cannot assume role" do
+    #     expect {
+    #       try_to_assume_role(pod_role_whitelist)
+    #     }.to raise_error(RuntimeError)
+    #   end
+    # end
 
 #     context "when namespace whitelists no roles" do
 #       let(:namespace_role_whitelist) { "" }
@@ -81,19 +76,32 @@ describe "kiam" do
 #     end
 #   end
 
-#   context "when pod is not allowed to assume any roles" do
-#     let(:pod_role_whitelist) { [] }
+context "when pod is allowed to assume role" do
+  let(:rolename) { "test-kiam-iam-role" }
+    before do
+      create_namespace(namespace)
+      sleep 10
+      apply_template_file(
+        namespace: namespace,
+        file: "spec/fixtures/namespace-annotations.yaml.erb",
+        binding: binding
+      )
+      create_iam_without_assumerole(rolename)
+      sleep 60
+    end
+  
+    after do
+      #delete_namespace(namespace)
+      delete_iam_without_assumerole(rolename)
+    end
+    context "when namespace whitelists *" do
+      it "can assume role" do
+        result = try_to_assume_role(rolename)
+        expect(result).to match(/Aws::STS::Errors => Unable to AssumeRole/)
+      end
+    end
+end
 
-#     context "when namespace whitelists *" do
-#       let(:namespace_role_whitelist) { "*" }
-
-#       it "can assume role" do
-#         expect {
-#           try_to_assume_role(role)
-#         }.to_not raise_error(AWS::RoleError)
-#       end
-#     end
-#   end
 
 #   context "when pod is allowed to assume other roles" do
 #     let(:pod_role_whitelist) { ["foo", "bar"] }
@@ -118,14 +126,9 @@ def try_to_assume_role(role)
     role: role,
     account_id: account_id,
     aws_region: aws_region,
-    kubernetes_cluster: kubernetes_cluster,
-    slack_webhook: "https:google.com"
+    kubernetes_cluster: kubernetes_cluster
   })
   pod = `kubectl -n #{namespace} get pods`.split(" ")
   result = `kubectl -n #{namespace} logs #{pod[5]}`
-  if result.match(/Cluster snapshots are recent/)
-    true
-  else
-    false
-  end
+  result
 end
