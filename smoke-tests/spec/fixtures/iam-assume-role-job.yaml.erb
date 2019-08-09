@@ -12,7 +12,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: iam-assume-role-ctr
-        image: <%= account_id %>.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/cluster-backup-checker:1.1
+        image: ministryofjustice/cloud-platform-integration-test-images:1.1
         env:
         - name: KUBERNETES_CLUSTER
           value: <%= kubernetes_cluster %>
@@ -22,6 +22,4 @@ spec:
           value: <%= aws_region %>
         - name: ROLE_NAME
           value: <%= role %>
-        - name: SLACK_WEBHOOK
-          value: <%= slack_webhook %>
     
