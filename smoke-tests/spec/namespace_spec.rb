@@ -5,17 +5,20 @@ describe "namespace" do
     `kubectl auth can-i get #{type} --namespace #{namespace} --as test --as-group github:#{team} --as-group system:authenticated`.chomp
   end
 
+  let(:yes) { "yes" }
+  let(:no) { "no - no RBAC policy matched" }
+
   context "when group is webops" do
     let(:group) { "webops" }
 
     it "allows webops to access namespace" do
       result = can_i_get "namespace", group
-      expect(result).to eq("yes")
+      expect(result).to eq(yes)
     end
 
     it "allows webops to access pods" do
       result = can_i_get "pod", group
-      expect(result).to eq("yes")
+      expect(result).to eq(yes)
     end
   end
 
@@ -24,12 +27,12 @@ describe "namespace" do
 
     it "does not allow non-webops to access namespace" do
       result = can_i_get "namespace", group
-      expect(result).to eq("no - no RBAC policy matched")
+      expect(result).to eq(no)
     end
 
     it "does not allow non-webops to access pods" do
       result = can_i_get "pod", group
-      expect(result).to eq("no - no RBAC policy matched")
+      expect(result).to eq(no)
     end
   end
 
@@ -49,12 +52,12 @@ describe "namespace" do
 
     it "allows non-webops to access pods" do
       result = can_i_get "pod", "test-webops", namespace
-      expect(result).to eq("yes")
+      expect(result).to eq(yes)
     end
 
     it "allows non-webops to access namespace" do
       result = can_i_get "namespace", "test-webops", namespace
-      expect(result).to eq("yes")
+      expect(result).to eq(yes)
     end
   end
 end
