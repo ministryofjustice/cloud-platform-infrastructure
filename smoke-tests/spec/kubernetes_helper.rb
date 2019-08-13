@@ -96,40 +96,41 @@ def get_pod_name(namespace, index)
   `kubectl get pods -n #{namespace} | awk 'FNR == #{index + 1} {print $1}'`.chomp
 end
 
-def create_iam_with_assumerole(rolename)
-  role = "aws iam create-role --role-name test-kiam-iam-role --assume-role-policy-document file://spec/fixtures/test-kiam-assume-role-policy-document.json"
-  cmd = `#{role}`
-  sleep 60
-  policy = "aws iam put-role-policy --role-name test-kiam-iam-role --policy-name test-kiam-with-policy --policy-document file://spec/fixtures/test-kiam-policy-with-assumerole.json"
-  cmd = `#{policy}`
-  sleep 60
+def set_json_file(args)
+  json_file = args.fetch(:file)
+  account_id = args.fetch(:account_id)
+  kubernetes_cluster = args.fetch(:kubernetes_cluster)
+  binding = args.fetch(:binding)
+  renderer = ERB.new(File.read(json_file))
+  json = renderer.result(binding)
 end
 
-def create_iam_without_assumerole(rolename)
-  role = "aws iam create-role --role-name test-kiam-iam-role --assume-role-policy-document file://spec/fixtures/test-kiam-assume-role-policy-document.json"
-  cmd = `#{role}`
-  sleep 60
-  policy = "aws iam put-role-policy --role-name test-kiam-iam-role --policy-name test-kiam-without-policy --policy-document file://spec/fixtures/test-kiam-policy-without-assumerole.json"
-  cmd = `#{policy}`
-  sleep 60
+def create_iam_with_assumerole(rolename,temp_path)
+  unless execute("aws iam get-role --role-name #{rolename} > /dev/null 2>&1")
+    `aws iam create-role --role-name #{rolename} --assume-role-policy-document file://#{temp_path}`
+    sleep 60
+  end
+    `aws iam put-role-policy --role-name #{rolename} --policy-name test-kiam-with-policy --policy-document file://spec/fixtures/test-kiam-policy-with-assumerole.json`
+    sleep 10
+end
+
+def create_iam_without_assumerole(rolename,temp_path)
+  unless execute("aws iam get-role --role-name #{rolename} > /dev/null 2>&1")
+    `aws iam create-role --role-name #{rolename} --assume-role-policy-document file://#{temp_path}`
+    sleep 60
+  end
+    `aws iam put-role-policy --role-name #{rolename} --policy-name test-kiam-without-policy --policy-document file://spec/fixtures/test-kiam-policy-without-assumerole.json`
+    sleep 10
 end
 
 
 def delete_iam_with_assumerole(rolename)
-  policy = "aws iam delete-role-policy --role-name test-kiam-iam-role --policy-name test-kiam-with-policy"
-  cmd = `#{policy}`
-  cmd = "aws iam delete-role --role-name test-kiam-iam-role"
-  role = `#{cmd}`
-  
-  role
+  `aws iam delete-role-policy --role-name #{rolename} --policy-name test-kiam-with-policy`
+  `aws iam delete-role --role-name #{rolename}`
 end
 
 
 def delete_iam_without_assumerole(rolename)
-  policy = "aws iam delete-role-policy --role-name test-kiam-iam-role --policy-name test-kiam-without-policy"
-  cmd = `#{policy}`
-  cmd = "aws iam delete-role --role-name test-kiam-iam-role"
-  role = `#{cmd}`
-  
-  role
+  `aws iam delete-role-policy --role-name #{rolename} --policy-name test-kiam-without-policy`
+  `aws iam delete-role --role-name #{rolename}`
 end

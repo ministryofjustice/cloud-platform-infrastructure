@@ -1,0 +1,11 @@
+{
+   "Statement": [
+   {
+     "Effect": "Allow",
+     "Principal": {
+        "AWS": "arn:aws:iam::<%= account_id %>:role/nodes.<%= kubernetes_cluster %>"
+     },
+   "Action": "sts:AssumeRole"
+   }
+ ]
+}
