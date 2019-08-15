@@ -21,8 +21,8 @@ def delete_namespace(namespace)
   `kubectl delete namespace #{namespace}`
 end
 
-def annotate_namespace(namespace)
-  `kubectl annotate --overwrite namespace #{namespace} 'iam.amazonaws.com/permitted=.*'`
+def annotate_namespace(namespace, annotation)
+  `kubectl annotate --overwrite namespace #{namespace} '#{annotate_namespace}'`
 end
 
 def delete_deployment(namespace, deployment)
@@ -70,6 +70,16 @@ def create_job(namespace, yaml_file, args)
   aws_region = args.fetch(:aws_region)
   apply_template_file(namespace: namespace, file: yaml_file, binding: binding)
   wait_for_job_to_start(namespace, job_name)
+end
+
+def launch_pod(namespace, args)
+  pod_name = args.fetch(:pod_name)
+  image = args.fetch(:image)
+  cmd = args.fetch(:cmd)
+end
+
+def annotate_pod(namespace, pod_name, annotation)
+  `kubectl -n #{namespace} annotate --overwrite pod #{pod_name} '#{annotation}'`
 end
 
 def wait_for_job_to_start(namespace, job_name)
