@@ -92,8 +92,13 @@ def wait_for_kops_validate
       validated = true
       break
     else
-      log "Flushing DNS and sleeping before retry..."
-      cmd_successful?(DNS_FLUSH_COMMAND)
+      unless i_am_root?
+        # If we are root, then we're running inside the
+        # tools image, and there's no point running the
+        # DNS_FLUSH_COMMAND
+        log "Flushing DNS and sleeping before retry..."
+        cmd_successful?(DNS_FLUSH_COMMAND)
+      end
       sleep 60
     end
   end
@@ -165,7 +170,7 @@ def run_and_output(cmd, opts = {})
 end
 
 def get_sudo
-  execute "sudo true"
+  execute("sudo true") unless i_am_root?
 end
 
 def usage
@@ -180,6 +185,10 @@ end
 def cmd_successful?(cmd)
   log cmd
   system cmd
+end
+
+def i_am_root?
+  `whoami`.chomp == "root"
 end
 
 ############################################################
