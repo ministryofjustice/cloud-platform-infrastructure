@@ -5,7 +5,7 @@
 # Correct annotation are added to the Pod to indicate which role should be assumed.
 # Without correct Pod annotation Kiam cannot provide access to the Pod to execute required actions.
 # Cronjob to schedule the job every day @17:00 UTC to run the script mentioned in the image
-# 
+#
 # Image - Ruby script added to Cloud platform ECR Repository
 data "aws_iam_policy_document" "cluster_backup_checker_assume" {
   statement {
@@ -19,7 +19,7 @@ data "aws_iam_policy_document" "cluster_backup_checker_assume" {
 }
 
 resource "aws_iam_role" "cluster_backup_checker" {
-  name               = "cluster-checker.${data.terraform_remote_state.cluster.cluster_domain_name}"
+  name               = "cluster-chckr.${data.terraform_remote_state.cluster.cluster_domain_name}"
   assume_role_policy = "${data.aws_iam_policy_document.cluster_backup_checker_assume.json}"
 }
 
