@@ -14,21 +14,27 @@ describe "kiam" do
   let(:account_id) { "754256621582" }
   let(:aws_region) { "eu-west-2" }
   kubernetes_cluster = current_cluster
-  
 
-  context "when role  have permissions to assume role on the pod" do
+  context "when pod is able to assume aws role"
     before do
-      apply_template_file(
-        namespace: namespace,
-        file: "spec/fixtures/namespace-annotations.yaml.erb",
-        binding: binding
-      )
+      create_namespace(namespace)
+
+      # apply_template_file(
+      #   namespace: namespace,
+      #   file: "spec/fixtures/namespace-annotations.yaml.erb",
+      #   binding: binding
+      # )
+      annotate_namespace(namespace)
+      
+      # creates the json policy to be assumed in the role, is there an 
+      # easier way to apply this?
       json = set_json_file(
         file: "spec/fixtures/test-kiam-assume-role-policy-document.json.erb",
         account_id: account_id,
         kubernetes_cluster: kubernetes_cluster,
         binding: binding
       )
+      # application of the role creation, tidy this up
       t = Tempfile.new("test_temp")
       t.write(json) 
       t.close
@@ -39,6 +45,8 @@ describe "kiam" do
       delete_namespace(namespace)
       delete_iam_with_assumerole(rolename)
     end
+
+    # rename this context and make it easier to understand
     context "when namespace whitelists *" do
       it "can assume role" do
         result = try_to_assume_role(rolename)
@@ -47,8 +55,8 @@ describe "kiam" do
     end
   end
  
-
-  context "when role doesnot have permissions to assume on the pod" do
+  # rename context to make it easier to understand
+  context "when role doesnot have permissions to assume on the  pod" do
     let(:rolename) { "test-kiam-iam-role" }
       before do
         apply_template_file(
@@ -80,7 +88,6 @@ describe "kiam" do
         end
       end
   end
-end
 
 def try_to_assume_role(rolename)
   kubernetes_cluster = current_cluster

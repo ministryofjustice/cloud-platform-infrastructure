@@ -21,6 +21,10 @@ def delete_namespace(namespace)
   `kubectl delete namespace #{namespace}`
 end
 
+def annotate_namespace(namespace)
+  `kubectl annotate --overwrite namespace #{namespace} 'iam.amazonaws.com/permitted=.*'`
+end
+
 def delete_deployment(namespace, deployment)
   `kubectl -n #{namespace} delete deployment #{deployment}`
 end
