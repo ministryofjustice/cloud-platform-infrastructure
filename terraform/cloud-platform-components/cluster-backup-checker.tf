@@ -19,7 +19,7 @@ data "aws_iam_policy_document" "cluster_backup_checker_assume" {
 }
 
 resource "aws_iam_role" "cluster_backup_checker" {
-  name               = "cluster-checker.${data.terraform_remote_state.cluster.cluster_domain_name}"
+  name               = "cluster-chckr.${data.terraform_remote_state.cluster.cluster_domain_name}"
   assume_role_policy = "${data.aws_iam_policy_document.cluster_backup_checker_assume.json}"
 }
 
