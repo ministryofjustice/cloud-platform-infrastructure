@@ -13,5 +13,6 @@ tools-shell:
 		-v $$(pwd):/app \
 		-v $${HOME}/.aws:/root/.aws \
 		-e AWS_SHARED_CREDENTIALS_FILE=/root/.aws/credentials \
+		-v $${HOME}/.gnupg:/root/.gnupg \
 		-w /app \
 		$(TOOLS_IMAGE) bash
