@@ -1,4 +1,4 @@
-TOOLS_IMAGE := tools-ruby # TODO: replace with full ECR image reference
+TOOLS_IMAGE := 754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools
 
 # The AWS_SHARED_CREDENTIALS_FILE variable is only needed if you have
 # the .aws directory mounted somewhere other than /root/.aws I'm just
