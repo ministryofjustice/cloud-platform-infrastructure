@@ -17,6 +17,7 @@ DNS_FLUSH_COMMAND = 'sudo killall -HUP mDNSResponder' # Mac OSX Mojave
 REQUIRED_ENV_VARS = %w( AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE )
 REQUIRED_EXECUTABLES = %w( git-crypt terraform helm aws kops ssh-keygen )
 REQUIRED_AWS_PROFILES = %w( moj-cp moj-dsd )
+ROOT_USER = "root"
 
 def main(cluster_name)
   usage if cluster_name.nil?
@@ -63,7 +64,7 @@ def install_components(cluster_name)
   switch_terraform_workspace(dir, cluster_name)
 
   # Ensure we have the latest helm charts for all the required components
-  execute "helm repo update"
+  execute "helm init --client-only; helm repo update"
   # Without this step, you may get errors like this:
   #
   #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
@@ -92,8 +93,13 @@ def wait_for_kops_validate
       validated = true
       break
     else
-      log "Flushing DNS and sleeping before retry..."
-      cmd_successful?(DNS_FLUSH_COMMAND)
+      unless i_am_root?
+        # If we are root, then we're running inside the
+        # tools image, and there's no point running the
+        # DNS_FLUSH_COMMAND
+        log "Flushing DNS and sleeping before retry..."
+        cmd_successful?(DNS_FLUSH_COMMAND)
+      end
       sleep 60
     end
   end
@@ -165,7 +171,7 @@ def run_and_output(cmd, opts = {})
 end
 
 def get_sudo
-  execute "sudo true"
+  execute("sudo true") unless i_am_root?
 end
 
 def usage
@@ -180,6 +186,10 @@ end
 def cmd_successful?(cmd)
   log cmd
   system cmd
+end
+
+def i_am_root?
+  `whoami`.chomp == ROOT_USER
 end
 
 ############################################################
