@@ -4,7 +4,7 @@ describe "namespaces" do
 
   # Monitoring is automatically set up for all namespaces which have specific
   # annotations. So, if any namespaces don't have any, it's a problem.
-  specify "must have annotations" do
+  xspecify "must have annotations" do
     # This finds namespaces which either don't have an annotations entry, or which
     # have one but it's empty. This might be overkill, but it doesn't add much
     # complexity to the test.
