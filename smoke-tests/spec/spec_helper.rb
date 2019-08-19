@@ -102,7 +102,7 @@ require "pry-byebug"
 require "erb"
 require "json"
 require "date"
-require "kubernetes_helper"
+require "./spec/kubernetes_helper"
 
 def readable_timestamp
   Time.now.strftime("%Y%m%d%H%M%S")
