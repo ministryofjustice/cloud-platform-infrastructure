@@ -12,7 +12,7 @@ describe "custom error pages" do
       }.to raise_error(OpenURI::HTTPError, "404 Not Found")
     end
 
-    it "serves a 404 response" do
+    xit "serves a 404 response" do
       begin
         URI.open(url)
       rescue OpenURI::HTTPError => e
