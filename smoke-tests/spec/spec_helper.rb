@@ -99,11 +99,11 @@ end
 
 require "open-uri"
 require "pry-byebug"
-require "kubernetes_helper"
 require "erb"
 require "json"
 require "date"
+require "kubernetes_helper"
 
 def readable_timestamp
-  Time.now.to_i
+  Time.now.strftime("%Y%m%d%H%M%S")
 end
