@@ -3,7 +3,7 @@ require "spec_helper"
 # Use the cluster: 'live-1' tag to identify tests which can only run against the live-1 cluster
 # (in this case, because that's the only place where elasticsearch is set up with these values)
 describe "Log collection", cluster: 'live-1' do
-  let(:namespace) { "smoketest-logging-#{Time.now.to_i}" }
+  let(:namespace) { "smoketest-logging-#{readable_timestamp}" }
 
   ELASTIC_SEARCH = "https://search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
 

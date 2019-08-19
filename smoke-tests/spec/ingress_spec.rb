@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe "nginx ingress", cluster: 'live-1' do
   let(:cluster_domain) { "apps.live-1.cloud-platform.service.justice.gov.uk" }
-  let(:namespace) { "smoketest-ingress-#{Time.now.to_i}" }
+  let(:namespace) { "smoketest-ingress-#{readable_timestamp}" }
   let(:host) { "#{namespace}.#{cluster_domain}" }
   let(:url) { "https://#{host}" }
 
