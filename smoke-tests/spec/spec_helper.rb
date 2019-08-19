@@ -103,3 +103,7 @@ require "kubernetes_helper"
 require "erb"
 require "json"
 require "date"
+
+def readable_timestamp
+  Time.now.to_i
+end

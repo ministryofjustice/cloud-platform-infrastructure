@@ -37,7 +37,7 @@ describe "namespace" do
   end
 
   context "when group is test-webops" do
-    namespace = "smoketest-namespace-#{Time.now.to_i}"
+    namespace = "smoketest-namespace-#{readable_timestamp}"
     before(:all) do
       apply_template_file(
         namespace: namespace,
