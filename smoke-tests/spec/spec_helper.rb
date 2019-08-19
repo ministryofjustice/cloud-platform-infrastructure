@@ -105,5 +105,5 @@ require "json"
 require "date"
 
 def readable_timestamp
-  Time.now.to_i
+  Time.now.strftime("%Y%m%d%H%M%S")
 end
