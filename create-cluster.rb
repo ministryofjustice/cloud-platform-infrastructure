@@ -66,14 +66,12 @@ def install_components(cluster_name)
   #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
   #
 
-
   cmd = "cd #{dir}; terraform apply -auto-approve"
   if cmd_successful?(cmd)
     log "Cluster components installed."
   else
-    log "Initial components install reported errors. Sleeping and retrying..."
-    sleep 120
-    cmd_successful?(cmd)
+    log "Cluster components failed to install. Aborting."
+    exit 1
   end
 end
 
