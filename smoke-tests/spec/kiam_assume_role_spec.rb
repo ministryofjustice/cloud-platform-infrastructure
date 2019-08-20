@@ -4,18 +4,21 @@ require 'tempfile'
 #create a namespace with annotations
 #Create a role
 #with a assume_role with and without right permissions
-#create an annotation for a pod 
+#create an annotation for a pod
 # test whether the pod runs with assume role with namespace and pod annotations
 # test whether the pod runs without correct assume role without namespace and pod annotations
 
 describe "kiam" do
+  # Do not use a dynamically-generated rolename here. This test
+  # only works using a stable set of AWS entities
   let(:rolename) { "test-kiam-iam-role" }
-  let(:namespace) { "integrationtest-kiam-#{Time.now.to_i}" }
-  #let(:namespace) { "integrationtest-kiam-1566308151" }
+
+  let(:namespace) { "integrationtest-kiam-#{readable_timestamp}" }
   let(:account_id) { "754256621582" }
   let(:aws_region) { "eu-west-2" }
+
   kubernetes_cluster = current_cluster
-  
+
   context "when role  have permissions to assume role on the pod" do
     before do
       puts "creating namespace"
@@ -31,14 +34,14 @@ describe "kiam" do
       #  binding: binding
       #)
       #t = Tempfile.new("test_temp")
-      #t.write(json) 
+      #t.write(json)
       #t.close
       #create_iam_with_assumerole(rolename,t.path)
       #puts "creating role"
       create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
       #sleep 60
     end
-  
+
     after do
       #delete_namespace(namespace)
       #puts "deleting namespace"
@@ -49,6 +52,7 @@ describe "kiam" do
       #sleep 10
       #delete_iam_with_assumerole(rolename)
     end
+
     context "when namespace whitelists *" do
       it "can assume role" do
         puts "trying test"
@@ -58,7 +62,7 @@ describe "kiam" do
       end
     end
   end
- 
+
 
   #context "when role doesnot have permissions to assume on the pod" do
   #  let(:rolename) { "test-kiam-iam-role" }
@@ -76,11 +80,11 @@ describe "kiam" do
   #      )
 
   #      t = Tempfile.new("test_temp")
-  #      t.write(json) 
+  #      t.write(json)
   #      t.close
   #      create_iam_without_assumerole(rolename,t.path)
   #    end
-  #  
+  #
   #    after do
   #      delete_namespace(namespace)
   #      delete_iam_without_assumerole(rolename)
@@ -111,19 +115,10 @@ def try_to_assume_role(rolename)
   result
 end
 
-def role_exists?(rolename, aws_region)
-  client = Aws::IAM::Client.new(region: aws_region)
-  iam = Aws::IAM::Resource.new(client: client)
-  
-  resp = client.get_role({
-    role_name: rolename, 
-  })
-end
-
 def delete_role(rolename, aws_region)
   client = Aws::IAM::Client.new(region: aws_region)
   iam = Aws::IAM::Resource.new(client: client)
- 
+
   resp = client.detach_role_policy({
     role_name: rolename,# required
     policy_arn: 'arn:aws:iam::754256621582:policy/test-kiam-policy', # required
@@ -135,7 +130,20 @@ def delete_role(rolename, aws_region)
 end
 
 def create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
-  unless role_exists?(rolename, aws_region) create_role(rolename, kubernetes_cluster, account_id, aws_region)
+  unless role_exists?(rolename, aws_region)
+    create_role(rolename, kubernetes_cluster, account_id, aws_region)
+  end
+end
+
+def role_exists?(rolename, aws_region)
+  client = Aws::IAM::Client.new(region: aws_region)
+  iam = Aws::IAM::Resource.new(client: client)
+
+  begin
+    !!client.get_role(role_name: rolename)
+  rescue Aws::IAM::Errors::NoSuchEntity => e
+    false
+  end
 end
 
 def create_role(rolename, kubernetes_cluster, account_id, aws_region)
@@ -160,7 +168,7 @@ def create_role(rolename, kubernetes_cluster, account_id, aws_region)
     assume_role_policy_document: policy_doc.to_json,
   })
 
-  client.wait_until(:role_exists, role_name: rolename) 
+  client.wait_until(:role_exists, role_name: rolename)
 
 # Needs to be created at runtime
   role.attach_policy({
