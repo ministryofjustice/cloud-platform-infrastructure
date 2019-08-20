@@ -71,20 +71,6 @@ def try_to_assume_role(rolename, account_id, aws_region, kubernetes_cluster, nam
   result
 end
 
-def delete_role(rolename, aws_region)
-  client = Aws::IAM::Client.new(region: aws_region)
-  iam = Aws::IAM::Resource.new(client: client)
-
-  resp = client.detach_role_policy({
-    role_name: rolename,# required
-    policy_arn: 'arn:aws:iam::754256621582:policy/test-kiam-policy', # required
-  })
-
-  client.delete_role({
-    role_name: rolename,
-  })
-end
-
 def create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
   unless role_exists?(rolename, aws_region)
     create_role(rolename, kubernetes_cluster, account_id, aws_region)
