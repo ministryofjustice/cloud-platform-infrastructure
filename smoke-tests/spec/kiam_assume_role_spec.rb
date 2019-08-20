@@ -19,44 +19,22 @@ describe "kiam" do
 
   kubernetes_cluster = current_cluster
 
-  context "when role  have permissions to assume role on the pod" do
+  context "namespace annotations allow assuming role" do
     before do
-      puts "creating namespace"
       apply_template_file(
         namespace: namespace,
         file: "spec/fixtures/namespace-annotations.yaml.erb",
         binding: binding
       )
-      #json = set_json_file(
-      #  file: "spec/fixtures/test-kiam-assume-role-policy-document.json.erb",
-      #  account_id: account_id,
-      #  kubernetes_cluster: kubernetes_cluster,
-      #  binding: binding
-      #)
-      #t = Tempfile.new("test_temp")
-      #t.write(json)
-      #t.close
-      #create_iam_with_assumerole(rolename,t.path)
-      #puts "creating role"
       create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
-      #sleep 60
     end
 
     after do
-      #delete_namespace(namespace)
-      #puts "deleting namespace"
-      #delete_role(rolename, aws_region)
-      #sleep 10
-      #puts "deleting job"
-      #`kubectl delete job integration-test-kiam-assume -n #{namespace}`
-      #sleep 10
-      #delete_iam_with_assumerole(rolename)
+      delete_namespace(namespace)
     end
 
     context "when namespace whitelists *" do
       it "can assume role" do
-        puts "trying test"
-        sleep 10
         result = try_to_assume_role(rolename)
         expect(result).to match(/SUCCESS: Pod able to AssumeRole/)
       end
@@ -99,7 +77,6 @@ describe "kiam" do
 end
 
 def try_to_assume_role(rolename)
-  puts "creating job"
   kubernetes_cluster = current_cluster
   create_job(namespace, "spec/fixtures/iam-assume-role-job.yaml.erb", {
     job_name: "integration-test-kiam-assume",
