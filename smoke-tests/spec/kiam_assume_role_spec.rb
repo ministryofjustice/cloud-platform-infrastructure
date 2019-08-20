@@ -18,6 +18,14 @@ describe "kiam" do
 
   let(:namespace) { "integrationtest-kiam-#{random_string}-#{readable_timestamp}" }
 
+  let(:assume_role_args) { {
+    rolename: rolename,
+    account_id: account_id,
+    aws_region: aws_region,
+    kubernetes_cluster: kubernetes_cluster,
+    namespace: namespace
+  } }
+
   # There is no after(:all) cleanup, because we want to use the same role every time
   before(:all) do
     create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
@@ -30,8 +38,7 @@ describe "kiam" do
 
     context "when namespace whitelists *" do
       it "can assume role" do
-        puts namespace
-        result = try_to_assume_role(rolename, account_id, aws_region, kubernetes_cluster, namespace)
+        result = try_to_assume_role(assume_role_args)
         expect(result).to match(/SUCCESS: Pod able to AssumeRole/)
       end
     end
@@ -48,21 +55,22 @@ describe "kiam" do
 
     context "when namespace whitelists *" do
       it "cannot assume role" do
-        result = try_to_assume_role(rolename, account_id, aws_region, kubernetes_cluster, namespace)
+        result = try_to_assume_role(assume_role_args)
         expect(result).to match(/Aws::STS::Errors => Unable to AssumeRole/)
       end
     end
   end
 end
 
-# TODO: no positional arguments
-def try_to_assume_role(rolename, account_id, aws_region, kubernetes_cluster, namespace)
+def try_to_assume_role(args)
+  namespace = args.fetch(:namespace)
+
   create_job(namespace, "spec/fixtures/iam-assume-role-job.yaml.erb", {
     job_name: "integration-test-kiam-assume",
-    role: rolename,
-    account_id: account_id,
-    aws_region: aws_region,
-    kubernetes_cluster: kubernetes_cluster
+    role: args.fetch(:rolename),
+    account_id: args.fetch(:account_id),
+    aws_region: args.fetch(:aws_region),
+    kubernetes_cluster: args.fetch(:kubernetes_cluster)
   })
 
   #get_pod_name
