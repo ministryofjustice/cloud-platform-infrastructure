@@ -58,40 +58,6 @@ describe "kiam" do
       end
     end
   end
-
-
-  #context "when role doesnot have permissions to assume on the pod" do
-  #  let(:rolename) { "test-kiam-iam-role" }
-  #    before do
-  #      apply_template_file(
-  #        namespace: namespace,
-  #        file: "spec/fixtures/namespace-annotations.yaml.erb",
-  #        binding: binding
-  #      )
-  #      json = set_json_file(
-  #        file: "spec/fixtures/test-kiam-assume-role-policy-document.json.erb",
-  #        account_id: account_id,
-  #        kubernetes_cluster: kubernetes_cluster,
-  #        binding: binding
-  #      )
-
-  #      t = Tempfile.new("test_temp")
-  #      t.write(json)
-  #      t.close
-  #      create_iam_without_assumerole(rolename,t.path)
-  #    end
-  #
-  #    after do
-  #      delete_namespace(namespace)
-  #      delete_iam_without_assumerole(rolename)
-  #    end
-  #    context "when namespace whitelists *" do
-  #      it "can assume role" do
-  #        result = try_to_assume_role(rolename)
-  #        expect(result).to match(/Aws::STS::Errors => Unable to AssumeRole/)
-  #      end
-  #    end
-  #end
 end
 
 def try_to_assume_role(rolename, account_id, aws_region, kubernetes_cluster, namespace)
