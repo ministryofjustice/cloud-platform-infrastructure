@@ -1,4 +1,5 @@
 TOOLS_IMAGE := 754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools
+TOOLS_HOME := /home/toolsuser
 
 tools-shell:
 	docker pull $(TOOLS_IMAGE)
@@ -8,8 +9,8 @@ tools-shell:
     -e AUTH0_CLIENT_ID=$${AUTH0_CLIENT_ID} \
     -e AUTH0_CLIENT_SECRET=$${AUTH0_CLIENT_SECRET} \
     -e KOPS_STATE_STORE=$${KOPS_STATE_STORE} \
-		-v $$(pwd):/app \
-		-v $${HOME}/.aws:/root/.aws \
-		-v $${HOME}/.gnupg:/root/.gnupg \
-		-w /app \
+		-v $${HOME}/.aws:$(TOOLS_HOME)/.aws \
+		-v $${HOME}/.gnupg:$(TOOLS_HOME)/.gnupg \
+		-v $$(pwd):$(TOOLS_HOME)/infra \
+		-w $(TOOLS_HOME)/infra \
 		$(TOOLS_IMAGE) bash
