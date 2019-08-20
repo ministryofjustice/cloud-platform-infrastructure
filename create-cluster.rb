@@ -175,10 +175,6 @@ def cmd_successful?(cmd)
   system cmd
 end
 
-def i_am_root?
-  `whoami`.chomp == ROOT_USER
-end
-
 ############################################################
 
 main ARGV.shift
