@@ -107,3 +107,8 @@ require "date"
 def readable_timestamp
   Time.now.strftime("%Y%m%d%H%M%S")
 end
+
+# String of random upper-case letters
+def random_string(length = 8)
+  (0...length).map { (65 + rand(26)).chr }.join
+end
