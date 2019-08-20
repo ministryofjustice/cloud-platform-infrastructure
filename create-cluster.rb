@@ -11,8 +11,6 @@ require "fileutils"
 
 MAX_CLUSTER_NAME_LENGTH = 12
 CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
-# TODO: use the right dns flush command, depending on the architecture of the local machine
-DNS_FLUSH_COMMAND = 'sudo killall -HUP mDNSResponder' # Mac OSX Mojave
 
 REQUIRED_ENV_VARS = %w( AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE )
 REQUIRED_EXECUTABLES = %w( git-crypt terraform helm aws kops ssh-keygen )
@@ -93,13 +91,7 @@ def wait_for_kops_validate
       validated = true
       break
     else
-      unless i_am_root?
-        # If we are root, then we're running inside the
-        # tools image, and there's no point running the
-        # DNS_FLUSH_COMMAND
-        log "Flushing DNS and sleeping before retry..."
-        cmd_successful?(DNS_FLUSH_COMMAND)
-      end
+      log "Sleeping before retry..."
       sleep 60
     end
   end
