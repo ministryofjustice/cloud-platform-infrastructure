@@ -79,7 +79,6 @@ end
 
 def role_exists?(rolename, aws_region)
   client = Aws::IAM::Client.new(region: aws_region)
-  iam = Aws::IAM::Resource.new(client: client)
 
   begin
     !!client.get_role(role_name: rolename)
