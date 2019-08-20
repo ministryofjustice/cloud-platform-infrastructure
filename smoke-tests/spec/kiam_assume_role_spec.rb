@@ -105,15 +105,13 @@ def create_role(rolename, kubernetes_cluster, account_id, aws_region)
     ]
   }
 
-  role = iam.create_role({
+  role = iam.create_role(
     role_name: rolename,
     assume_role_policy_document: policy_doc.to_json,
-  })
+  )
 
   client.wait_until(:role_exists, role_name: rolename)
 
-# Needs to be created at runtime
-  role.attach_policy({
-  policy_arn: 'arn:aws:iam::754256621582:policy/test-kiam-policy'
-})
+  # Needs to be created at runtime
+  role.attach_policy(policy_arn: 'arn:aws:iam::754256621582:policy/test-kiam-policy')
 end
