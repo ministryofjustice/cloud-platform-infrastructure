@@ -23,21 +23,23 @@ describe "kiam" do
         file: "spec/fixtures/namespace-annotations.yaml.erb",
         binding: binding
       )
-      json = set_json_file(
-        file: "spec/fixtures/test-kiam-assume-role-policy-document.json.erb",
-        account_id: account_id,
-        kubernetes_cluster: kubernetes_cluster,
-        binding: binding
-      )
-      t = Tempfile.new("test_temp")
-      t.write(json) 
-      t.close
-      create_iam_with_assumerole(rolename,t.path)
+      #json = set_json_file(
+      #  file: "spec/fixtures/test-kiam-assume-role-policy-document.json.erb",
+      #  account_id: account_id,
+      #  kubernetes_cluster: kubernetes_cluster,
+      #  binding: binding
+      #)
+      #t = Tempfile.new("test_temp")
+      #t.write(json) 
+      #t.close
+      #create_iam_with_assumerole(rolename,t.path)
+      create_role(rolename, kubernetes_cluster, account_id, aws_region)
+      sleep 70
     end
   
     after do
       delete_namespace(namespace)
-      delete_iam_with_assumerole(rolename)
+      #delete_iam_with_assumerole(rolename)
     end
     context "when namespace whitelists *" do
       it "can assume role" do
@@ -48,38 +50,38 @@ describe "kiam" do
   end
  
 
-  context "when role doesnot have permissions to assume on the pod" do
-    let(:rolename) { "test-kiam-iam-role" }
-      before do
-        apply_template_file(
-          namespace: namespace,
-          file: "spec/fixtures/namespace-annotations.yaml.erb",
-          binding: binding
-        )
-        json = set_json_file(
-          file: "spec/fixtures/test-kiam-assume-role-policy-document.json.erb",
-          account_id: account_id,
-          kubernetes_cluster: kubernetes_cluster,
-          binding: binding
-        )
+  #context "when role doesnot have permissions to assume on the pod" do
+  #  let(:rolename) { "test-kiam-iam-role" }
+  #    before do
+  #      apply_template_file(
+  #        namespace: namespace,
+  #        file: "spec/fixtures/namespace-annotations.yaml.erb",
+  #        binding: binding
+  #      )
+  #      json = set_json_file(
+  #        file: "spec/fixtures/test-kiam-assume-role-policy-document.json.erb",
+  #        account_id: account_id,
+  #        kubernetes_cluster: kubernetes_cluster,
+  #        binding: binding
+  #      )
 
-        t = Tempfile.new("test_temp")
-        t.write(json) 
-        t.close
-        create_iam_without_assumerole(rolename,t.path)
-      end
-    
-      after do
-        delete_namespace(namespace)
-        delete_iam_without_assumerole(rolename)
-      end
-      context "when namespace whitelists *" do
-        it "can assume role" do
-          result = try_to_assume_role(rolename)
-          expect(result).to match(/Aws::STS::Errors => Unable to AssumeRole/)
-        end
-      end
-  end
+  #      t = Tempfile.new("test_temp")
+  #      t.write(json) 
+  #      t.close
+  #      create_iam_without_assumerole(rolename,t.path)
+  #    end
+  #  
+  #    after do
+  #      delete_namespace(namespace)
+  #      delete_iam_without_assumerole(rolename)
+  #    end
+  #    context "when namespace whitelists *" do
+  #      it "can assume role" do
+  #        result = try_to_assume_role(rolename)
+  #        expect(result).to match(/Aws::STS::Errors => Unable to AssumeRole/)
+  #      end
+  #    end
+  #end
 end
 
 def try_to_assume_role(rolename)
@@ -96,4 +98,32 @@ def try_to_assume_role(rolename)
   pod = `kubectl -n #{namespace} get pods`.split(" ")
   result = `kubectl -n #{namespace} logs #{pod[5]}`
   result
+end
+
+def create_role(rolename, kubernetes_cluster, account_id, aws_region)
+  client = Aws::IAM::Client.new(region: aws_region)
+  iam = Aws::IAM::Resource.new(client: client)
+
+  policy_doc = {
+    Version:"2012-10-17",
+    Statement:[
+      {
+        Effect:"Allow",
+        Principal:{
+          AWS: "arn:aws:iam::#{account_id}:role/nodes.#{kubernetes_cluster}"
+        },
+        Action:"sts:AssumeRole"
+      }
+    ]
+  }
+
+  role = iam.create_role({
+    role_name: rolename,
+    assume_role_policy_document: policy_doc.to_json,
+  })
+
+# Needs to be created at runtime
+  role.attach_policy({
+  policy_arn: 'arn:aws:iam::754256621582:policy/test-kiam-policy'
+})
 end
