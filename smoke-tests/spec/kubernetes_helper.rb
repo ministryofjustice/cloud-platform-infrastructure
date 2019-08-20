@@ -65,7 +65,9 @@ end
 def create_job(namespace, yaml_file, args)
   job_name = args.fetch(:job_name)
   search_url = args[:search_url]
-  role = args.fetch(:role)
+  # TODO: tidy this up - use role or rolename, not both
+  rolename = args.fetch(:role)
+  role = rolename
   account_id = args.fetch(:account_id)
   kubernetes_cluster = args.fetch(:kubernetes_cluster)
   aws_region = args.fetch(:aws_region)

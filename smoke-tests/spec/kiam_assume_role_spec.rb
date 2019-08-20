@@ -11,13 +11,18 @@ require 'tempfile'
 describe "kiam" do
   # Do not use a dynamically-generated rolename here. This test
   # only works using a stable set of AWS entities
-  let(:rolename) { "test-kiam-iam-role" }
+  rolename = "test-kiam-iam-role"
+  account_id = "754256621582"
+  aws_region = "eu-west-2"
 
   let(:namespace) { "integrationtest-kiam-#{readable_timestamp}" }
-  let(:account_id) { "754256621582" }
-  let(:aws_region) { "eu-west-2" }
 
   kubernetes_cluster = current_cluster
+
+  # There is no after(:all) cleanup, because we want to use the same role every time
+  before(:all) do
+    create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
+  end
 
   context "namespace annotations allow assuming role" do
     before do
@@ -26,6 +31,19 @@ describe "kiam" do
         file: "spec/fixtures/namespace-annotations.yaml.erb",
         binding: binding
       )
+    end
+
+    after do
+      delete_namespace(namespace)
+    end
+
+    context "when namespace whitelists *" do
+      it "can assume role" do
+        result = try_to_assume_role(rolename, account_id, aws_region, kubernetes_cluster, namespace)
+        expect(result).to match(/SUCCESS: Pod able to AssumeRole/)
+      end
+    end
+  end
       create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
     end
 
@@ -76,8 +94,7 @@ describe "kiam" do
   #end
 end
 
-def try_to_assume_role(rolename)
-  kubernetes_cluster = current_cluster
+def try_to_assume_role(rolename, account_id, aws_region, kubernetes_cluster, namespace)
   create_job(namespace, "spec/fixtures/iam-assume-role-job.yaml.erb", {
     job_name: "integration-test-kiam-assume",
     role: rolename,
