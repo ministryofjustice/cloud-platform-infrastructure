@@ -11,13 +11,14 @@ require 'tempfile'
 describe "kiam" do
   let(:rolename) { "test-kiam-iam-role" }
   let(:namespace) { "integrationtest-kiam-#{Time.now.to_i}" }
+  #let(:namespace) { "integrationtest-kiam-1566308151" }
   let(:account_id) { "754256621582" }
   let(:aws_region) { "eu-west-2" }
   kubernetes_cluster = current_cluster
   
-
   context "when role  have permissions to assume role on the pod" do
     before do
+      puts "creating namespace"
       apply_template_file(
         namespace: namespace,
         file: "spec/fixtures/namespace-annotations.yaml.erb",
@@ -33,16 +34,25 @@ describe "kiam" do
       #t.write(json) 
       #t.close
       #create_iam_with_assumerole(rolename,t.path)
-      create_role(rolename, kubernetes_cluster, account_id, aws_region)
-      sleep 70
+      #puts "creating role"
+      create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
+      #sleep 60
     end
   
     after do
-      delete_namespace(namespace)
+      #delete_namespace(namespace)
+      #puts "deleting namespace"
+      #delete_role(rolename, aws_region)
+      #sleep 10
+      #puts "deleting job"
+      #`kubectl delete job integration-test-kiam-assume -n #{namespace}`
+      #sleep 10
       #delete_iam_with_assumerole(rolename)
     end
     context "when namespace whitelists *" do
       it "can assume role" do
+        puts "trying test"
+        sleep 10
         result = try_to_assume_role(rolename)
         expect(result).to match(/SUCCESS: Pod able to AssumeRole/)
       end
@@ -85,9 +95,10 @@ describe "kiam" do
 end
 
 def try_to_assume_role(rolename)
+  puts "creating job"
   kubernetes_cluster = current_cluster
   create_job(namespace, "spec/fixtures/iam-assume-role-job.yaml.erb", {
-    job_name: "integration-test-kiam-assume-role-job",
+    job_name: "integration-test-kiam-assume",
     role: rolename,
     account_id: account_id,
     aws_region: aws_region,
@@ -98,6 +109,33 @@ def try_to_assume_role(rolename)
   pod = `kubectl -n #{namespace} get pods`.split(" ")
   result = `kubectl -n #{namespace} logs #{pod[5]}`
   result
+end
+
+def role_exists?(rolename, aws_region)
+  client = Aws::IAM::Client.new(region: aws_region)
+  iam = Aws::IAM::Resource.new(client: client)
+  
+  resp = client.get_role({
+    role_name: rolename, 
+  })
+end
+
+def delete_role(rolename, aws_region)
+  client = Aws::IAM::Client.new(region: aws_region)
+  iam = Aws::IAM::Resource.new(client: client)
+ 
+  resp = client.detach_role_policy({
+    role_name: rolename,# required
+    policy_arn: 'arn:aws:iam::754256621582:policy/test-kiam-policy', # required
+  })
+
+  client.delete_role({
+    role_name: rolename,
+  })
+end
+
+def create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
+  unless role_exists?(rolename, aws_region) create_role(rolename, kubernetes_cluster, account_id, aws_region)
 end
 
 def create_role(rolename, kubernetes_cluster, account_id, aws_region)
@@ -121,6 +159,8 @@ def create_role(rolename, kubernetes_cluster, account_id, aws_region)
     role_name: rolename,
     assume_role_policy_document: policy_doc.to_json,
   })
+
+  client.wait_until(:role_exists, role_name: rolename) 
 
 # Needs to be created at runtime
   role.attach_policy({
