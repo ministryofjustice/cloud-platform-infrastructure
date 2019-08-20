@@ -15,7 +15,6 @@ CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
 REQUIRED_ENV_VARS = %w( AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE )
 REQUIRED_EXECUTABLES = %w( git-crypt terraform helm aws kops ssh-keygen )
 REQUIRED_AWS_PROFILES = %w( moj-cp moj-dsd )
-ROOT_USER = "root"
 
 def main(cluster_name)
   usage if cluster_name.nil?
