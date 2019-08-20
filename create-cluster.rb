@@ -23,7 +23,6 @@ def main(cluster_name)
   check_prerequisites(cluster_name)
 
   execute "git-crypt unlock"
-  get_sudo
 
   create_cluster(cluster_name)
   run_kops(cluster_name)
@@ -160,10 +159,6 @@ end
 
 def run_and_output(cmd, opts = {})
   puts execute(cmd, opts)
-end
-
-def get_sudo
-  execute("sudo true") unless i_am_root?
 end
 
 def usage
