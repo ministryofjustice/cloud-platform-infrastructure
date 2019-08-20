@@ -111,5 +111,5 @@ end
 
 # String of random upper-case letters
 def random_string(length = 8)
-  (0...length).map { (65 + rand(26)).chr }.join
+  (0...length).map { (65 + rand(26)).chr }.join.downcase
 end
