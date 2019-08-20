@@ -11,24 +11,19 @@ require 'tempfile'
 describe "kiam" do
   # Do not use a dynamically-generated rolename here. This test
   # only works using a stable set of AWS entities
-  rolename = "test-kiam-iam-role"
-  account_id = "754256621582"
-  aws_region = "eu-west-2"
-  kubernetes_cluster = current_cluster
+
+  role_args = {
+    rolename: "test-kiam-iam-role",
+    account_id: "754256621582",
+    aws_region: "eu-west-2",
+    kubernetes_cluster: current_cluster
+  }
 
   let(:namespace) { "integrationtest-kiam-#{random_string}-#{readable_timestamp}" }
 
-  let(:assume_role_args) { {
-    rolename: rolename,
-    account_id: account_id,
-    aws_region: aws_region,
-    kubernetes_cluster: kubernetes_cluster,
-    namespace: namespace
-  } }
-
   # There is no after(:all) cleanup, because we want to use the same role every time
   before(:all) do
-    create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
+    create_role_if_not_exists(role_args)
   end
 
   context "namespace annotations allow assuming role" do
@@ -38,7 +33,7 @@ describe "kiam" do
 
     context "when namespace whitelists *" do
       it "can assume role" do
-        result = try_to_assume_role(assume_role_args)
+        result = try_to_assume_role(namespace, role_args)
         expect(result).to match(/SUCCESS: Pod able to AssumeRole/)
       end
     end
@@ -55,16 +50,14 @@ describe "kiam" do
 
     context "when namespace whitelists *" do
       it "cannot assume role" do
-        result = try_to_assume_role(assume_role_args)
+        result = try_to_assume_role(namespace, role_args)
         expect(result).to match(/Aws::STS::Errors => Unable to AssumeRole/)
       end
     end
   end
 end
 
-def try_to_assume_role(args)
-  namespace = args.fetch(:namespace)
-
+def try_to_assume_role(namespace, args)
   create_job(namespace, "spec/fixtures/iam-assume-role-job.yaml.erb", {
     job_name: "integration-test-kiam-assume",
     role: args.fetch(:rolename),
@@ -79,7 +72,12 @@ def try_to_assume_role(args)
   result
 end
 
-def create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
+def create_role_if_not_exists(args)
+  rolename = args.fetch(:rolename)
+  kubernetes_cluster = args.fetch(:kubernetes_cluster)
+  account_id = args.fetch(:account_id)
+  aws_region = args.fetch(:aws_region)
+
   unless role_exists?(rolename, aws_region)
     create_role(rolename, kubernetes_cluster, account_id, aws_region)
   end
@@ -89,6 +87,7 @@ def role_exists?(rolename, aws_region)
   client = Aws::IAM::Client.new(region: aws_region)
 
   begin
+    # TODO: tidy up role_name vs. rolename
     !!client.get_role(role_name: rolename)
   rescue Aws::IAM::Errors::NoSuchEntity
     false
