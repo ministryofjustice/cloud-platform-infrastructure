@@ -14,10 +14,9 @@ describe "kiam" do
   rolename = "test-kiam-iam-role"
   account_id = "754256621582"
   aws_region = "eu-west-2"
-
-  let(:namespace) { "integrationtest-kiam-#{readable_timestamp}" }
-
   kubernetes_cluster = current_cluster
+
+  let(:namespace) { "integrationtest-kiam-#{random_string}-#{readable_timestamp}" }
 
   # There is no after(:all) cleanup, because we want to use the same role every time
   before(:all) do
