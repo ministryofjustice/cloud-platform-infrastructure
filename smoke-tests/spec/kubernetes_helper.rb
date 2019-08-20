@@ -2,6 +2,11 @@ def current_cluster
   `kubectl config current-context`.chomp
 end
 
+def all_namespaces
+  json = `kubectl get namespaces -o json`
+  JSON.parse(json).fetch("items")
+end
+
 def create_namespace(namespace)
   unless namespace_exists?(namespace)
     `kubectl create namespace #{namespace}`
