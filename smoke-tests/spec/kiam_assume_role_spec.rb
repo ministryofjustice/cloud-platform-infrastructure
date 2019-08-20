@@ -82,7 +82,7 @@ def role_exists?(rolename, aws_region)
 
   begin
     !!client.get_role(role_name: rolename)
-  rescue Aws::IAM::Errors::NoSuchEntity => e
+  rescue Aws::IAM::Errors::NoSuchEntity
     false
   end
 end
