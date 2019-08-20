@@ -3,7 +3,7 @@ require "spec_helper"
 describe "custom error pages" do
   context "404" do
     let(:url) do
-      "https://foobar.apps.#{current_cluster}"
+      "https://#{random_string}.apps.#{current_cluster}"
     end
 
     it "gets a 404 status" do
