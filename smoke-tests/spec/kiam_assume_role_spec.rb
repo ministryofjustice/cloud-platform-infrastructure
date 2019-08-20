@@ -25,25 +25,21 @@ describe "kiam" do
 
   context "namespace annotations allow assuming role" do
     before do
-      apply_template_file(
-        namespace: namespace,
-        file: "spec/fixtures/namespace-annotations.yaml.erb",
-        binding: binding
-      )
-    end
-
-    after do
-      delete_namespace(namespace)
+      create_namespace(namespace, annotations: %[iam.amazonaws.com/permitted=.*])
     end
 
     context "when namespace whitelists *" do
       it "can assume role" do
+        puts namespace
         result = try_to_assume_role(rolename, account_id, aws_region, kubernetes_cluster, namespace)
         expect(result).to match(/SUCCESS: Pod able to AssumeRole/)
       end
     end
   end
-      create_role_if_not_exists(rolename, kubernetes_cluster, account_id, aws_region)
+
+  context "namespace has no annotations" do
+    before do
+      create_namespace(namespace)
     end
 
     after do
@@ -51,14 +47,15 @@ describe "kiam" do
     end
 
     context "when namespace whitelists *" do
-      it "can assume role" do
-        result = try_to_assume_role(rolename)
-        expect(result).to match(/SUCCESS: Pod able to AssumeRole/)
+      it "cannot assume role" do
+        result = try_to_assume_role(rolename, account_id, aws_region, kubernetes_cluster, namespace)
+        expect(result).to match(/Aws::STS::Errors => Unable to AssumeRole/)
       end
     end
   end
 end
 
+# TODO: no positional arguments
 def try_to_assume_role(rolename, account_id, aws_region, kubernetes_cluster, namespace)
   create_job(namespace, "spec/fixtures/iam-assume-role-job.yaml.erb", {
     job_name: "integration-test-kiam-assume",
