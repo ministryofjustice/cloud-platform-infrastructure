@@ -4,6 +4,7 @@ TOOLS_IMAGE := 754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools
 # the .aws directory mounted somewhere other than /root/.aws I'm just
 # leaving it in place for clarity.
 tools-shell:
+	docker pull $(TOOLS_IMAGE)
 	docker run --rm -it \
     -e AWS_PROFILE=$${AWS_PROFILE} \
     -e AUTH0_DOMAIN=$${AUTH0_DOMAIN} \
