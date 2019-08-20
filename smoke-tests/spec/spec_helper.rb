@@ -97,6 +97,7 @@ RSpec.configure do |config|
   #   Kernel.srand config.seed
 end
 
+require "aws-sdk-iam"
 require "open-uri"
 require "pry-byebug"
 require "kubernetes_helper"
