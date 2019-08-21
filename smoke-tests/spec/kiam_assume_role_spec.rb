@@ -14,6 +14,8 @@ describe "kiam" do
     kubernetes_cluster: current_cluster
   }
 
+  pod = ""  # name of the running pod in our namespace
+
   let(:namespace) { "integrationtest-kiam-#{random_string}-#{readable_timestamp}" }
 
   # There is no after(:all) cleanup, because we want to use the same role every time
@@ -44,8 +46,7 @@ describe "kiam" do
   context "namespace annotations allow assuming role" do
     before do
       create_namespace(namespace, annotations: %[iam.amazonaws.com/permitted=.*])
-      create_deployment(namespace)
-      sleep 30 # TODO: replace with a wait loop that checks for a running pod
+      pod = create_deployment(namespace)
     end
 
     after do
@@ -55,7 +56,7 @@ describe "kiam" do
     context "when namespace whitelists *" do
       it "can assume role" do
         # TODO: get the role_arn via the AWS gem
-        json = try_to_assume_role(namespace: namespace, role_arn: "arn:aws:iam::754256621582:role/test-kiam-iam-role")
+        json = try_to_assume_role(namespace: namespace, pod: pod, role_arn: "arn:aws:iam::754256621582:role/test-kiam-iam-role")
         result = JSON.parse(json).has_key?("Credentials")
         expect(result).to be true
       end
@@ -65,8 +66,7 @@ describe "kiam" do
   context "namespace has no annotations" do
     before do
       create_namespace(namespace)
-      create_deployment(namespace)
-      sleep 30 # TODO: replace with a wait loop that checks for a running pod
+      pod = create_deployment(namespace)
     end
 
     after do
@@ -75,7 +75,7 @@ describe "kiam" do
 
     context "when namespace whitelists *" do
       it "cannot assume role" do
-        result = try_to_assume_role(namespace: namespace, role_arn: "arn:aws:iam::754256621582:role/test-kiam-iam-role")
+        result = try_to_assume_role(namespace: namespace, pod: pod, role_arn: "arn:aws:iam::754256621582:role/test-kiam-iam-role")
         expect(result).to match(/Unable to locate credentials/)
       end
     end
@@ -84,7 +84,7 @@ end
 
 def try_to_assume_role(args)
   namespace = args.fetch(:namespace)
-  pod = get_pod_name(namespace, 0) # there is only one pod, get the name of the first
+  pod = args.fetch(:pod)
   role_arn = args.fetch(:role_arn)
 
   cmd = %[kubectl exec -n #{namespace} #{pod} -- aws sts assume-role --role-arn "#{role_arn}" --role-session-name dummy]
@@ -181,4 +181,14 @@ def create_deployment(namespace)
   cmd = %[echo '#{jsn}' | kubectl -n #{namespace} apply -f -]
 
   `#{cmd}`
+
+  pod = ""
+
+  60.times do
+    pod = get_running_pod_name(namespace, 0)
+    break if pod.length > 0
+    sleep 1
+  end
+
+  pod
 end
