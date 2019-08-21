@@ -15,12 +15,11 @@ describe "kiam" do
 
   pod = ""  # name of the running pod in our namespace
 
-  let(:namespace) { "integrationtest-kiam-#{random_string}-#{readable_timestamp}" }
+  # we want to use the same role every time, so we're not going to clean this up
+  role = create_role_if_not_exists(role_args)
+  role_arn = role.to_h.dig(:role, :arn)
 
-  # There is no after(:all) cleanup, because we want to use the same role every time
-  before(:all) do
-    create_role_if_not_exists(role_args)
-  end
+  let(:namespace) { "integrationtest-kiam-#{random_string}-#{readable_timestamp}" }
 
   # context "namespace has annotations" do
   #   context "pod has annotations" do
@@ -54,8 +53,7 @@ describe "kiam" do
 
     context "when namespace whitelists *" do
       it "can assume role" do
-        # TODO: get the role_arn via the AWS gem
-        json = try_to_assume_role(namespace: namespace, pod: pod, role_arn: "arn:aws:iam::754256621582:role/test-kiam-iam-role")
+        json = try_to_assume_role(namespace: namespace, pod: pod, role_arn: role_arn)
         result = JSON.parse(json).has_key?("Credentials")
         expect(result).to be true
       end
@@ -74,7 +72,7 @@ describe "kiam" do
 
     context "when namespace whitelists *" do
       it "cannot assume role" do
-        result = try_to_assume_role(namespace: namespace, pod: pod, role_arn: "arn:aws:iam::754256621582:role/test-kiam-iam-role")
+        result = try_to_assume_role(namespace: namespace, pod: pod, role_arn: role_arn)
         expect(result).to match(/Unable to locate credentials/)
       end
     end
