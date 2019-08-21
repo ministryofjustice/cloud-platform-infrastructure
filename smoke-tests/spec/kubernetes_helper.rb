@@ -105,3 +105,55 @@ end
 def get_pod_name(namespace, index, options = "")
   `kubectl get pods -n #{namespace} #{options} 2>/dev/null | awk 'FNR == #{index + 1} {print $1}'`.chomp
 end
+
+# TODO: pass in command
+# TODO: pass in annotations
+def create_deployment(namespace)
+  json = <<~EOF
+  {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": { "name": "test-kiam-deployment" },
+    "spec": {
+      "selector": { "matchLabels": { "app": "not-needed" } },
+      "template": {
+        "metadata": {
+          "annotations": { "iam.amazonaws.com/role": "test-kiam-iam-role" },
+          "labels": { "app": "not-needed" }
+        },
+        "spec": {
+          "securityContext": {
+            "runAsUser": 1000,
+            "runAsGroup": 3000
+          },
+          "containers": [
+            {
+              "name": "tools-image",
+              "image": "#{TOOLS_IMAGE}",
+              "command": [ "sleep", "86400" ]
+            }
+          ]
+        }
+      }
+    }
+  }
+  EOF
+
+  # collapse the json onto a single line
+  jsn = JSON.parse(json).to_json
+
+  cmd = %[echo '#{jsn}' | kubectl -n #{namespace} apply -f -]
+
+  `#{cmd}`
+
+  pod = ""
+
+  60.times do
+    pod = get_running_pod_name(namespace, 1)
+    break if pod.length > 0
+    sleep 1
+  end
+
+  pod
+end
+
