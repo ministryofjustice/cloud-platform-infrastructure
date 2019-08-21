@@ -1,17 +1,10 @@
 require "spec_helper"
 require 'tempfile'
-###################
-#create a namespace with annotations
-#Create a role
-#with a assume_role with and without right permissions
-#create an annotation for a pod
-# test whether the pod runs with assume role with namespace and pod annotations
-# test whether the pod runs without correct assume role without namespace and pod annotations
 
 describe "kiam" do
+
   # Do not use a dynamically-generated rolename here. This test
   # only works using a stable set of AWS entities
-
   role_args = {
     rolename: "test-kiam-iam-role",
     account_id: "754256621582",
@@ -66,10 +59,8 @@ def try_to_assume_role(namespace, args)
     kubernetes_cluster: args.fetch(:kubernetes_cluster)
   })
 
-  #get_pod_name
   pod = `kubectl -n #{namespace} get pods`.split(" ")
-  result = `kubectl -n #{namespace} logs #{pod[5]}`
-  result
+  `kubectl -n #{namespace} logs #{pod[5]}`
 end
 
 def create_role_if_not_exists(args)
@@ -118,6 +109,6 @@ def create_role(rolename, kubernetes_cluster, account_id, aws_region)
 
   client.wait_until(:role_exists, role_name: rolename)
 
-  # Needs to be created at runtime
+  # TODO: Needs to be created at runtime
   role.attach_policy(policy_arn: 'arn:aws:iam::754256621582:policy/test-kiam-policy')
 end
