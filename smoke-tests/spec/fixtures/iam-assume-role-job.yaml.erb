@@ -6,8 +6,8 @@ spec:
   backoffLimit: 4
   template:
     metadata:
-      annotations: 
-        iam.amazonaws.com/role: <%= role %>
+      annotations:
+        iam.amazonaws.com/role: <%= role_name %>
     spec:
       restartPolicy: Never
       containers:
@@ -21,5 +21,5 @@ spec:
         - name: AWS_REGION
           value: <%= aws_region %>
         - name: ROLE_NAME
-          value: <%= rolename %>
-    
+          value: <%= role_name %>
+
