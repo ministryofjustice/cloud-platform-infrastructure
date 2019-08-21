@@ -1,15 +1,13 @@
 require "spec_helper"
 
-TOOLS_IMAGE = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools"
-
 describe "kiam" do
 
   # Do not use a dynamically-generated role_name here. This test
   # only works using a stable set of AWS entities
   role_args = {
-    role_name: "test-kiam-iam-role",
-    account_id: "754256621582",
-    aws_region: "eu-west-2",
+    role_name: KIAM_ROLE_NAME,
+    account_id: AWS[:account_id],
+    aws_region: AWS[:region],
     kubernetes_cluster: current_cluster
   }
 

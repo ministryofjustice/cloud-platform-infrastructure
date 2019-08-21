@@ -104,6 +104,7 @@ require "kubernetes_helper"
 require "erb"
 require "json"
 require "date"
+require "./spec/constants"
 require "./spec/kiam_helper"
 
 def readable_timestamp
