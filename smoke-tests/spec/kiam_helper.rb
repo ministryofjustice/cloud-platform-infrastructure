@@ -82,7 +82,7 @@ def create_deployment(namespace)
           "containers": [
             {
               "name": "tools-image",
-              "image": "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools",
+              "image": "#{TOOLS_IMAGE}",
               "command": [ "sleep", "86400" ]
             }
           ]
