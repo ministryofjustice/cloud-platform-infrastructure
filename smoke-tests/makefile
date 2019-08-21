@@ -18,7 +18,7 @@ shell:
 		-e AWS_PROFILE=$(AWS_PROFILE) \
 		-e AWS_SHARED_CREDENTIALS_FILE=/app/.aws/credentials \
 		-e KUBECONFIG=/app/config \
-	$(IMAGE) sh
+		$(IMAGE) sh
 
 # Runs all tests, against whichever cluster your .kube/config points to
 test:
@@ -30,7 +30,7 @@ test:
 		-e AWS_PROFILE=$(AWS_PROFILE) \
 		-e AWS_SHARED_CREDENTIALS_FILE=/app/.aws/credentials \
 		-e KUBECONFIG=/app/config \
-	$(IMAGE) rspec
+		$(IMAGE) rspec
 
 # Only run tests tagged with cluster: live-1
 test-live-1:
@@ -42,7 +42,7 @@ test-live-1:
 		-e AWS_PROFILE=$(AWS_PROFILE) \
 		-e AWS_SHARED_CREDENTIALS_FILE=/app/.aws/credentials \
 		-e KUBECONFIG=/app/config \
-	$(IMAGE) rspec --tag cluster:live-1
+		$(IMAGE) rspec --tag cluster:live-1
 
 # Only run tests NOT tagged with cluster: live-1
 test-non-live-1:
@@ -54,4 +54,4 @@ test-non-live-1:
 		-e AWS_PROFILE=$(AWS_PROFILE) \
 		-e AWS_SHARED_CREDENTIALS_FILE=/app/.aws/credentials \
 		-e KUBECONFIG=/app/config \
-	$(IMAGE) rspec --tag ~cluster:live-1
+		$(IMAGE) rspec --tag ~cluster:live-1
