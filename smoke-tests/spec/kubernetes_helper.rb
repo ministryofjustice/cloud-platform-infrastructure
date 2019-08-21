@@ -103,7 +103,7 @@ end
 
 # Get the name of the Nth pod in the namespace
 def get_pod_name(namespace, index)
-  `kubectl get pods -n #{namespace} | awk 'FNR == #{index + 1} {print $1}'`.chomp
+  `kubectl get pods -n #{namespace} | grep -v NAME | awk 'FNR == #{index + 1} {print $1}'`.chomp
 end
 
 def set_json_file(args)
