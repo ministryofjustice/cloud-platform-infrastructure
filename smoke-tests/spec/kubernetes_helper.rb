@@ -69,10 +69,6 @@ end
 def create_job(namespace, yaml_file, args)
   job_name = args.fetch(:job_name)
   search_url = args[:search_url]
-  role_name = args.fetch(:role_name)
-  account_id = args.fetch(:account_id)
-  kubernetes_cluster = args.fetch(:kubernetes_cluster)
-  aws_region = args.fetch(:aws_region)
 
   apply_template_file(namespace: namespace, file: yaml_file, binding: binding)
   wait_for_job_to_start(namespace, job_name)
@@ -109,44 +105,3 @@ end
 def get_pod_name(namespace, index, options = "")
   `kubectl get pods -n #{namespace} #{options} 2>/dev/null | grep -v NAME | awk 'FNR == #{index + 1} {print $1}'`.chomp
 end
-
-def set_json_file(args)
-  json_file = args.fetch(:file)
-  account_id = args.fetch(:account_id)
-  kubernetes_cluster = args.fetch(:kubernetes_cluster)
-  binding = args.fetch(:binding)
-  renderer = ERB.new(File.read(json_file))
-  json = renderer.result(binding)
-end
-
-def create_iam_with_assumerole(role_name,temp_path)
-  unless execute("aws iam get-role --role-name #{role_name} > /dev/null 2>&1")
-    `aws iam create-role --role-name #{role_name} --assume-role-policy-document file://#{temp_path}`
-    sleep 60
-  end
-    `aws iam put-role-policy --role-name #{role_name} --policy-name test-kiam-with-policy --policy-document file://spec/fixtures/test-kiam-policy-with-assumerole.json`
-    sleep 10
-end
-
-def create_iam_without_assumerole(role_name,temp_path)
-  unless execute("aws iam get-role --role-name #{role_name} > /dev/null 2>&1")
-    `aws iam create-role --role-name #{role_name} --assume-role-policy-document file://#{temp_path}`
-    sleep 60
-  end
-    `aws iam put-role-policy --role-name #{role_name} --policy-name test-kiam-without-policy --policy-document file://spec/fixtures/test-kiam-policy-without-assumerole.json`
-    sleep 10
-end
-
-
-def delete_iam_with_assumerole(role_name)
-  `aws iam delete-role-policy --role-name #{role_name} --policy-name test-kiam-with-policy`
-  `aws iam delete-role --role-name #{role_name}`
-end
-
-
-def delete_iam_without_assumerole(role_name)
-  `aws iam delete-role-policy --role-name #{role_name} --policy-name test-kiam-without-policy`
-  `aws iam delete-role --role-name #{role_name}`
-end
-
-# TODO: find and delete unused methods
