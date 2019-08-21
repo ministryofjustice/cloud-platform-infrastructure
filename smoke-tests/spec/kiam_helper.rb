@@ -18,6 +18,26 @@ end
 
 def role_exists?(role_name, aws_region)
   client = Aws::IAM::Client.new(region: aws_region)
+  allow_assume_role_policy = {
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Effect: "Allow",
+        Action: [
+          "sts:AssumeRole"
+        ],
+        Resource: [
+          "*"
+        ]
+      }
+    ]
+  }
+  result = client.create_policy(
+    policy_document: allow_assume_role_policy.to_json,
+    policy_name: "test-kiam-polcy"
+  )
+  binding.pry
+  arn = result.data.dig(:policy, :arn)
 
   begin
     client.get_role(role_name: role_name)
@@ -30,6 +50,25 @@ end
 def create_role(role_name, kubernetes_cluster, account_id, aws_region)
   client = Aws::IAM::Client.new(region: aws_region)
   iam = Aws::IAM::Resource.new(client: client)
+  allow_assume_role_policy = {
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Effect: "Allow",
+        Action: [
+          "sts:AssumeRole"
+        ],
+        Resource: [
+          "*"
+        ]
+      }
+    ]
+  }
+  result = client.create_policy(
+    policy_document: allow_assume_role_policy.to_json,
+    policy_name: "test-kiam-polcy"
+  )
+  arn = result.data.dig(:policy, :arn)
 
   policy_doc = {
     Version:"2012-10-17",
@@ -57,10 +96,6 @@ def create_role(role_name, kubernetes_cluster, account_id, aws_region)
   role
 end
 
-# TODO: pass in image name
-# TODO: move to kubernetes_helper
-# TODO: pass in command
-# TODO: pass in annotations
 def create_deployment(namespace)
   json = <<~EOF
   {
