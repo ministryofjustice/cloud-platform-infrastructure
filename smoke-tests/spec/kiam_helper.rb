@@ -18,26 +18,6 @@ end
 
 def role_exists?(role_name, aws_region)
   client = Aws::IAM::Client.new(region: aws_region)
-  allow_assume_role_policy = {
-    Version: "2012-10-17",
-    Statement: [
-      {
-        Effect: "Allow",
-        Action: [
-          "sts:AssumeRole"
-        ],
-        Resource: [
-          "*"
-        ]
-      }
-    ]
-  }
-  result = client.create_policy(
-    policy_document: allow_assume_role_policy.to_json,
-    policy_name: "test-kiam-polcy"
-  )
-  binding.pry
-  arn = result.data.dig(:policy, :arn)
 
   begin
     client.get_role(role_name: role_name)
@@ -46,31 +26,44 @@ def role_exists?(role_name, aws_region)
   end
 end
 
+def create_policy_if_not_exists(client, args)
+  client.create_policy(
+    policy_document: args.fetch(:policy_document),
+    policy_name: args.fetch(:policy_name)
+  )
+rescue Aws::IAM::Errors::EntityAlreadyExists
+  binding.pry ; 1
+
+  # TODO: find policy by name
+  # client.list_policies.policies.find {|p| p.policy_name == args.fetch(:policy_name) }
+
+
+end
+
 # TODO: too many positional parameters
 def create_role(role_name, kubernetes_cluster, account_id, aws_region)
   client = Aws::IAM::Client.new(region: aws_region)
   iam = Aws::IAM::Resource.new(client: client)
-  allow_assume_role_policy = {
-    Version: "2012-10-17",
-    Statement: [
-      {
-        Effect: "Allow",
-        Action: [
-          "sts:AssumeRole"
-        ],
-        Resource: [
-          "*"
-        ]
-      }
-    ]
-  }
-  result = client.create_policy(
-    policy_document: allow_assume_role_policy.to_json,
+
+  assume_role_policy = create_policy_if_not_exists(client,
+    policy_document: {
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Effect: "Allow",
+          Action: [
+            "sts:AssumeRole"
+          ],
+          Resource: [
+            "*"
+          ]
+        }
+      ]
+    }.to_json,
     policy_name: "test-kiam-polcy"
   )
-  arn = result.data.dig(:policy, :arn)
 
-  policy_doc = {
+  node_assume_role_policy_doc = {
     Version:"2012-10-17",
     Statement:[
       {
@@ -85,13 +78,14 @@ def create_role(role_name, kubernetes_cluster, account_id, aws_region)
 
   role = iam.create_role(
     role_name: role_name,
-    assume_role_policy_document: policy_doc.to_json,
+    assume_role_policy_document: node_assume_role_policy_doc.to_json,
   )
 
   client.wait_until(:role_exists, role_name: role_name)
 
   # TODO: Needs to be created at runtime
-  role.attach_policy(policy_arn: 'arn:aws:iam::754256621582:policy/test-kiam-policy')
+  # role.attach_policy(policy_arn: 'arn:aws:iam::754256621582:policy/test-kiam-policy')
+  role.attach_policy(policy_arn: assume_role_policy.dig(:policy, :arn))
 
   role
 end
