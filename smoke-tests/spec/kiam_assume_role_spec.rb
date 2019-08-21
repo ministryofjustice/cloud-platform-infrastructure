@@ -1,6 +1,8 @@
 require "spec_helper"
 require 'tempfile'
 
+TOOLS_IMAGE = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools"
+
 describe "kiam" do
 
   # Do not use a dynamically-generated role_name here. This test
@@ -19,15 +21,40 @@ describe "kiam" do
     create_role_if_not_exists(role_args)
   end
 
+  # context "namespace has annotations" do
+  #   context "pod has annotations" do
+  #     it "can assume role"
+  #   end
+  #
+  #   context "pod does not have annotations" do
+  #     it "cannot assume role"
+  #   end
+  # end
+  #
+  # context "namespace does not have annotations" do
+  #   context "pod has annotations" do
+  #     it "cannot assume role"
+  #   end
+  #
+  #   context "pod does not have annotations" do
+  #     it "cannot assume role"
+  #   end
+  # end
+
   context "namespace annotations allow assuming role" do
     before do
       create_namespace(namespace, annotations: %[iam.amazonaws.com/permitted=.*])
+      create_deployment(namespace)
+      sleep 30 # TODO: replace with a wait loop that checks for a running pod
     end
 
     context "when namespace whitelists *" do
       it "can assume role" do
-        result = try_to_assume_role(namespace, role_args)
-        expect(result).to match(/SUCCESS: Pod able to AssumeRole/)
+        # TODO: get the role_arn via the AWS gem
+        json = try_to_assume_role(namespace: namespace, role_arn: "arn:aws:iam::754256621582:role/test-kiam-iam-role")
+        puts json
+        result = JSON.parse(json).has_key?("Credentials")
+        expect(result).to be true
       end
     end
   end
@@ -50,17 +77,13 @@ describe "kiam" do
   end
 end
 
-def try_to_assume_role(namespace, args)
-  create_job(namespace, "spec/fixtures/iam-assume-role-job.yaml.erb", {
-    job_name: "integration-test-kiam-assume",
-    role_name: args.fetch(:role_name),
-    account_id: args.fetch(:account_id),
-    aws_region: args.fetch(:aws_region),
-    kubernetes_cluster: args.fetch(:kubernetes_cluster)
-  })
+def try_to_assume_role(args)
+  namespace = args.fetch(:namespace)
+  pod = get_pod_name(namespace, 0) # there is only one pod, get the name of the first
+  role_arn = args.fetch(:role_arn)
 
-  pod = `kubectl -n #{namespace} get pods`.split(" ")
-  `kubectl -n #{namespace} logs #{pod[5]}`
+  cmd = %[kubectl exec -n #{namespace} #{pod} -- aws sts assume-role --role-arn "#{role_arn}" --role-session-name dummy]
+  `#{cmd}`
 end
 
 def create_role_if_not_exists(args)
@@ -110,4 +133,47 @@ def create_role(role_name, kubernetes_cluster, account_id, aws_region)
 
   # TODO: Needs to be created at runtime
   role.attach_policy(policy_arn: 'arn:aws:iam::754256621582:policy/test-kiam-policy')
+end
+
+# TODO: pass in image name
+# TODO: move to kubernetes_helper
+# TODO: pass in command
+# TODO: pass in annotations
+def create_deployment(namespace)
+  json = <<~EOF
+  {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": { "name": "test-kiam-deployment" },
+    "spec": {
+      "selector": { "matchLabels": { "app": "not-needed" } },
+      "template": {
+        "metadata": {
+          "annotations": { "iam.amazonaws.com/role": "test-kiam-iam-role" },
+          "labels": { "app": "not-needed" }
+        },
+        "spec": {
+          "securityContext": {
+            "runAsUser": 1000,
+            "runAsGroup": 3000
+          },
+          "containers": [
+            {
+              "name": "tools-image",
+              "image": "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools",
+              "command": [ "sleep", "86400" ]
+            }
+          ]
+        }
+      }
+    }
+  }
+  EOF
+
+  # collapse the json onto a single line
+  jsn = JSON.parse(json).to_json
+
+  cmd = %[echo '#{jsn}' | kubectl -n #{namespace} apply -f -]
+
+  `#{cmd}`
 end
