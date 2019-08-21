@@ -61,3 +61,52 @@ end
 # TODO: move to kubernetes_helper
 # TODO: pass in command
 # TODO: pass in annotations
+def create_deployment(namespace)
+  json = <<~EOF
+  {
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": { "name": "test-kiam-deployment" },
+    "spec": {
+      "selector": { "matchLabels": { "app": "not-needed" } },
+      "template": {
+        "metadata": {
+          "annotations": { "iam.amazonaws.com/role": "test-kiam-iam-role" },
+          "labels": { "app": "not-needed" }
+        },
+        "spec": {
+          "securityContext": {
+            "runAsUser": 1000,
+            "runAsGroup": 3000
+          },
+          "containers": [
+            {
+              "name": "tools-image",
+              "image": "754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools",
+              "command": [ "sleep", "86400" ]
+            }
+          ]
+        }
+      }
+    }
+  }
+  EOF
+
+  # collapse the json onto a single line
+  jsn = JSON.parse(json).to_json
+
+  cmd = %[echo '#{jsn}' | kubectl -n #{namespace} apply -f -]
+
+  `#{cmd}`
+
+  pod = ""
+
+  60.times do
+    pod = get_running_pod_name(namespace, 1)
+    break if pod.length > 0
+    sleep 1
+  end
+
+  pod
+end
+
