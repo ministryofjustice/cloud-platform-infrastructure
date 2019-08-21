@@ -48,11 +48,14 @@ describe "kiam" do
       sleep 30 # TODO: replace with a wait loop that checks for a running pod
     end
 
+    after do
+      delete_namespace(namespace)
+    end
+
     context "when namespace whitelists *" do
       it "can assume role" do
         # TODO: get the role_arn via the AWS gem
         json = try_to_assume_role(namespace: namespace, role_arn: "arn:aws:iam::754256621582:role/test-kiam-iam-role")
-        puts json
         result = JSON.parse(json).has_key?("Credentials")
         expect(result).to be true
       end
@@ -62,6 +65,8 @@ describe "kiam" do
   context "namespace has no annotations" do
     before do
       create_namespace(namespace)
+      create_deployment(namespace)
+      sleep 30 # TODO: replace with a wait loop that checks for a running pod
     end
 
     after do
@@ -70,8 +75,8 @@ describe "kiam" do
 
     context "when namespace whitelists *" do
       it "cannot assume role" do
-        result = try_to_assume_role(namespace, role_args)
-        expect(result).to match(/Aws::STS::Errors => Unable to AssumeRole/)
+        result = try_to_assume_role(namespace: namespace, role_arn: "arn:aws:iam::754256621582:role/test-kiam-iam-role")
+        expect(result).to match(/Unable to locate credentials/)
       end
     end
   end
@@ -83,7 +88,7 @@ def try_to_assume_role(args)
   role_arn = args.fetch(:role_arn)
 
   cmd = %[kubectl exec -n #{namespace} #{pod} -- aws sts assume-role --role-arn "#{role_arn}" --role-session-name dummy]
-  `#{cmd}`
+  `#{cmd} 2>&1`
 end
 
 def create_role_if_not_exists(args)
