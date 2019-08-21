@@ -185,7 +185,7 @@ def create_deployment(namespace)
   pod = ""
 
   60.times do
-    pod = get_running_pod_name(namespace, 0)
+    pod = get_running_pod_name(namespace, 1)
     break if pod.length > 0
     sleep 1
   end
