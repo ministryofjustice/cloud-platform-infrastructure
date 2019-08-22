@@ -7,7 +7,7 @@ def all_namespaces
   JSON.parse(json).fetch("items")
 end
 
-def create_namespace(namespace)
+def create_namespace(namespace, opts = {})
   unless namespace_exists?(namespace)
     `kubectl create namespace #{namespace}`
 
@@ -15,6 +15,10 @@ def create_namespace(namespace)
       break if namespace_exists?(namespace)
       sleep 1
     end
+
+    if annotations = opts[:annotations]
+      `kubectl annotate --overwrite namespace #{namespace} '#{annotations}'`
+     end
   end
 end
 
