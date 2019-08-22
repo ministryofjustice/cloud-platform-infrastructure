@@ -46,7 +46,7 @@ def fetch_or_create_role(args)
   assume_role_policy = fetch_or_create_policy(
     client,
     policy_document: ASSUME_ROLE_POLICY_DOCUMENT.to_json,
-    policy_name: "test-kiam-polcy"
+    policy_name: "integration-test-kiam-polcy"
   )
   arn = assume_role_policy.arn
 
@@ -103,17 +103,20 @@ def create_role(client, role_name, kubernetes_cluster, account_id, aws_region)
   role
 end
 
-def create_deployment(namespace)
+def create_deployment(args)
+  namespace = args.fetch(:namespace)
+  pod_annotations = args.fetch(:pod_annotations)
+
   json = <<~EOF
   {
     "apiVersion": "apps/v1",
     "kind": "Deployment",
-    "metadata": { "name": "test-kiam-deployment" },
+    "metadata": { "name": "integration-test-kiam-deployment" },
     "spec": {
       "selector": { "matchLabels": { "app": "not-needed" } },
       "template": {
         "metadata": {
-          "annotations": { "iam.amazonaws.com/role": "test-kiam-iam-role" },
+          "annotations": #{pod_annotations.to_json},
           "labels": { "app": "not-needed" }
         },
         "spec": {
