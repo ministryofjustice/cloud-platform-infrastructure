@@ -14,8 +14,7 @@ describe "kiam" do
   pod = ""  # name of the running pod in our namespace
 
   # we want to use the same role every time, so we're not going to clean this up
-  role = create_role_if_not_exists(role_args)
-  role_arn = role.to_h.dig(:role, :arn)
+  role = fetch_or_create_role(role_args)
 
   let(:namespace) { "integrationtest-kiam-#{random_string}-#{readable_timestamp}" }
 
@@ -46,12 +45,12 @@ describe "kiam" do
     end
 
     after do
-      delete_namespace(namespace)
+      # delete_namespace(namespace)
     end
 
     context "when namespace whitelists *" do
       it "can assume role" do
-        json = try_to_assume_role(namespace: namespace, pod: pod, role_arn: role_arn)
+        json = try_to_assume_role(namespace: namespace, pod: pod, role_arn: role.arn)
         result = JSON.parse(json).has_key?("Credentials")
         expect(result).to be true
       end
@@ -70,7 +69,7 @@ describe "kiam" do
 
     context "when namespace whitelists *" do
       it "cannot assume role" do
-        result = try_to_assume_role(namespace: namespace, pod: pod, role_arn: role_arn)
+        result = try_to_assume_role(namespace: namespace, pod: pod, role_arn: role.arn)
         expect(result).to match(/Unable to locate credentials/)
       end
     end
