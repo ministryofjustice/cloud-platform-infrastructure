@@ -26,12 +26,9 @@ class KiamRole
   def fetch_or_create_role
     role = Aws::IAM::Role.new(client: client, name: role_name)
 
-    # TODO: use client.list_roles here
-    # https://docs.aws.amazon.com/sdkforruby/api/Aws/IAM/Client.html#get_role-instance_method
-
-    begin
+    if client.list_roles.roles.find {|r| r.role_name == role_name}
       role.load
-    rescue Aws::IAM::Errors::NoSuchEntity
+    else
       role = create_role
     end
 
@@ -79,17 +76,14 @@ class KiamRole
   def fetch_or_create_policy(args)
     policy_name = args.fetch(:policy_name)
 
-    begin
+    if policy = client.list_policies.policies.find {|p| p.policy_name == args.fetch(:policy_name) }
+      arn = policy.arn
+    else
       resp = client.create_policy(
         policy_document: args.fetch(:policy_document),
         policy_name: policy_name
       )
       arn = resp.policy.arn
-    rescue Aws::IAM::Errors::EntityAlreadyExists
-      # TODO: do this first, so we don't do control flow via exception
-      p = client.list_policies.policies.find {|p| p.policy_name == args.fetch(:policy_name) }
-      raise("Unable to find or create policy #{policy_name}") if p.nil?
-      arn = p.arn
     end
 
     Aws::IAM::Policy.new(client: client, arn: arn)
@@ -104,6 +98,7 @@ def fetch_or_create_role(args)
   KiamRole.new(args).fetch_or_create_role
 end
 
+# Run a command, on the pod in the namespace, to try and assume the role, and capture the output from it.
 def try_to_assume_role(args)
   namespace = args.fetch(:namespace)
   role_arn = args.fetch(:role_arn)

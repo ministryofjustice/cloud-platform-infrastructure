@@ -10,6 +10,8 @@ describe "kiam" do
   # Note: If you run these tests when the role/policy setup does not exist, the
   # test will create it. But, you might see failures on the first few runs. It
   # seems to take a while for things to 'settle' on AWS.
+  # The error you might see includes 'An error occurred (InvalidClientTokenId)'
+  # If you see that error, wait a few minutes and retry.
   role_args = {
     role_name: KIAM_ROLE_NAME,
     account_id: AWS[:account_id],
