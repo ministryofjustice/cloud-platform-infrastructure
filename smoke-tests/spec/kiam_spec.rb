@@ -18,54 +18,42 @@ describe "kiam" do
 
   let(:namespace) { "integrationtest-kiam-#{random_string}-#{readable_timestamp}" }
 
-  # context "namespace has annotations" do
-  #   context "pod has annotations" do
-  #     it "can assume role"
-  #   end
-  #
-  #   context "pod does not have annotations" do
-  #     it "cannot assume role"
-  #   end
-  # end
-  #
-  # context "namespace does not have annotations" do
-  #   context "pod has annotations" do
-  #     it "cannot assume role"
-  #   end
-  #
-  #   context "pod does not have annotations" do
-  #     it "cannot assume role"
-  #   end
-  # end
+  before do
+    create_namespace(namespace, namespace_annotations)
+    pod = create_deployment(namespace)
+  end
 
-  context "namespace annotations allow assuming role" do
-    before do
-      create_namespace(namespace, annotations: %[iam.amazonaws.com/permitted=.*])
-      pod = create_deployment(namespace)
-    end
+  after do
+    delete_namespace(namespace)
+  end
 
-    after do
-      # delete_namespace(namespace)
-    end
+  context "namespace has annotations" do
+    let(:namespace_annotations) { { annotations: "iam.amazonaws.com/permitted=.*" } }
 
-    context "when namespace whitelists *" do
+    context "pod has annotations" do
       it "can assume role" do
         json = try_to_assume_role(namespace: namespace, pod: pod, role_arn: role.arn)
         result = JSON.parse(json).has_key?("Credentials")
         expect(result).to be true
       end
     end
+
+  #   context "pod does not have annotations" do
+  #     it "cannot assume role"
+  #   end
+
   end
 
-  context "namespace has no annotations" do
-    before do
-      create_namespace(namespace)
-      pod = create_deployment(namespace)
-    end
+  # context "namespace does not have annotations" do
+  #   context "pod has annotations" do
+  #     it "cannot assume role"
+  #   end
+  # end
 
-    after do
-      delete_namespace(namespace)
-    end
+  context "namespace has no annotations" do
+    let(:namespace_annotations) { {} }
+
+    #   context "pod has annotations" do
 
     context "when namespace whitelists *" do
       it "cannot assume role" do
@@ -73,5 +61,13 @@ describe "kiam" do
         expect(result).to match(/Unable to locate credentials/)
       end
     end
+
+    # end
+
+    #
+    #   context "pod does not have annotations" do
+    #     it "cannot assume role"
+    #   end
+
   end
 end
