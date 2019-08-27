@@ -1,4 +1,5 @@
-IMAGE := ministryofjustice/cloud-platform-smoke-tests:1.3
+IMAGE := ministryofjustice/cloud-platform-smoke-tests
+VERSION := 1.3
 KUBE_CONFIG := ~/.kube/config
 AWS_PROFILE := moj-cp # Cloud Platform AWS account
 
@@ -6,8 +7,10 @@ build:
 	docker build -t $(IMAGE) .
 
 push:
-	docker tag $(IMAGE) $(IMAGE)
-	docker push $(IMAGE)
+	docker tag $(IMAGE) $(IMAGE):$(VERSION)
+	docker push $(IMAGE):$(VERSION)
+	docker tag $(IMAGE) $(IMAGE):latest
+	docker push $(IMAGE):latest
 
 shell:
 	docker run --rm -it \
