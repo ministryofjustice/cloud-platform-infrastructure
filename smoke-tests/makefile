@@ -1,4 +1,4 @@
-IMAGE := ministryofjustice/cloud-platform-smoke-tests:1.2
+IMAGE := ministryofjustice/cloud-platform-smoke-tests:1.3
 KUBE_CONFIG := ~/.kube/config
 AWS_PROFILE := moj-cp # Cloud Platform AWS account
 
