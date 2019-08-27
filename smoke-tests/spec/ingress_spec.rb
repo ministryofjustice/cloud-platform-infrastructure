@@ -20,10 +20,10 @@ describe "nginx ingress", cluster: 'live-1' do
 
       apply_template_file(
         namespace: namespace,
-        file: "spec/fixtures/ingress-smoketest.yaml.erb",
+        file: "spec/fixtures/helloworld-deployment.yaml.erb",
         binding: binding
       )
-      wait_for(namespace, "ingress", "ingress-smoketest-app-ing")
+      wait_for(namespace, "ingress", "integration-test-app-ing")
       sleep 7 # Without this, the test fails
     end
 
