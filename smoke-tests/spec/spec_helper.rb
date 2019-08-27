@@ -97,12 +97,15 @@ RSpec.configure do |config|
   #   Kernel.srand config.seed
 end
 
+require "aws-sdk-iam"
 require "open-uri"
 require "pry-byebug"
 require "kubernetes_helper"
 require "erb"
 require "json"
 require "date"
+require "./spec/constants"
+require "./spec/kiam_helper"
 
 def readable_timestamp
   Time.now.strftime("%Y%m%d%H%M%S")
@@ -110,5 +113,5 @@ end
 
 # String of random upper-case letters
 def random_string(length = 8)
-  (0...length).map { (65 + rand(26)).chr }.join
+  (0...length).map { (65 + rand(26)).chr }.join.downcase
 end

@@ -11,15 +11,15 @@ The smoke tests will run inside a docker container against your current Kubernet
 - `git`
 - `docker`
 - `cluster-admin` access to a Cloud Platform cluster
+- `aws-credentials` your aws credentials must be located in the default location `${HOME}/.aws`
 
 ### Build or pull the image
 You'll need to have pulled the image locally, you can do this with the following:
 
 #### Pull
-- `docker pull ministryofjustice/cloud-platform-smoke-tests:1.0`
--
+- `docker pull ministryofjustice/cloud-platform-smoke-tests:${TAG}`
+
 #### Build
-- git clone the [smoke-tests]() repository.
 - run `make build`
 
 ### Run tests
