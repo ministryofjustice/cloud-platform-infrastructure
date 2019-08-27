@@ -7,7 +7,7 @@ def all_namespaces
   JSON.parse(json).fetch("items")
 end
 
-def create_namespace(namespace)
+def create_namespace(namespace, opts = {})
   unless namespace_exists?(namespace)
     `kubectl create namespace #{namespace}`
 
@@ -15,6 +15,10 @@ def create_namespace(namespace)
       break if namespace_exists?(namespace)
       sleep 1
     end
+
+    if annotations = opts[:annotations]
+      `kubectl annotate --overwrite namespace #{namespace} '#{annotations}'`
+     end
   end
 end
 
@@ -93,8 +97,11 @@ def get_pod_logs(namespace, pod_name)
   `kubectl -n #{namespace} logs #{pod_name}`
 end
 
-# Get the name of the Nth pod in the namespace
-def get_pod_name(namespace, index)
-  `kubectl get pods -n #{namespace} | awk 'FNR == #{index + 1} {print $1}'`.chomp
+def get_running_pod_name(namespace, index)
+  get_pod_name(namespace, index, "--field-selector=status.phase=Running")
 end
 
+# Get the name of the Nth pod in the namespace
+def get_pod_name(namespace, index, options = "")
+  `kubectl get pods -n #{namespace} #{options} 2>/dev/null | awk 'FNR == #{index + 1} {print $1}'`.chomp
+end

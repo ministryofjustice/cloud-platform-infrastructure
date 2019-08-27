@@ -6,3 +6,5 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 gem "rspec"
 gem "pry-byebug"
+gem "aws-sdk-core", "~> 3.59"
+gem "aws-sdk-iam", '~> 1.3'
