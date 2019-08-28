@@ -12,39 +12,17 @@
 # Maybe:
 # Test certificate creation
 
-# _external_dns
-# "heritage=external-dns,external-dns/owner=default,external-dns/resource=ingress/family-mediators-api-production/family-mediators-api-ingress-production"
-#
-# Alias record
-# aef1937c1a95711e98cdd0aaafbe3d46-9b185ef26eadab0b.elb.eu-west-2.amazonaws.com.
-#
-# NS record
-# ns-1462.awsdns-54.org.
-# ns-1813.awsdns-34.co.uk.
-# ns-500.awsdns-62.com.
-# ns-912.awsdns-50.net.
-#
-# SOA record
-# ns-1462.awsdns-54.org. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400
-#
-# ns-54.awsdns-06.com.
-# ns-1613.awsdns-09.co.uk.
-# ns-745.awsdns-29.net.
-# ns-1369.awsdns-43.org.
-
 # how to query the cert used by a page
 # echo | openssl s_client -showcerts -servername jb.apps.jb-test-10.cloud-platform.service.justice.gov.uk -connect jb.apps.jb-test-10.cloud-platform.service.justice.gov.uk:443 2>/dev/null | openssl x509 -inform pem -noout -text
-#
 #
 require "spec_helper"
 
 describe "cert-manager" do
-  let(:namespace) { "cert-manager-integration-test-#{readable_timestamp}" }
-  let(:cluster) { "apps.#{current_cluster}" } 
-  let(:host) { "#{namespace}.#{cluster}" }
+  let(:namespace) { "c-manager-test-#{random_string}" }
+  let(:cluster) { "#{current_cluster}" } 
+  let(:host) { "#{namespace}.apps.#{cluster}" }
 
-
-  context "when certificate resource is created" do
+  context "when a certificate resource is created" do
     before do
       create_namespace(namespace)
       apply_template_file(
@@ -54,15 +32,55 @@ describe "cert-manager" do
       )
       wait_for(namespace, "ingress", "integration-test-app-ing")
       sleep 7 # Without this, the test fails
+      create_certificate(namespace, host)
     end
 
     after do
-      delete_namespace(namespace)
+      #delete_namespace(namespace)
     end
 
-    it "returns valid certificate for openssl call" do
+    it "returns valid certificate for an openssl call" do
       result = true
       expect(result).to eq(true)
     end
   end    
 end    
+
+def create_certificate(namespace, host)
+
+  json = <<~EOF
+  {
+    "apiVersion": "certmanager.k8s.io/v1alpha1",
+    "kind": "Certificate",
+    "metadata": {
+      "name": "cert-manager-integration-test",
+      "namespace": "#{namespace}"
+    },
+    "spec": {
+      "acme": {
+        "config": [
+          {
+            "dns01": {
+              "provider": "route53-cloud-platform"
+            },
+            "domains": [
+              "#{host}"
+            ]
+          }
+        ]
+      },
+      "commonName": "#{host}",
+      "issuerRef": {
+        "kind": "ClusterIssuer",
+        "name": "letsencrypt-production"
+      },
+      "secretName": "hello-world-ssl"
+    }
+  }
+  EOF
+
+  jsn = JSON.parse(json).to_json
+
+  cmd = %[echo '#{jsn}' | kubectl -n #{namespace} apply -f -]
+  `#{cmd}`
+end
