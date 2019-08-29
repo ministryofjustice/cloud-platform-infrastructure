@@ -98,6 +98,7 @@ RSpec.configure do |config|
 end
 
 require "aws-sdk-iam"
+require "aws-sdk-route53"
 require "open-uri"
 require "pry-byebug"
 require "kubernetes_helper"
