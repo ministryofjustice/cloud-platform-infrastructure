@@ -18,12 +18,18 @@
 require "spec_helper"
 
 describe "cert-manager" do
-  let(:namespace) { "c-manager-test-#{random_string}" }
+  # Cert-manager has a limit of 64 chars.
+  let(:namespace) { "cert-manager-test-#{random_string}" }
   let(:cluster) { "#{current_cluster}" } 
   let(:host) { "#{namespace}.apps.#{cluster}" }
+  let(:domain) { "cert-man#{random_string}.jb-test-10.cloud-platform.service.justice.gov.uk" }
+  # Hard code the parent zone id
+  let(:parent_zone_id) { "ZBWUW6LDZYMJ2" }
 
   context "when a certificate resource is created" do
     before do
+      zone = create_zone(domain)
+      create_delegation_set(zone, parent_zone_id)
       create_namespace(namespace)
       apply_template_file(
         namespace: namespace,
@@ -32,7 +38,7 @@ describe "cert-manager" do
       )
       wait_for(namespace, "ingress", "integration-test-app-ing")
       sleep 7 # Without this, the test fails
-      create_certificate(namespace, host)
+      create_certificate(namespace, domain)
     end
 
     after do
@@ -46,7 +52,7 @@ describe "cert-manager" do
   end    
 end    
 
-def create_certificate(namespace, host)
+def create_certificate(namespace, domain)
 
   json = <<~EOF
   {
@@ -64,12 +70,12 @@ def create_certificate(namespace, host)
               "provider": "route53-cloud-platform"
             },
             "domains": [
-              "#{host}"
+              "#{domain}"
             ]
           }
         ]
       },
-      "commonName": "#{host}",
+      "commonName": "#{domain}",
       "issuerRef": {
         "kind": "ClusterIssuer",
         "name": "letsencrypt-production"
@@ -83,4 +89,50 @@ def create_certificate(namespace, host)
 
   cmd = %[echo '#{jsn}' | kubectl -n #{namespace} apply -f -]
   `#{cmd}`
+end
+
+def create_zone(domain)
+  client = Aws::Route53::Client.new()
+  new_zone = client.create_hosted_zone({
+    name: domain, # required
+    caller_reference: "#{readable_timestamp}", # required, different each time
+    hosted_zone_config: {
+      comment: "CERT-MANAGER INTEGRATION TEST",
+      private_zone: false,
+    },
+  })
+
+  new_zone
+end
+
+# Delegate a Route53 zone (child -> Parent)
+# Expect a Route53 zone object and the parent zone_id
+# 
+def create_delegation_set(zone, parent_zone_id)
+
+  client = Aws::Route53::Client.new()
+  resp = client.change_resource_record_sets({
+    change_batch: {
+      changes: [
+        {
+          action: "CREATE", 
+          resource_record_set: {
+            name: zone.hosted_zone.name, 
+            resource_records: zone.delegation_set.name_servers.map { |ns| { value: ns } },
+            ttl: 60, 
+            type: "NS", 
+          }, 
+        }, 
+      ], 
+      comment: "FOR TESTING PURPOSES ONLY", 
+    }, 
+    hosted_zone_id: parent_zone_id, 
+  })
+
+end
+
+# Delete zone
+# Should match the zone ID returne by create_zone
+def delete_zone(zone_id)
+  "deleted"
 end
