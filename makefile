@@ -1,4 +1,4 @@
-TOOLS_IMAGE := 754256621582.dkr.ecr.eu-west-2.amazonaws.com/cloud-platform/tools
+TOOLS_IMAGE := ministryofjustice/cloud-platform-tools
 
 tools-shell:
 	docker pull $(TOOLS_IMAGE)
