@@ -3,16 +3,15 @@
 # Return route53 zone object https://docs.aws.amazon.com/sdkforruby/api/Aws/Route53/Types/CreateHostedZoneResponse.html 
 def create_zone(domain)
     client = Aws::Route53::Client.new()
-    new_zone = client.create_hosted_zone({
+    client.create_hosted_zone(
         name: domain, # required
         caller_reference: "#{readable_timestamp}", # required, different each time
         hosted_zone_config: {
             comment: "FOR TESTING PURPOSES ONLY",
             private_zone: false,
         },
-    })
+    )
 
-    new_zone
 end
 
 # Delegate a Route53 zone (child -> Parent)
@@ -20,23 +19,23 @@ end
 def create_delegation_set(child_zone, parent_id)
 
     client = Aws::Route53::Client.new()
-    resp = client.change_resource_record_sets({
-    change_batch: {
-        changes: [
-        {
-            action: "CREATE", 
-            resource_record_set: {
-                name: child_zone.hosted_zone.name, 
-                resource_records: child_zone.delegation_set.name_servers.map { |ns| { value: ns } },
-                ttl: 60, 
-                type: "NS", 
+    client.change_resource_record_sets(
+        change_batch: {
+            changes: [
+            {
+                action: "CREATE", 
+                resource_record_set: {
+                    name: child_zone.hosted_zone.name, 
+                    resource_records: child_zone.delegation_set.name_servers.map { |ns| { value: ns } },
+                    ttl: 60, 
+                    type: "NS", 
+                }, 
             }, 
+            ], 
+            comment: "FOR TESTING PURPOSES ONLY", 
         }, 
-        ], 
-        comment: "FOR TESTING PURPOSES ONLY", 
-    }, 
-    hosted_zone_id: parent_id, 
-    })
+        hosted_zone_id: parent_id, 
+    )
 
 end
 
@@ -46,9 +45,9 @@ end
 def get_zone_records(zone_id)
   
     client = Aws::Route53::Client.new()
-    records = client.list_resource_record_sets({
+    records = client.list_resource_record_sets(
         hosted_zone_id: zone_id, # required
-    })
+    )
 
     records.resource_record_sets.collect { |r| {type: r.type, name: r.name, value: r.resource_records.map { |item| item.value } } }
     # example:
