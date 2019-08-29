@@ -59,8 +59,3 @@ def get_zone_records(zone_id)
 end
 
 
-# Delete zone
-# Should match the zone ID returne by create_zone
-def delete_zone(zone_id)
-    "deleted"
-end
