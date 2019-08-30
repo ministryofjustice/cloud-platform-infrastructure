@@ -7,13 +7,13 @@ class KiamRole
       {
         Effect: "Allow",
         Action: [
-          "sts:AssumeRole"
+          "sts:AssumeRole",
         ],
         Resource: [
-          "*"
-        ]
-      }
-    ]
+          "*",
+        ],
+      },
+    ],
   }
 
   def initialize(args)
@@ -26,7 +26,7 @@ class KiamRole
   def fetch_or_create_role
     role = Aws::IAM::Role.new(client: client, name: role_name)
 
-    if client.list_roles.roles.find {|r| r.role_name == role_name}
+    if client.list_roles.roles.find { |r| r.role_name == role_name }
       role.load
     else
       role = create_role
@@ -51,16 +51,16 @@ class KiamRole
     iam = Aws::IAM::Resource.new(client: client)
 
     node_assume_role_policy_doc = {
-      Version:"2012-10-17",
-      Statement:[
+      Version: "2012-10-17",
+      Statement: [
         {
-          Effect:"Allow",
-          Principal:{
-            AWS: "arn:aws:iam::#{account_id}:role/nodes.#{kubernetes_cluster}"
+          Effect: "Allow",
+          Principal: {
+            AWS: "arn:aws:iam::#{account_id}:role/nodes.#{kubernetes_cluster}",
           },
-          Action:"sts:AssumeRole"
-        }
-      ]
+          Action: "sts:AssumeRole",
+        },
+      ],
     }
 
     role = iam.create_role(
@@ -76,7 +76,7 @@ class KiamRole
   def fetch_or_create_policy(args)
     policy_name = args.fetch(:policy_name)
 
-    if policy = client.list_policies.policies.find {|p| p.policy_name == args.fetch(:policy_name) }
+    if policy = client.list_policies.policies.find { |p| p.policy_name == args.fetch(:policy_name) }
       arn = policy.arn
     else
       resp = client.create_policy(
@@ -104,7 +104,7 @@ def try_to_assume_role(args)
   role_arn = args.fetch(:role_arn)
   pod = args.fetch(:pod)
 
-  cmd = %[kubectl exec -n #{namespace} #{pod} -- aws sts assume-role --role-arn "#{role_arn}" --role-session-name dummy]
+  cmd = %(kubectl exec -n #{namespace} #{pod} -- aws sts assume-role --role-arn "#{role_arn}" --role-session-name dummy)
   `#{cmd} 2>&1`
 end
 
@@ -115,39 +115,39 @@ def create_deployment(args)
   pod_annotations = args.fetch(:pod_annotations)
 
   json = <<~EOF
-  {
-    "apiVersion": "apps/v1",
-    "kind": "Deployment",
-    "metadata": { "name": "integration-test-kiam-deployment" },
-    "spec": {
-      "selector": { "matchLabels": { "app": "not-needed" } },
-      "template": {
-        "metadata": {
-          "annotations": #{pod_annotations.to_json},
-          "labels": { "app": "not-needed" }
-        },
-        "spec": {
-          "securityContext": {
-            "runAsUser": 1000,
-            "runAsGroup": 3000
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": { "name": "integration-test-kiam-deployment" },
+      "spec": {
+        "selector": { "matchLabels": { "app": "not-needed" } },
+        "template": {
+          "metadata": {
+            "annotations": #{pod_annotations.to_json},
+            "labels": { "app": "not-needed" }
           },
-          "containers": [
-            {
-              "name": "tools-image",
-              "image": "#{TOOLS_IMAGE}",
-              "command": [ "sleep", "86400" ]
-            }
-          ]
+          "spec": {
+            "securityContext": {
+              "runAsUser": 1000,
+              "runAsGroup": 3000
+            },
+            "containers": [
+              {
+                "name": "tools-image",
+                "image": "#{TOOLS_IMAGE}",
+                "command": [ "sleep", "86400" ]
+              }
+            ]
+          }
         }
       }
     }
-  }
   EOF
 
   # collapse the json onto a single line
   jsn = JSON.parse(json).to_json
 
-  cmd = %[echo '#{jsn}' | kubectl -n #{namespace} apply -f -]
+  cmd = %(echo '#{jsn}' | kubectl -n #{namespace} apply -f -)
 
   `#{cmd}`
 

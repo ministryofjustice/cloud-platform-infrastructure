@@ -18,7 +18,7 @@ def create_namespace(namespace, opts = {})
 
     if annotations = opts[:annotations]
       `kubectl annotate --overwrite namespace #{namespace} '#{annotations}'`
-     end
+    end
   end
 end
 
