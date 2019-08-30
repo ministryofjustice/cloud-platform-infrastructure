@@ -5,7 +5,7 @@ def create_zone(domain)
   client = Aws::Route53::Client.new
   client.create_hosted_zone(
     name: domain, # required
-    caller_reference: readable_timestamp.to_s, # required, different each time
+    caller_reference: readable_timestamp, # required, different each time
     hosted_zone_config: {
       comment: "FOR TESTING PURPOSES ONLY",
       private_zone: false,
