@@ -9,8 +9,6 @@
 #
 require "fileutils"
 
-abort("you must run this within the container!") unless (File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /docker/)
-
 MAX_CLUSTER_NAME_LENGTH = 12
 CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
 
@@ -175,5 +173,7 @@ def cmd_successful?(cmd)
 end
 
 ############################################################
+
+abort("you must run this within the container!") unless (File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /docker/)
 
 main ARGV.shift
