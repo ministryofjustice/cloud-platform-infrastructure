@@ -18,22 +18,23 @@
 require "spec_helper"
 
 describe "cert-manager" do
-  # Cert-manager has a limit of 64 chars.
   let(:random) { "#{random_string}" }
   let(:namespace) { "cert-manager-test-#{random}" }
   let(:cluster) { "#{current_cluster}" } 
 
+  before do
+    create_namespace(namespace)
+  end
+
+  after do
+    delete_namespace(namespace)
+  end
+
   context "when a certificate resource is created" do
     let(:domain) { "cert-manager-#{random}.cloud-platform.service.justice.gov.uk" }
 
-    before do
-      create_namespace(namespace)
-
-      create_certificate(namespace, domain)
-      wait_for(namespace, "certificate", "cert-manager-integration-test")
-
-      # Required amount of time for certificate status to eq "True"
-      sleep 100
+    it "returns valid certificate from an openssl call" do
+      # This deployment uses the bitnami/nginx image to simply return a 200.
       apply_template_file(
         namespace: namespace,
         domain: domain,
@@ -41,14 +42,11 @@ describe "cert-manager" do
         binding: binding
       )
       wait_for(namespace, "ingress", "integration-test-app-ing")
-      sleep 7
-    end
 
-    after do
-      delete_namespace(namespace)
-    end
+      # Required amount of time for certificate status to eq "True".
+      create_certificate(namespace, domain)
+      sleep 100
 
-    it "returns valid certificate from an openssl call" do
       result = validate_certificate(domain)
       expect(result).to match(/#{domain}/)
     end
