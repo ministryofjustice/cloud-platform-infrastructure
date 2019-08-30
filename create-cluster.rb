@@ -178,6 +178,6 @@ end
 
 ############################################################
 
-abort("you must run this within the container!") unless running_in_docker_container?
+abort("You must run this script from within the ministryofjustice/cloud-platform-tools docker container!") unless running_in_docker_container?
 
 main ARGV.shift
