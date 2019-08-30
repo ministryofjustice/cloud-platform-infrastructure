@@ -27,6 +27,8 @@ RUN addgroup -g 1000 -S appgroup && \
 
 WORKDIR /app
 
+RUN gem install bundler
+
 COPY Gemfile* ./
 RUN bundle install
 
