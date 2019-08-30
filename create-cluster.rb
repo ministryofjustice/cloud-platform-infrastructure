@@ -172,8 +172,12 @@ def cmd_successful?(cmd)
   system cmd
 end
 
+def running_in_docker_container?
+  File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /docker/
+end
+
 ############################################################
 
-abort("you must run this within the container!") unless (File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /docker/)
+abort("you must run this within the container!") unless running_in_docker_container?
 
 main ARGV.shift
