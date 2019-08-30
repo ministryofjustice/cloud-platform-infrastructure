@@ -2,7 +2,7 @@ require "spec_helper"
 
 # Use the cluster: 'live-1' tag to identify tests which can only run against the live-1 cluster
 # (in this case, because that's the only place where elasticsearch is set up with these values)
-describe "Log collection", cluster: 'live-1' do
+describe "Log collection", cluster: "live-1" do
   let(:namespace) { "smoketest-logging-#{readable_timestamp}" }
 
   ELASTIC_SEARCH = "https://search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
@@ -30,7 +30,7 @@ describe "Log collection", cluster: 'live-1' do
     # this job queries elasticsearch, looking for all log data for our namespace, today
     create_job(namespace, "spec/fixtures/logging-job.yaml.erb", {
       job_name: "smoketest-logging-job",
-      search_url: search_url
+      search_url: search_url,
     })
 
     pod_name = get_pod_name(namespace, 2) # We created 2 jobs, so the pod we want is the 2nd one
@@ -39,5 +39,4 @@ describe "Log collection", cluster: 'live-1' do
     total_hits = hash.fetch("hits").fetch("total")
     expect(total_hits).to be > 0 # i.e. there are some log events for our namespace
   end
-
 end

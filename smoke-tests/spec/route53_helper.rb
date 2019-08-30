@@ -4,7 +4,7 @@
 def create_zone(domain)
   client = Aws::Route53::Client.new
   client.create_hosted_zone(
-    name: domain, 
+    name: domain,
     caller_reference: readable_timestamp, # required, different each time
     hosted_zone_config: {
       comment: "FOR TESTING PURPOSES ONLY",
@@ -40,10 +40,10 @@ end
 # Expect a zone_id in input
 # Returns an array of hashes {type, name, value} of records.
 # example:
-  # [
-  #   {:type=>"NS", :name=>"test.service.justice.gov.uk.", :value=>["ns-000.awsdns-00.net.", "ns-000.awsdns-00.net.", "ns-000.awsdns-00.net.", "ns-000.awsdns-00.net."]},
-  #   {:type=>"SOA", :name=>"mourad2.service.justice.gov.uk.", :value=>["ns-000.awsdns-00.net. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"]}
-  # ]
+# [
+#   {:type=>"NS", :name=>"test.service.justice.gov.uk.", :value=>["ns-000.awsdns-00.net.", "ns-000.awsdns-00.net.", "ns-000.awsdns-00.net.", "ns-000.awsdns-00.net."]},
+#   {:type=>"SOA", :name=>"mourad2.service.justice.gov.uk.", :value=>["ns-000.awsdns-00.net. awsdns-hostmaster.amazon.com. 1 7200 900 1209600 86400"]}
+# ]
 def get_zone_records(zone_id)
   client = Aws::Route53::Client.new
   records = client.list_resource_record_sets(
@@ -51,5 +51,4 @@ def get_zone_records(zone_id)
   )
 
   records.resource_record_sets.collect { |r| {type: r.type, name: r.name, value: r.resource_records.map { |item| item.value }} }
-  
 end
