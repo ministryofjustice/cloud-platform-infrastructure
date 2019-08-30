@@ -22,18 +22,18 @@ describe "cert-manager" do
   let(:random) { "#{random_string}" }
   let(:namespace) { "cert-manager-test-#{random}" }
   let(:cluster) { "#{current_cluster}" } 
-  # Hard code the parent zone id
-  let(:parent_zone_id) { "Z1OWR28V4Q2RTU" }
 
   context "when a certificate resource is created" do
     let(:domain) { "cert-manager-#{random}.cloud-platform.service.justice.gov.uk" }
 
     before do
       create_namespace(namespace)
+
       create_certificate(namespace, domain)
-      #zone = create_zone(domain)
-      #create_delegation_set(zone, parent_zone_id)
-      sleep 40
+      wait_for(namespace, "certificate", "cert-manager-integration-test")
+
+      # Required amount of time for certificate status to eq "True"
+      sleep 100
       apply_template_file(
         namespace: namespace,
         domain: domain,
@@ -45,15 +45,39 @@ describe "cert-manager" do
     end
 
     after do
-      #delete_namespace(namespace)
+      delete_namespace(namespace)
     end
 
-    it "returns valid certificate for an openssl call" do
-      result = true
-      expect(result).to eq(true)
+    it "returns valid certificate from an openssl call" do
+      result = validate_certificate(domain)
+      expect(result).to match(/#{domain}/)
     end
   end
+
+  #context "when a certificate resource hasn't been added" do
+  #  let(:domain) { "cert-manager-#{random}.apps.#{cluster}" }
+
+  #  create_namespace(namespace)
+  #  apply_template_file(
+  #    namespace: namespace,
+  #    domain: domain,
+  #    file: "spec/fixtures/helloworld-deployment.yaml.erb",
+  #    binding: binding
+  #  )
+  #  wait_for(namespace, "ingress", "integration-test-app-ing")
+  #  
+  #  it "returns wildcard certificate from an openssl call" do
+  #    result = validate_certificate(domain)
+  #    expect(result).to match(/#{domain}/)
+  #  end
+  #end
 end 
+
+def validate_certificate(domain)
+  cmd = %[echo | openssl s_client -showcerts -servername #{domain} -connect #{domain}:443 2>/dev/null | openssl x509 -inform pem -noout -text | grep DNS]
+
+  `#{cmd} 2>&1`
+end
 
 def create_certificate(namespace, domain)
 
@@ -92,44 +116,4 @@ def create_certificate(namespace, domain)
 
   cmd = %[echo '#{jsn}' | kubectl -n #{namespace} apply -f -]
   `#{cmd}`
-end
-
-def create_zone(domain)
-  client = Aws::Route53::Client.new()
-  new_zone = client.create_hosted_zone({
-    name: domain, # required
-    caller_reference: "#{readable_timestamp}", # required, different each time
-    hosted_zone_config: {
-      comment: "CERT-MANAGER INTEGRATION TEST",
-      private_zone: false,
-    },
-  })
-
-  new_zone
-end
-
-# Delegate a Route53 zone (child -> Parent)
-# Expect a Route53 zone object and the parent zone_id
-# 
-def create_delegation_set(zone, parent_zone_id)
-
-  client = Aws::Route53::Client.new()
-  resp = client.change_resource_record_sets({
-    change_batch: {
-      changes: [
-        {
-          action: "CREATE", 
-          resource_record_set: {
-            name: zone.hosted_zone.name, 
-            resource_records: zone.delegation_set.name_servers.map { |ns| { value: ns } },
-            ttl: 60, 
-            type: "NS", 
-          }, 
-        }, 
-      ], 
-      comment: "FOR TESTING PURPOSES ONLY", 
-    }, 
-    hosted_zone_id: parent_zone_id, 
-  })
-
 end
