@@ -14,6 +14,7 @@ RUN \
     libxml2-dev \
     libxslt-dev \
     linux-headers \
+    openssl \
     openssl-dev \
     python3 \
     ruby-dev \
