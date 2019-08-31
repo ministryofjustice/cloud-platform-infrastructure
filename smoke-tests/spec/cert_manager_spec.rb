@@ -1,26 +1,14 @@
-# Before all:
-# Create ns
-# Create helloworld pod with ingress
-# Context: Certficate created and curl returns 200
-# Check to see if domain exists, if not add it.
-# Before: Create certificate
-# Context: Check the status of the certificate
-# Curl endpoint
-# After: Destroy certificate
-# Context: Certificate not created and curl returns !200
-# curl endpoint
-# Maybe:
-# Test certificate creation
-
-# how to query the cert used by a page
-# echo | openssl s_client -showcerts -servername jb.apps.jb-test-10.cloud-platform.service.justice.gov.uk -connect jb.apps.jb-test-10.cloud-platform.service.justice.gov.uk:443 2>/dev/null | openssl x509 -inform pem -noout -text
+# This test must NOT be run as part of a pipeline. This is due to the Let's Encrypt 
+# limit of 50 certificates per week. The intention of this script is to be used as 
+# a user command to execute from their machine as and when required. 
 #
+# This test uses the cluster: 'live-1' tag to identify tests which can only run against 
+# the live-1 cluster (in this case it's because only live clusters have access to the 
+# 'cloud-platform.service.justice.gov.uk domain'
 require "spec_helper"
 
-describe "cert-manager" do
-  let(:random) { "#{random_string}" }
-  let(:namespace) { "cert-manager-test-#{random}" }
-  let(:cluster) { "#{current_cluster}" } 
+describe "cert-manager", cluster: 'live-1'  do
+  let(:namespace) { "cert-manager-test-#{random_string}" }
 
   before do
     create_namespace(namespace)
@@ -31,10 +19,10 @@ describe "cert-manager" do
   end
 
   context "when a certificate resource is created" do
-    let(:domain) { "cert-manager-#{random}.cloud-platform.service.justice.gov.uk" }
+    let(:domain) { "cert-manager-#{random_string}.cloud-platform.service.justice.gov.uk" }
 
-    it "returns valid certificate from an openssl call" do
-      # This deployment uses the bitnami/nginx image to simply return a 200.
+    xit "returns valid certificate from an openssl call" do
+      # Creates a deplyment using the bintami/nginx image to return a 200.
       apply_template_file(
         namespace: namespace,
         domain: domain,
@@ -43,32 +31,14 @@ describe "cert-manager" do
       )
       wait_for(namespace, "ingress", "integration-test-app-ing")
 
-      # Required amount of time for certificate status to eq "True".
+      # Certificate creation and subsequent 2 minute wait for certificate status to equal "True"
       create_certificate(namespace, domain)
-      sleep 100
+      sleep 120
 
       result = validate_certificate(domain)
       expect(result).to match(/#{domain}/)
     end
   end
-
-  #context "when a certificate resource hasn't been added" do
-  #  let(:domain) { "cert-manager-#{random}.apps.#{cluster}" }
-
-  #  create_namespace(namespace)
-  #  apply_template_file(
-  #    namespace: namespace,
-  #    domain: domain,
-  #    file: "spec/fixtures/helloworld-deployment.yaml.erb",
-  #    binding: binding
-  #  )
-  #  wait_for(namespace, "ingress", "integration-test-app-ing")
-  #  
-  #  it "returns wildcard certificate from an openssl call" do
-  #    result = validate_certificate(domain)
-  #    expect(result).to match(/#{domain}/)
-  #  end
-  #end
 end 
 
 def validate_certificate(domain)
