@@ -36,10 +36,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - <%= domain %>
+    - <%= host %>
     secretName: hello-world-ssl
   rules:
-  - host: <%= domain %>
+  - host: <%= host %>
     http:
       paths:
       - path: /

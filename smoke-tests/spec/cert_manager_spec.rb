@@ -19,35 +19,35 @@ describe "cert-manager", cluster: 'live-1'  do
   end
 
   context "when a certificate resource is created" do
-    let(:domain) { "cert-manager-#{random_string}.cloud-platform.service.justice.gov.uk" }
+    let(:host) { "cert-manager-#{random_string}.cloud-platform.service.justice.gov.uk" }
 
-    xit "returns valid certificate from an openssl call" do
+    it "returns valid certificate from an openssl call" do
       # Creates a deplyment using the bintami/nginx image to return a 200.
       apply_template_file(
         namespace: namespace,
-        domain: domain,
+        host: host,
         file: "spec/fixtures/helloworld-deployment.yaml.erb",
         binding: binding
       )
       wait_for(namespace, "ingress", "integration-test-app-ing")
 
       # Certificate creation and subsequent 2 minute wait for certificate status to equal "True"
-      create_certificate(namespace, domain)
+      create_certificate(namespace, host)
       sleep 120
 
-      result = validate_certificate(domain)
-      expect(result).to match(/#{domain}/)
+      result = validate_certificate(host)
+      expect(result).to match(/#{host}/)
     end
   end
 end 
 
-def validate_certificate(domain)
-  cmd = %[echo | openssl s_client -showcerts -servername #{domain} -connect #{domain}:443 2>/dev/null | openssl x509 -inform pem -noout -text | grep DNS]
+def validate_certificate(host)
+  cmd = %[echo | openssl s_client -showcerts -servername #{host} -connect #{host}:443 2>/dev/null | openssl x509 -inform pem -noout -text | grep DNS]
 
   `#{cmd} 2>&1`
 end
 
-def create_certificate(namespace, domain)
+def create_certificate(namespace, host)
 
   json = <<~EOF
   {
@@ -65,12 +65,12 @@ def create_certificate(namespace, domain)
               "provider": "route53-cloud-platform"
             },
             "domains": [
-              "#{domain}"
+              "#{host}"
             ]
           }
         ]
       },
-      "commonName": "#{domain}",
+      "commonName": "#{host}",
       "issuerRef": {
         "kind": "ClusterIssuer",
         "name": "letsencrypt-production"

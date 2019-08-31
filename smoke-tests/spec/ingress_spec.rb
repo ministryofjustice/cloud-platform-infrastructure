@@ -20,6 +20,7 @@ describe "nginx ingress", cluster: 'live-1' do
 
       apply_template_file(
         namespace: namespace,
+        host: host,
         file: "spec/fixtures/helloworld-deployment.yaml.erb",
         binding: binding
       )
