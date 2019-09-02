@@ -1,10 +1,13 @@
 IMAGE := ministryofjustice/cloud-platform-smoke-tests
-VERSION := 1.3
+VERSION := 1.4
 KUBE_CONFIG := ~/.kube/config
 AWS_PROFILE := moj-cp # Cloud Platform AWS account
 
-build:
+build: .built-docker-image
+
+.built-docker-image: Dockerfile Gemfile Gemfile.lock makefile
 	docker build -t $(IMAGE) .
+	touch .built-docker-image
 
 push:
 	docker tag $(IMAGE) $(IMAGE):$(VERSION)
