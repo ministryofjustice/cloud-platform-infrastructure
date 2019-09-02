@@ -52,3 +52,34 @@ def get_zone_records(zone_id)
 
   records.resource_record_sets.collect { |r| {type: r.type, name: r.name, value: r.resource_records.map { |item| item.value }} }
 end
+
+# Deletes a hosted zone.
+# Expects a zone_id in input
+# Be careful
+def delete_zone(zone_id)
+  client = Aws::Route53::Client.new
+  client.delete_hosted_zone({
+    id: zone_id,
+  })
+end
+
+def delete_delegation_set(child_zone, parent_id)
+  client = Aws::Route53::Client.new
+  client.change_resource_record_sets(
+    change_batch: {
+      changes: [
+        {
+          action: "DELETE",
+          resource_record_set: {
+            name: child_zone.hosted_zone.name,
+            resource_records: child_zone.delegation_set.name_servers.map { |ns| {value: ns} },
+            ttl: 60,
+            type: "NS",
+          },
+        },
+      ],
+      comment: "FOR TESTING PURPOSES ONLY",
+    },
+    hosted_zone_id: parent_id,
+  )
+end
