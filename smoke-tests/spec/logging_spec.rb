@@ -22,7 +22,9 @@ describe "Log collection", cluster: "live-1" do
     # It takes time for the 'helloworld' job output to be shipped to elasticsearch, and there
     # is no easy way to figure out when this has/hasn't happened. This sleep seems to work
     # consistently, but it's possible it may break unexpectedly, at some point.
-    sleep 60
+
+    sleep 120 # TODO: this is an experimental change (from 60), to see if a longer sleep fixes
+              #       intermittent pipeline failures
 
     date = Date.today.strftime("%Y.%m.%d")
     search_url = "#{ELASTIC_SEARCH}/logstash-#{date}/_search"
