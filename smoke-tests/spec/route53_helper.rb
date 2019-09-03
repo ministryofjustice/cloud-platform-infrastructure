@@ -60,7 +60,7 @@ def delete_zone(zone_id)
   client = Aws::Route53::Client.new
   client.delete_hosted_zone(
     id: zone_id,
-  })
+  )
 end
 
 # Deletes a Delegation set (NS)
