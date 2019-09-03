@@ -7,7 +7,7 @@ def create_zone(domain)
     name: domain,
     caller_reference: readable_timestamp, # required, different each time
     hosted_zone_config: {
-      comment: "FOR TESTING PURPOSES ONLY",
+      comment: "integrationtest",
       private_zone: false,
     },
   )
@@ -30,7 +30,7 @@ def create_delegation_set(child_zone, parent_id)
           },
         },
       ],
-      comment: "FOR TESTING PURPOSES ONLY",
+      comment: "integrationtest",
     },
     hosted_zone_id: parent_id,
   )
@@ -58,11 +58,13 @@ end
 # Be careful
 def delete_zone(zone_id)
   client = Aws::Route53::Client.new
-  client.delete_hosted_zone({
+  client.delete_hosted_zone(
     id: zone_id,
   })
 end
 
+# Deletes a Delegation set (NS)
+# Expects a parent and child zone, see create_delegation_set
 def delete_delegation_set(child_zone, parent_id)
   client = Aws::Route53::Client.new
   client.change_resource_record_sets(
@@ -78,7 +80,7 @@ def delete_delegation_set(child_zone, parent_id)
           },
         },
       ],
-      comment: "FOR TESTING PURPOSES ONLY",
+      comment: "integrationtest",
     },
     hosted_zone_id: parent_id,
   )
