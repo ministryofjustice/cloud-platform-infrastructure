@@ -4,7 +4,7 @@ describe "external DNS" do
 
   context "when zone matches ingress domain" do
     let(:domain) { "child.parent.service.justice.gov.uk" }
-    let(:namespace_name) { "test" }
+    let(:namespace) { "child-parent" }
     let(:ingress_domain) { domain }
     let(:parent_zone_id) { "ZQVC43X15AWL9" }
     zone = nil
@@ -24,17 +24,23 @@ describe "external DNS" do
 
     #When I create an ingress
     context "when an ingress is created" do
-      # before do
-      #   create_namespace(namespace_name)
-      #   apply_yaml_file
-      # end
+      before do
+        create_namespace(namespace)
+      end
+
+      after do 
+        delete_namespace(namespace)
+      end
 
       # an A record should be created
       it "creates an A record" do
+        
+        create_ingress()
+        sleep 180
         records = get_zone_records(zone.hosted_zone.id)      
         record_types = records.map { |rec| rec.fetch(:type) }
 
-        expect(record_types).to include("NS")
+        expect(record_types).to include("A")
       end
 
       # When the ingress is deleted
@@ -79,3 +85,6 @@ describe "external DNS" do
   # end
 
 end
+
+
+## TODO 
