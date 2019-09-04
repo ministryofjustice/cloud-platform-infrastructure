@@ -97,3 +97,22 @@ resource "kubernetes_config_map" "policy_service_type" {
     ignore_changes = ["metadata.0.annotations"]
   }
 }
+
+resource "kubernetes_config_map" "policy_pod_toleration" {
+  metadata {
+    name      = "policy-pod-toleration"
+    namespace = "${helm_release.open-policy-agent.namespace}"
+
+    labels {
+      "openpolicyagent.org/policy" = "rego"
+    }
+  }
+
+  data {
+    main.rego = "${file("${path.module}/resources/opa/policies/pod_toleration.rego")}"
+  }
+
+  lifecycle {
+    ignore_changes = ["metadata.0.annotations"]
+  }
+}
