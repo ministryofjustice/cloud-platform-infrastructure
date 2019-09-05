@@ -1,6 +1,6 @@
 FROM ruby:2.6.3-alpine
 
-ENV KUBECTL_VERSION=1.11.10
+ENV KUBECTL_VERSION=1.13.8
 
 RUN \
   apk add \

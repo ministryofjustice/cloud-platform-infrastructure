@@ -6,7 +6,7 @@ describe "namespace" do
   end
 
   let(:yes) { "yes" }
-  let(:no) { "no - no RBAC policy matched" }
+  let(:no) { "no" }
 
   context "when group is webops" do
     let(:group) { "webops" }

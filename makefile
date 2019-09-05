@@ -1,7 +1,7 @@
-TOOLS_IMAGE := ministryofjustice/cloud-platform-tools
+TOOLS_IMAGE := cloud-platform-tools:1.13
 
 tools-shell:
-	docker pull $(TOOLS_IMAGE)
+	# docker pull $(TOOLS_IMAGE)
 	docker run --rm -it \
     -e AWS_PROFILE=$${AWS_PROFILE} \
     -e AUTH0_DOMAIN=$${AUTH0_DOMAIN} \
