@@ -1,13 +1,6 @@
-# This test must NOT be run as part of a pipeline. This is due to the Let's Encrypt 
-# limit of 50 certificates per week. The intention of this script is to be used as 
-# a user command to execute from their machine as and when required. 
-#
-# This test uses the cluster: 'live-1' tag to identify tests which can only run against 
-# the live-1 cluster (in this case it's because only live clusters have access to the 
-# 'cloud-platform.service.justice.gov.uk domain'
 require "spec_helper"
 
-describe "cert-manager", cluster: 'live-1'  do
+describe "cert-manager" do
   let(:namespace) { "cert-manager-test-#{random_string}" }
 
   before do
@@ -19,7 +12,7 @@ describe "cert-manager", cluster: 'live-1'  do
   end
 
   context "when a certificate resource is created" do
-    let(:host) { "cert-manager-#{random_string}.cloud-platform.service.justice.gov.uk" }
+    let(:host) { "certtest.#{current_cluster}" }
 
     it "returns valid certificate from an openssl call" do
       # Creates a deplyment using the bintami/nginx image to return a 200.
@@ -73,7 +66,7 @@ def create_certificate(namespace, host)
       "commonName": "#{host}",
       "issuerRef": {
         "kind": "ClusterIssuer",
-        "name": "letsencrypt-production"
+        "name": "letsencrypt-staging"
       },
       "secretName": "hello-world-ssl"
     }
