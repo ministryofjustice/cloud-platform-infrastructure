@@ -13,12 +13,10 @@ describe "custom error pages" do
     end
 
     xit "serves a 404 response" do
-      begin
-        URI.open(url)
-      rescue OpenURI::HTTPError => e
-        body = e.io.string
-        expect(body).to eq("404 page not found\n")
-      end
+      URI.open(url)
+    rescue OpenURI::HTTPError => e
+      body = e.io.string
+      expect(body).to eq("404 page not found\n")
     end
   end
 end

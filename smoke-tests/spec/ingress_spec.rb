@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "nginx ingress", cluster: 'live-1' do
+describe "nginx ingress", cluster: "live-1" do
   let(:cluster_domain) { "apps.live-1.cloud-platform.service.justice.gov.uk" }
   let(:namespace) { "smoketest-ingress-#{readable_timestamp}" }
   let(:host) { "#{namespace}.#{cluster_domain}" }
@@ -24,8 +24,9 @@ describe "nginx ingress", cluster: 'live-1' do
         file: "spec/fixtures/helloworld-deployment.yaml.erb",
         binding: binding
       )
+
       wait_for(namespace, "ingress", "integration-test-app-ing")
-      sleep 7 # Without this, the test fails
+      sleep 20 # Without this, the test fails
     end
 
     after do
