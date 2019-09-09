@@ -172,6 +172,12 @@ def cmd_successful?(cmd)
   system cmd
 end
 
+def running_in_docker_container?
+  File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /docker/
+end
+
 ############################################################
+
+abort("You must run this script from within the ministryofjustice/cloud-platform-tools docker container!") unless running_in_docker_container?
 
 main ARGV.shift
