@@ -107,7 +107,7 @@ def get_pod_name(namespace, index, options = "")
 end
 
 # Get all nodes an app runs on
-def get_app_nodes(namespace, app, status = "Running")
+def get_app_node_ips(namespace, app, status = "Running")
   `kubectl -n #{namespace} get pods -o json -o jsonpath='{..items[*].status.hostIP}' --field-selector status.phase='#{status}' --selector app=='#{app}' --sort-by='.status.hostIP'`.chomp
 end
 
