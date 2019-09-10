@@ -12,7 +12,7 @@ describe "cert-manager" do
   end
 
   context "when a certificate resource is created" do
-    let(:host) { "certtest.#{current_cluster}" }
+    let(:host) { "cert-test#{random_string(length = 2)}.#{current_cluster}" }
 
     it "returns valid certificate from an openssl call" do
       # Creates a deplyment using the bintami/nginx image to return a 200.
