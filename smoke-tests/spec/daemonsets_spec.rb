@@ -1,7 +1,7 @@
 require "spec_helper"
 
 # We want a fluentd pod running on each node, including masters
-describe "Log shipping" do
+describe "fluentd" do
   # gets all node IPs, then the fluentd pods, compares the lists
   it "runs fluentd" do
     cluster_nodes = get_cluster_ips
