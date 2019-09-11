@@ -15,7 +15,7 @@ describe "daemonsets" do
       "fluentd-es",
       "kiam-agent",
       "kiam-server",
-      "prometheus-operator-prometheus-node-exporter"
+      "prometheus-operator-prometheus-node-exporter",
     ]
 
     expect(names).to eq(expected)
@@ -34,7 +34,7 @@ describe "daemonsets" do
   end
 
   context "kiam" do
-    let(:pods) {  get_running_app_pods("kiam", "kiam") }
+    let(:pods) { get_running_app_pods("kiam", "kiam") }
 
     let(:app_node_ips) {
       pod_ips(pods.filter { |pod| pod.dig("metadata", "labels", "component") == component })
