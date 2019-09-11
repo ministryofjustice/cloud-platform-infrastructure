@@ -14,3 +14,43 @@ describe "fluentd" do
     expect(all_containers_running?(pods)).to eq(true)
   end
 end
+
+describe "kiam" do
+  let(:kiam_pods) {  get_running_app_pods("kiam", "kiam") }
+  let(:worker_ips) { node_ips worker_nodes }
+  let(:master_ips) { node_ips master_nodes }
+
+  let(:app_node_ips) {
+    kiam_pods.filter { |pod| pod.dig("metadata", "labels", "component") == component }
+      .map { |pod| pod.dig("status", "hostIP") }
+      .sort
+  }
+
+  specify "all containers are running" do
+    expect(all_containers_running?(kiam_pods)).to eq(true)
+  end
+
+  context "agent" do
+    let(:component) { "agent" }
+
+    it "runs on workers" do
+      expect(worker_ips).to eq(app_node_ips)
+    end
+
+    it "doesn't run on masters" do
+      expect(app_node_ips & master_ips).to be_empty
+    end
+  end
+
+  context "server" do
+    let(:component) { "server" }
+
+    it "runs on workers" do
+      expect(worker_ips).to eq(app_node_ips)
+    end
+
+    it "doesn't run on masters" do
+      expect(app_node_ips & master_ips).to be_empty
+    end
+  end
+end

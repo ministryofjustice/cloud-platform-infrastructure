@@ -146,6 +146,18 @@ def node_ips(nodes)
     .sort
 end
 
+def master_nodes
+  filter_by_role(get_nodes, "master")
+end
+
+def worker_nodes
+  filter_by_role(get_nodes, "node")
+end
+
+def filter_by_role(nodes, role)
+  nodes.filter { |node| node.dig("metadata", "labels", "kubernetes.io/role") == role }
+end
+
 def get_nodes
   JSON.parse(`kubectl get nodes -o json`).fetch("items")
 end
