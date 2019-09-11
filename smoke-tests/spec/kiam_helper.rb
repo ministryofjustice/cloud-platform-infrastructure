@@ -88,7 +88,7 @@ class KiamRole
         {
           Effect: "Allow",
           Principal: {
-            AWS: ["#{cluster_nodes_policy_principal}"]
+            AWS: [cluster_nodes_policy_principal.to_s],
           },
           Action: "sts:AssumeRole",
         },

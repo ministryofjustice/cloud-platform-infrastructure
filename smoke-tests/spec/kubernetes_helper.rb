@@ -107,7 +107,7 @@ end
 
 def get_running_app_pods(namespace, app)
   get_pods(namespace)
-    .filter { |pod|  pod.dig("status", "phase") == "Running" }
+    .filter { |pod| pod.dig("status", "phase") == "Running" }
     .filter { |pod| pod.dig("metadata", "labels", "app") == app }
 end
 

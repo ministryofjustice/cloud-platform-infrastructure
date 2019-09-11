@@ -24,7 +24,7 @@ describe "Log collection", cluster: "live-1" do
     # consistently, but it's possible it may break unexpectedly, at some point.
 
     sleep 120 # TODO: this is an experimental change (from 60), to see if a longer sleep fixes
-              #       intermittent pipeline failures
+    #       intermittent pipeline failures
 
     date = Date.today.strftime("%Y.%m.%d")
     search_url = "#{ELASTIC_SEARCH}/logstash-#{date}/_search"
