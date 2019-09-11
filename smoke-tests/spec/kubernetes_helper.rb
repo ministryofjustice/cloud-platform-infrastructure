@@ -97,18 +97,18 @@ def get_pod_logs(namespace, pod_name)
   `kubectl -n #{namespace} logs #{pod_name}`
 end
 
-def get_running_pod_name(namespace, index)
-  get_pod_name(namespace, index, "--field-selector=status.phase=Running")
-end
-
 def get_pods(namespace)
   JSON.parse(`kubectl -n #{namespace} get pods -o json`).fetch("items")
 end
 
 def get_running_app_pods(namespace, app)
+  get_running_pods(namespace)
+    .filter { |pod| pod.dig("metadata", "labels", "app") == app }
+end
+
+def get_running_pods(namespace)
   get_pods(namespace)
     .filter { |pod| pod.dig("status", "phase") == "Running" }
-    .filter { |pod| pod.dig("metadata", "labels", "app") == app }
 end
 
 def all_containers_running?(pods)
@@ -118,11 +118,6 @@ def all_containers_running?(pods)
     .flatten
 
   all_container_states.uniq == ["running"]
-end
-
-# Get the name of the Nth pod in the namespace
-def get_pod_name(namespace, index, options = "")
-  `kubectl get pods -n #{namespace} #{options} 2>/dev/null | awk 'FNR == #{index + 1} {print $1}'`.chomp
 end
 
 def get_pod_matching_name(namespace, prefix)

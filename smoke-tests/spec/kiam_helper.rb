@@ -187,13 +187,13 @@ def create_deployment(args)
 
   `#{cmd}`
 
-  pod = ""
+  pods = []
 
   60.times do
-    pod = get_running_pod_name(namespace, 1)
-    break if pod.length > 0
+    pods = get_running_pods(namespace)
+    break if pods.count > 0
     sleep 1
   end
 
-  pod
+  pods.first.dig("metadata", "name")
 end
