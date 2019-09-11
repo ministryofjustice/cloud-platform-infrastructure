@@ -97,18 +97,18 @@ def get_pod_logs(namespace, pod_name)
   `kubectl -n #{namespace} logs #{pod_name}`
 end
 
-def get_running_pod_name(namespace, index)
-  get_pod_name(namespace, index, "--field-selector=status.phase=Running")
-end
-
 def get_pods(namespace)
   JSON.parse(`kubectl -n #{namespace} get pods -o json`).fetch("items")
 end
 
 def get_running_app_pods(namespace, app)
-  get_pods(namespace)
-    .filter { |pod|  pod.dig("status", "phase") == "Running" }
+  get_running_pods(namespace)
     .filter { |pod| pod.dig("metadata", "labels", "app") == app }
+end
+
+def get_running_pods(namespace)
+  get_pods(namespace)
+    .filter { |pod| pod.dig("status", "phase") == "Running" }
 end
 
 def all_containers_running?(pods)
@@ -120,17 +120,24 @@ def all_containers_running?(pods)
   all_container_states.uniq == ["running"]
 end
 
-# Get the name of the Nth pod in the namespace
-def get_pod_name(namespace, index, options = "")
-  `kubectl get pods -n #{namespace} #{options} 2>/dev/null | awk 'FNR == #{index + 1} {print $1}'`.chomp
+def get_pod_matching_name(namespace, prefix)
+  get_pods(namespace)
+    .filter { |pod| pod.dig("metadata", "name") =~ %r{^#{prefix}} }
+    .first
 end
 
 # Get all nodes an app runs on
 def get_app_node_ips(namespace, app, status = "Running")
-  `kubectl -n #{namespace} get pods -o json -o jsonpath='{..items[*].status.hostIP}' --field-selector status.phase='#{status}' --selector app=='#{app}' --sort-by='.status.hostIP'`.chomp
+  get_running_app_pods(namespace, app)
+    .map { |pod| pod.dig("status", "hostIP") }
+    .sort
 end
 
 # Get the internal IPs of all cluster VMs
 def get_cluster_ips
-  `kubectl get nodes -o json -o jsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}' --sort-by='.status.addresses[?(@.type=="InternalIP")].address'`.chomp
+  JSON.parse(`kubectl get nodes -o json`).fetch("items")
+    .map { |node| node.dig("status", "addresses").filter { |addr| addr.dig("type") == "InternalIP" } }
+    .flatten
+    .map { |i| i.fetch("address") }
+    .sort
 end
