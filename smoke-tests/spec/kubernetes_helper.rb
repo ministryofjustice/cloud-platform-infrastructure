@@ -105,3 +105,13 @@ end
 def get_pod_name(namespace, index, options = "")
   `kubectl get pods -n #{namespace} #{options} 2>/dev/null | awk 'FNR == #{index + 1} {print $1}'`.chomp
 end
+
+# Get all nodes an app runs on
+def get_app_node_ips(namespace, app, status = "Running")
+  `kubectl -n #{namespace} get pods -o json -o jsonpath='{..items[*].status.hostIP}' --field-selector status.phase='#{status}' --selector app=='#{app}' --sort-by='.status.hostIP'`.chomp
+end
+
+# Get the internal IPs of all cluster VMs
+def get_cluster_ips
+  `kubectl get nodes -o json -o jsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}' --sort-by='.status.addresses[?(@.type=="InternalIP")].address'`.chomp
+end

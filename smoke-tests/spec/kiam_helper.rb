@@ -28,6 +28,7 @@ class KiamRole
 
     if client.list_roles.roles.find { |r| r.role_name == role_name }
       role.load
+      ensure_cluster_nodes_are_trusted(role)
     else
       role = create_role
     end
@@ -47,6 +48,23 @@ class KiamRole
 
   private
 
+  # If the role was created during a test run for a different cluster, the current
+  # cluster's nodes will not be included as principals in the role's trust
+  # relationships.
+  # This method finds the principals and adds this cluster's nodes, if they're not
+  # already listed.
+  def ensure_cluster_nodes_are_trusted(role)
+    # NB: role.load must have been called before this method is called
+    json = CGI.unescape(role.assume_role_policy_document)
+    policy = JSON.parse(json)
+    principals = Array(policy.fetch("Statement").first.dig("Principal", "AWS"))
+    unless principals.include?(cluster_nodes_policy_principal)
+      principals << cluster_nodes_policy_principal
+      policy.fetch("Statement").first.fetch("Principal")["AWS"] = principals
+      client.update_assume_role_policy(policy_document: policy.to_json, role_name: role_name)
+    end
+  end
+
   def create_role
     iam = Aws::IAM::Resource.new(client: client)
 
@@ -56,7 +74,7 @@ class KiamRole
         {
           Effect: "Allow",
           Principal: {
-            AWS: "arn:aws:iam::#{account_id}:role/nodes.#{kubernetes_cluster}",
+            AWS: ["#{cluster_nodes_policy_principal}"]
           },
           Action: "sts:AssumeRole",
         },
@@ -71,6 +89,10 @@ class KiamRole
     client.wait_until(:role_exists, role_name: role_name)
 
     role
+  end
+
+  def cluster_nodes_policy_principal
+    "arn:aws:iam::#{account_id}:role/nodes.#{kubernetes_cluster}"
   end
 
   def fetch_or_create_policy(args)
