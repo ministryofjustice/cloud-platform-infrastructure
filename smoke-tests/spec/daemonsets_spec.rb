@@ -54,3 +54,17 @@ describe "kiam" do
     end
   end
 end
+
+describe "prometheus exporter" do
+  let(:pods) { get_running_app_pods("monitoring", "prometheus-node-exporter") }
+
+  it "runs on all nodes" do
+    ips = node_ips(get_nodes)
+    app_nodes = get_app_node_ips("monitoring", "prometheus-node-exporter")
+    expect(app_nodes).to eq(ips)
+  end
+
+  specify "all containers are running" do
+    expect(all_containers_running?(pods)).to eq(true)
+  end
+end
