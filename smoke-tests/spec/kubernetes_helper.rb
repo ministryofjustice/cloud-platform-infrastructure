@@ -135,9 +135,17 @@ end
 
 # Get the internal IPs of all cluster VMs
 def get_cluster_ips
-  JSON.parse(`kubectl get nodes -o json`).fetch("items")
+  node_ips get_nodes
+end
+
+def node_ips(nodes)
+  nodes
     .map { |node| node.dig("status", "addresses").filter { |addr| addr.dig("type") == "InternalIP" } }
     .flatten
     .map { |i| i.fetch("address") }
     .sort
+end
+
+def get_nodes
+  JSON.parse(`kubectl get nodes -o json`).fetch("items")
 end
