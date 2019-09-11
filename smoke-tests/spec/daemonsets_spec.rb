@@ -1,82 +1,81 @@
 require "spec_helper"
 
-# We want a fluentd pod running on each node, including masters
-describe "fluentd" do
-  # gets all node IPs, then the fluentd pods, compares the lists
-  it "runs fluentd" do
-    cluster_nodes = get_cluster_ips
-    app_nodes = get_app_node_ips("logging", "fluentd-es")
-    expect(cluster_nodes).to eq(app_nodes)
-  end
-
-  specify "all fluentd containers are running" do
-    pods = get_running_app_pods("logging", "fluentd-es")
-    expect(all_containers_running?(pods)).to eq(true)
-  end
-end
-
-describe "kiam" do
-  let(:kiam_pods) {  get_running_app_pods("kiam", "kiam") }
+describe "daemonsets" do
   let(:worker_ips) { node_ips worker_nodes }
   let(:master_ips) { node_ips master_nodes }
+  let(:all_node_ips) { node_ips(get_nodes) }
 
-  let(:app_node_ips) {
-    pod_ips(kiam_pods.filter { |pod| pod.dig("metadata", "labels", "component") == component })
-  }
+  let(:app_node_ips) { pod_ips pods }
 
-  specify "all containers are running" do
-    expect(all_containers_running?(kiam_pods)).to eq(true)
-  end
+  context "fluentd" do
+    let(:pods) { get_running_app_pods("logging", "fluentd-es") }
 
-  context "agent" do
-    let(:component) { "agent" }
-
-    it "runs on workers" do
-      expect(worker_ips).to eq(app_node_ips)
+    it "runs fluentd" do
+      expect(all_node_ips).to eq(app_node_ips)
     end
 
-    it "doesn't run on masters" do
-      expect(app_node_ips & master_ips).to be_empty
+    specify "all fluentd containers are running" do
+      expect(all_containers_running?(pods)).to eq(true)
     end
   end
 
-  context "server" do
-    let(:component) { "server" }
+  context "kiam" do
+    let(:pods) {  get_running_app_pods("kiam", "kiam") }
 
-    it "runs on workers" do
-      expect(worker_ips).to eq(app_node_ips)
+    let(:app_node_ips) {
+      pod_ips(pods.filter { |pod| pod.dig("metadata", "labels", "component") == component })
+    }
+
+    specify "all containers are running" do
+      expect(all_containers_running?(pods)).to eq(true)
     end
 
-    it "doesn't run on masters" do
-      expect(app_node_ips & master_ips).to be_empty
+    context "agent" do
+      let(:component) { "agent" }
+
+      it "runs on workers" do
+        expect(worker_ips).to eq(app_node_ips)
+      end
+
+      it "doesn't run on masters" do
+        expect(app_node_ips & master_ips).to be_empty
+      end
+    end
+
+    context "server" do
+      let(:component) { "server" }
+
+      it "runs on workers" do
+        expect(worker_ips).to eq(app_node_ips)
+      end
+
+      it "doesn't run on masters" do
+        expect(app_node_ips & master_ips).to be_empty
+      end
     end
   end
-end
 
-describe "prometheus exporter" do
-  let(:pods) { get_running_app_pods("monitoring", "prometheus-node-exporter") }
+  context "prometheus exporter" do
+    let(:pods) { get_running_app_pods("monitoring", "prometheus-node-exporter") }
 
-  it "runs on all nodes" do
-    ips = node_ips(get_nodes)
-    app_nodes = get_app_node_ips("monitoring", "prometheus-node-exporter")
-    expect(app_nodes).to eq(ips)
+    it "runs on all nodes" do
+      expect(app_node_ips).to eq(all_node_ips)
+    end
+
+    specify "all containers are running" do
+      expect(all_containers_running?(pods)).to eq(true)
+    end
   end
 
-  specify "all containers are running" do
-    expect(all_containers_running?(pods)).to eq(true)
-  end
-end
+  context "calico" do
+    let(:pods) { get_running_app_pods("kube-system", "calico-node", "k8s-app") }
 
-describe "calico" do
-  let(:pods) { get_running_app_pods("kube-system", "calico-node", "k8s-app") }
+    it "runs on all nodes" do
+      expect(app_node_ips).to eq(all_node_ips)
+    end
 
-  it "runs on all nodes" do
-    ips = node_ips(get_nodes)
-    calico_ips = pod_ips(pods)
-    expect(calico_ips).to eq(ips)
-  end
-
-  specify "all containers are running" do
-    expect(all_containers_running?(pods)).to eq(true)
+    specify "all containers are running" do
+      expect(all_containers_running?(pods)).to eq(true)
+    end
   end
 end
