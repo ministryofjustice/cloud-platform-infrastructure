@@ -10,4 +10,8 @@ describe "Log shipping" do
     expect(cluster_nodes).to eq(app_nodes)
   end
 
+  specify "all fluentd containers are running" do
+    pods = get_running_app_pods("logging", "fluentd-es")
+    expect(all_containers_running?(pods)).to eq(true)
+  end
 end
