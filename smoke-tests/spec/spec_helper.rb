@@ -108,6 +108,7 @@ require "./spec/constants"
 require "./spec/kiam_helper"
 require "./spec/route53_helper"
 require "./spec/kubernetes_helper"
+require "./spec/external_dns_helper"
 
 def readable_timestamp
   Time.now.strftime("%Y%m%d%H%M%S")
