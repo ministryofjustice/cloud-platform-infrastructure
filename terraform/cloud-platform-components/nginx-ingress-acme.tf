@@ -116,7 +116,7 @@ defaultBackend:
   name: default-backend
   image:
     repository: ministryofjustice/cloud-platform-custom-error-pages
-    tag: "0.3"
+    tag: "0.4"
     pullPolicy: IfNotPresent
 
   extraArgs: {}

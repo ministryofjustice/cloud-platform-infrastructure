@@ -24,7 +24,7 @@ describe "nginx ingress", cluster: "live-1" do
         binding: binding
       )
       wait_for(namespace, "ingress", "ingress-smoketest-app-ing")
-      sleep 7 # Without this, the test fails
+      sleep 20 # Without this, the test fails
     end
 
     after do
