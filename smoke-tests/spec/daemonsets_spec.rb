@@ -7,6 +7,20 @@ describe "daemonsets" do
 
   let(:app_node_ips) { pod_ips pods }
 
+  specify "expected daemonsets" do
+    names = get_daemonsets.map { |set| set.dig("metadata", "name") }.sort
+
+    expected = [
+      "calico-node",
+      "fluentd-es",
+      "kiam-agent",
+      "kiam-server",
+      "prometheus-operator-prometheus-node-exporter"
+    ]
+
+    expect(names).to eq(expected)
+  end
+
   context "fluentd" do
     let(:pods) { get_running_app_pods("logging", "fluentd-es") }
 

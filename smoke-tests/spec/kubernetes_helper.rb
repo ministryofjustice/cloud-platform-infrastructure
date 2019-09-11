@@ -165,3 +165,7 @@ end
 def get_nodes
   JSON.parse(`kubectl get nodes -o json`).fetch("items")
 end
+
+def get_daemonsets
+  JSON.parse(`kubectl get daemonsets --all-namespaces -o json`).fetch("items")
+end
