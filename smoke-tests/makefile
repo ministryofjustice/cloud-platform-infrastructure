@@ -60,4 +60,4 @@ test-non-live-1:
 		-e AWS_PROFILE=$(AWS_PROFILE) \
 		-e AWS_SHARED_CREDENTIALS_FILE=/app/.aws/credentials \
 		-e KUBECONFIG=/app/config \
-		$(IMAGE) rspec --tag ~cluster:live-1
+		$(IMAGE) rspec --tag ~cluster:live-1 --format documentation --out rspec.txt
