@@ -66,3 +66,17 @@ describe "prometheus exporter" do
     expect(all_containers_running?(pods)).to eq(true)
   end
 end
+
+describe "calico" do
+  let(:pods) { get_running_app_pods("kube-system", "calico-node", "k8s-app") }
+
+  it "runs on all nodes" do
+    ips = node_ips(get_nodes)
+    calico_ips = pod_ips(pods)
+    expect(calico_ips).to eq(ips)
+  end
+
+  specify "all containers are running" do
+    expect(all_containers_running?(pods)).to eq(true)
+  end
+end
