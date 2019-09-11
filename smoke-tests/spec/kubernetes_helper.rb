@@ -101,9 +101,9 @@ def get_pods(namespace)
   JSON.parse(`kubectl -n #{namespace} get pods -o json`).fetch("items")
 end
 
-def get_running_app_pods(namespace, app)
+def get_running_app_pods(namespace, app, property = "app")
   get_running_pods(namespace)
-    .filter { |pod| pod.dig("metadata", "labels", "app") == app }
+    .filter { |pod| pod.dig("metadata", "labels", property) == app }
 end
 
 def get_running_pods(namespace)
@@ -128,7 +128,11 @@ end
 
 # Get all nodes an app runs on
 def get_app_node_ips(namespace, app, status = "Running")
-  get_running_app_pods(namespace, app)
+  pod_ips get_running_app_pods(namespace, app)
+end
+
+def pod_ips(pods)
+  pods
     .map { |pod| pod.dig("status", "hostIP") }
     .sort
 end

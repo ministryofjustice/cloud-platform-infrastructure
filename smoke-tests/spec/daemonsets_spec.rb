@@ -21,9 +21,7 @@ describe "kiam" do
   let(:master_ips) { node_ips master_nodes }
 
   let(:app_node_ips) {
-    kiam_pods.filter { |pod| pod.dig("metadata", "labels", "component") == component }
-      .map { |pod| pod.dig("status", "hostIP") }
-      .sort
+    pod_ips(kiam_pods.filter { |pod| pod.dig("metadata", "labels", "component") == component })
   }
 
   specify "all containers are running" do
