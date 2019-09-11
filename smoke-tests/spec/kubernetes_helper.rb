@@ -127,10 +127,16 @@ end
 
 # Get all nodes an app runs on
 def get_app_node_ips(namespace, app, status = "Running")
-  `kubectl -n #{namespace} get pods -o json -o jsonpath='{..items[*].status.hostIP}' --field-selector status.phase='#{status}' --selector app=='#{app}' --sort-by='.status.hostIP'`.chomp
+  get_running_app_pods(namespace, app)
+    .map { |pod| pod.dig("status", "hostIP") }
+    .sort
 end
 
 # Get the internal IPs of all cluster VMs
 def get_cluster_ips
-  `kubectl get nodes -o json -o jsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}' --sort-by='.status.addresses[?(@.type=="InternalIP")].address'`.chomp
+  JSON.parse(`kubectl get nodes -o json`).fetch("items")
+    .map { |node| node.dig("status", "addresses").filter { |addr| addr.dig("type") == "InternalIP" } }
+    .flatten
+    .map { |i| i.fetch("address") }
+    .sort
 end
