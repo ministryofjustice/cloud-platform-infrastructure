@@ -26,6 +26,7 @@ def main(cluster_name)
   create_cluster(cluster_name)
   run_kops(cluster_name)
   install_components(cluster_name)
+  run_integration_tests
 
   run_and_output "kubectl cluster-info"
 end
@@ -176,6 +177,10 @@ def running_in_docker_container?
   File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /docker/
 end
 
+def run_integration_tests
+  dir = "smoke-tests/"
+  execute "cd #{dir}; make test-non-live-1"
+end
 ############################################################
 
 abort("You must run this script from within the ministryofjustice/cloud-platform-tools docker container!") unless running_in_docker_container?
