@@ -154,16 +154,6 @@ resource "null_resource" "cert_manager_issuers" {
   }
 }
 
-// This is likely not needed beyond the 0.6 upgrade, see:
-//   http://docs.cert-manager.io/en/latest/admin/upgrading/upgrading-0.4-0.5.html
-// resource "null_resource" "cert_manager_webhook_label" {
-//  provisioner "local-exec" {
-//    command = "kubectl label --overwrite namespace cert-manager 'certmanager.k8s.io/disable-validation=true'"
-//  }
-//
-//  depends_on = ["helm_release.cert-manager"]
-// }
-
 resource "null_resource" "cert_manager_monitoring" {
   depends_on = ["helm_release.prometheus_operator", "helm_release.cert-manager"]
 
