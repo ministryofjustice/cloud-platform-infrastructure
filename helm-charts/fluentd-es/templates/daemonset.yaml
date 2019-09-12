@@ -54,11 +54,11 @@ spec:
           value: {{ .Values.fluent_kubernetes_cluster_name }}
         resources:
           limits:
-            cpu: 250m
+            cpu: 500m
             memory: 1000Mi
           requests:
-            cpu: 100m
-            memory: 200Mi
+            cpu: 10m
+            memory: 400Mi
         volumeMounts:
         - name: varlog
           mountPath: /var/log
