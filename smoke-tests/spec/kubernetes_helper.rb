@@ -101,9 +101,9 @@ def get_pods(namespace)
   JSON.parse(`kubectl -n #{namespace} get pods -o json`).fetch("items")
 end
 
-def get_running_app_pods(namespace, app)
+def get_running_app_pods(namespace, app, property = "app")
   get_running_pods(namespace)
-    .filter { |pod| pod.dig("metadata", "labels", "app") == app }
+    .filter { |pod| pod.dig("metadata", "labels", property) == app }
 end
 
 def get_running_pods(namespace)
@@ -128,16 +128,44 @@ end
 
 # Get all nodes an app runs on
 def get_app_node_ips(namespace, app, status = "Running")
-  get_running_app_pods(namespace, app)
+  pod_ips get_running_app_pods(namespace, app)
+end
+
+def pod_ips(pods)
+  pods
     .map { |pod| pod.dig("status", "hostIP") }
     .sort
 end
 
 # Get the internal IPs of all cluster VMs
 def get_cluster_ips
-  JSON.parse(`kubectl get nodes -o json`).fetch("items")
+  node_ips get_nodes
+end
+
+def node_ips(nodes)
+  nodes
     .map { |node| node.dig("status", "addresses").filter { |addr| addr.dig("type") == "InternalIP" } }
     .flatten
     .map { |i| i.fetch("address") }
     .sort
+end
+
+def master_nodes
+  filter_by_role(get_nodes, "master")
+end
+
+def worker_nodes
+  filter_by_role(get_nodes, "node")
+end
+
+def filter_by_role(nodes, role)
+  nodes.filter { |node| node.dig("metadata", "labels", "kubernetes.io/role") == role }
+end
+
+def get_nodes
+  JSON.parse(`kubectl get nodes -o json`).fetch("items")
+end
+
+def get_daemonsets
+  JSON.parse(`kubectl get daemonsets --all-namespaces -o json`).fetch("items")
 end
