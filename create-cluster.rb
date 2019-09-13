@@ -178,8 +178,8 @@ def running_in_docker_container?
 end
 
 def run_integration_tests
-  dir = "smoke-tests"
-  execute "cd #{dir}; make test-non-live-1"
+  dir = "smoke-tests/spec/"
+  execute "cd #{dir}; rspec --tag ~cluster:live-1 --format documentation --out rspec.txt"
 end
 ############################################################
 
