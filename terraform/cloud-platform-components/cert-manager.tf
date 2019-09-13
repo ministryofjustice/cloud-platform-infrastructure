@@ -81,11 +81,8 @@ EOS
   provisioner "local-exec" {
     when = "destroy"
 
-    command = <<EOS
-kubectl delete -n cert-manager -f - <<EOF
-${data.http.cert-manager-crds.body}
-EOF
-EOS
+    # destroying the CRDs also deletes all resources of type "certificate" (not the actual certs, those are in secrets of type "tls")
+    command = "exit 0"
   }
 
   triggers {
