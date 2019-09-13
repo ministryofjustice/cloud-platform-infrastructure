@@ -7,7 +7,7 @@ resource "helm_release" "open-policy-agent" {
   namespace  = "opa"
   repository = "stable"
   chart      = "opa"
-  version    = "1.3.2"
+  version    = "1.4.2"
 
   depends_on = [
     "null_resource.deploy",
@@ -110,6 +110,25 @@ resource "kubernetes_config_map" "policy_pod_toleration" {
 
   data {
     main.rego = "${file("${path.module}/resources/opa/policies/pod_toleration.rego")}"
+  }
+
+  lifecycle {
+    ignore_changes = ["metadata.0.annotations"]
+  }
+}
+
+resource "kubernetes_config_map" "policy_pod_toleration_operator" {
+  metadata {
+    name      = "policy-pod-toleration-operator"
+    namespace = "${helm_release.open-policy-agent.namespace}"
+
+    labels {
+      "openpolicyagent.org/policy" = "rego"
+    }
+  }
+
+  data {
+    main.rego = "${file("${path.module}/resources/opa/policies/pod_toleration_operator.rego")}"
   }
 
   lifecycle {
