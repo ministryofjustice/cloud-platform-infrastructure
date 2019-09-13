@@ -292,7 +292,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
 
   cluster_config {
     instance_type          = "m4.xlarge.elasticsearch"
-    instance_count         = "3"
+    instance_count         = "4"
     zone_awareness_enabled = true
   }
 
