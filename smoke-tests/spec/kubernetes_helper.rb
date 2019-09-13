@@ -169,3 +169,14 @@ end
 def get_daemonsets
   JSON.parse(`kubectl get daemonsets --all-namespaces -o json`).fetch("items")
 end
+
+# Scale replicas
+def scale_replicas(namespace, deployment, replicas = "")
+  `kubectl -n #{namespace} scale deployment #{deployment} --replicas=#{replicas}`
+end
+
+# ingress_annotations
+def annotate_ingress(namespace, ingress, annotations)
+  `kubectl -n #{namespace} annotate ingress #{ingress} #{ing_annotations.join(" ")}`
+end
+
