@@ -1,13 +1,13 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: modsec-smoketest-app
+  name: modsec-integrationtest-app
 spec:
   replicas: 1
   template:
     metadata:
       labels:
-        app: modsec-smoketest-app
+        app: modsec-integrationtest-app
     spec:
       containers:
       - name: nginx
@@ -18,21 +18,21 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: modsec-smoketest-svc
+  name: modsec-integrationtest-svc
   labels:
-    app: modsec-smoketest-svc
+    app: modsec-integrationtest-svc
 spec:
   ports:
   - port: 80
     name: http
     targetPort: 8080
   selector:
-    app: modsec-smoketest-app
+    app: modsec-integrationtest-app
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: modsec-smoketest-app-ing
+  name: modsec-integrationtest-app-ing
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
@@ -50,6 +50,6 @@ spec:
       paths:
       - path: /
         backend:
-          serviceName: modsec-smoketest-svc
+          serviceName: modsec-integrationtest-svc
           servicePort: 80
 

@@ -1,9 +1,9 @@
 require "spec_helper"
 
 describe "Testing modsec" do
-  namespace = "smoketest-modsec-#{readable_timestamp}"
+  namespace = "integrationtest-modsec-#{readable_timestamp}"
   host = "#{namespace}.apps.#{current_cluster}"
-  ingress_name = "modsec-smoketest-app-ing"
+  ingress_name = "modsec-integrationtest-app-ing"
 
   let(:good_url) { "https://#{host}" }
   let(:bad_url) { "https://#{host}?exec=/bin/bash" }
@@ -13,7 +13,7 @@ describe "Testing modsec" do
 
     apply_template_file(
       namespace: namespace,
-      file: "spec/fixtures/modsec-smoketest.yaml.erb",
+      file: "spec/fixtures/modsec-integrationtest.yaml.erb",
       binding: binding,
     )
     wait_for(namespace, "ingress", ingress_name)
@@ -29,7 +29,6 @@ describe "Testing modsec" do
       let(:url) { good_url }
 
       specify "request succeeds" do
-        binding.pry
         expect(URI.open(url).status).to eq(["200", "OK"])
       end
     end
