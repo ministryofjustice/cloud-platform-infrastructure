@@ -1,13 +1,14 @@
 require "spec_helper"
 
 describe "Testing modsec" do
-  let(:namespace) { "smoketest-modsec-#{readable_timestamp}" }
-  let(:host) { "#{namespace}.apps.#{current_cluster}" }
+  namespace = "smoketest-modsec-#{readable_timestamp}"
+  host = "#{namespace}.apps.#{current_cluster}"
+  ingress_name = "modsec-smoketest-app-ing"
+
   let(:good_url) { "https://#{host}" }
   let(:bad_url) { "https://#{host}?exec=/bin/bash" }
-  let(:ingress_name) { "modsec-smoketest-app-ing" }
 
-  before do
+  before(:all) do
     create_namespace(namespace)
 
     apply_template_file(
@@ -19,7 +20,7 @@ describe "Testing modsec" do
     sleep 10
   end
 
-  after do
+  after(:all) do
     delete_namespace(namespace)
   end
 
@@ -28,6 +29,7 @@ describe "Testing modsec" do
       let(:url) { good_url }
 
       specify "request succeeds" do
+        binding.pry
         expect(URI.open(url).status).to eq(["200", "OK"])
       end
     end
