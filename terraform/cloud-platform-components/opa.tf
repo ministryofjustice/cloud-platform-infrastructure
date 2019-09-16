@@ -98,9 +98,9 @@ resource "kubernetes_config_map" "policy_service_type" {
   }
 }
 
-resource "kubernetes_config_map" "policy_pod_toleration" {
+resource "kubernetes_config_map" "policy_pod_toleration_withkey" {
   metadata {
-    name      = "policy-pod-toleration"
+    name      = "policy-pod-toleration-withkey"
     namespace = "${helm_release.open-policy-agent.namespace}"
 
     labels {
@@ -109,7 +109,7 @@ resource "kubernetes_config_map" "policy_pod_toleration" {
   }
 
   data {
-    main.rego = "${file("${path.module}/resources/opa/policies/pod_toleration.rego")}"
+    main.rego = "${file("${path.module}/resources/opa/policies/pod_toleration_withkey.rego")}"
   }
 
   lifecycle {
@@ -117,9 +117,9 @@ resource "kubernetes_config_map" "policy_pod_toleration" {
   }
 }
 
-resource "kubernetes_config_map" "policy_pod_toleration_operator" {
+resource "kubernetes_config_map" "policy_pod_toleration_withnullkey" {
   metadata {
-    name      = "policy-pod-toleration-operator"
+    name      = "policy-pod-toleration-withnullkey"
     namespace = "${helm_release.open-policy-agent.namespace}"
 
     labels {
@@ -128,7 +128,7 @@ resource "kubernetes_config_map" "policy_pod_toleration_operator" {
   }
 
   data {
-    main.rego = "${file("${path.module}/resources/opa/policies/pod_toleration_operator.rego")}"
+    main.rego = "${file("${path.module}/resources/opa/policies/pod_toleration_withnullkey.rego")}"
   }
 
   lifecycle {
