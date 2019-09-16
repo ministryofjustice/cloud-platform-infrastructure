@@ -134,3 +134,8 @@ end
 def get_cluster_ips
   `kubectl get nodes -o json -o jsonpath='{.items[*].status.addresses[?(@.type=="InternalIP")].address}' --sort-by='.status.addresses[?(@.type=="InternalIP")].address'`.chomp
 end
+
+#Set the enable-modsecurity flag to false on the ingress annotation
+def set_modsec_ing_annotation_false(namespace, ingress_name)
+  `kubectl -n #{namespace} annotate --overwrite ingresses/#{ingress_name} nginx.ingress.kubernetes.io/enable-modsecurity='false'`.chomp
+end

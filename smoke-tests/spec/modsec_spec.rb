@@ -1,11 +1,13 @@
 require "spec_helper"
 
-describe "modsec ingress" do
+describe "Testing modsec" do
   let(:namespace) { "smoketest-modsec-#{readable_timestamp}" }
   let(:host) { "#{namespace}.apps.#{current_cluster}" }
-  let(:url) { "https://#{host}?exec=/bin/bash" }
+  let(:url1) { "https://#{host}" }
+  let(:url2) { "https://#{host}?exec=/bin/bash" }
+  let(:ingress_name) { "modsec-smoketest-app-ing" }
 
-  context "deploy modsec ingress" do
+  context "deploy ingress with modsec" do
     before do
       create_namespace(namespace)
 
@@ -14,16 +16,39 @@ describe "modsec ingress" do
         file: "spec/fixtures/modsec-smoketest.yaml.erb",
         binding: binding,
       )
-      wait_for(namespace, "ingress", "modsec-smoketest-app-ing")
-      sleep 20
+      wait_for(namespace, "ingress", ingress_name)
+      sleep 10
     end
 
-    it "gets a 403 Forbidden error" do
-      expect { URI.open(url) }.to raise_error(OpenURI::HTTPError, "403 Forbidden")
-    end
-
-    after do
+  context "when modsec deployed" do
+    it "URL benign and request successful" do
+      result = URI.open(url1)
+      expect(result.status).to eq(["200", "OK"])
       delete_namespace(namespace)
+    end
+
+    it "URL malicious and request blocked" do
+      expect { URI.open(url2) }.to raise_error(OpenURI::HTTPError, "403 Forbidden")
+      delete_namespace(namespace)
+    end
+  end
+  
+  context "when modsec disabled" do
+    it "URL benign and request successful" do
+      set_modsec_ing_annotation_false(namespace, ingress_name)
+      sleep 5
+      result = URI.open(url1)
+      expect(result.status).to eq(["200", "OK"])
+      delete_namespace(namespace)
+    end
+
+    it "URL malicious and request successful" do
+      set_modsec_ing_annotation_false(namespace, ingress_name)
+      sleep 5
+      result = URI.open(url2)
+      expect(result.status).to eq(["200", "OK"])
+      delete_namespace(namespace)
+      end
     end
   end
 end
