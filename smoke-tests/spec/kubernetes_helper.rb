@@ -10,6 +10,7 @@ end
 def create_namespace(namespace, opts = {})
   unless namespace_exists?(namespace)
     `kubectl create namespace #{namespace}`
+    `kubectl annotate --overwrite namespace #{namespace} 'cloud-platform-integration-test=default'`
 
     10.times do
       break if namespace_exists?(namespace)
