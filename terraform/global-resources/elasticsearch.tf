@@ -254,7 +254,7 @@ resource "aws_elasticsearch_domain" "audit" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp2"
-    volume_size = "512"
+    volume_size = "1024"
   }
 
   advanced_options {
