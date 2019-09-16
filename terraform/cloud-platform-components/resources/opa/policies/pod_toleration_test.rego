@@ -51,42 +51,35 @@ new_namespace_toleration(name, annotation) = {
   }
 } { annotation }
 
-test_pod_create_allowed {
+test_pod_with_toleration_key_denied {
   denied
-    with input as new_admission_review("CREATE", new_pod("ns-0", "pod-0", "false"), null)
+    with input as new_admission_review("CREATE", new_pod("ns-0", "pod-0", "node-role.kubernetes.io/master"), null)
     with data.kubernetes.namespaces as {
-      "ns-0": new_namespace_toleration("ns-0", true)
+      "ns-0": new_namespace_toleration("ns-0", false)
     }
 }
 
-test_pod_create_toleration_allowed {
-  denied
+test_pod_with_toleration_key_annotated_allowed {
+  not denied
     with input as new_admission_review("CREATE", new_pod("ns-0", "pod-0", "node-role.kubernetes.io/master"), null)
     with data.kubernetes.namespaces as {
       "ns-0": new_namespace_toleration("ns-0", true)
     }
 }
 
+test_pod_create_toleration_nullkey_denied {
+  denied
+    with input as new_admission_review("CREATE", new_pod("ns-0", "pod-0", "null"), null)
+    with data.kubernetes.namespaces as {
+      "ns-0": new_namespace_toleration("ns-0", false)
+    }
+}
+
 test_pod_create_toleration_master_denied {
   not denied
-    with input as new_admission_review("CREATE", new_pod("ns-0", "pod-0", "node-role.kubernetes.io/ksdjfhsk"), null)
+    with input as new_admission_review("CREATE", new_pod("ns-0", "pod-0", "null"), null)
     with data.kubernetes.namespaces as {
       "ns-0": new_namespace_toleration("ns-0", true)
     }
 }
 
-# test_pod_create_allowed_by_annotation {
-#   not denied
-#     with input as new_admission_review("CREATE", new_pod("ns-0", "pod-0", "node-role.kubernetes.io/master:NoSchedule"), null)
-#     with data.kubernetes.namespaces as {
-#       "ns-0": new_namespace_toleration("ns-0", true)
-#     }
-# }
-
-# test_pod_create_allowed_by_annotation_with_value {
-#   not denied
-#     with input as new_admission_review("CREATE", new_pod("ns-0", "pod-0", false), null)
-#     with data.kubernetes.namespaces as {
-#       "ns-0": new_namespace_toleration("ns-0", "foobar")
-#     }
-# }
