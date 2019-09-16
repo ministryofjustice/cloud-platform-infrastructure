@@ -169,3 +169,8 @@ end
 def get_daemonsets
   JSON.parse(`kubectl get daemonsets --all-namespaces -o json`).fetch("items")
 end
+
+#Set the enable-modsecurity flag to false on the ingress annotation
+def set_modsec_ing_annotation_false(namespace, ingress_name)
+  `kubectl -n #{namespace} annotate --overwrite ingresses/#{ingress_name} nginx.ingress.kubernetes.io/enable-modsecurity='false'`.chomp
+end
