@@ -25,8 +25,7 @@ class KiamRole
 
   def fetch_or_create_role
     role = Aws::IAM::Role.new(client: client, name: role_name)
-
-    if client.list_roles.roles.find { |r| r.role_name == role_name }
+    if list_roles(client).find { |r| r.role_name == role_name }
       role.load
       ensure_cluster_nodes_are_trusted(role)
     else
@@ -47,6 +46,21 @@ class KiamRole
   end
 
   private
+
+  def list_roles(client)
+    rtn = []
+    is_truncated = true
+    marker = nil
+
+    while is_truncated
+      roles = client.list_roles(marker: marker)
+      rtn += roles.roles
+      is_truncated = roles.is_truncated
+      marker = roles.marker
+    end
+
+    rtn
+  end
 
   # If the role was created during a test run for a different cluster, the current
   # cluster's nodes will not be included as principals in the role's trust
@@ -74,7 +88,7 @@ class KiamRole
         {
           Effect: "Allow",
           Principal: {
-            AWS: ["#{cluster_nodes_policy_principal}"]
+            AWS: [cluster_nodes_policy_principal.to_s],
           },
           Action: "sts:AssumeRole",
         },
@@ -173,13 +187,13 @@ def create_deployment(args)
 
   `#{cmd}`
 
-  pod = ""
+  pods = []
 
   60.times do
-    pod = get_running_pod_name(namespace, 1)
-    break if pod.length > 0
+    pods = get_running_pods(namespace)
+    break if pods.count > 0
     sleep 1
   end
 
-  pod
+  pods.first.dig("metadata", "name")
 end
