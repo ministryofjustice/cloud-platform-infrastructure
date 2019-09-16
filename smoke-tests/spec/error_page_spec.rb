@@ -13,16 +13,13 @@ describe "http request error responses" do
         expect(error.io.string).to include("Error, service unavailable - GOV.UK")
       }
     end
-
   end
-end
 
-describe "Namespace with no custom default-backend and ingress annotations, serve cluster default-backend error page" do
-  let(:namespace) { "def-backend-#{readable_timestamp}" }
-  let(:host) { "#{namespace}.apps.#{current_cluster}" }
-  let(:url) { "https://#{host}" }
+  context "in a namespace" do
+    let(:namespace) { "integrationtest-#{readable_timestamp}" }
+    let(:host) { "#{namespace}.apps.#{current_cluster}" }
+    let(:namespace_url) { "https://#{host}" }
 
-  context "when app is deployed and scaled to zero replicas" do
     before do
       create_namespace(namespace)
 
@@ -31,25 +28,30 @@ describe "Namespace with no custom default-backend and ingress annotations, serv
         file: "spec/fixtures/helloworld-deployment.yaml.erb",
         binding: binding
       )
-
-      scale_replicas(namespace, "intergration-test-helloworld", "0")
-
-      sleep 10 # Without this, the test fails
     end
 
     after do
       delete_namespace(namespace)
     end
 
-    it "serves a 503 response with cluster backend page" do
-      expect {
-        URI.open(url)
-      }.to raise_error { |error|
-        expect(error).to be_a(OpenURI::HTTPError)
-        expect(error.message).to eq("503 Service Unavailable")
-        expect(error.io.string).to include("Error, service unavailable - GOV.UK")
-      }
+    context "handling 503 error" do
+      before do
+        # if nothing in the namespace is listening for requests, we get a 503 error
+        scale_replicas(namespace, "intergration-test-helloworld", "0")
+        sleep 10
+      end
+
+      it "serves the cluster's custom 503 page" do
+        expect {
+          URI.open(namespace_url)
+        }.to raise_error { |error|
+          expect(error).to be_a(OpenURI::HTTPError)
+          expect(error.message).to eq("503 Service Unavailable")
+          expect(error.io.string).to include("Error, service unavailable - GOV.UK")
+        }
+      end
     end
+
   end
 end
 
