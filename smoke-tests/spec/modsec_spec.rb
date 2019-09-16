@@ -17,7 +17,7 @@ describe "Testing modsec" do
       binding: binding,
     )
     wait_for(namespace, "ingress", ingress_name)
-    sleep 10
+    sleep 20
   end
 
   after(:all) do
