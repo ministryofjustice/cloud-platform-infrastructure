@@ -7,7 +7,7 @@ resource "helm_release" "open-policy-agent" {
   namespace  = "opa"
   repository = "stable"
   chart      = "opa"
-  version    = "1.3.2"
+  version    = "1.8.0"
 
   depends_on = [
     "null_resource.deploy",
