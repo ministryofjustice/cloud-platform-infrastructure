@@ -1,16 +1,14 @@
 require "spec_helper"
 
 describe "external DNS" do
-  # let!(zone) { nil }
   namespace = "child-#{readable_timestamp}"
+  let(:domain) { "child.parent.service.justice.gov.uk" }
+  let(:ingress_domain) { domain }
+  let(:parent_domain) { "parent.service.justice.gov.uk" }
   zone = nil
   parent_zone = nil
 
   context "when zone matches ingress domain" do
-    let(:domain) { "child.parent.service.justice.gov.uk" }
-    let(:ingress_domain) { domain }
-    let(:parent_domain) { "parent.service.justice.gov.uk" }
-
     # Create a new zone per test
     before do
       parent_zone = create_zone(parent_domain)
@@ -63,9 +61,8 @@ describe "external DNS" do
   # When no Route53 Zone match the ingress domain
   context "when zone does not match ingress domain" do
     let(:timestamp) { readable_timestamp }
-    zone = nil
-
     before do
+      parent_zone = create_zone(parent_domain)
       create_namespace(namespace)
       create_ingress(namespace)
       sleep 120
@@ -74,6 +71,7 @@ describe "external DNS" do
     after do
       delete_ingress(namespace)
       delete_namespace(namespace)
+      cleanup_zone(parent_zone, domain, namespace)
     end
 
     context "when an ingress is created" do
