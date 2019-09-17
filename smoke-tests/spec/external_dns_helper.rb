@@ -1,15 +1,18 @@
-def create_ingress
-  apply_template_file(
-    namespace: namespace,
-    file: "spec/fixtures/external-dns-ingress.yaml.erb",
-    binding: binding
-  )
-  wait_for(namespace, "ingress", "ingress-external-dns", 60)
+
+def create_ingress(namespace)
+    sleep 1
+    apply_template_file(
+          namespace: namespace,
+          file: "spec/fixtures/external-dns-ingress.yaml.erb",
+          binding: binding
+    )
+    wait_for(namespace, "ingress", "ingress-external-dns", 60)
 end
 
 def delete_ingress(namespace)
-  `kubectl delete ingress ingress-external-dns -n #{namespace}`
-  sleep 10
+    sleep 1
+    `kubectl delete ingress ingress-external-dns -n #{namespace}`
+    sleep 10
 end
 
 def get_ingress_enpoint
@@ -40,41 +43,52 @@ def delete_A_record(zone_id, zone_name, domain_name)
   })
 end
 
-def delete_TXT_record(zone_id, zone_name)
-  client = Aws::Route53::Client.new
-  txt_record = {
-    action: "DELETE",
-    resource_record_set: {
-      name: "_external_dns.#{zone_name}",
-      ttl: 300,
-      resource_records: [
-        {
-          value: '"heritage=external-dns,external-dns/owner=default,external-dns/resource=ingress/child-parent/ingress-external-dns"',
-        },
-      ],
-      type: "TXT",
-    },
-  }
+def delete_TXT_record(zone_id, zone_name, namespace)
+    client = Aws::Route53::Client.new
+    txt_record= { 
+        action: "DELETE",
+        resource_record_set: {
+            name: "_external_dns.#{zone_name}",
+            ttl: 300,
+            resource_records:[
+                {
+                    value: %("heritage=external-dns,external-dns/owner=default,external-dns/resource=ingress/#{namespace}/ingress-external-dns")
+                }
+            ],
+            type: "TXT",
+        }
+    }
 
-  client.change_resource_record_sets({
-    hosted_zone_id: zone_id,
-    change_batch: {
-      changes: [txt_record],
-    },
-  })
+
+    client.change_resource_record_sets({
+        :hosted_zone_id => zone_id,
+        :change_batch => {
+            :changes => [txt_record]
+        },  
+    })
 end
 
-def cleanup_zone(zone, a_record_name)
-  if is_zone_empty?(zone.hosted_zone.id) == true
-    delete_zone(zone.hosted_zone.id)
-  else
-    delete_A_record(zone.hosted_zone.id, zone.hosted_zone.name, a_record_name)
-    delete_TXT_record(zone.hosted_zone.id, zone.hosted_zone.name)
-    delete_zone(zone.hosted_zone.id)
-  end
+
+
+def cleanup_zone(zone, a_record_name, namespace)
+    sleep 1
+
+    if is_zone_empty?(zone.hosted_zone.id) == true
+        delete_zone(zone.hosted_zone.id)
+    else
+        delete_A_record(zone.hosted_zone.id,zone.hosted_zone.name, a_record_name)
+        delete_TXT_record(zone.hosted_zone.id,zone.hosted_zone.name, namespace)
+        delete_zone(zone.hosted_zone.id)
+    end
+
 end
 
 def is_zone_empty?(zone_id)
-  records = get_zone_records(zone_id)
-  !(records.size > 2)
+    sleep 1
+    records = get_zone_records(zone_id)
+    if records.size > 2
+        false
+    else
+        true
+    end
 end

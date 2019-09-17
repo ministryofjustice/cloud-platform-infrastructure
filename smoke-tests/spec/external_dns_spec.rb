@@ -2,38 +2,43 @@ require "spec_helper"
 
 describe "external DNS" do
   # let!(zone) { nil }
+  namespace = "child-#{readable_timestamp}"
+  zone = nil
+  parent_zone = nil
 
   context "when zone matches ingress domain" do
     let(:domain) { "child.parent.service.justice.gov.uk" }
-    let(:namespace) { "child-parent" }
     let(:ingress_domain) { domain }
-    let(:parent_zone_id) { "ZQVC43X15AWL9" }
-    zone = nil
+    let(:parent_domain) { "parent.service.justice.gov.uk" }
 
     # Create a new zone per test
     before do
+      parent_zone = create_zone(parent_domain)
       zone = create_zone(domain)
-      create_delegation_set(zone, parent_zone_id)
+      create_delegation_set(zone, parent_zone.hosted_zone.id)
     end
 
     after do
-      cleanup_zone(zone, domain)
-      delete_delegation_set(zone, parent_zone_id)
+      cleanup_zone(zone, domain, namespace)
+      delete_delegation_set(zone, parent_zone.hosted_zone.id)
+      delete_zone(parent_zone.hosted_zone.id)
     end
 
     # When I create an ingress
     context "when an ingress is created" do
-      before do
+      before(:all) do
+        sleep 1
         create_namespace(namespace)
       end
 
-      after do
+      after(:all) do
         delete_namespace(namespace)
       end
 
       # an A record should be created
       it "creates an A record" do
-        create_ingress
+        create_ingress(namespace)
+        # Ingress is created immediately, but we're waiting for ext-dns to propagate the change to R53
         sleep 120
         records = get_zone_records(zone.hosted_zone.id)
         record_types = records.map { |rec| rec.fetch(:type) }
@@ -43,7 +48,7 @@ describe "external DNS" do
       # When the ingress is deleted
       context "when ingress is deleted" do
         before do
-          delete_ingress(namespace) # includes waiting for confirmation
+          delete_ingress(namespace)
         end
 
         # The existing record in the zone should not deleted
@@ -57,14 +62,12 @@ describe "external DNS" do
 
   # When no Route53 Zone match the ingress domain
   context "when zone does not match ingress domain" do
-    let(:domain) { "otherchild.parent.service.justice.gov.uk" }
-    let(:namespace) { "child-parent" }
-    let(:parent_zone_id) { "ZQVC43X15AWL9" }
+    let(:timestamp) { readable_timestamp }
     zone = nil
 
     before do
       create_namespace(namespace)
-      create_ingress
+      create_ingress(namespace)
       sleep 120
     end
 
@@ -75,7 +78,7 @@ describe "external DNS" do
 
     context "when an ingress is created" do
       it "a record is created in the parent zone" do
-        records = get_zone_records(parent_zone_id)
+        records = get_zone_records(parent_zone.hosted_zone.id)
         record_types = records.map { |rec| rec.fetch(:type) }
         expect(record_types).to include("A")
       end
