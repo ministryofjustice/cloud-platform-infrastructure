@@ -51,7 +51,7 @@ describe "http request error responses" do
 
       apply_template_file(
         namespace: namespace,
-        file: "spec/fixtures/helloworld-deployment.yaml.erb",
+        file: "spec/fixtures/helloworld-deployment.yaml.erb",   # TODO: deploy the custom error generator
         binding: binding
       )
 
@@ -73,20 +73,35 @@ describe "http request error responses" do
       end
     end
 
+    context "when the error code is not in the cluster error list" # result: no error page at all
+
     # This is a crazy hack by the kubernetes team. See here for more details:
     # https://github.com/kubernetes/ingress-nginx/pull/3344#issue-227791109
     context "when namespace defines list of errors including anything not in cluster list" do
-      let(:ing_annotations) { [ %{nginx.ingress.kubernetes.io/custom-http-errors="415"} ] }
+      let(:ing_annotations) { [ %{nginx.ingress.kubernetes.io/custom-http-errors="415,503"} ] }
 
       before do
         annotate_ingress(namespace, "integration-test-app-ing", ing_annotations)
         sleep 120 # sometimes 10 is enough here, but sometimes it's not
       end
 
-      # All error pages will be served from the namespace ingress, regardless of status code
-      it "serves error page from nginx ingress" do
-        expect_ingress_error_page(namespace_url, "503 Service Temporarily Unavailable")
+      context "when the error is in the namespace error list" do # i.e. it's 503
+        it "serves error page from nginx ingress" do
+          expect_ingress_error_page(namespace_url, "503 Service Temporarily Unavailable")
+        end
       end
+
+      context "when the error is not in the namespace error list" do
+        it "serves no error page"
+      end
+    end
+
+    context "when namespace has error list which is a subset of cluster-level error list" do
+      let(:ing_annotations) { [ %{nginx.ingress.kubernetes.io/custom-http-errors="503"} ] }
+
+      it "serves cluster error page for error in the list" # 503 gets cluster error page
+
+      it "serves no error page for error not in the list" # even if the error is in the cluster list. TODO: raise a 502 error
     end
 
     context "when namespace has its own default backend" do
@@ -127,7 +142,7 @@ describe "http request error responses" do
           expect_backend_error_page(namespace_url, "503 Service Unavailable", "5xx html") # the page body "5xx html" is defined in the backend docker image
         end
 
-        it "serves other errors from the cluster default backend"
+        it "serves other errors from the cluster default backend" # this will only work after we upgrade the ingress controller
       end
     end
   end
