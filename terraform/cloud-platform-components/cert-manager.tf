@@ -1,5 +1,5 @@
 locals {
-  cert-manager-version = "0.8.1"
+  cert-manager-version = "v0.8.1"
 }
 
 resource "kubernetes_namespace" "cert_manager" {
@@ -66,7 +66,7 @@ resource "aws_iam_role_policy" "cert_manager" {
 }
 
 data "http" "cert-manager-crds" {
-  url = "https://raw.githubusercontent.com/jetstack/cert-manager/v${local.cert-manager-version}/deploy/manifests/00-crds.yaml"
+  url = "https://raw.githubusercontent.com/jetstack/cert-manager/${local.cert-manager-version}/deploy/manifests/00-crds.yaml"
 }
 
 resource "null_resource" "cert-manager-crds" {
