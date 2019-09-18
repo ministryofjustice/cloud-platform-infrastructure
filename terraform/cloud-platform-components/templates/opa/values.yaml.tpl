@@ -34,7 +34,7 @@ admissionControllerRules:
     apiGroups: [""]
     apiVersions: ["v1"]
     resources: ["services"]
-  - operations: ["*"]
+  - operations: ["CREATE", "UPDATE"]
     apiGroups: [""]
     apiVersions: ["v1"]
     resources: ["pods"]
