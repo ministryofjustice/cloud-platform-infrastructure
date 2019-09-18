@@ -22,11 +22,11 @@ def main(cluster_name)
   check_prerequisites(cluster_name)
 
   execute "git-crypt unlock"
-
+  
   create_cluster(cluster_name)
   run_kops(cluster_name)
   install_components(cluster_name)
-  run_integration_tests
+  run_integration_tests(cluster_name)
 
   run_and_output "kubectl cluster-info"
 end
@@ -177,9 +177,10 @@ def running_in_docker_container?
   File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /docker/
 end
 
-def run_integration_tests
-  dir = "smoke-tests/spec/"
-  execute "cd #{dir}; rspec --tag ~cluster:live-1 --format documentation --out rspec.txt"
+def run_integration_tests(cluster_name)
+  dir = "smoke-tests/"
+  output = "./#{cluster_name}-rspec.txt"
+  run_and_output "cd #{dir}; bundle install; rspec --tag ~cluster:live-1 --format progress --format documentation --out #{output}"
 end
 ############################################################
 
