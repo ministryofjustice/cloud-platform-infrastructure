@@ -75,7 +75,7 @@ test_pod_create_toleration_nullkey_denied {
     }
 }
 
-test_pod_create_toleration_master_denied {
+test_pod_create_toleration_nullkey_annotated_allowed {
   not denied
     with input as new_admission_review("CREATE", new_pod("ns-0", "pod-0", "null"), null)
     with data.kubernetes.namespaces as {
