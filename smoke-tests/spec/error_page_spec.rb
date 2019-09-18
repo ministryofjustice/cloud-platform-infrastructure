@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "custom error pages" do
+describe "custom error pages", cluster: "live-1" do
   context "404" do
     let(:url) do
       "https://#{random_string}.apps.#{current_cluster}"
