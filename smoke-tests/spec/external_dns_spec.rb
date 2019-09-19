@@ -27,7 +27,6 @@ describe "external DNS" do
     # When I create an ingress
     context "when an ingress is created" do
       before(:all) do
-        sleep 1
         create_namespace(namespace)
       end
 

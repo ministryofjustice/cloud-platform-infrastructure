@@ -1,7 +1,6 @@
 
 # Expects a the ingress template to exist at fixture_name
 def create_ingress(namespace, ingress_name, fixture_name)
-  sleep 1
   apply_template_file(
     namespace: namespace,
     file: fixture_name,
@@ -20,6 +19,7 @@ def get_ingress_enpoint(namespace, ingress_name)
 end
 
 # Dedicated to A record created by External DNS
+# TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
 def delete_A_record(zone_id, zone_name, domain_name, namespace, ingress_name)
   sleep 1
   client = Aws::Route53::Client.new
@@ -47,6 +47,7 @@ def delete_A_record(zone_id, zone_name, domain_name, namespace, ingress_name)
 end
 
 # Dedicated to deleting TXT records created by external-dns
+# TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
 def delete_txt_record(zone_id, zone_name, domain_name, namespace)
   sleep 1
   client = Aws::Route53::Client.new
@@ -75,8 +76,7 @@ end
 # Checks if the zone is empty, then deletes
 # if not empty, it will assume it contains one A record and one TXT record created by external-dns 
 def cleanup_zone(zone, domain, namespace, ingress_name)
-  sleep 1
-  if is_zone_empty?(zone.hosted_zone.id) == true
+  if is_zone_empty?(zone.hosted_zone.id)
     delete_zone(zone.hosted_zone.id)
   else
     delete_A_record(zone.hosted_zone.id, zone.hosted_zone.name, domain, namespace, ingress_name)
@@ -87,6 +87,7 @@ end
 
 # Checks if a zone is empty
 # A zone is considered empty if it only contains one SOA and one NS record
+# TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
 def is_zone_empty?(zone_id)
   sleep 1
   records = get_zone_records(zone_id)
