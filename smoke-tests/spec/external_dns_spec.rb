@@ -4,7 +4,9 @@ describe "external DNS" do
   namespace = "child-#{readable_timestamp}"
   let(:domain) { "child.parent.service.justice.gov.uk" }
   let(:ingress_domain) { domain }
+  let(:ingress_name) { domain }
   let(:parent_domain) { "parent.service.justice.gov.uk" }
+  let(:fixture_name) {"spec/fixtures/external-dns-ingress.yaml.erb"}
   zone = nil
   parent_zone = nil
 
@@ -17,7 +19,7 @@ describe "external DNS" do
     end
 
     after do
-      cleanup_zone(zone, domain, namespace)
+      cleanup_zone(zone, domain, namespace, ingress_name)
       delete_delegation_set(zone, parent_zone.hosted_zone.id)
       delete_zone(parent_zone.hosted_zone.id)
     end
@@ -35,7 +37,7 @@ describe "external DNS" do
 
       # an A record should be created
       it "creates an A record" do
-        create_ingress(namespace)
+        create_ingress(namespace, ingress_name, fixture_name)
         # Ingress is created immediately, but we're waiting for ext-dns to propagate the change to R53
         sleep 120
         records = get_zone_records(zone.hosted_zone.id)
@@ -46,7 +48,7 @@ describe "external DNS" do
       # When the ingress is deleted
       context "when ingress is deleted" do
         before do
-          delete_ingress(namespace)
+          delete_ingress(namespace, ingress_name)
         end
 
         # The existing record in the zone should not deleted
@@ -64,14 +66,14 @@ describe "external DNS" do
     before do
       parent_zone = create_zone(parent_domain)
       create_namespace(namespace)
-      create_ingress(namespace)
+      create_ingress(namespace, ingress_name, fixture_name)
       sleep 120
     end
 
     after do
-      delete_ingress(namespace)
+      cleanup_zone(parent_zone, domain, namespace, ingress_name)
+      delete_ingress(namespace, ingress_name)
       delete_namespace(namespace)
-      cleanup_zone(parent_zone, domain, namespace)
     end
 
     context "when an ingress is created" do
