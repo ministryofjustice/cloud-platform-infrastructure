@@ -41,7 +41,7 @@ def delete_A_record(zone_id, zone_name, domain_name, namespace, ingress_name)
   })
 end
 
-def delete_TXT_record(zone_id, zone_name, domain_name, namespace)
+def delete_txt_record(zone_id, zone_name, domain_name, namespace)
   sleep 1
   client = Aws::Route53::Client.new
   txt_record = {
@@ -72,7 +72,7 @@ def cleanup_zone(zone, domain, namespace, ingress_name)
     delete_zone(zone.hosted_zone.id)
   else
     delete_A_record(zone.hosted_zone.id, zone.hosted_zone.name, domain, namespace, ingress_name)
-    delete_TXT_record(zone.hosted_zone.id, zone.hosted_zone.name, domain, namespace)
+    delete_txt_record(zone.hosted_zone.id, zone.hosted_zone.name, domain, namespace)
     delete_zone(zone.hosted_zone.id)
   end
 end
