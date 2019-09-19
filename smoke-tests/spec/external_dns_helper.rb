@@ -1,3 +1,5 @@
+
+# Expects a the ingress template to exist at fixture_name
 def create_ingress(namespace, ingress_name, fixture_name)
   sleep 1
   apply_template_file(
@@ -12,10 +14,12 @@ def delete_ingress(namespace, ingress_name)
   `kubectl delete ingress #{ingress_name} -n #{namespace}`
 end
 
+# Returns an ingress endpoint (ELB enpoint)
 def get_ingress_enpoint(namespace, ingress_name)
   `kubectl get ingress #{ingress_name} -n #{namespace} -o json -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'`
 end
 
+# Dedicated to A record created by External DNS
 def delete_A_record(zone_id, zone_name, domain_name, namespace, ingress_name)
   sleep 1
   client = Aws::Route53::Client.new
@@ -25,6 +29,7 @@ def delete_A_record(zone_id, zone_name, domain_name, namespace, ingress_name)
     resource_record_set: {
       name: domain_name,
       alias_target: {
+        # ZD4D7Y8KGAS4G this zone is the default AWS zone for ELB records, in eu-west-2
         "hosted_zone_id": "ZD4D7Y8KGAS4G",
         "dns_name": get_ingress_enpoint(namespace, ingress_name),
         "evaluate_target_health": true,
@@ -41,6 +46,7 @@ def delete_A_record(zone_id, zone_name, domain_name, namespace, ingress_name)
   })
 end
 
+# Dedicated to deleting TXT records created by external-dns
 def delete_txt_record(zone_id, zone_name, domain_name, namespace)
   sleep 1
   client = Aws::Route53::Client.new
@@ -66,6 +72,8 @@ def delete_txt_record(zone_id, zone_name, domain_name, namespace)
   })
 end
 
+# Checks if the zone is empty, then deletes
+# if not empty, it will assume it contains one A record and one TXT record created by external-dns 
 def cleanup_zone(zone, domain, namespace, ingress_name)
   sleep 1
   if is_zone_empty?(zone.hosted_zone.id) == true
@@ -77,8 +85,11 @@ def cleanup_zone(zone, domain, namespace, ingress_name)
   end
 end
 
+# Checks if a zone is empty
+# A zone is considered empty if it only contains one SOA and one NS record
 def is_zone_empty?(zone_id)
   sleep 1
   records = get_zone_records(zone_id)
+  # If there is any more than 2 records, the zone is not empty
   !(records.size > 2)
 end

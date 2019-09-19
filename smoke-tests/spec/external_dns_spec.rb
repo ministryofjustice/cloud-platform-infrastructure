@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe "external DNS" do
-  namespace = "child-#{readable_timestamp}"
+  namespace = "integrationtest-#{readable_timestamp}"
   let(:domain) { "child.parent.service.justice.gov.uk" }
   let(:ingress_domain) { domain }
   let(:ingress_name) { domain }
