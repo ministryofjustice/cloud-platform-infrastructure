@@ -6,7 +6,7 @@ describe "external DNS" do
   let(:ingress_domain) { domain }
   let(:ingress_name) { domain }
   let(:parent_domain) { "parent.service.justice.gov.uk" }
-  let(:fixture_name) {"spec/fixtures/external-dns-ingress.yaml.erb"}
+  let(:fixture_name) { "spec/fixtures/external-dns-ingress.yaml.erb" }
   zone = nil
   parent_zone = nil
 
