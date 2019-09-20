@@ -1,3 +1,21 @@
+resource "kubernetes_namespace" "opa" {
+  metadata {
+    name = "opa"
+
+    labels {
+      "name"                        = "opa"
+      "openpolicyagent.org/webhook" = "ignore"
+    }
+
+    annotations {
+      "cloud-platform.justice.gov.uk/application"   = "OPA"
+      "cloud-platform.justice.gov.uk/business-unit" = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+    }
+  }
+}
+
 data "template_file" "values" {
   template = "${file("${path.module}/templates/opa/values.yaml.tpl")}"
 }
@@ -10,6 +28,7 @@ resource "helm_release" "open-policy-agent" {
   version    = "1.8.0"
 
   depends_on = [
+    "kubernetes_namespace.opa",
     "null_resource.deploy",
   ]
 
