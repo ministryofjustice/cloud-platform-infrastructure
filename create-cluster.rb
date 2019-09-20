@@ -59,6 +59,8 @@ def install_components(cluster_name)
   execute "cd #{dir}; rm -rf .terraform"
   switch_terraform_workspace(dir, cluster_name)
 
+  disable_alerts()
+
   # Ensure we have the latest helm charts for all the required components
   execute "helm init --client-only; helm repo update"
   # Without this step, you may get errors like this:
@@ -73,6 +75,11 @@ def install_components(cluster_name)
     log "Cluster components failed to install. Aborting."
     exit 1
   end
+end
+
+def disable_alerts
+  `sed -i 's/pagerduty_config = ".*"/pagerduty_config = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
+  `sed -i 's/cloud_platform_slack_webhook = ".*"/cloud_platform_slack_webhook = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
 end
 
 def wait_for_kops_validate
