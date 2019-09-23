@@ -1,3 +1,18 @@
+resource "kubernetes_namespace" "logging" {
+  metadata {
+    name = "logging"
+
+    annotations {
+      "cloud-platform.justice.gov.uk/application"                = "Logging"
+      "cloud-platform.justice.gov.uk/business-unit"              = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"                      = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"                = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+      "iam.amazonaws.com/permitted"                              = ".*"
+      "cloud-platform.justice.gov.uk/can-tolerate-master-taints" = "true"
+    }
+  }
+}
+
 resource "helm_release" "fluentd_es" {
   name      = "fluentd-es"
   chart     = "../../helm-charts/fluentd-es"
@@ -27,7 +42,11 @@ resource "helm_release" "fluentd_es" {
     value = true
   }
 
-  depends_on = ["null_resource.deploy", "null_resource.priority_classes"]
+  depends_on = [
+    "kubernetes_namespace.logging",
+    "null_resource.deploy",
+    "null_resource.priority_classes",
+  ]
 
   lifecycle {
     ignore_changes = ["keyring"]
