@@ -58,8 +58,6 @@ def install_components(cluster_name)
   dir = "terraform/cloud-platform-components"
   execute "cd #{dir}; rm -rf .terraform"
   switch_terraform_workspace(dir, cluster_name)
-  
-  # Comment disable_alerts() to enable high priority - Pagerduty alarms and lower prority Slack alerts for your cluster
   disable_alerts()
 
   # Ensure we have the latest helm charts for all the required components
@@ -79,7 +77,11 @@ def install_components(cluster_name)
 end
 
 def disable_alerts
+  # This will replace the value of pagerduty_config to a dummy value in your working terraform.tfvars file.
+  # Comment below command to enable high priority - Pagerduty alarms for your cluster
   `sed -i 's/pagerduty_config = ".*"/pagerduty_config = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
+  # This will change the slack webhook of alertmanager.  
+  # Comment below command to enable lower prority Slack alerts for your cluster
   `sed -i 's/cloud_platform_slack_webhook = ".*"/cloud_platform_slack_webhook = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
 end
 
