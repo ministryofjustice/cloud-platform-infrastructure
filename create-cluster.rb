@@ -68,6 +68,9 @@ def install_components(cluster_name)
   #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
   #
 
+  # Annotate kube-system namespace to allow calico to create pods on master nodes
+  run_and_output "kubectl annotate --overwrite namespace kube-system 'cloud-platform.justice.gov.uk/can-tolerate-master-taints: true'"
+
   cmd = "cd #{dir}; terraform apply -auto-approve"
   if cmd_successful?(cmd)
     log "Cluster components installed."
