@@ -77,11 +77,9 @@ def install_components(cluster_name)
 end
 
 def disable_alerts
-  # This will disable high-priority pagerduty alarms for your cluster by replacing the token XXXXX with a dummy value 
-  # in line pagerduty_config = "XXXXX" in your working terraform.tfvars file.
+  # This will disable high-priority pagerduty alarms for your cluster by replacing the pagerduty_config token XXXXX with a dummy value
   `sed -i 's/pagerduty_config = ".*"/pagerduty_config = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
-  # This will disable lower priority alerts for your cluster by replacing the alertmanager slack webhook url XXXXX with a dummy value 
-  # in line cloud_platform_slack_webhook = "XXXXX" in your working terraform.tfvars file.
+  # This will disable lower priority alerts for your cluster by replacing the alertmanager slack webhook url XXXXX with a dummy value
   `sed -i 's/cloud_platform_slack_webhook = ".*"/cloud_platform_slack_webhook = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
 end
 
