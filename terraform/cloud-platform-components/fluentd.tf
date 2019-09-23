@@ -42,7 +42,11 @@ resource "helm_release" "fluentd_es" {
     value = true
   }
 
-  depends_on = ["null_resource.deploy", "null_resource.priority_classes"]
+  depends_on = [
+    "kubernetes_namespace.logging",
+    "null_resource.deploy",
+    "null_resource.priority_classes",
+  ]
 
   lifecycle {
     ignore_changes = ["keyring"]
