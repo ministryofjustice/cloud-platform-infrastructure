@@ -90,9 +90,15 @@ EOS
   }
 }
 
+data "helm_repository" "jetstack" {
+  name = "jetstack"
+  url  = "https://charts.jetstack.io"
+}
+
 resource "helm_release" "cert-manager" {
   name          = "cert-manager"
   chart         = "jetstack/cert-manager"
+  repository    = "${data.helm_repository.jetstack.metadata.0.name}"
   namespace     = "cert-manager"
   version       = "${local.cert-manager-version}"
   recreate_pods = true
