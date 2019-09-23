@@ -9,8 +9,11 @@ def create_ingress(namespace, ingress_name, fixture_name)
   wait_for(namespace, "ingress", ingress_name, 60)
 end
 
+# delete ingress if namespace and ingress exist
 def delete_ingress(namespace, ingress_name)
-  `kubectl delete ingress #{ingress_name} -n #{namespace}`
+  if namespace_exists?(namespace) && object_exists?(namespace, "ingress", ingress_name)
+    `kubectl delete ingress #{ingress_name} -n #{namespace}`
+  end
 end
 
 # Returns an ingress endpoint (ELB enpoint)
@@ -20,7 +23,7 @@ end
 
 # Dedicated to A record created by External DNS
 # TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
-def delete_A_record(zone_id, zone_name, domain_name, namespace, ingress_name)
+def delete_a_record(zone_id, zone_name, domain_name, namespace, ingress_name)
   sleep 1
   client = Aws::Route53::Client.new
 
@@ -31,7 +34,7 @@ def delete_A_record(zone_id, zone_name, domain_name, namespace, ingress_name)
       alias_target: {
         # ZD4D7Y8KGAS4G this zone is the default AWS zone for ELB records, in eu-west-2
         "hosted_zone_id": "ZD4D7Y8KGAS4G",
-        "dns_name": get_ingress_enpoint(namespace, ingress_name),
+        "dns_name": get_cluster_endpoint,
         "evaluate_target_health": true,
       },
       type: "A",
@@ -79,7 +82,7 @@ def cleanup_zone(zone, domain, namespace, ingress_name)
   if is_zone_empty?(zone.hosted_zone.id)
     delete_zone(zone.hosted_zone.id)
   else
-    delete_A_record(zone.hosted_zone.id, zone.hosted_zone.name, domain, namespace, ingress_name)
+    delete_a_record(zone.hosted_zone.id, zone.hosted_zone.name, domain, namespace, ingress_name)
     delete_txt_record(zone.hosted_zone.id, zone.hosted_zone.name, domain, namespace)
     delete_zone(zone.hosted_zone.id)
   end

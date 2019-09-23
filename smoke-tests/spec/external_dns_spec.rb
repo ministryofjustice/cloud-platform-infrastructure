@@ -1,14 +1,14 @@
 require "spec_helper"
 
 describe "external DNS" do
-  namespace = "integrationtest-#{readable_timestamp}"
+  namespace = "integrationtest-dns-#{readable_timestamp}"
+  zone = nil
+  parent_zone = nil
   let(:domain) { "child.parent.service.justice.gov.uk" }
   let(:ingress_domain) { domain }
   let(:ingress_name) { domain }
   let(:parent_domain) { "parent.service.justice.gov.uk" }
-  let(:fixture_name) { "spec/fixtures/external-dns-ingress.yaml.erb" }
-  zone = nil
-  parent_zone = nil
+  let(:fixture_name) {"spec/fixtures/external-dns-ingress.yaml.erb"}
 
   context "when zone matches ingress domain" do
     # Create a new zone per test
@@ -16,6 +16,7 @@ describe "external DNS" do
       parent_zone = create_zone(parent_domain)
       zone = create_zone(domain)
       create_delegation_set(zone, parent_zone.hosted_zone.id)
+      create_namespace(namespace)
     end
 
     after do
@@ -25,38 +26,37 @@ describe "external DNS" do
     end
 
     # When I create an ingress
-    context "when an ingress is created" do
-      before(:all) do
-        create_namespace(namespace)
-      end
+    context "and an ingress is created" do
 
-      after(:all) do
-        delete_namespace(namespace)
+      before do
+        create_ingress(namespace, ingress_name, fixture_name)
+        sleep 120 #waiting for ext-dns to detect the change
       end
 
       # an A record should be created
-      it "creates an A record" do
-        create_ingress(namespace, ingress_name, fixture_name)
-        # Ingress is created immediately, but we're waiting for ext-dns to propagate the change to R53
-        sleep 120
+      it "it creates an A record" do
         records = get_zone_records(zone.hosted_zone.id)
         record_types = records.map { |rec| rec.fetch(:type) }
         expect(record_types).to include("A")
       end
 
-      # When the ingress is deleted
-      context "when ingress is deleted" do
-        before do
-          delete_ingress(namespace, ingress_name)
-        end
+    end
+    # When the ingress is deleted
+    context "and when the ingress is deleted" do
+      before do
+        create_ingress(namespace, ingress_name, fixture_name)
+        sleep 160 #waiting for ext-dns to detect the change
+        delete_ingress(namespace, ingress_name)
+      end
 
-        # The existing record in the zone should not deleted
-        it "does not delete records" do
-          records = get_zone_records(zone.hosted_zone.id)
-          expect(records).to_not be_nil
-        end
+      # The existing record in the zone should not deleted
+      it "it does not delete records" do
+        records = get_zone_records(zone.hosted_zone.id)
+        record_types = records.map { |rec| rec.fetch(:type) }
+        expect(record_types).to include("A")
       end
     end
+    
   end
 
   # When no Route53 Zone match the ingress domain
@@ -66,7 +66,7 @@ describe "external DNS" do
       parent_zone = create_zone(parent_domain)
       create_namespace(namespace)
       create_ingress(namespace, ingress_name, fixture_name)
-      sleep 120
+      sleep 160
     end
 
     after do
