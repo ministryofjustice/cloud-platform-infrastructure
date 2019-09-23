@@ -58,7 +58,8 @@ def install_components(cluster_name)
   dir = "terraform/cloud-platform-components"
   execute "cd #{dir}; rm -rf .terraform"
   switch_terraform_workspace(dir, cluster_name)
-
+  
+  # Comment disable_alerts() to enable high priority - Pagerduty alarms and lower prority Slack alerts for your cluster
   disable_alerts()
 
   # Ensure we have the latest helm charts for all the required components
