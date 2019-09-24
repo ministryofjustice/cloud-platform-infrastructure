@@ -2,6 +2,10 @@ resource "kubernetes_namespace" "logging" {
   metadata {
     name = "logging"
 
+    labels {
+      "component" = "logging"
+    }
+
     annotations {
       "cloud-platform.justice.gov.uk/application"                = "Logging"
       "cloud-platform.justice.gov.uk/business-unit"              = "cloud-platform"
