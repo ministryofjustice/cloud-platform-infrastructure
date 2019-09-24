@@ -28,6 +28,7 @@ resource "helm_release" "open-policy-agent" {
   version    = "1.8.0"
 
   depends_on = [
+    "null_resource.kube_system_ns_label",
     "kubernetes_namespace.opa",
     "null_resource.deploy",
   ]
@@ -38,6 +39,13 @@ resource "helm_release" "open-policy-agent" {
 
   lifecycle {
     ignore_changes = ["keyring"]
+  }
+}
+
+# This label will prevent OPA to ignore kube-system  This adds label to kube-system namespace.
+resource "null_resource" "kube_system_ns_label" {
+  provisioner "local-exec" {
+    command = "kubectl label ns kube-system 'openpolicyagent.org/webhook=ignore'"
   }
 }
 
