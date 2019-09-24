@@ -68,15 +68,25 @@ class KiamRole
   # This method finds the principals and adds this cluster's nodes, if they're not
   # already listed.
   def ensure_cluster_nodes_are_trusted(role)
+    policy = role_policy(role)
+    add_principal(policy, cluster_nodes_policy_principal)
+  end
+
+  def role_policy(role)
     # NB: role.load must have been called before this method is called
     json = CGI.unescape(role.assume_role_policy_document)
-    policy = JSON.parse(json)
-    principals = Array(policy.fetch("Statement").first.dig("Principal", "AWS"))
-    unless principals.include?(cluster_nodes_policy_principal)
-      principals << cluster_nodes_policy_principal
-      policy.fetch("Statement").first.fetch("Principal")["AWS"] = principals
-      client.update_assume_role_policy(policy_document: policy.to_json, role_name: role_name)
-    end
+    JSON.parse(json)
+  end
+
+  def add_principal(role_policy, principal)
+    principals = Array(role_policy.fetch("Statement").first.dig("Principal", "AWS"))
+    return if principals.include?(principal)
+
+    principals << principal
+    role_policy.fetch("Statement").first.fetch("Principal")["AWS"] = principals
+    client.update_assume_role_policy(policy_document: role_policy.to_json, role_name: role_name)
+  end
+
   end
 
   def create_role
