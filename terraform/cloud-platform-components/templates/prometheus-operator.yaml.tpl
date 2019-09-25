@@ -572,13 +572,13 @@ nodeExporter:
   ## Use the value configured in prometheus-node-exporter.podLabels
   ##
   jobLabel: jobLabel
-  resources:
-    limits:
-      cpu: 10m
-      memory: 50Mi
-    requests:
-      cpu: 5m
-      memory: 25Mi
+  resources: {}
+#    limits:
+#      cpu: 10m
+#      memory: 50Mi
+#    requests:
+#      cpu: 5m
+#      memory: 25Mi
 
 ## Configuration for prometheus-node-exporter subchart
 ##
@@ -590,13 +590,13 @@ prometheus-node-exporter:
   extraArgs:
     - --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker/.+)($|/)
     - --collector.filesystem.ignored-fs-types=^(autofs|binfmt_misc|cgroup|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|sysfs|tracefs)$
-  resources:
-    limits:
-      cpu: 10m
-      memory: 50Mi
-    requests:
-      cpu: 5m
-      memory: 25Mi
+  resources: {}
+#    limits:
+#      cpu: 10m
+#      memory: 50Mi
+#    requests:
+#      cpu: 5m
+#      memory: 25Mi
 
 ## Manages Prometheus and Alertmanager components
 ##
@@ -990,13 +990,13 @@ prometheus:
 
     ## Resource limits & requests
     ##
-    resources:
-      requests:
-        cpu: 1
-        memory: 10Gi
-      limits:
-        cpu: 1
-        memory: 10Gi
+    resources: {}
+#      requests:
+#        cpu: 1
+#        memory: 10Gi
+#      limits:
+#        cpu: 1
+#        memory: 10Gi
 
     ## Prometheus StorageSpec for persistent data
     ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md
