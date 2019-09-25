@@ -44,6 +44,10 @@ describe "kiam" do
     delete_namespace(namespace)
   end
 
+  after(:all) do
+    remove_cluster_nodes_from_trust_relationship(role_args, role)
+  end
+
   context "namespace has annotations" do
     let(:namespace_annotations) { {annotations: "iam.amazonaws.com/permitted=.*"} }
 
