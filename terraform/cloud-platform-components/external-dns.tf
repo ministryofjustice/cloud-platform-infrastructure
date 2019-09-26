@@ -41,7 +41,7 @@ resource "helm_release" "external_dns" {
   name      = "external-dns"
   chart     = "stable/external-dns"
   namespace = "kube-system"
-  version   = "2.6.4"
+  version   = "12.6.4"
 
   values = [<<EOF
 image:
@@ -64,6 +64,12 @@ logLevel: info
 podAnnotations:
   iam.amazonaws.com/role: "${aws_iam_role.external_dns.name}"
 EOF
+  ]
+
+  depends_on = [
+    "null_resource.deploy",
+    "helm_release.kiam",
+    "helm_release.open-policy-agent",
   ]
 
   lifecycle {
