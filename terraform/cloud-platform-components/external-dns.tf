@@ -41,11 +41,11 @@ resource "helm_release" "external_dns" {
   name      = "external-dns"
   chart     = "stable/external-dns"
   namespace = "kube-system"
-  version   = "1.7.0"
+  version   = "12.6.4"
 
   values = [<<EOF
 image:
-  tag: v0.5.11
+  tag: 0.5.17-debian-9-r0
 sources:
   - service
   - ingress
