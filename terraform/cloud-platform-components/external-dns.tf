@@ -41,7 +41,7 @@ resource "helm_release" "external_dns" {
   name      = "external-dns"
   chart     = "stable/external-dns"
   namespace = "kube-system"
-  version   = "12.6.4"
+  version   = "2.6.4"
 
   values = [<<EOF
 image:
