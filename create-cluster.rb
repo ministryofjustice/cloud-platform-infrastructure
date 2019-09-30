@@ -82,6 +82,7 @@ def disable_alerts
   `sed -i 's/pagerduty_config = ".*"/pagerduty_config = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
   # This will disable lower priority alerts for your cluster by replacing the alertmanager slack webhook url with a dummy value
   `sed -i 's/cloud_platform_slack_webhook = ".*"/cloud_platform_slack_webhook = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
+  `sed -i 's/webhook  = ".*"/webhook = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
 end
 
 def wait_for_kops_validate
