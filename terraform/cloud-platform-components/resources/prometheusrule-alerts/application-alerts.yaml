@@ -237,7 +237,7 @@ spec:
       for: 10m
       labels:
         severity: warning
-    - alert: KubePersistentVolumeFullInFourDays
+    - alert: KubePersistentVolumeFullInFourDays-Low
       annotations:
         message: Based on recent sampling, the PersistentVolume claimed by {{`{{ $labels.persistentvolumeclaim }}`}} in Namespace {{`{{ $labels.namespace }}`}} is expected to fill up within four days. Currently {{`{{ printf "%0.2f" $value }}`}}% is available.
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubepersistentvolumefullinfourdays
