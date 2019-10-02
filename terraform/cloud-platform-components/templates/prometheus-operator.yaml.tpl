@@ -110,6 +110,10 @@ alertmanager:
           alertname: PodIsRestartingFrequently
         receiver: 'null'
       - match:
+          alertname: KubePersistentVolumeFullInFourDay
+        receiver: 'null'
+      
+      - match:
           severity: critical
         receiver: pager-duty-high-priority
       ${indent(6, alertmanager_routes)}
