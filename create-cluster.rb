@@ -62,7 +62,7 @@ def install_components(cluster_name)
   disable_alerts()
 
   # Ensure we have the latest helm charts for all the required components
-  execute "helm init --client-only; helm repo update"
+  execute "helm init --client-only; helm repo add jetstack https://charts.jetstack.io ; helm repo update"
   # Without this step, you may get errors like this:
   #
   #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
