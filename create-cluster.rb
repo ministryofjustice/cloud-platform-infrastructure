@@ -183,7 +183,7 @@ def cmd_successful?(cmd)
 end
 
 def running_in_docker_container?
-  File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /docker/
+  File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /(docker|kubepods)/
 end
 
 def run_integration_tests(cluster_name)

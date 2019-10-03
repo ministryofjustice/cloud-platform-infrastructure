@@ -242,7 +242,7 @@ spec:
       admissionregistration.k8s.io/v1alpha1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.12.10
+  kubernetesVersion: 1.13.11
   masterPublicName: api.${cluster_domain_name}
   networkCIDR: ${network_cidr_block}
   networkID: ${network_id}
@@ -305,7 +305,7 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-2a
 spec:
-  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
@@ -332,7 +332,7 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-2b
 spec:
-  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
@@ -359,7 +359,7 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-2c
 spec:
-  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
@@ -386,8 +386,8 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: nodes
 spec:
-  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
-  machineType: r5.xlarge
+  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
+  machineType: r5.2xlarge
   maxSize: ${cluster_node_count}
   minSize: ${cluster_node_count}
   rootVolumeSize: 256
