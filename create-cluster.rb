@@ -21,7 +21,7 @@ def main(cluster_name)
 
   check_prerequisites(cluster_name)
 
-  execute "git-crypt unlock"
+  execute "git-crypt unlock ~/.aws/gitcrypt-infra"
  
   create_cluster(cluster_name)
   run_kops(cluster_name)
@@ -182,7 +182,7 @@ def cmd_successful?(cmd)
 end
 
 def running_in_docker_container?
-  File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /docker/
+  File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /(docker|kubepods)/
 end
 
 def run_integration_tests(cluster_name)
