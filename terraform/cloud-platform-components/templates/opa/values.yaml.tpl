@@ -101,7 +101,7 @@ logFormat: text
 # Number of OPA replicas to deploy. OPA maintains an eventually consistent
 # cache of policies and data. If you want high availability you can deploy two
 # or more replicas.
-replicas: 1
+replicas: 2
 
 # To control how the OPA is scheduled on the cluster, set the tolerations and
 # nodeSelector values below. For example, to deploy OPA onto the master nodes:
