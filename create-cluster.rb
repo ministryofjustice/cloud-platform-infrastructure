@@ -21,7 +21,7 @@ def main(cluster_name)
 
   check_prerequisites(cluster_name)
 
-  execute "git-crypt unlock ~/.aws/gitcrypt-infra"
+  execute "git-crypt unlock"
  
   create_cluster(cluster_name)
   run_kops(cluster_name)
