@@ -23,7 +23,7 @@ resource "helm_release" "nginx_ingress_acme" {
   name      = "nginx-ingress-acme"
   chart     = "stable/nginx-ingress"
   namespace = "ingress-controllers"
-  version   = "v1.3.1"
+  version   = "v1.24.0"
 
   values = [<<EOF
 controller:
@@ -66,7 +66,6 @@ controller:
       "kubernetes_service_port": "$service_port",
       "proxy_upstream_name": "$proxy_upstream_name",
       "proxy_protocol_addr": "$proxy_protocol_addr",
-      "real_ip": "$the_real_ip",
       "remote_addr": "$remote_addr",
       "remote_user": "$remote_user",
       "request_id": "$req_id",
