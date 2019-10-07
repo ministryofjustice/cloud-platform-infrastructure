@@ -101,7 +101,6 @@ require "aws-sdk-route53"
 require "aws-sdk-iam"
 require "open-uri"
 require "pry-byebug"
-require "kubernetes_helper"
 require "erb"
 require "json"
 require "date"
@@ -109,6 +108,7 @@ require "./spec/constants"
 require "./spec/kiam_helper"
 require "./spec/route53_helper"
 require "./spec/kubernetes_helper"
+require "./spec/external_dns_helper"
 
 def readable_timestamp
   Time.now.strftime("%Y%m%d%H%M%S")
