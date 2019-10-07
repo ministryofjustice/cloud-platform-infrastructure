@@ -17,7 +17,7 @@ def delete_ingress(namespace, ingress_name)
 end
 
 # Returns an ingress endpoint (ELB enpoint)
-def get_ingress_enpoint(namespace, ingress_name)
+def get_ingress_endpoint(namespace, ingress_name)
   `kubectl get ingress #{ingress_name} -n #{namespace} -o json -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'`
 end
 
@@ -34,7 +34,7 @@ def delete_a_record(zone_id, zone_name, domain_name, namespace, ingress_name)
       alias_target: {
         # ZD4D7Y8KGAS4G this zone is the default AWS zone for ELB records, in eu-west-2
         "hosted_zone_id": "ZD4D7Y8KGAS4G",
-        "dns_name": get_cluster_endpoint,
+        "dns_name": get_ingress_endpoint,
         "evaluate_target_health": true,
       },
       type: "A",
