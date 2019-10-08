@@ -8,7 +8,7 @@ describe "external DNS" do
   let(:ingress_domain) { domain }
   let(:ingress_name) { domain }
   let(:parent_domain) { "parent.service.justice.gov.uk" }
-  let(:fixture_name) {"spec/fixtures/external-dns-ingress.yaml.erb"}
+  let(:fixture_name) { "spec/fixtures/external-dns-ingress.yaml.erb" }
 
   context "when zone matches ingress domain" do
     # Create a new zone per test
@@ -23,14 +23,14 @@ describe "external DNS" do
       cleanup_zone(zone, domain, namespace, ingress_name)
       delete_delegation_set(zone, parent_zone.hosted_zone.id)
       delete_zone(parent_zone.hosted_zone.id)
+      delete_namespace(namespace)
     end
 
     # When I create an ingress
     context "and an ingress is created" do
-
       before do
         create_ingress(namespace, ingress_name, fixture_name)
-        sleep 120 #waiting for ext-dns to detect the change
+        sleep 120 # waiting for ext-dns to detect the change
       end
 
       # an A record should be created
@@ -39,24 +39,7 @@ describe "external DNS" do
         record_types = records.map { |rec| rec.fetch(:type) }
         expect(record_types).to include("A")
       end
-
     end
-    # When the ingress is deleted
-    context "and when the ingress is deleted" do
-      before do
-        create_ingress(namespace, ingress_name, fixture_name)
-        sleep 160 #waiting for ext-dns to detect the change
-        delete_ingress(namespace, ingress_name)
-      end
-
-      # The existing record in the zone should not deleted
-      it "it does not delete records" do
-        records = get_zone_records(zone.hosted_zone.id)
-        record_types = records.map { |rec| rec.fetch(:type) }
-        expect(record_types).to include("A")
-      end
-    end
-    
   end
 
   # When no Route53 Zone match the ingress domain
