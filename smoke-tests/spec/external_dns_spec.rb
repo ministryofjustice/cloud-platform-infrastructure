@@ -8,7 +8,7 @@ describe "external DNS" do
   let(:ingress_domain) { domain }
   let(:ingress_name) { domain }
   let(:parent_domain) { "parent.service.justice.gov.uk" }
-  let(:fixture_name) {"spec/fixtures/external-dns-ingress.yaml.erb"}
+  let(:fixture_name) { "spec/fixtures/external-dns-ingress.yaml.erb" }
 
   context "when zone matches ingress domain" do
     # Create a new zone per test
@@ -28,10 +28,9 @@ describe "external DNS" do
 
     # When I create an ingress
     context "and an ingress is created" do
-
       before do
         create_ingress(namespace, ingress_name, fixture_name)
-        sleep 120 #waiting for ext-dns to detect the change
+        sleep 120 # waiting for ext-dns to detect the change
       end
 
       # an A record should be created
@@ -40,8 +39,7 @@ describe "external DNS" do
         record_types = records.map { |rec| rec.fetch(:type) }
         expect(record_types).to include("A")
       end
-
-    end    
+    end
   end
 
   # When no Route53 Zone match the ingress domain

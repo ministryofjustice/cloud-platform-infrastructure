@@ -1,4 +1,3 @@
-
 # Expects a the ingress template to exist at fixture_name
 def create_ingress(namespace, ingress_name, fixture_name)
   apply_template_file(
@@ -34,7 +33,7 @@ def delete_a_record(zone_id, zone_name, domain_name, namespace, ingress_name)
       alias_target: {
         # ZD4D7Y8KGAS4G this zone is the default AWS zone for ELB records, in eu-west-2
         "hosted_zone_id": "ZD4D7Y8KGAS4G",
-        "dns_name": get_ingress_endpoint(namespace, ingress_name)+".",
+        "dns_name": get_ingress_endpoint(namespace, ingress_name) + ".",
         "evaluate_target_health": true,
       },
       type: "A",
@@ -77,7 +76,7 @@ def delete_txt_record(zone_id, zone_name, domain_name, namespace)
 end
 
 # Checks if the zone is empty, then deletes
-# if not empty, it will assume it contains one A record and one TXT record created by external-dns 
+# if not empty, it will assume it contains one A record and one TXT record created by external-dns
 def cleanup_zone(zone, domain, namespace, ingress_name)
   if is_zone_empty?(zone.hosted_zone.id)
     delete_zone(zone.hosted_zone.id)
