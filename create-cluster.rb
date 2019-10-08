@@ -22,10 +22,11 @@ def main(cluster_name)
   check_prerequisites(cluster_name)
 
   execute "git-crypt unlock"
-
+ 
   create_cluster(cluster_name)
   run_kops(cluster_name)
   install_components(cluster_name)
+  run_integration_tests(cluster_name)
 
   run_and_output "kubectl cluster-info"
 end
@@ -58,9 +59,10 @@ def install_components(cluster_name)
   dir = "terraform/cloud-platform-components"
   execute "cd #{dir}; rm -rf .terraform"
   switch_terraform_workspace(dir, cluster_name)
+  disable_alerts()
 
   # Ensure we have the latest helm charts for all the required components
-  execute "helm init --client-only; helm repo update"
+  execute "helm init --client-only; helm repo add jetstack https://charts.jetstack.io ; helm repo update"
   # Without this step, you may get errors like this:
   #
   #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
@@ -73,6 +75,14 @@ def install_components(cluster_name)
     log "Cluster components failed to install. Aborting."
     exit 1
   end
+end
+
+def disable_alerts
+  # This will disable high-priority pagerduty alarms for your cluster by replacing the pagerduty_config token with a dummy value
+  `sed -i 's/pagerduty_config\s\{1,\}=\s\{1,\}".*"/pagerduty_config = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
+  # This will disable lower priority alerts for your cluster by replacing the alertmanager slack webhook url with a dummy value
+  `sed -i 's/cloud_platform_slack_webhook\s\{1,\}=\s\{1,\}".*"/cloud_platform_slack_webhook = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
+  `sed -i 's/webhook\s\{1,\}=\s\{1,\}".*"/webhook = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
 end
 
 def wait_for_kops_validate
@@ -173,9 +183,14 @@ def cmd_successful?(cmd)
 end
 
 def running_in_docker_container?
-  File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /docker/
+  File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /(docker|kubepods)/
 end
 
+def run_integration_tests(cluster_name)
+  dir = "smoke-tests/"
+  output = "./#{cluster_name}-rspec.txt"
+  run_and_output "cd #{dir}; bundle install; rspec --tag ~cluster:live-1 --format progress --format documentation --out #{output}"
+end
 ############################################################
 
 abort("You must run this script from within the ministryofjustice/cloud-platform-tools docker container!") unless running_in_docker_container?

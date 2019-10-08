@@ -254,7 +254,7 @@ resource "aws_elasticsearch_domain" "audit" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp2"
-    volume_size = "512"
+    volume_size = "1024"
   }
 
   advanced_options {
@@ -284,6 +284,7 @@ resource "aws_elasticsearch_domain" "audit" {
   }
 }
 
+# audit cluster for live-1
 resource "aws_elasticsearch_domain" "audit_1" {
   domain_name           = "${local.audit_domain}"
   provider              = "aws.cloud-platform"
@@ -291,14 +292,14 @@ resource "aws_elasticsearch_domain" "audit_1" {
 
   cluster_config {
     instance_type          = "m4.xlarge.elasticsearch"
-    instance_count         = "3"
+    instance_count         = "4"
     zone_awareness_enabled = true
   }
 
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp2"
-    volume_size = "320"
+    volume_size = "1024"
   }
 
   advanced_options {

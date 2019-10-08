@@ -1,5 +1,5 @@
 locals {
-  cert-manager-version = "v0.6.6"
+  cert-manager-version = "v0.8.1"
 }
 
 resource "kubernetes_namespace" "cert_manager" {
@@ -66,7 +66,7 @@ resource "aws_iam_role_policy" "cert_manager" {
 }
 
 data "http" "cert-manager-crds" {
-  url = "https://raw.githubusercontent.com/jetstack/cert-manager/release-${replace(local.cert-manager-version, "/^v?(\\d+\\.\\d+)\\.\\d+$/", "$1")}/deploy/manifests/00-crds.yaml"
+  url = "https://raw.githubusercontent.com/jetstack/cert-manager/${local.cert-manager-version}/deploy/manifests/00-crds.yaml"
 }
 
 resource "null_resource" "cert-manager-crds" {
@@ -81,11 +81,8 @@ EOS
   provisioner "local-exec" {
     when = "destroy"
 
-    command = <<EOS
-kubectl delete -n cert-manager -f - <<EOF
-${data.http.cert-manager-crds.body}
-EOF
-EOS
+    # destroying the CRDs also deletes all resources of type "certificate" (not the actual certs, those are in secrets of type "tls")
+    command = "exit 0"
   }
 
   triggers {
@@ -93,9 +90,15 @@ EOS
   }
 }
 
+data "helm_repository" "jetstack" {
+  name = "jetstack"
+  url  = "https://charts.jetstack.io"
+}
+
 resource "helm_release" "cert-manager" {
   name          = "cert-manager"
-  chart         = "stable/cert-manager"
+  chart         = "jetstack/cert-manager"
+  repository    = "${data.helm_repository.jetstack.metadata.0.name}"
   namespace     = "cert-manager"
   version       = "${local.cert-manager-version}"
   recreate_pods = true
@@ -149,19 +152,9 @@ resource "null_resource" "cert_manager_issuers" {
   }
 
   triggers {
-    contents_production = "${sha1(file("${path.module}/templates/cert-manager/letsencrypt-staging.yaml"))}"
+    contents_production = "${sha1(file("${path.module}/templates/cert-manager/letsencrypt-production.yaml"))}"
     contents_staging    = "${sha1(file("${path.module}/templates/cert-manager/letsencrypt-staging.yaml"))}"
   }
-}
-
-// This is likely not needed beyond the 0.6 upgrade, see:
-//   http://docs.cert-manager.io/en/latest/admin/upgrading/upgrading-0.4-0.5.html
-resource "null_resource" "cert_manager_webhook_label" {
-  provisioner "local-exec" {
-    command = "kubectl label --overwrite namespace cert-manager 'certmanager.k8s.io/disable-validation=true'"
-  }
-
-  depends_on = ["helm_release.cert-manager"]
 }
 
 resource "null_resource" "cert_manager_monitoring" {

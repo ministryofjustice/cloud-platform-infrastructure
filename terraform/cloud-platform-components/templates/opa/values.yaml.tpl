@@ -18,7 +18,10 @@ admissionControllerKind: ValidatingWebhookConfiguration
 # To _fail closed_ on failures, change to Fail. During initial testing, we
 # recommend leaving the failure policy as Ignore.
 admissionControllerFailurePolicy: Fail
-
+# Adds a namespace selector to the admission controller webhook
+admissionControllerNamespaceSelector:
+  matchExpressions:
+    - {key: openpolicyagent.org/webhook, operator: NotIn, values: [ignore]}
 # To restrict the kinds of operations and resources that are subject to OPA
 # policy checks, see the settings below. By default, all resources and
 # operations are subject to OPA policy checks.
@@ -31,6 +34,10 @@ admissionControllerRules:
     apiGroups: [""]
     apiVersions: ["v1"]
     resources: ["services"]
+  - operations: ["CREATE", "UPDATE"]
+    apiGroups: [""]
+    apiVersions: ["v1"]
+    resources: ["pods"]
 
 # Controls a PodDisruptionBudget for the OPA pod. Suggested use if having opa
 # always running for admission control is important
@@ -62,7 +69,7 @@ authz:
 
 # Docker image and tag to deploy.
 image: openpolicyagent/opa
-imageTag: 0.10.5
+imageTag: 0.10.7
 imagePullPolicy: IfNotPresent
 
 mgmt:
@@ -94,7 +101,7 @@ logFormat: text
 # Number of OPA replicas to deploy. OPA maintains an eventually consistent
 # cache of policies and data. If you want high availability you can deploy two
 # or more replicas.
-replicas: 1
+replicas: 2
 
 # To control how the OPA is scheduled on the cluster, set the tolerations and
 # nodeSelector values below. For example, to deploy OPA onto the master nodes:

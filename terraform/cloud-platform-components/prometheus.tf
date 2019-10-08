@@ -4,6 +4,19 @@
 resource "kubernetes_namespace" "monitoring" {
   metadata {
     name = "monitoring"
+
+    labels {
+      "component" = "monitoring"
+    }
+
+    annotations {
+      "cloud-platform.justice.gov.uk/application"                = "Monitoring"
+      "cloud-platform.justice.gov.uk/business-unit"              = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"                      = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"                = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+      "iam.amazonaws.com/permitted"                              = ".*"
+      "cloud-platform.justice.gov.uk/can-tolerate-master-taints" = "true"
+    }
   }
 
   lifecycle {

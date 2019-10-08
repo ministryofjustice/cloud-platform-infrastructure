@@ -1,3 +1,21 @@
+resource "kubernetes_namespace" "opa" {
+  metadata {
+    name = "opa"
+
+    labels {
+      "name"                        = "opa"
+      "openpolicyagent.org/webhook" = "ignore"
+    }
+
+    annotations {
+      "cloud-platform.justice.gov.uk/application"   = "OPA"
+      "cloud-platform.justice.gov.uk/business-unit" = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+    }
+  }
+}
+
 data "template_file" "values" {
   template = "${file("${path.module}/templates/opa/values.yaml.tpl")}"
 }
@@ -7,9 +25,11 @@ resource "helm_release" "open-policy-agent" {
   namespace  = "opa"
   repository = "stable"
   chart      = "opa"
-  version    = "1.3.2"
+  version    = "1.8.0"
 
   depends_on = [
+    "null_resource.kube_system_ns_label",
+    "kubernetes_namespace.opa",
     "null_resource.deploy",
   ]
 
@@ -19,6 +39,13 @@ resource "helm_release" "open-policy-agent" {
 
   lifecycle {
     ignore_changes = ["keyring"]
+  }
+}
+
+# By adding this label OPA will ignore kube-system for all policy decisions. 
+resource "null_resource" "kube_system_ns_label" {
+  provisioner "local-exec" {
+    command = "kubectl label ns kube-system 'openpolicyagent.org/webhook=ignore'"
   }
 }
 
@@ -91,6 +118,44 @@ resource "kubernetes_config_map" "policy_service_type" {
 
   data {
     main.rego = "${file("${path.module}/resources/opa/policies/service_type.rego")}"
+  }
+
+  lifecycle {
+    ignore_changes = ["metadata.0.annotations"]
+  }
+}
+
+resource "kubernetes_config_map" "policy_pod_toleration_withkey" {
+  metadata {
+    name      = "policy-pod-toleration-withkey"
+    namespace = "${helm_release.open-policy-agent.namespace}"
+
+    labels {
+      "openpolicyagent.org/policy" = "rego"
+    }
+  }
+
+  data {
+    main.rego = "${file("${path.module}/resources/opa/policies/pod_toleration_withkey.rego")}"
+  }
+
+  lifecycle {
+    ignore_changes = ["metadata.0.annotations"]
+  }
+}
+
+resource "kubernetes_config_map" "policy_pod_toleration_withnullkey" {
+  metadata {
+    name      = "policy-pod-toleration-withnullkey"
+    namespace = "${helm_release.open-policy-agent.namespace}"
+
+    labels {
+      "openpolicyagent.org/policy" = "rego"
+    }
+  }
+
+  data {
+    main.rego = "${file("${path.module}/resources/opa/policies/pod_toleration_withnullkey.rego")}"
   }
 
   lifecycle {

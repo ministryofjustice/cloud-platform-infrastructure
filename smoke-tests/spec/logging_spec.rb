@@ -24,7 +24,7 @@ describe "Log collection", cluster: "live-1" do
     # consistently, but it's possible it may break unexpectedly, at some point.
 
     sleep 120 # TODO: this is an experimental change (from 60), to see if a longer sleep fixes
-              #       intermittent pipeline failures
+    #       intermittent pipeline failures
 
     date = Date.today.strftime("%Y.%m.%d")
     search_url = "#{ELASTIC_SEARCH}/logstash-#{date}/_search"
@@ -35,7 +35,8 @@ describe "Log collection", cluster: "live-1" do
       search_url: search_url,
     })
 
-    pod_name = get_pod_name(namespace, 2) # We created 2 jobs, so the pod we want is the 2nd one
+    pod = get_pod_matching_name(namespace, "smoketest-logging-job")
+    pod_name = pod.dig("metadata", "name")
     json = get_pod_logs(namespace, pod_name) # results from the elasticsearch query
     hash = JSON.parse(json)
     total_hits = hash.fetch("hits").fetch("total")

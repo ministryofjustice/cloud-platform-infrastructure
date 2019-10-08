@@ -1,0 +1,15 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: <%= ingress_name %>
+spec:
+  rules:
+  - host: <%= domain %>
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ingress-external-svc
+          servicePort: 80
+

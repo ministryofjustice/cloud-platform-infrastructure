@@ -10,6 +10,7 @@ end
 def create_namespace(namespace, opts = {})
   unless namespace_exists?(namespace)
     `kubectl create namespace #{namespace}`
+    `kubectl annotate --overwrite namespace #{namespace} 'cloud-platform-integration-test=default'`
 
     10.times do
       break if namespace_exists?(namespace)
@@ -97,11 +98,80 @@ def get_pod_logs(namespace, pod_name)
   `kubectl -n #{namespace} logs #{pod_name}`
 end
 
-def get_running_pod_name(namespace, index)
-  get_pod_name(namespace, index, "--field-selector=status.phase=Running")
+def get_pods(namespace)
+  JSON.parse(`kubectl -n #{namespace} get pods -o json`).fetch("items")
 end
 
-# Get the name of the Nth pod in the namespace
-def get_pod_name(namespace, index, options = "")
-  `kubectl get pods -n #{namespace} #{options} 2>/dev/null | awk 'FNR == #{index + 1} {print $1}'`.chomp
+def get_running_app_pods(namespace, app, property = "app")
+  get_running_pods(namespace)
+    .filter { |pod| pod.dig("metadata", "labels", property) == app }
+end
+
+def get_running_pods(namespace)
+  get_pods(namespace)
+    .filter { |pod| pod.dig("status", "phase") == "Running" }
+end
+
+def all_containers_running?(pods)
+  all_container_states = pods.map { |pod| pod.dig("status", "containerStatuses") }
+    .flatten
+    .map { |container| container.fetch("state").keys }
+    .flatten
+
+  all_container_states.uniq == ["running"]
+end
+
+def get_pod_matching_name(namespace, prefix)
+  get_pods(namespace)
+    .filter { |pod| pod.dig("metadata", "name") =~ %r{^#{prefix}} }
+    .first
+end
+
+# Get all nodes an app runs on
+def get_app_node_ips(namespace, app, status = "Running")
+  pod_ips get_running_app_pods(namespace, app)
+end
+
+def pod_ips(pods)
+  pods
+    .map { |pod| pod.dig("status", "hostIP") }
+    .sort
+end
+
+# Get the internal IPs of all cluster VMs
+def get_cluster_ips
+  node_ips get_nodes
+end
+
+def node_ips(nodes)
+  nodes
+    .map { |node| node.dig("status", "addresses").filter { |addr| addr.dig("type") == "InternalIP" } }
+    .flatten
+    .map { |i| i.fetch("address") }
+    .sort
+end
+
+def master_nodes
+  filter_by_role(get_nodes, "master")
+end
+
+def worker_nodes
+  filter_by_role(get_nodes, "node")
+end
+
+def filter_by_role(nodes, role)
+  nodes.filter { |node| node.dig("metadata", "labels", "kubernetes.io/role") == role }
+end
+
+def get_nodes
+  JSON.parse(`kubectl get nodes -o json`).fetch("items")
+end
+
+def get_daemonsets
+  JSON.parse(`kubectl get daemonsets --all-namespaces -o json`).fetch("items")
+end
+
+#Set the enable-modsecurity flag to false on the ingress annotation
+def set_modsec_ing_annotation_false(namespace, ingress_name)
+  `kubectl -n #{namespace} annotate --overwrite ingresses/#{ingress_name} nginx.ingress.kubernetes.io/enable-modsecurity='false'`.chomp
 end

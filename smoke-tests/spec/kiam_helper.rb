@@ -25,8 +25,7 @@ class KiamRole
 
   def fetch_or_create_role
     role = Aws::IAM::Role.new(client: client, name: role_name)
-
-    if client.list_roles.roles.find { |r| r.role_name == role_name }
+    if list_roles(client).find { |r| r.role_name == role_name }
       role.load
       ensure_cluster_nodes_are_trusted(role)
     else
@@ -46,7 +45,41 @@ class KiamRole
     role
   end
 
+
+  # If we leave this cluster's nodes in the trust relationships for the test role,
+  # then, when the cluster is deleted, the role is left in a broken state, because
+  # the deleted cluster's ARN in the trust relationships gets replaced with something
+  # that looks like an access key ID, and you end up with errors like this:
+  #
+  #     Invalid principal in policy: "AWS":"AROA27XXXXXXXXXXJ2R57"
+  #
+  # This method removes the cluster ARN from the role trust relationships, so that
+  # this problem doesn't arise when the cluster is deleted.
+  def remove_cluster_nodes_from_trust_relationship(role)
+    # Never try to remove live-1 from the trust relationships, because removing
+    # the last trust relationship would leave the role in a broken state.
+    return if kubernetes_cluster == LIVE1
+
+    policy = role_policy(role)
+    remove_principal(policy)
+  end
+
   private
+
+  def list_roles(client)
+    rtn = []
+    is_truncated = true
+    marker = nil
+
+    while is_truncated
+      roles = client.list_roles(marker: marker)
+      rtn += roles.roles
+      is_truncated = roles.is_truncated
+      marker = roles.marker
+    end
+
+    rtn
+  end
 
   # If the role was created during a test run for a different cluster, the current
   # cluster's nodes will not be included as principals in the role's trust
@@ -54,15 +87,30 @@ class KiamRole
   # This method finds the principals and adds this cluster's nodes, if they're not
   # already listed.
   def ensure_cluster_nodes_are_trusted(role)
+    policy = role_policy(role)
+    add_principal(policy, cluster_nodes_policy_principal)
+  end
+
+  def role_policy(role)
     # NB: role.load must have been called before this method is called
     json = CGI.unescape(role.assume_role_policy_document)
-    policy = JSON.parse(json)
-    principals = Array(policy.fetch("Statement").first.dig("Principal", "AWS"))
-    unless principals.include?(cluster_nodes_policy_principal)
-      principals << cluster_nodes_policy_principal
-      policy.fetch("Statement").first.fetch("Principal")["AWS"] = principals
-      client.update_assume_role_policy(policy_document: policy.to_json, role_name: role_name)
-    end
+    JSON.parse(json)
+  end
+
+  def add_principal(role_policy, principal)
+    principals = Array(role_policy.fetch("Statement").first.dig("Principal", "AWS"))
+    return if principals.include?(principal)
+
+    principals << principal
+    role_policy.fetch("Statement").first.fetch("Principal")["AWS"] = principals
+    client.update_assume_role_policy(policy_document: role_policy.to_json, role_name: role_name)
+  end
+
+  def remove_principal(role_policy)
+    principals = Array(role_policy.fetch("Statement").first.dig("Principal", "AWS"))
+    principals.delete(cluster_nodes_policy_principal)
+    role_policy.fetch("Statement").first.fetch("Principal")["AWS"] = principals
+    client.update_assume_role_policy(policy_document: role_policy.to_json, role_name: role_name)
   end
 
   def create_role
@@ -74,7 +122,7 @@ class KiamRole
         {
           Effect: "Allow",
           Principal: {
-            AWS: ["#{cluster_nodes_policy_principal}"]
+            AWS: [cluster_nodes_policy_principal.to_s],
           },
           Action: "sts:AssumeRole",
         },
@@ -116,8 +164,14 @@ class KiamRole
   end
 end
 
+######## end of KiamRole class
+
 def fetch_or_create_role(args)
   KiamRole.new(args).fetch_or_create_role
+end
+
+def remove_cluster_nodes_from_trust_relationship(args, role)
+  KiamRole.new(args).remove_cluster_nodes_from_trust_relationship(role)
 end
 
 # Run a command, on the pod in the namespace, to try and assume the role, and capture the output from it.
@@ -173,13 +227,13 @@ def create_deployment(args)
 
   `#{cmd}`
 
-  pod = ""
+  pods = []
 
   60.times do
-    pod = get_running_pod_name(namespace, 1)
-    break if pod.length > 0
+    pods = get_running_pods(namespace)
+    break if pods.count > 0
     sleep 1
   end
 
-  pod
+  pods.first.dig("metadata", "name")
 end
