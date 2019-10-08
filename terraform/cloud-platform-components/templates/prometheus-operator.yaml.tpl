@@ -110,7 +110,7 @@ alertmanager:
           alertname: PodIsRestartingFrequently
         receiver: 'null'
       - match:
-          alertname: KubePersistentVolumeFullInFourDay
+          alertname: KubePersistentVolumeFullInFourDays
         receiver: 'null'
       
       - match:
