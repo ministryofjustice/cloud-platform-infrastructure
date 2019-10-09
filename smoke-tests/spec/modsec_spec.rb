@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "Testing modsec" do
+xdescribe "Testing modsec" do
   namespace = "integrationtest-modsec-#{readable_timestamp}"
   host = "#{namespace}.apps.#{current_cluster}"
   ingress_name = "modsec-integrationtest-app-ing"
