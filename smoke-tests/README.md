@@ -12,6 +12,9 @@ The smoke tests will run inside a docker container against your current Kubernet
 - `docker`
 - `cluster-admin` access to a Cloud Platform cluster
 - `aws-credentials` your aws credentials must be located in the default location `${HOME}/.aws`
+- The following environment variables must be set:
+      AWS_PROFILE=moj-cp
+      AWS_REGION=eu-west-2
 
 ### Build or pull the image
 You'll need to have pulled the image locally, you can do this with the following:
