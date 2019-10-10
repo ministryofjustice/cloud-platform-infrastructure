@@ -1,6 +1,6 @@
 require "spec_helper"
 
-xdescribe "cert-manager" do
+describe "cert-manager" do
   let(:namespace) { "cert-manager-test-#{random_string}" }
 
   before do
