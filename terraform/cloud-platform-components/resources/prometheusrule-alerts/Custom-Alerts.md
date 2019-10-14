@@ -428,3 +428,45 @@ $ kubectl logs <cronjob-name> -n logging
 ```
 
 The following links have more information on [Kubernetes Cronjobs](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/) and [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/)
+
+## Nginx Config Reload Failure
+
+```
+NginxConfigReloadFailure
+Severity: Critical
+```
+
+This alert is triggered when the nginx config fails to reload on an ingress-controller pod.
+
+Expression:
+```
+nginx_ingress_controller_config_last_reload_successful == 0
+```
+
+### Action
+
+Check why nginx config is not able to reload using the below:
+
+The following two [`stern`](https://github.com/wercker/stern) commands can be run to confirm config is not reloading and for any errors marked as `[emerg]` which means the system is in an unusable state and requires immediate attention.
+
+```
+stern --namespace ingress-controllers nginx-ingress-acme-controller | grep "Unexpected failure reloading the backend"
+stern --namespace ingress-controllers nginx-ingress-acme-controller | grep emerg
+```
+
+You can also run the following query on Kibana to check for the error:
+
+`kubernetes.namespace_name:event-router emerg`
+
+#### Nginx Error Log Severity Levels
+
+The are a number of severity levels that can be defined in the error_log. The following is a list of all severity levels: 
+
++ debug - Useful debugging information to help determine where the problem lies.
++ info - Informational messages that aren’t necessary to read but may be good to know.
++ notice - Something normal happened that is worth noting.
++ warn - Something unexpected happened, however is not a cause for concern.
++ error - Something was unsuccessful.
++ crit - There are problems that need to be critically addressed.
++ alert - Prompt action is required.
++ emerg - The system is in an unusable state and requires immediate attention.
