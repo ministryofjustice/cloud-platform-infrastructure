@@ -252,11 +252,4 @@ spec:
       for: 5m
       labels:
         severity: warning
-    - alert: NginxConfigReloadFailure
-      annotations:
-        message: The Nginx Config has failed to reload for pod {{ $labels.pod }}
-        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md#alert-name-kubepersistentvolumefullinfourdays
-      expr: nginx_ingress_controller_config_last_reload_successful == 0
-      for: 30s
-      labels:
-        severity: critical
+        

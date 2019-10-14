@@ -114,3 +114,12 @@ spec:
       annotations:
         message: HTTPCode_Target_5XX_Count high for `{{$labels.service}}. HTTPCode_Target_5XX_Count high'
         runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md
+    - alert: NginxConfigReloadFailure
+      annotations:
+        message: The Nginx Config has failed to reload for pod {{ $labels.pod }}
+        runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#nginx-config-reload-failure
+      expr: nginx_ingress_controller_config_last_reload_successful == 0
+      for: 30s
+      labels:
+        severity: critical
+        
