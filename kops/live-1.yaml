@@ -242,7 +242,7 @@ spec:
       admissionregistration.k8s.io/v1alpha1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.12.10
+  kubernetesVersion: 1.13.11
   masterPublicName: api.live-1.cloud-platform.service.justice.gov.uk
   networkCIDR: 172.20.0.0/16
   networkID: vpc-0726ec279947067f8
@@ -317,7 +317,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2a
 spec:
-  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
@@ -344,7 +344,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2b
 spec:
-  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
@@ -371,7 +371,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2c
 spec:
-  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
+  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
@@ -398,10 +398,10 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: nodes
 spec:
-  image: kope.io/k8s-1.11-debian-stretch-amd64-hvm-ebs-2018-08-17
-  machineType: r5.xlarge
-  maxSize: 40
-  minSize: 40
+  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
+  machineType: r5.2xlarge
+  maxSize: 21
+  minSize: 21
   rootVolumeSize: 256
   nodeLabels:
     kops.k8s.io/instancegroup: nodes
