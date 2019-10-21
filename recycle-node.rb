@@ -9,29 +9,56 @@
 #
 
 require 'json'
-require "pry-byebug"
-require 'optparse'
+require "yaml"
+require "pry-byebug"  # TODO remove this
+require "net/http"
 
 K8S_CLUSTER_NAME = "vij-ing-fire.cloud-platform.service.justice.gov.uk"
+AWS_REGION = "eu-west-2"
+KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-infrastructure/master/kops/live-1.yaml"
 
 def main
   number_of_workers = count_worker_nodes
   worker_instance_group_size = get_worker_instance_group_size
 
-  unless number_of_workers == worker_instance_group_size
+  unless correct_number_of_workers_running?
     raise "There should be #{worker_instance_group_size} workers, but #{number_of_workers} found. Aborting."
   end
 
-  # drain_node
-  # sleep 30
-  # terminate_node
-  # sleep 60
-  # wait_for_kops_validate
+  node = get_oldest_worker_node
+  drain_node(node)
+  sleep 30
+  terminate_node(node)
+  sleep 60
+
+  wait_for_node_to_be_replaced
+end
+
+def correct_number_of_workers_running?
+  count_worker_nodes == get_worker_instance_group_size
+end
+
+def wait_for_node_to_be_replaced
+  max_tries = 30
+  validated = false
+
+  (1..max_tries).each do |attempt|
+    log "Checking that node has been replaced, #{attempt} of #{max_tries}..."
+
+    if correct_number_of_workers_running?
+      log "Terminated node was replaced"
+      validated = true
+      break
+    else
+      log "Waiting for node to be replaced..."
+      sleep 60
+    end
+  end
+
+  raise "Terminated node was not replaced after checking #{max_tries} times." unless validated
 end
 
 def count_worker_nodes
-  #data = `kubectl get nodes -l kubernetes.io/role=node --sort-by=".status.conditions[?(@.reason == 'KubeletReady' )].status"`.chomp
-  
   get_worker_nodes
     .find_all { |node| node_ready?(node) }
     .count
@@ -54,14 +81,20 @@ def worker_node?(node)
   node.dig("metadata", "labels")["kubernetes.io/role"] == "node"
 end
 
-# def count_worker_nodes
-#   `kubectl get nodes -l kubernetes.io/role=node | grep -e Ready | wc -l | xargs`
-# end
-
-# puts count_worker_nodes
-
 def get_worker_instance_group_size
-  execute "kops get ig --name #{K8S_CLUSTER_NAME} nodes -o json | jq -r '.spec.maxSize'"
+  docs = []
+  YAML.load_stream(get_kops_config) { |doc| docs << doc }
+  worker_instance_group = docs.last
+  
+  unless worker_instance_group.dig("metadata", "name") == "nodes"
+    raise "Failed to parse kops config. Last document in YAML file is supposed to be worker instancegroup definition."
+  end
+
+  worker_instance_group.dig("spec", "minSize").to_i
+end
+
+def get_kops_config
+  Net::HTTP.get(URI(KOPS_CONFIG_URL))
 end
 
 def get_oldest_worker_node
@@ -73,7 +106,7 @@ end
 def drain_node(node)
   name = node.dig("metadata", "name")
 
-  cmd = "kubectl  --ignore-daemonsets --delete-local-data drain #{name}"
+  cmd = "kubectl --ignore-daemonsets --delete-local-data drain #{name}"
 
   if cmd_successful?(cmd)
     log "worker node #{name} drained sucessfully."
@@ -83,41 +116,20 @@ def drain_node(node)
 end
 
 def terminate_node(node)
-  node_name = node.dig("metadata", "name")
-
-  # TODO - json
-  aws_instance_id_drained_node = `kubectl get node #{node_name} -o 'jsonpath={.spec.providerID}' | cut -d "/" -f 5`.chomp
-
   if cordoned?(node)
-    execute "aws ec2 terminate-instances --instance-ids #{aws_instance_id_drained_node} --region eu-west-2"
+    execute "aws ec2 terminate-instances --instance-ids #{aws_instance_id(node)} --region #{AWS_REGION}"
   else
     raise "Older worker node failed to terminate. Aborting."
   end
 end 
 
-def cordoned?(node)
-  binding.pry
-  execute("kubectl get nodes #{node_name} -o 'jsonpath={.spec.unschedulable}'") == "true"
+def aws_instance_id(node)
+  node.dig("spec", "providerID").split("/").last
 end
 
-def wait_for_kops_validate
-  max_tries = 30
-  validated = false
-
-  (1..max_tries).each do |attempt|
-    log "Validate cluster, attempt #{attempt} of #{max_tries}..."
-
-    if cmd_successful?("kops validate cluster")
-      log "Cluster validated."
-      validated = true
-      break
-    else
-      log "Sleeping before retry..."
-      sleep 60
-    end
-  end
-
-  raise "ERROR Failed to validate cluster after $max_tries attempts." unless validated
+def cordoned?(node)
+  spec = node.dig("spec")
+  spec.has_key?("unschedulable") && spec.dig("unschedulable") == "true"
 end
 
 def log(msg)
@@ -136,5 +148,4 @@ def execute(cmd, can_fail: false)
   result
 end
 
-cordoned? get_oldest_worker_node
-# main
+main
