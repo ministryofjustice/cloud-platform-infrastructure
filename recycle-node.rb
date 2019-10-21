@@ -1,16 +1,14 @@
 #!/usr/bin/env ruby
 
-# See example.env.create-cluster for the environment variables
-# which must be set before running this script.
 #
 # Usage:
-#   Change the K8S_CLUSTER_NAME and kubectl use-context of #K8S_CLUSTER_NAME
+#   export AWS_PROFILE=moj-cp
+#   Change the K8S_CLUSTER_NAME and set kubectl config to use-context #K8S_CLUSTER_NAME
 #   ./create-cluster.rb
 #
 
 require 'json'
 require "yaml"
-require "pry-byebug"  # TODO remove this
 require "net/http"
 
 K8S_CLUSTER_NAME = "vij-ing-fire.cloud-platform.service.justice.gov.uk"
@@ -28,6 +26,7 @@ def main
   node = get_oldest_worker_node
   drain_node(node)
   sleep 30
+  node = get_latest_node_details(node) # node status should have changed, after being drained
   terminate_node(node)
   sleep 60
 
@@ -82,6 +81,7 @@ def worker_node?(node)
 end
 
 def get_worker_instance_group_size
+  return 3
   docs = []
   YAML.load_stream(get_kops_config) { |doc| docs << doc }
   worker_instance_group = docs.last
@@ -104,7 +104,7 @@ def get_oldest_worker_node
 end
 
 def drain_node(node)
-  name = node.dig("metadata", "name")
+  name = node_name(node)
 
   cmd = "kubectl --ignore-daemonsets --delete-local-data drain #{name}"
 
@@ -113,6 +113,10 @@ def drain_node(node)
   else
     raise "worker node #{name} failed to drain. Aborting."
   end
+end
+
+def node_name(node)
+  node.dig("metadata", "name")
 end
 
 def terminate_node(node)
@@ -127,9 +131,14 @@ def aws_instance_id(node)
   node.dig("spec", "providerID").split("/").last
 end
 
+def get_latest_node_details(node)
+  name = node_name(node)
+  JSON.parse(execute("kubectl get node #{name} -o json"))
+end
+
 def cordoned?(node)
   spec = node.dig("spec")
-  spec.has_key?("unschedulable") && spec.dig("unschedulable") == "true"
+  spec.fetch("unschedulable", false)
 end
 
 def log(msg)
