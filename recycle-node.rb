@@ -1,17 +1,23 @@
 #!/usr/bin/env ruby
 
-#
+
 # Usage:
 #   export AWS_PROFILE=moj-cp
-#   Change the K8S_CLUSTER_NAME and set kubectl config to use-context #K8S_CLUSTER_NAME
+#   Edit "K8S_CLUSTER_NAME" to specify the cluster to recycle old node. 
+#   Set kubectl config to use-context #K8S_CLUSTER_NAME
 #   ./create-cluster.rb
 #
+#  Note: To run this on a test cluster, update function `get_worker_instance_group_size` as shown below, 
+#  to return number of worker nodes configured as minSize in kops/test-cluster.yaml file for the test cluster.
+# 
+#  def get_worker_instance_group_size
+#     return 3 
 
 require 'json'
 require "yaml"
 require "net/http"
 
-K8S_CLUSTER_NAME = "vij-ing-fire.cloud-platform.service.justice.gov.uk"
+K8S_CLUSTER_NAME = "recycle-node.cloud-platform.service.justice.gov.uk"
 AWS_REGION = "eu-west-2"
 KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-infrastructure/master/kops/live-1.yaml"
 
@@ -35,26 +41,6 @@ end
 
 def correct_number_of_workers_running?
   count_worker_nodes == get_worker_instance_group_size
-end
-
-def wait_for_node_to_be_replaced
-  max_tries = 30
-  validated = false
-
-  (1..max_tries).each do |attempt|
-    log "Checking that node has been replaced, #{attempt} of #{max_tries}..."
-
-    if correct_number_of_workers_running?
-      log "Terminated node was replaced"
-      validated = true
-      break
-    else
-      log "Waiting for node to be replaced..."
-      sleep 60
-    end
-  end
-
-  raise "Terminated node was not replaced after checking #{max_tries} times." unless validated
 end
 
 def count_worker_nodes
@@ -81,7 +67,6 @@ def worker_node?(node)
 end
 
 def get_worker_instance_group_size
-  return 3
   docs = []
   YAML.load_stream(get_kops_config) { |doc| docs << doc }
   worker_instance_group = docs.last
@@ -119,6 +104,11 @@ def node_name(node)
   node.dig("metadata", "name")
 end
 
+def get_latest_node_details(node)
+  name = node_name(node)
+  JSON.parse(execute("kubectl get node #{name} -o json"))
+end
+
 def terminate_node(node)
   if cordoned?(node)
     execute "aws ec2 terminate-instances --instance-ids #{aws_instance_id(node)} --region #{AWS_REGION}"
@@ -131,14 +121,29 @@ def aws_instance_id(node)
   node.dig("spec", "providerID").split("/").last
 end
 
-def get_latest_node_details(node)
-  name = node_name(node)
-  JSON.parse(execute("kubectl get node #{name} -o json"))
-end
-
 def cordoned?(node)
   spec = node.dig("spec")
   spec.fetch("unschedulable", false)
+end
+
+def wait_for_node_to_be_replaced
+  max_tries = 30
+  validated = false
+
+  (1..max_tries).each do |attempt|
+    log "Checking that node has been replaced, #{attempt} of #{max_tries}..."
+
+    if correct_number_of_workers_running?
+      log "Terminated node was replaced"
+      validated = true
+      break
+    else
+      log "Waiting for node to be replaced..."
+      sleep 60
+    end
+  end
+
+  raise "Terminated node was not replaced after checking #{max_tries} times." unless validated
 end
 
 def log(msg)
