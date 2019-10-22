@@ -19,43 +19,25 @@ describe "servicemonitors" do
       "prometheus-operator-operator",
       "prometheus-operator-prometheus",
     ]
+    expect(names).to include(*expected)
+  end
+
+  specify "expected nginx-ingress servicemonitors" do
+    names = get_servicemonitors("ingress-controllers").map { |set| set.dig("metadata", "name") }.sort
+
+    expected = [
+      "nginx-ingress",
+    ]
     expect(names).to eq(expected)
   end
 
-  # specify "expected nginx-ingress servicemonitors" do
-  #   names = get_servicemonitors.map { |set| set.dig("metadata", "name") }.sort
+  specify "expected concourse servicemonitors", cluster: "live-1" do
+    names = get_servicemonitors("concourse").map { |set| set.dig("metadata", "name") }.sort
 
-  #   expected = [
-  #     "alertmanagers.monitoring.coreos.com",
-  #     "certificates.certmanager.k8s.io",
-  #     "challenges.certmanager.k8s.io",
-  #     "clusterissuers.certmanager.k8s.io",
-  #     "issuers.certmanager.k8s.io",
-  #     "orders.certmanager.k8s.io",
-  #     "prometheuses.monitoring.coreos.com",
-  #     "prometheusrules.monitoring.coreos.com",
-  #     "servicemonitors.monitoring.coreos.com",
-  #     "tzcronjobs.cronjobber.hidde.co",
-  #   ]
-  #   expect(names).to eq(expected)
-  # end
-
-  # specify "expected concourse servicemonitors" do
-  #   names = get_servicemonitors.map { |set| set.dig("metadata", "name") }.sort
-
-  #   expected = [
-  #     "alertmanagers.monitoring.coreos.com",
-  #     "certificates.certmanager.k8s.io",
-  #     "challenges.certmanager.k8s.io",
-  #     "clusterissuers.certmanager.k8s.io",
-  #     "issuers.certmanager.k8s.io",
-  #     "orders.certmanager.k8s.io",
-  #     "prometheuses.monitoring.coreos.com",
-  #     "prometheusrules.monitoring.coreos.com",
-  #     "servicemonitors.monitoring.coreos.com",
-  #     "tzcronjobs.cronjobber.hidde.co",
-  #   ]
-  #   expect(names).to eq(expected)
-  # end
+    expected = [
+      "concourse",
+    ]
+    expect(names).to eq(expected)
+  end
 
 end
