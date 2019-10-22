@@ -4,11 +4,11 @@
 # Usage:
 #   export AWS_PROFILE=moj-cp
 #   Edit "K8S_CLUSTER_NAME" to specify the cluster to recycle old node. 
-#   Set kubectl config to use-context #K8S_CLUSTER_NAME
-#   ./create-cluster.rb
+#   ./recycle-node.rb
 #
-#  Note: To run this on a test cluster, update function `get_worker_instance_group_size` as shown below, 
-#  to return number of worker nodes configured as minSize in kops/test-cluster.yaml file for the test cluster.
+#  Note: 
+#   The `get_worker_instance_group_size` method looks for the instance group size in the kops manifest in our github repository, so it will always return the size of the live-1 cluster.
+#   To run this on a test cluster, update method `get_worker_instance_group_size` as shown below, to return number of worker nodes configured as minSize in kops/test-cluster.yaml.
 # 
 #  def get_worker_instance_group_size
 #     return 3 
@@ -22,11 +22,11 @@ AWS_REGION = "eu-west-2"
 KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-infrastructure/master/kops/live-1.yaml"
 
 def main
-  number_of_workers = count_worker_nodes
-  worker_instance_group_size = get_worker_instance_group_size
+
+  config_cluster
 
   unless correct_number_of_workers_running?
-    raise "There should be #{worker_instance_group_size} workers, but #{number_of_workers} found. Aborting."
+    raise "There should be #{get_worker_instance_group_size} workers, but #{count_worker_nodes} found. Aborting."
   end
 
   node = get_oldest_worker_node
@@ -37,6 +37,10 @@ def main
   sleep 60
 
   wait_for_node_to_be_replaced
+end
+
+def config_cluster
+  execute "kubectl config use-context #{K8S_CLUSTER_NAME}"
 end
 
 def correct_number_of_workers_running?
@@ -50,7 +54,7 @@ def count_worker_nodes
 end
 
 def get_nodes
-  JSON.parse(`kubectl get nodes -o json`).dig("items")
+  JSON.parse(execute("kubectl get nodes -o json")).dig("items")
 end
 
 def get_worker_nodes
@@ -113,7 +117,7 @@ def terminate_node(node)
   if cordoned?(node)
     execute "aws ec2 terminate-instances --instance-ids #{aws_instance_id(node)} --region #{AWS_REGION}"
   else
-    raise "Older worker node failed to terminate. Aborting."
+    raise "worker node #{name} was not cordoned."
   end
 end 
 
@@ -122,8 +126,7 @@ def aws_instance_id(node)
 end
 
 def cordoned?(node)
-  spec = node.dig("spec")
-  spec.fetch("unschedulable", false)
+  node.dig("spec").fetch("unschedulable", false)
 end
 
 def wait_for_node_to_be_replaced
@@ -155,10 +158,9 @@ def cmd_successful?(cmd)
   system cmd
 end
 
-def execute(cmd, can_fail: false)
+def execute(cmd)
   log cmd
-  result = `#{cmd}` # TODO: Use open3
-  raise "Command: #{cmd} failed." unless (can_fail || $?.success?)
+  result = `#{cmd}`
   result
 end
 
