@@ -40,7 +40,9 @@ def main
 end
 
 def config_cluster
-  execute "kubectl config use-context #{K8S_CLUSTER_NAME}"
+  unless cmd_successful?("kubectl config use-context #{K8S_CLUSTER_NAME}")
+    raise "config not found for #{K8S_CLUSTER_NAME}. Aborting."
+  end
 end
 
 def correct_number_of_workers_running?
@@ -160,8 +162,7 @@ end
 
 def execute(cmd)
   log cmd
-  result = `#{cmd}`
-  result
+  `#{cmd}`
 end
 
 main
