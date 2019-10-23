@@ -1,3 +1,52 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: integration-test-errorpage
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: integration-test-app
+    spec:
+      containers:
+      - name: http-error-handler
+        image: ministryofjustice/cloud-platform-http-error-handler:0.1
+        ports:
+        - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: integration-test-svc
+  labels:
+    app: integration-test-svc
+spec:
+  ports:
+  - port: 80
+    name: http
+    targetPort: 8080
+  selector:
+    app: integration-test-app
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: integration-test-app-ing
+spec:
+  tls:
+  - hosts:
+    - <%= host %>
+    secretName: hello-world-ssl
+  rules:
+  - host: <%= host %>
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: integration-test-svc
+          servicePort: 80
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -43,4 +92,5 @@ spec:
         env:
         - name: DEBUG
           value: "true"
+
 
