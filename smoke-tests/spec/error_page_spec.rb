@@ -96,14 +96,14 @@ describe "http request error responses" do
 
       before do
         annotate_ingress(namespace, "integration-test-app-ing", ing_annotations)
-        sleep 5 # sometimes 10 is enough here, but sometimes it's not
+        sleep 5 # sometimes 5 is enough here, but sometimes it's not
       end
 
       context "when the error code in the cluster error list" do
         let(:namespace_url) { "https://#{host}/err?code=503" }
 
         it "serves error page from nginx ingress, when application not serving error page" do
-          scale_replicas(namespace, "integration-test-errorpage", "0")
+          scale_replicas(namespace, "integration-test-errorpage", "0") # Scaled down to 0, so application is not listening for requests.
           sleep 5
           expect_ingress_error_page(namespace_url, "503 Service Temporarily Unavailable")
         end
@@ -131,7 +131,7 @@ describe "http request error responses" do
 
       before do
         annotate_ingress(namespace, "integration-test-app-ing", ing_annotations)
-        sleep 5 # sometimes 10 is enough here, but sometimes it's not
+        sleep 5 # sometimes 5 is enough here, but sometimes it's not
       end
 
       context "when the error is in the namespace error list" do # i.e. it's 503
