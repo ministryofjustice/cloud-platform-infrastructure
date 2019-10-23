@@ -175,12 +175,11 @@ end
 def set_modsec_ing_annotation_false(namespace, ingress_name)
   `kubectl -n #{namespace} annotate --overwrite ingresses/#{ingress_name} nginx.ingress.kubernetes.io/enable-modsecurity='false'`.chomp
 end
-# Scale replicas
+
 def scale_replicas(namespace, deployment, replicas = "")
   `kubectl -n #{namespace} scale deployment #{deployment} --replicas=#{replicas}`
 end
 
-# ingress_annotations
 def annotate_ingress(namespace, ingress, annotations)
   `kubectl -n #{namespace} annotate ingress #{ingress} #{ing_annotations.join(" ")}`
 end
