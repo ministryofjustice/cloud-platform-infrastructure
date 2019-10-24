@@ -68,7 +68,7 @@ describe "http request error responses" do
         file: "spec/fixtures/default-backend.yaml.erb",   # Deploy application with the HTTP handler and custom default backend.
         binding: binding
       )
-      sleep 5
+      sleep 10
     end
 
     after do
