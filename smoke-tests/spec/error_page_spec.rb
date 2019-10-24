@@ -1,42 +1,48 @@
 require "spec_helper"
 
+CLUSTER_ERROR_PAGE_HTML_BODY = "Error, service unavailable - GOV.UK"
+CUSTOM_ERROR_GENERATOR_HTML_BODY = "Code="
+
+def open_url(url)
+  expect {
+    URI.open(url)
+  }
+end
+
+# when Nginx cannot route a http request successfully.
+# cluster level default-backend service will handle the response by serving cloud-platform cluster error page.
 def expect_cluster_error_page(url, message)
-  expect {
-    URI.open(url)
-  }.to raise_error { |error|
+    open_url(url).to raise_error { |error|
     expect(error).to be_a(OpenURI::HTTPError)
     expect(error.message).to eq(message)
-    expect(error.io.string).to include("Error, service unavailable - GOV.UK")
+    expect(error.io.string).to include(CLUSTER_ERROR_PAGE_HTML_BODY)
   }
 end
 
+# when ingress in a namespace is annotated to not serve cluster_error_page, it serves no error page and get a HTTP error Status.
 def expect_ingress_error_page(url, message)
-  expect {
-    URI.open(url)
-  }.to raise_error { |error|
+    open_url(url).to raise_error { |error|
     expect(error).to be_a(OpenURI::HTTPError)
     expect(error.message).to eq(message)
-    expect(error.io.string).to_not include("Error, service unavailable - GOV.UK")
+    expect(error.io.string).to_not include(CLUSTER_ERROR_PAGE_HTML_BODY)
   }
 end
 
+# custom default-backend service in a namespace will handle the error response by serving custom backend_error_page from the namespace. 
 def expect_backend_error_page(url, message, body)
-  expect {
-    URI.open(url)
-  }.to raise_error { |error|
+    open_url(url).to raise_error { |error|
     expect(error).to be_a(OpenURI::HTTPError)
     expect(error.message).to eq(message)
     expect(error.io.string).to eq(body)
   }
 end
 
+# application can serve own error pages by annotating ingress to not serve cluster_error_page or default-backend in namespace.
 def expect_application_error_page(url, message, body)
-  expect {
-    URI.open(url)
-  }.to raise_error { |error|
+    open_url(url).to raise_error { |error|
     expect(error).to be_a(OpenURI::HTTPError)
     expect(error.message).to eq(message)
-    expect(error.io.string).to include("Code=")
+    expect(error.io.string).to include(CUSTOM_ERROR_GENERATOR_HTML_BODY)
   }
 end
 
@@ -51,10 +57,10 @@ describe "http request error responses" do
     end
   end
 
-  context "in a namespace with the HTTP handler" do 
+  context "in a namespace with the HTTP handler" do   # http 'handler' is an app. which raises whichever http error we ask it for.
     let(:namespace) { "integrationtest-errorpage-#{readable_timestamp}" }
-    let(:namespace_url) { "https://#{host}/err?code=#{error_to_raise}" }
     let(:host) { "#{namespace}.apps.#{current_cluster}" }
+    let(:namespace_url) { "https://#{host}/err?code=#{error_to_raise}" }
     let(:ing_annotations) { [
       "nginx.ingress.kubernetes.io/default-backend=nginx-errors",
       %{nginx.ingress.kubernetes.io/custom-http-errors="#{error_to_annotate}"},  
@@ -101,7 +107,7 @@ describe "http request error responses" do
 
       before do
         annotate_ingress(namespace, "integration-test-app-ing", ing_annotations)
-        sleep 5 # sometimes 5 is enough here, but sometimes it's not
+        sleep 10 # sometimes 10 is enough here, but sometimes it's not
       end
 
       context "when the error is in the cluster error list and application not serving error page" do
@@ -109,7 +115,7 @@ describe "http request error responses" do
 
         before do
           scale_replicas(namespace, "integration-test-errorpage", "0") # Scaled down to 0, so application is not listening for requests.
-          sleep 5
+          sleep 10
         end
 
         it "serves error page from nginx ingress" do
@@ -139,7 +145,7 @@ describe "http request error responses" do
 
       before do
         annotate_ingress(namespace, "integration-test-app-ing", ing_annotations)
-        sleep 5 # sometimes 5 is enough here, but sometimes it's not
+        sleep 10 # sometimes 10 is enough here, but sometimes it's not
       end
 
       context "when the error is in the namespace error list" do # i.e. it's 503
@@ -160,10 +166,10 @@ describe "http request error responses" do
     end
 
     context "when namespace has its own default backend" do
-
+      # Default backend annotation on the ingress is referenced to a service which will handle error responses inside the same namespace. 
       before do
         annotate_ingress(namespace, "integration-test-app-ing", ing_annotations)
-        sleep 5
+        sleep 10
       end
 
       context "when ingress is annotated with default-backend service but not with the list of http errors" do
@@ -174,27 +180,39 @@ describe "http request error responses" do
           expect_cluster_error_page(namespace_url, "503 Service Unavailable")
         end
       end
-
-      context "when ingress is annotated with an error code not from the cluster error list and application not serving error pages" do
+    
+      # If a custom http error annotation is specified on the ingress, along with default backend annotation,
+      # the errors will be routed to that annotation’s default backend service (instead of the global default backend). 
+      context "when ingress is annotated with an error code not from the cluster error list" do
         let(:error_to_annotate) { "415" }
         let(:error_to_raise) { "503" }
 
-        before do
-          scale_replicas(namespace, "integration-test-errorpage", "0") # Scaled down to 0, so application is not listening for requests.
-          sleep 5
+        context "application not serving error pages" do
+
+          before do
+            scale_replicas(namespace, "integration-test-errorpage", "0") # Scaled down to 0, so application is not listening for requests.
+            sleep 10
+          end
+
+          it "serves error page from namespace default backend." do
+            expect_backend_error_page(namespace_url, "503 Service Unavailable", "5xx html") # the page body "5xx html" is defined in the backend docker image
+          end
         end
 
-        it "serves error page from namespace default backend." do
-          expect_backend_error_page(namespace_url, "503 Service Unavailable", "5xx html") # the page body "5xx html" is defined in the backend docker image
+        context "application is serving error pages" do
+
+          it "serves error page from application" do
+            expect_application_error_page(namespace_url, "503 Service Unavailable", "Code=503") # the page body "Code=503" is from the application.
+          end
         end
-      end
 
-      context "when ingress is annotated with an error code not from the cluster error list and application is serving error pages" do
-        let(:error_to_annotate) { "415" }
-        let(:error_to_raise) { "503" }
-
-        it "serves error page from application" do
-          expect_application_error_page(namespace_url, "503 Service Unavailable", "Code=503") # the page body "Code=503" is from the application.
+        context "error raised is same as annotated error code" do
+          let(:error_to_annotate) { "429" }
+          let(:error_to_raise) { "429" }
+  
+          it "serves error page from namespace default backend" do
+            expect_backend_error_page(namespace_url, "429 Too Many Requests", "4xx html") # the page body "4xx html" is defined in the backend docker image
+          end
         end
       end
 
@@ -204,15 +222,6 @@ describe "http request error responses" do
 
         it "serves 503 error page from namespace default backend" do
           expect_backend_error_page(namespace_url, "503 Service Unavailable", "5xx html") # the page body "5xx html" is defined in the backend docker image
-        end
-      end
-
-      context "when the ingress is annotated with an error code not in the cluster error list" do
-        let(:error_to_annotate) { "429" }
-        let(:error_to_raise) { "429" }
-
-        it "serves 429 error page from namespace default backend" do
-          expect_backend_error_page(namespace_url, "429 Too Many Requests", "4xx html") # the page body "4xx html" is defined in the backend docker image
         end
       end
     end
