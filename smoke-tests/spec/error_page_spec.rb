@@ -11,6 +11,7 @@ end
 
 # when Nginx cannot route a http request successfully.
 # cluster level default-backend service will handle the response by serving cloud-platform cluster error page.
+# This method check for HTTP error response is from cluster level default-backend service, serving cluster error page.
 def expect_cluster_error_page(url, message)
     open_url(url).to raise_error { |error|
     expect(error).to be_a(OpenURI::HTTPError)
@@ -20,6 +21,7 @@ def expect_cluster_error_page(url, message)
 end
 
 # when ingress in a namespace is annotated to not serve cluster_error_page, it serves no error page and get a HTTP error Status.
+# This method check for HTTP error response is not from cluster default-backend and error is not cluster error page.
 def expect_ingress_error_page(url, message)
     open_url(url).to raise_error { |error|
     expect(error).to be_a(OpenURI::HTTPError)
@@ -28,21 +30,23 @@ def expect_ingress_error_page(url, message)
   }
 end
 
-# custom default-backend service in a namespace will handle the error response by serving custom backend_error_page from the namespace. 
+# application serve own error pages by annotating ingress to not serve cluster_error_page or default-backend in namespace.
+# This method check for HTTP error response is from the application.
+def expect_application_error_page(url, message, body)
+  open_url(url).to raise_error { |error|
+  expect(error).to be_a(OpenURI::HTTPError)
+  expect(error.message).to eq(message)
+  expect(error.io.string).to include(CUSTOM_ERROR_GENERATOR_HTML_BODY)
+}
+end
+
+# custom default-backend service in a namespace will handle the error response by serving custom backend_error_page from the namespace.
+# This method check for HTTP error response is from the default-backend service in a namespace, serving namespace backend error page.
 def expect_backend_error_page(url, message, body)
     open_url(url).to raise_error { |error|
     expect(error).to be_a(OpenURI::HTTPError)
     expect(error.message).to eq(message)
     expect(error.io.string).to eq(body)
-  }
-end
-
-# application can serve own error pages by annotating ingress to not serve cluster_error_page or default-backend in namespace.
-def expect_application_error_page(url, message, body)
-    open_url(url).to raise_error { |error|
-    expect(error).to be_a(OpenURI::HTTPError)
-    expect(error.message).to eq(message)
-    expect(error.io.string).to include(CUSTOM_ERROR_GENERATOR_HTML_BODY)
   }
 end
 
