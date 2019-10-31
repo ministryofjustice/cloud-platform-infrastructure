@@ -13,9 +13,9 @@ require "optparse"
 MAX_CLUSTER_NAME_LENGTH = 12
 CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
 
-REQUIRED_ENV_VARS = %w( AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE )
-REQUIRED_EXECUTABLES = %w( git-crypt terraform helm aws kops ssh-keygen )
-REQUIRED_AWS_PROFILES = %w( moj-cp moj-dsd )
+REQUIRED_ENV_VARS = %w[AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE]
+REQUIRED_EXECUTABLES = %w[git-crypt terraform helm aws kops ssh-keygen]
+REQUIRED_AWS_PROFILES = %w[moj-cp moj-dsd]
 
 # Cluster sizes. Currently, this only alters the instance types used for the master & worker nodes,
 # not the number of nodes which will be created.
@@ -40,8 +40,8 @@ MACHINE_TYPES = {
 }
 
 def main(options)
-  cluster_name= options[:cluster_name]
-  cluster_size= options[:cluster_size]
+  cluster_name = options[:cluster_name]
+  cluster_size = options[:cluster_size]
 
   usage if cluster_name.nil? || cluster_size.nil?
 
@@ -96,7 +96,7 @@ def install_components(cluster_name)
   dir = "terraform/cloud-platform-components"
   execute "cd #{dir}; rm -rf .terraform"
   switch_terraform_workspace(dir, cluster_name)
-  disable_alerts()
+  disable_alerts
 
   # Ensure we have the latest helm charts for all the required components
   execute "helm init --client-only; helm repo add jetstack https://charts.jetstack.io ; helm repo update"
@@ -142,7 +142,6 @@ def wait_for_kops_validate
   raise "ERROR Failed to validate cluster after $max_tries attempts." unless validated
 end
 
-
 def switch_terraform_workspace(dir, name)
   run_and_output "cd #{dir}; terraform init"
   # The workspace might already exist, so the workspace new is allowed to fail
@@ -150,7 +149,6 @@ def switch_terraform_workspace(dir, name)
   run_and_output "cd #{dir}; terraform workspace new #{name}", can_fail: true
   run_and_output "cd #{dir}; terraform workspace select #{name}"
 end
-
 
 def check_prerequisites(cluster_name)
   check_env_vars
@@ -175,13 +173,13 @@ end
 
 def check_terraform_auth0
   raise "ERROR Terraform auth0 provider plugin not found." \
-    unless Dir["#{ENV.fetch('HOME')}/.terraform.d/plugins/**/**"].grep(/auth0/).any?
+    unless Dir["#{ENV.fetch("HOME")}/.terraform.d/plugins/**/**"].grep(/auth0/).any?
 end
 
 # cluster is built in moj-cp, but cert-manager and external-dns need
 # credentials for moj-dsd
 def check_aws_profiles
-  creds = File.read("#{ENV.fetch('HOME')}/.aws/credentials").split("\n")
+  creds = File.read("#{ENV.fetch("HOME")}/.aws/credentials").split("\n")
   REQUIRED_AWS_PROFILES.each do |profile|
     raise "ERROR Required AWS Profile #{profile} not found." \
       unless creds.grep(/\[#{profile}\]/).any?
@@ -197,7 +195,7 @@ end
 def execute(cmd, can_fail: false)
   log cmd
   result = `#{cmd}` # TODO: Use open3
-  raise "Command: #{cmd} failed." unless (can_fail || $?.success?)
+  raise "Command: #{cmd} failed." unless can_fail || $?.success?
   result
 end
 
@@ -232,9 +230,9 @@ def run_integration_tests(cluster_name)
 end
 
 def parse_options
-  options = { cluster_size: SMALL }
+  options = {cluster_size: SMALL}
 
-  OptionParser.new do |opts|
+  OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
       options[:cluster_name] = name
     end
@@ -247,7 +245,7 @@ def parse_options
       puts opts
       exit
     end
-  end.parse!
+  }.parse!
 
   options
 end
