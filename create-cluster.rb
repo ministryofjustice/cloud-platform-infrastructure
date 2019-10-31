@@ -8,6 +8,7 @@
 #   ./create-cluster.rb [cluster-name]
 #
 require "fileutils"
+require "optparse"
 
 MAX_CLUSTER_NAME_LENGTH = 12
 CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
@@ -16,14 +17,39 @@ REQUIRED_ENV_VARS = %w( AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SE
 REQUIRED_EXECUTABLES = %w( git-crypt terraform helm aws kops ssh-keygen )
 REQUIRED_AWS_PROFILES = %w( moj-cp moj-dsd )
 
-def main(cluster_name)
-  usage if cluster_name.nil?
+# Cluster sizes. Currently, this only alters the instance types used for the master & worker nodes,
+# not the number of nodes which will be created.
+SMALL = "small"
+MEDIUM = "medium"
+PRODUCTION = "production"
+
+# Defines the EC2 instance types which will be created for different sizes of test cluster
+MACHINE_TYPES = {
+  SMALL => {
+    "master_node_machine_type" => "c4.large",
+    "worker_node_machine_type" => "r5.large",
+  },
+  MEDIUM => {
+    "master_node_machine_type" => "c4.2xlarge",
+    "worker_node_machine_type" => "r5.xlarge",
+  },
+  PRODUCTION => {
+    "master_node_machine_type" => "c4.4xlarge",
+    "worker_node_machine_type" => "r5.2xlarge",
+  },
+}
+
+def main(options)
+  cluster_name= options[:cluster_name]
+  cluster_size= options[:cluster_size]
+
+  usage if cluster_name.nil? || cluster_size.nil?
 
   check_prerequisites(cluster_name)
 
   execute "git-crypt unlock"
- 
-  create_cluster(cluster_name)
+
+  create_cluster(cluster_name, cluster_size)
   run_kops(cluster_name)
   install_components(cluster_name)
   run_integration_tests(cluster_name)
@@ -31,11 +57,22 @@ def main(cluster_name)
   run_and_output "kubectl cluster-info"
 end
 
-def create_cluster(cluster_name)
+def create_cluster(cluster_name, cluster_size)
   FileUtils.rm_rf("terraform/cloud-platform/.terraform")
   dir = "terraform/cloud-platform"
   switch_terraform_workspace(dir, cluster_name)
-  run_and_output "cd #{dir}; terraform apply -auto-approve"
+
+  master_node_machine_type = MACHINE_TYPES.dig(cluster_size, "master_node_machine_type")
+  worker_node_machine_type = MACHINE_TYPES.dig(cluster_size, "worker_node_machine_type")
+
+  tf_apply = [
+    "terraform apply",
+    "-var master_node_machine_type=#{master_node_machine_type}",
+    "-var worker_node_machine_type=#{worker_node_machine_type}",
+    "-auto-approve",
+  ].join(" ")
+
+  run_and_output "cd #{dir}; #{tf_apply}"
 end
 
 def run_kops(cluster_name)
@@ -169,7 +206,9 @@ def run_and_output(cmd, opts = {})
 end
 
 def usage
-  puts "USAGE: #{$0} cluster-name"
+  puts
+  puts "For usage instructions, run: #{$0} --help"
+  puts
   exit 1
 end
 
@@ -191,8 +230,32 @@ def run_integration_tests(cluster_name)
   output = "./#{cluster_name}-rspec.txt"
   run_and_output "cd #{dir}; bundle install; rspec --tag ~cluster:live-1 --format progress --format documentation --out #{output}"
 end
+
+def parse_options
+  options = { cluster_size: SMALL }
+
+  OptionParser.new do |opts|
+    opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
+      options[:cluster_name] = name
+    end
+
+    opts.on("-s", "--size CLUSTER-SIZE", [SMALL, MEDIUM, PRODUCTION], "Cluster size (#{SMALL} | #{MEDIUM} | #{PRODUCTION})") do |size|
+      options[:cluster_size] = size
+    end
+
+    opts.on_tail("-h", "--help", "Show help message") do
+      puts opts
+      exit
+    end
+  end.parse!
+
+  options
+end
+
 ############################################################
 
 abort("You must run this script from within the ministryofjustice/cloud-platform-tools docker container!") unless running_in_docker_container?
 
-main ARGV.shift
+options = parse_options
+
+main(options)
