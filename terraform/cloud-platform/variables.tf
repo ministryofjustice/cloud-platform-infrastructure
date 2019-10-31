@@ -25,3 +25,13 @@ variable "cluster_node_count" {
   description = "The number of worker node in the cluster"
   default     = "21"
 }
+
+variable "master_node_machine_type" {
+  description = "The AWS EC2 instance types to use for master nodes"
+  default     = "c4.4xlarge"
+}
+
+variable "worker_node_machine_type" {
+  description = "The AWS EC2 instance types to use for worker nodes"
+  default     = "r5.2xlarge"
+}
