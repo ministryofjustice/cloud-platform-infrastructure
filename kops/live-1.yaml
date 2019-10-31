@@ -298,7 +298,7 @@ spec:
       [Service]
       ExecStart=/bin/bash -c '\
         while true; do \
-          ak=$(curl -Lfs https://s3-eu-west-1.amazonaws.com/cloud-platform-bf93848161c6b2e960c32272e2911566/authorized_keys) \
+          ak=$(curl -Lfs https://s3-eu-west-2.amazonaws.com/cloud-platform-ab9d0cbde59c3b3112de9d117068515d/authorized_keys) \
             && [ ! -z "$$ak" ] \
             && echo "$$ak" > /home/admin/.ssh/authorized_keys; \
           sleep 60; \
