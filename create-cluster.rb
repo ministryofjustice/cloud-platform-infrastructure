@@ -160,7 +160,8 @@ end
 
 def check_env_vars
   REQUIRED_ENV_VARS.each do |var|
-    ENV.fetch(var) { raise "ERROR Required environment variable #{var} is not set." }
+    value = ENV.fetch(var, "")
+    raise "ERROR Required environment variable #{var} is not set." if value.empty?
   end
 end
 
