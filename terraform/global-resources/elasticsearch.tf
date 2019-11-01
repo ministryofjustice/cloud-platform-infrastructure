@@ -137,7 +137,7 @@ resource "aws_elasticsearch_domain" "live_1" {
   elasticsearch_version = "6.4"
 
   cluster_config {
-    instance_type            = "m4.xlarge.elasticsearch"
+    instance_type            = "m4.2xlarge.elasticsearch"
     instance_count           = "6"
     dedicated_master_enabled = true
     dedicated_master_type    = "m4.large.elasticsearch"
