@@ -1,10 +1,17 @@
 require "spec_helper"
 
-describe "nginx ingress", cluster: "live-1" do
-  let(:cluster_domain) { "apps.live-1.cloud-platform.service.justice.gov.uk" }
-  let(:namespace) { "smoketest-ingress-#{readable_timestamp}" }
-  let(:host) { "#{namespace}.#{cluster_domain}" }
+describe "nginx ingress" do
+  namespace = "smoketest-ingress-#{readable_timestamp}"
+  host = "#{namespace}.apps.#{current_cluster}"
   let(:url) { "https://#{host}" }
+
+  before(:all) do
+    create_namespace(namespace)
+  end
+
+  after(:all) do
+    delete_namespace(namespace)
+  end
 
   context "when ingress is not deployed" do
     it "fails http get" do
@@ -16,21 +23,15 @@ describe "nginx ingress", cluster: "live-1" do
 
   context "when ingress is deployed" do
     before do
-      create_namespace(namespace)
-
       apply_template_file(
         namespace: namespace,
         host: host,
         file: "spec/fixtures/helloworld-deployment.yaml.erb",
-        binding: binding
+        binding: binding,
       )
 
       wait_for(namespace, "ingress", "integration-test-app-ing")
       sleep 20 # Without this, the test fails
-    end
-
-    after do
-      delete_namespace(namespace)
     end
 
     it "returns 200 for http get" do
@@ -38,4 +39,17 @@ describe "nginx ingress", cluster: "live-1" do
       expect(result.status).to eq(["200", "OK"])
     end
   end
+
+  context "when ingress is deployed with invalid syntax" do
+
+    it "returns Exit Code 1" do
+stdout_str, stderr_str, status = apply_template_file(
+  namespace: namespace,
+  host: host,
+  file: "spec/fixtures/invalid-nginx-syntax.yaml.erb",
+  binding: binding,
+)
+      expect(stderr_str).to match(/admission webhook "validate.nginx.ingress.kubernetes.io" denied the request/)
+    end
+  end  
 end

@@ -53,7 +53,7 @@ def apply_yaml_file(args)
 end
 
 def apply_yaml(namespace, yaml)
-  `kubectl -n #{namespace} apply -f - <<EOF\n#{yaml}\nEOF\n`
+  Open3.capture3("kubectl -n #{namespace} apply -f - <<EOF\n#{yaml}\nEOF\n")
 end
 
 def wait_for(namespace, type, name, seconds = 10)
