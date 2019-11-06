@@ -53,7 +53,6 @@ controller:
       "time": "$time_iso8601",
       "body_bytes_sent": $body_bytes_sent,
       "bytes_sent": $bytes_sent,
-      "gzip_ratio": $gzip_ratio,
       "http_host": "$host",
       "http_referer": "$http_referer",
       "http_user_agent": "$http_user_agent",
