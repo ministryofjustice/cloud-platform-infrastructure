@@ -24,7 +24,7 @@ describe "Testing modsec" do
     delete_namespace(namespace)
   end
 
-  context "when modsec deployed" do  # this is the default behaviour
+  context "when modsec deployed" do # this is the default behaviour
     context "when the url is benign" do
       let(:url) { good_url }
 
