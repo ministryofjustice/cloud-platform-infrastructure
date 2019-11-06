@@ -53,7 +53,7 @@ def apply_yaml_file(args)
 end
 
 def apply_yaml(namespace, yaml)
-  `kubectl -n #{namespace} apply -f - <<EOF\n#{yaml}\nEOF\n`
+  Open3.capture3("kubectl -n #{namespace} apply -f - <<EOF\n#{yaml}\nEOF\n")
 end
 
 def wait_for(namespace, type, name, seconds = 10)
@@ -179,7 +179,7 @@ def get_servicemonitors(namespace)
   JSON.parse(`kubectl get servicemonitors -n #{namespace} -o json`).fetch("items")
 end
 
-#Set the enable-modsecurity flag to false on the ingress annotation
+# Set the enable-modsecurity flag to false on the ingress annotation
 def set_modsec_ing_annotation_false(namespace, ingress_name)
   `kubectl -n #{namespace} annotate --overwrite ingresses/#{ingress_name} nginx.ingress.kubernetes.io/enable-modsecurity='false'`.chomp
 end
@@ -191,4 +191,3 @@ end
 def annotate_ingress(namespace, ingress, annotations)
   `kubectl -n #{namespace} annotate ingress #{ingress} #{ing_annotations.join(" ")}`
 end
-
