@@ -108,6 +108,31 @@ controller:
 
   extraArgs:
     default-ssl-certificate: ingress-controllers/default-certificate
+  
+  admissionWebhooks:
+    enabled: true
+    failurePolicy: Fail
+    port: 8443
+
+    service:
+      annotations: {}
+      omitClusterIP: false
+      clusterIP: ""
+      externalIPs: []
+      loadBalancerIP: ""
+      loadBalancerSourceRanges: []
+      servicePort: 443
+      type: ClusterIP
+
+    patch:
+      enabled: true
+      image:
+        repository: jettech/kube-webhook-certgen
+        tag: v1.0.0
+        pullPolicy: IfNotPresent
+      priorityClassName: ""
+      podAnnotations: {}
+      nodeSelector: {}
 
 defaultBackend:
   enabled: true
