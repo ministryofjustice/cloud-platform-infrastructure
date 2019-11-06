@@ -62,7 +62,7 @@ controller:
       "kubernetes_namespace": "$namespace",
       "kubernetes_ingress_name": "$ingress_name",
       "kubernetes_service_name": "$service_name",
-      "kubernetes_service_port": $service_port,
+      "kubernetes_service_port": "$service_port",
       "proxy_upstream_name": "$proxy_upstream_name",
       "proxy_protocol_addr": "$proxy_protocol_addr",
       "remote_addr": "$remote_addr",
