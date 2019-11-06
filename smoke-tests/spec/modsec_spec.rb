@@ -1,6 +1,6 @@
 require "spec_helper"
 
-xdescribe "Testing modsec" do
+describe "Testing modsec" do
   namespace = "integrationtest-modsec-#{readable_timestamp}"
   host = "#{namespace}.apps.#{current_cluster}"
   ingress_name = "modsec-integrationtest-app-ing"
@@ -24,7 +24,7 @@ xdescribe "Testing modsec" do
     delete_namespace(namespace)
   end
 
-  context "when modsec deployed" do  # this is the default behaviour
+  context "when modsec deployed" do # this is the default behaviour
     context "when the url is benign" do
       let(:url) { good_url }
 
