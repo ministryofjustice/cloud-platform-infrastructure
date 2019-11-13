@@ -119,7 +119,7 @@ spec:
         message: The Nginx Config has failed to reload for pod {{ $labels.pod }}
         runbook_url: https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/prometheusrule-alerts/Custom-Alerts.md#nginx-config-reload-failure
       expr: nginx_ingress_controller_config_last_reload_successful == 0
-      for: 30s
+      for: 1m
       labels:
         severity: critical
         
