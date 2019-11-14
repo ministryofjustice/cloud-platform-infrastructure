@@ -190,7 +190,7 @@ resource "aws_autoscaling_group" "bastion" {
   # If the expression in the following list itself returns a list, remove the
   # brackets to avoid interpretation as a list of lists. If the expression
   # returns a single list item then leave it as-is and remove this TODO comment.
-  vpc_zone_identifier = [module.cluster_vpc.public_subnets]
+  vpc_zone_identifier = module.cluster_vpc.public_subnets
   default_cooldown    = 60
 
   tags = [
