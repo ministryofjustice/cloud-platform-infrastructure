@@ -377,7 +377,189 @@ config: |-
   - aws_namespace: AWS/AmazonMQ
     aws_metric_name: TotalProducerCount
     aws_dimensions: [Broker]  
+  
+  # Elasticsearch Metrics
+  - aws_namespace: AWS/ES
+    aws_metric_name: ClusterStatus.green
+    aws_dimensions: [DomainName]
+    
+  - aws_namespace: AWS/ES
+    aws_metric_name: ClusterStatus.yellow
+    aws_dimensions: [DomainName]
 
+  - aws_namespace: AWS/ES
+    aws_metric_name: ClusterStatus.red
+    aws_dimensions: [DomainName]
+    
+  - aws_namespace: AWS/ES
+    aws_metric_name: Nodes
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: SearchableDocuments
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: DeletedDocuments
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: CPUUtilization
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: FreeStorageSpace
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ClusterUsedSpace
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ClusterIndexWritesBlocked
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: JVMMemoryPressure
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: AutomatedSnapshotFailure
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: CPUCreditBalance
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: KibanaHealthyNodes
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: KMSKeyError
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: KMSKeyInaccessible
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: InvalidHostHeaderRequests
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ElasticsearchRequests
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: 2xx
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: 3xx
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: 4xx
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: 5xx
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: MasterCPUUtilization
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: MasterFreeStorageSpace
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: MasterJVMMemoryPressure
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: MasterCPUCreditBalance
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: MasterReachableFromNode
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: MasterSysMemoryUtilization
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ReadLatency
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: WriteLatency
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: ReadThroughput
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: WriteThroughput
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: DiskQueueDepth
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: ReadIOPS
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: WriteIOPS
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: IndexingLatency
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: IndexingRate
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: SearchLatency
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: SearchRate
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: SysMemoryUtilization
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: JVMGCYoungCollectionCount
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: JVMGCYoungCollectionTime
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: JVMGCOldCollectionCount
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: JVMGCOldCollectionTime
+    aws_dimentions: [DomainName]
+      - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolForce_mergeQueue
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolForce_mergeRejected
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolForce_mergeThreads
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolIndexQueue
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolIndexRejected
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolIndexThreads
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolSearchQueue
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolSearchRejected
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolSearchThreads
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolBulkQueue
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolBulkRejected
+    aws_dimentions: [DomainName]
+    - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolBulkThreads
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolWriteThreads
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolWriteRejected
+    aws_dimentions: [DomainName]
+  - aws_namespace: AWS/ES
+    aws_metric_name: ThreadpoolWriteQueue
+    aws_dimentions: [DomainName]
+  
 serviceMonitor:
   # When set true then use a ServiceMonitor to configure scraping
   enabled: true
