@@ -4,7 +4,7 @@ data "aws_iam_policy_document" "federated_role_trust_policy" {
 
     principals {
       type        = "Federated"
-      identifiers = ["${aws_iam_saml_provider.auth0.arn}"]
+      identifiers = [aws_iam_saml_provider.auth0.arn]
     }
 
     actions = ["sts:AssumeRoleWithSAML"]
@@ -22,10 +22,11 @@ data "aws_iam_policy_document" "federated_role_trust_policy" {
 resource "aws_iam_role" "test_github_webops" {
   name = "test-github-webops"
 
-  assume_role_policy = "${data.aws_iam_policy_document.federated_role_trust_policy.json}"
+  assume_role_policy = data.aws_iam_policy_document.federated_role_trust_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "test_github_webops_admin" {
-  role       = "${aws_iam_role.test_github_webops.name}"
+  role       = aws_iam_role.test_github_webops.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
+
