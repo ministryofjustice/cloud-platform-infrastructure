@@ -5,8 +5,11 @@ locals {
   authorized_keys_url = "https://s3-eu-west-2.amazonaws.com/cloud-platform-ab9d0cbde59c3b3112de9d117068515d/authorized_keys"
 }
 
-data "aws_region" "current" {}
-data "aws_caller_identity" "current" {}
+data "aws_region" "current" {
+}
+
+data "aws_caller_identity" "current" {
+}
 
 data "aws_ami" "debian_stretch_latest" {
   most_recent      = true
@@ -30,25 +33,27 @@ data "aws_ami" "debian_stretch_latest" {
 resource "aws_eip" "bastion" {
   vpc = true
 
-  tags {
-    "Name" = "${local.bastion_fqdn}"
+  tags = {
+    "Name" = local.bastion_fqdn
   }
 }
 
 data "template_file" "authorized_keys_manager" {
-  template = "${file("${path.module}/resources/bastion/authorized_keys_manager.service")}"
+  template = file(
+    "${path.module}/resources/bastion/authorized_keys_manager.service",
+  )
 
-  vars {
-    authorized_keys_url = "${local.authorized_keys_url}"
+  vars = {
+    authorized_keys_url = local.authorized_keys_url
   }
 }
 
 data "template_file" "configure_bastion" {
-  template = "${file("${path.module}/resources/bastion/configure_bastion.sh")}"
+  template = file("${path.module}/resources/bastion/configure_bastion.sh")
 
-  vars {
-    eip_id     = "${aws_eip.bastion.id}"
-    aws_region = "${data.aws_region.current.name}"
+  vars = {
+    eip_id     = aws_eip.bastion.id
+    aws_region = data.aws_region.current.name
   }
 }
 
@@ -72,18 +77,19 @@ write_files:
   owner: root:root
   path: /etc/ssh/sshd_config
 EOF
+
   }
 
   part {
     content_type = "text/x-shellscript"
-    content      = "${data.template_file.configure_bastion.rendered}"
+    content      = data.template_file.configure_bastion.rendered
   }
 }
 
 resource "aws_security_group" "bastion" {
-  name        = "${local.bastion_fqdn}"
+  name        = local.bastion_fqdn
   description = "Security group for bastion"
-  vpc_id      = "${module.cluster_vpc.vpc_id}"
+  vpc_id      = module.cluster_vpc.vpc_id
 
   // non-standard port to reduce probes
   ingress {
@@ -100,8 +106,8 @@ resource "aws_security_group" "bastion" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
-    "Name" = "${local.bastion_fqdn}"
+  tags = {
+    "Name" = local.bastion_fqdn
   }
 }
 
@@ -121,8 +127,8 @@ data "aws_iam_policy_document" "bastion_assume" {
 }
 
 resource "aws_iam_role" "bastion" {
-  name               = "${local.bastion_fqdn}"
-  assume_role_policy = "${data.aws_iam_policy_document.bastion_assume.json}"
+  name               = local.bastion_fqdn
+  assume_role_policy = data.aws_iam_policy_document.bastion_assume.json
 }
 
 data "aws_iam_policy_document" "bastion" {
@@ -140,22 +146,22 @@ data "aws_iam_policy_document" "bastion" {
 
 resource "aws_iam_role_policy" "bastion" {
   name   = "associate-eip"
-  role   = "${aws_iam_role.bastion.id}"
-  policy = "${data.aws_iam_policy_document.bastion.json}"
+  role   = aws_iam_role.bastion.id
+  policy = data.aws_iam_policy_document.bastion.json
 }
 
 resource "aws_iam_instance_profile" "bastion" {
-  name = "${aws_route53_record.bastion.name}"
-  role = "${aws_iam_role.bastion.name}"
+  name = aws_route53_record.bastion.name
+  role = aws_iam_role.bastion.name
 }
 
 resource "aws_launch_configuration" "bastion" {
-  iam_instance_profile = "${aws_iam_instance_profile.bastion.name}"
-  image_id             = "${data.aws_ami.debian_stretch_latest.image_id}"
+  iam_instance_profile = aws_iam_instance_profile.bastion.name
+  image_id             = data.aws_ami.debian_stretch_latest.image_id
   instance_type        = "t2.nano"
-  key_name             = "${aws_key_pair.cluster.key_name}"
-  security_groups      = ["${aws_security_group.bastion.id}"]
-  user_data            = "${data.template_cloudinit_config.bastion.rendered}"
+  key_name             = aws_key_pair.cluster.key_name
+  security_groups      = [aws_security_group.bastion.id]
+  user_data            = data.template_cloudinit_config.bastion.rendered
 
   lifecycle {
     create_before_destroy = true
@@ -168,30 +174,39 @@ resource "aws_launch_configuration" "bastion" {
 }
 
 resource "aws_autoscaling_group" "bastion" {
-  name                      = "${local.bastion_fqdn}"
+  name                      = local.bastion_fqdn
   desired_capacity          = "1"
   max_size                  = "1"
   min_size                  = "1"
   health_check_grace_period = 60
   health_check_type         = "EC2"
   force_delete              = true
-  launch_configuration      = "${aws_launch_configuration.bastion.name}"
-  vpc_zone_identifier       = ["${module.cluster_vpc.public_subnets}"]
-  default_cooldown          = 60
+  launch_configuration      = aws_launch_configuration.bastion.name
+  # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
+  # force an interpolation expression to be interpreted as a list by wrapping it
+  # in an extra set of list brackets. That form was supported for compatibility in
+  # v0.11, but is no longer supported in Terraform v0.12.
+  #
+  # If the expression in the following list itself returns a list, remove the
+  # brackets to avoid interpretation as a list of lists. If the expression
+  # returns a single list item then leave it as-is and remove this TODO comment.
+  vpc_zone_identifier = [module.cluster_vpc.public_subnets]
+  default_cooldown    = 60
 
   tags = [
     {
       key                 = "Name"
-      value               = "${local.bastion_fqdn}"
+      value               = local.bastion_fqdn
       propagate_at_launch = true
     },
   ]
 }
 
 resource "aws_route53_record" "bastion" {
-  zone_id = "${module.cluster_dns.cluster_dns_zone_id}"
-  name    = "${local.bastion_fqdn}"
+  zone_id = module.cluster_dns.cluster_dns_zone_id
+  name    = local.bastion_fqdn
   type    = "A"
   ttl     = "30"
-  records = ["${aws_eip.bastion.public_ip}"]
+  records = [aws_eip.bastion.public_ip]
 }
+
