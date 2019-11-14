@@ -1,2 +1,6 @@
-variable "cluster_base_domain_name" {}
-variable "parent_zone_id" {}
+variable "cluster_base_domain_name" {
+}
+
+variable "parent_zone_id" {
+}
+
