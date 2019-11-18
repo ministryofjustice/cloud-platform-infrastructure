@@ -14,3 +14,11 @@ variable "cloud_platform_slack_webhook" {
   description = "Slack webhook to pass it to  script to send alerts"
 }
 
+variable "github_client_id" {
+}
+
+variable "github_client_secret" {
+}
+
+variable "github_secret_key" {
+}
