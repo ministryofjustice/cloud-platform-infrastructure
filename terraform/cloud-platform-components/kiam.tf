@@ -4,8 +4,8 @@ resource "tls_private_key" "ca" {
 }
 
 resource "tls_self_signed_cert" "ca" {
-  key_algorithm     = "${tls_private_key.ca.algorithm}"
-  private_key_pem   = "${tls_private_key.ca.private_key_pem}"
+  key_algorithm     = tls_private_key.ca.algorithm
+  private_key_pem   = tls_private_key.ca.private_key_pem
   is_ca_certificate = true
 
   validity_period_hours = 87600 // 10 years
@@ -27,8 +27,8 @@ resource "tls_private_key" "agent" {
 }
 
 resource "tls_cert_request" "agent" {
-  key_algorithm   = "${tls_private_key.agent.algorithm}"
-  private_key_pem = "${tls_private_key.agent.private_key_pem}"
+  key_algorithm   = tls_private_key.agent.algorithm
+  private_key_pem = tls_private_key.agent.private_key_pem
 
   subject {
     common_name = "Kiam Agent"
@@ -36,10 +36,10 @@ resource "tls_cert_request" "agent" {
 }
 
 resource "tls_locally_signed_cert" "agent" {
-  cert_request_pem   = "${tls_cert_request.agent.cert_request_pem }"
-  ca_key_algorithm   = "${tls_private_key.ca.algorithm}"
-  ca_private_key_pem = "${tls_private_key.ca.private_key_pem}"
-  ca_cert_pem        = "${tls_self_signed_cert.ca.cert_pem}"
+  cert_request_pem   = tls_cert_request.agent.cert_request_pem
+  ca_key_algorithm   = tls_private_key.ca.algorithm
+  ca_private_key_pem = tls_private_key.ca.private_key_pem
+  ca_cert_pem        = tls_self_signed_cert.ca.cert_pem
 
   validity_period_hours = 8760 // 1 year
   early_renewal_hours   = 720  // 1 month
@@ -58,8 +58,8 @@ resource "tls_private_key" "server" {
 }
 
 resource "tls_cert_request" "server" {
-  key_algorithm   = "${tls_private_key.server.algorithm}"
-  private_key_pem = "${tls_private_key.server.private_key_pem}"
+  key_algorithm   = tls_private_key.server.algorithm
+  private_key_pem = tls_private_key.server.private_key_pem
 
   subject {
     common_name = "Kiam Server"
@@ -75,10 +75,10 @@ resource "tls_cert_request" "server" {
 }
 
 resource "tls_locally_signed_cert" "server" {
-  cert_request_pem   = "${tls_cert_request.server.cert_request_pem }"
-  ca_key_algorithm   = "${tls_private_key.ca.algorithm}"
-  ca_private_key_pem = "${tls_private_key.ca.private_key_pem}"
-  ca_cert_pem        = "${tls_self_signed_cert.ca.cert_pem}"
+  cert_request_pem   = tls_cert_request.server.cert_request_pem
+  ca_key_algorithm   = tls_private_key.ca.algorithm
+  ca_private_key_pem = tls_private_key.ca.private_key_pem
+  ca_cert_pem        = tls_self_signed_cert.ca.cert_pem
 
   validity_period_hours = 8760 // 1 year
   early_renewal_hours   = 720  // 1 month
@@ -92,15 +92,15 @@ resource "tls_locally_signed_cert" "server" {
 }
 
 data "template_file" "kiam" {
-  template = "${file("${path.module}/templates/kiam.yaml.tpl")}"
+  template = file("${path.module}/templates/kiam.yaml.tpl")
 
   vars = {
     kiam_version = "v3.0"
-    ca           = "${base64encode(tls_self_signed_cert.ca.cert_pem)}"
-    agent_cert   = "${base64encode(tls_locally_signed_cert.agent.cert_pem)}"
-    agent_key    = "${base64encode(tls_private_key.agent.private_key_pem)}"
-    server_cert  = "${base64encode(tls_locally_signed_cert.server.cert_pem)}"
-    server_key   = "${base64encode(tls_private_key.server.private_key_pem)}"
+    ca           = base64encode(tls_self_signed_cert.ca.cert_pem)
+    agent_cert   = base64encode(tls_locally_signed_cert.agent.cert_pem)
+    agent_key    = base64encode(tls_private_key.agent.private_key_pem)
+    server_cert  = base64encode(tls_locally_signed_cert.server.cert_pem)
+    server_key   = base64encode(tls_private_key.server.private_key_pem)
   }
 }
 
@@ -118,37 +118,37 @@ resource "helm_release" "kiam" {
   recreate_pods = "true"
 
   values = [
-    "${data.template_file.kiam.rendered}",
+    data.template_file.kiam.rendered,
   ]
 
   depends_on = [
-    "null_resource.deploy",
-    "helm_release.open-policy-agent",
+    null_resource.deploy,
+    helm_release.open-policy-agent,
   ]
 
   lifecycle {
-    ignore_changes = ["keyring"]
+    ignore_changes = [keyring]
   }
 }
 
 resource "kubernetes_service" "server-metrics" {
   depends_on = [
-    "helm_release.kiam",
-    "helm_release.open-policy-agent",
+    helm_release.kiam,
+    helm_release.open-policy-agent,
   ]
 
   metadata {
     name      = "kiam-server-metrics"
     namespace = "kiam"
 
-    labels {
+    labels = {
       app       = "kiam"
       component = "server-metrics"
     }
   }
 
   spec {
-    selector {
+    selector = {
       component = "server"
     }
 
@@ -163,22 +163,22 @@ resource "kubernetes_service" "server-metrics" {
 
 resource "kubernetes_service" "agent-metrics" {
   depends_on = [
-    "helm_release.kiam",
-    "helm_release.open-policy-agent",
+    helm_release.kiam,
+    helm_release.open-policy-agent,
   ]
 
   metadata {
     name      = "kiam-agent-metrics"
     namespace = "kiam"
 
-    labels {
+    labels = {
       app       = "kiam"
       component = "agent-metrics"
     }
   }
 
   spec {
-    selector {
+    selector = {
       component = "agent"
     }
 
@@ -192,18 +192,22 @@ resource "kubernetes_service" "agent-metrics" {
 }
 
 resource "null_resource" "kiam_servicemonitor" {
-  depends_on = ["helm_release.kiam", "helm_release.prometheus_operator"]
+  depends_on = [
+    helm_release.kiam,
+    helm_release.prometheus_operator,
+  ]
 
   provisioner "local-exec" {
     command = "kubectl apply -f ${path.module}/resources/kiam/servicemonitor.yaml"
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "kubectl delete -f ${path.module}/resources/kiam/servicemonitor.yaml"
   }
 
-  triggers {
-    contents = "${sha1(file("${path.module}/resources/kiam/servicemonitor.yaml"))}"
+  triggers = {
+    contents = filesha1("${path.module}/resources/kiam/servicemonitor.yaml")
   }
 }
+

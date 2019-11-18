@@ -26,8 +26,8 @@ resource "kubernetes_cluster_role_binding" "tiller" {
 
 resource "null_resource" "deploy" {
   depends_on = [
-    "kubernetes_service_account.tiller",
-    "kubernetes_cluster_role_binding.tiller",
+    kubernetes_service_account.tiller,
+    kubernetes_cluster_role_binding.tiller,
   ]
 
   provisioner "local-exec" {
@@ -35,7 +35,8 @@ resource "null_resource" "deploy" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "kubectl -n kube-system delete deployment.apps/tiller-deploy service/tiller-deploy"
   }
 }
+

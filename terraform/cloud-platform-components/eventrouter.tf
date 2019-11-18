@@ -8,5 +8,6 @@ resource "helm_release" "eventrouter" {
     value = "stdout"
   }
 
-  depends_on = ["helm_release.fluentd_es"]
+  depends_on = [helm_release.fluentd_es]
 }
+

@@ -14,9 +14,10 @@ resource "helm_release" "metrics_server" {
     value = "--logtostderr"
   }
 
-  depends_on = ["null_resource.deploy"]
+  depends_on = [null_resource.deploy]
 
   lifecycle {
-    ignore_changes = ["keyring"]
+    ignore_changes = [keyring]
   }
 }
+

@@ -4,7 +4,8 @@ resource "null_resource" "storageclass" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "kubectl delete -f ${path.module}/resources/storageclass.yaml"
   }
 }
+

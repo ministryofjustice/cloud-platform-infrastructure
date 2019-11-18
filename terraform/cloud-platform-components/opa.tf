@@ -2,12 +2,12 @@ resource "kubernetes_namespace" "opa" {
   metadata {
     name = "opa"
 
-    labels {
+    labels = {
       "name"                        = "opa"
       "openpolicyagent.org/webhook" = "ignore"
     }
 
-    annotations {
+    annotations = {
       "cloud-platform.justice.gov.uk/application"   = "OPA"
       "cloud-platform.justice.gov.uk/business-unit" = "cloud-platform"
       "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
@@ -17,7 +17,7 @@ resource "kubernetes_namespace" "opa" {
 }
 
 data "template_file" "values" {
-  template = "${file("${path.module}/templates/opa/values.yaml.tpl")}"
+  template = file("${path.module}/templates/opa/values.yaml.tpl")
 }
 
 resource "helm_release" "open-policy-agent" {
@@ -28,17 +28,17 @@ resource "helm_release" "open-policy-agent" {
   version    = "1.8.0"
 
   depends_on = [
-    "null_resource.kube_system_ns_label",
-    "kubernetes_namespace.opa",
-    "null_resource.deploy",
+    null_resource.kube_system_ns_label,
+    kubernetes_namespace.opa,
+    null_resource.deploy,
   ]
 
   values = [
-    "${data.template_file.values.rendered}",
+    data.template_file.values.rendered,
   ]
 
   lifecycle {
-    ignore_changes = ["keyring"]
+    ignore_changes = [keyring]
   }
 }
 
@@ -52,15 +52,15 @@ resource "null_resource" "kube_system_ns_label" {
 resource "kubernetes_config_map" "policy_default" {
   metadata {
     name      = "policy-default"
-    namespace = "${helm_release.open-policy-agent.namespace}"
+    namespace = helm_release.open-policy-agent.namespace
 
-    labels {
+    labels = {
       "openpolicyagent.org/policy" = "rego"
     }
   }
 
-  data {
-    main.rego = "${file("${path.module}/resources/opa/policies/main.rego")}"
+  data = {
+    main.rego = file("${path.module}/resources/opa/policies/main.rego")
   }
 
   lifecycle {
@@ -71,15 +71,17 @@ resource "kubernetes_config_map" "policy_default" {
 resource "kubernetes_config_map" "policy_cloud_platform_admission" {
   metadata {
     name      = "policy-cloud-platform-admission"
-    namespace = "${helm_release.open-policy-agent.namespace}"
+    namespace = helm_release.open-policy-agent.namespace
 
-    labels {
+    labels = {
       "openpolicyagent.org/policy" = "rego"
     }
   }
 
-  data {
-    main.rego = "${file("${path.module}/resources/opa/policies/cloud_platform_admission.rego")}"
+  data = {
+    main.rego = file(
+      "${path.module}/resources/opa/policies/cloud_platform_admission.rego",
+    )
   }
 
   lifecycle {
@@ -90,15 +92,15 @@ resource "kubernetes_config_map" "policy_cloud_platform_admission" {
 resource "kubernetes_config_map" "policy_ingress_clash" {
   metadata {
     name      = "policy-ingress-clash"
-    namespace = "${helm_release.open-policy-agent.namespace}"
+    namespace = helm_release.open-policy-agent.namespace
 
-    labels {
+    labels = {
       "openpolicyagent.org/policy" = "rego"
     }
   }
 
-  data {
-    main.rego = "${file("${path.module}/resources/opa/policies/ingress_clash.rego")}"
+  data = {
+    main.rego = file("${path.module}/resources/opa/policies/ingress_clash.rego")
   }
 
   lifecycle {
@@ -109,15 +111,15 @@ resource "kubernetes_config_map" "policy_ingress_clash" {
 resource "kubernetes_config_map" "policy_service_type" {
   metadata {
     name      = "policy-service-type"
-    namespace = "${helm_release.open-policy-agent.namespace}"
+    namespace = helm_release.open-policy-agent.namespace
 
-    labels {
+    labels = {
       "openpolicyagent.org/policy" = "rego"
     }
   }
 
-  data {
-    main.rego = "${file("${path.module}/resources/opa/policies/service_type.rego")}"
+  data = {
+    main.rego = file("${path.module}/resources/opa/policies/service_type.rego")
   }
 
   lifecycle {
@@ -128,15 +130,17 @@ resource "kubernetes_config_map" "policy_service_type" {
 resource "kubernetes_config_map" "policy_pod_toleration_withkey" {
   metadata {
     name      = "policy-pod-toleration-withkey"
-    namespace = "${helm_release.open-policy-agent.namespace}"
+    namespace = helm_release.open-policy-agent.namespace
 
-    labels {
+    labels = {
       "openpolicyagent.org/policy" = "rego"
     }
   }
 
-  data {
-    main.rego = "${file("${path.module}/resources/opa/policies/pod_toleration_withkey.rego")}"
+  data = {
+    main.rego = file(
+      "${path.module}/resources/opa/policies/pod_toleration_withkey.rego",
+    )
   }
 
   lifecycle {
@@ -147,18 +151,21 @@ resource "kubernetes_config_map" "policy_pod_toleration_withkey" {
 resource "kubernetes_config_map" "policy_pod_toleration_withnullkey" {
   metadata {
     name      = "policy-pod-toleration-withnullkey"
-    namespace = "${helm_release.open-policy-agent.namespace}"
+    namespace = helm_release.open-policy-agent.namespace
 
-    labels {
+    labels = {
       "openpolicyagent.org/policy" = "rego"
     }
   }
 
-  data {
-    main.rego = "${file("${path.module}/resources/opa/policies/pod_toleration_withnullkey.rego")}"
+  data = {
+    main.rego = file(
+      "${path.module}/resources/opa/policies/pod_toleration_withnullkey.rego",
+    )
   }
 
   lifecycle {
     ignore_changes = ["metadata.0.annotations"]
   }
 }
+

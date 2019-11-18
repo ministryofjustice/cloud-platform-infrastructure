@@ -4,14 +4,14 @@ data "aws_iam_policy_document" "ecr_exporter_assume" {
 
     principals {
       type        = "AWS"
-      identifiers = ["${data.aws_iam_role.nodes.arn}"]
+      identifiers = [data.aws_iam_role.nodes.arn]
     }
   }
 }
 
 resource "aws_iam_role" "ecr_exporter" {
-  name               = "ecr-exporter.${data.terraform_remote_state.cluster.cluster_domain_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.ecr_exporter_assume.json}"
+  name               = "ecr-exporter.${data.terraform_remote_state.cluster.outputs.cluster_domain_name}"
+  assume_role_policy = data.aws_iam_policy_document.ecr_exporter_assume.json
 }
 
 data "aws_iam_policy_document" "ecr_exporter" {
@@ -27,13 +27,13 @@ data "aws_iam_policy_document" "ecr_exporter" {
 
 resource "aws_iam_role_policy" "ecr_exporter" {
   name   = "ecr-exporter"
-  role   = "${aws_iam_role.ecr_exporter.id}"
-  policy = "${data.aws_iam_policy_document.ecr_exporter.json}"
+  role   = aws_iam_role.ecr_exporter.id
+  policy = data.aws_iam_policy_document.ecr_exporter.json
 }
 
 resource "helm_release" "ecr_exporter" {
   name      = "ecr-exporter"
-  count     = "${terraform.workspace == local.live_workspace ? 1 : 0}"
+  count     = terraform.workspace == local.live_workspace ? 1 : 0
   namespace = "monitoring"
   chart     = "../../helm-charts/prometheus-ecr-exporter"
 
@@ -44,7 +44,7 @@ resource "helm_release" "ecr_exporter" {
 
   set {
     name  = "aws.role"
-    value = "${aws_iam_role.ecr_exporter.name}"
+    value = aws_iam_role.ecr_exporter.name
   }
 
   set {
@@ -53,11 +53,12 @@ resource "helm_release" "ecr_exporter" {
   }
 
   depends_on = [
-    "null_resource.deploy",
-    "helm_release.prometheus_operator",
+    null_resource.deploy,
+    helm_release.prometheus_operator,
   ]
 
   lifecycle {
-    ignore_changes = ["keyring"]
+    ignore_changes = [keyring]
   }
 }
+
