@@ -64,7 +64,7 @@ resource "kubernetes_config_map" "policy_default" {
   }
 
   lifecycle {
-    ignore_changes = ["metadata.0.annotations"]
+    ignore_changes = [metadata.0.annotations]
   }
 }
 
@@ -85,7 +85,7 @@ resource "kubernetes_config_map" "policy_cloud_platform_admission" {
   }
 
   lifecycle {
-    ignore_changes = ["metadata.0.annotations"]
+    ignore_changes = [metadata.0.annotations]
   }
 }
 
@@ -104,7 +104,7 @@ resource "kubernetes_config_map" "policy_ingress_clash" {
   }
 
   lifecycle {
-    ignore_changes = ["metadata.0.annotations"]
+    ignore_changes = [metadata.0.annotations]
   }
 }
 
@@ -123,7 +123,7 @@ resource "kubernetes_config_map" "policy_service_type" {
   }
 
   lifecycle {
-    ignore_changes = ["metadata.0.annotations"]
+    ignore_changes = [metadata.0.annotations]
   }
 }
 
@@ -144,7 +144,7 @@ resource "kubernetes_config_map" "policy_pod_toleration_withkey" {
   }
 
   lifecycle {
-    ignore_changes = ["metadata.0.annotations"]
+    ignore_changes = [metadata.0.annotations]
   }
 }
 
@@ -165,7 +165,7 @@ resource "kubernetes_config_map" "policy_pod_toleration_withnullkey" {
   }
 
   lifecycle {
-    ignore_changes = ["metadata.0.annotations"]
+    ignore_changes = [metadata.0.annotations]
   }
 }
 
