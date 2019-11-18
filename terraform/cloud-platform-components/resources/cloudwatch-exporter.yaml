@@ -22,6 +22,7 @@ config: |-
   region: eu-west-2
   period_seconds: 240
   metrics:
+  # RDS Metrics
   - aws_namespace: AWS/RDS
     aws_metric_name: CPUCreditUsage
     aws_dimensions: [DBInstanceIdentifier]
@@ -376,7 +377,7 @@ config: |-
   - aws_namespace: AWS/AmazonMQ
     aws_metric_name: TotalProducerCount
     aws_dimensions: [Broker]
-    
+
   # Elasticsearch Metrics
   - aws_namespace: AWS/ES
     aws_metric_name: ClusterStatus.green
