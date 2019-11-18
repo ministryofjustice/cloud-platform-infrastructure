@@ -60,7 +60,7 @@ resource "kubernetes_config_map" "policy_default" {
   }
 
   data = {
-    main.rego = file("${path.module}/resources/opa/policies/main.rego")
+    main = file("${path.module}/resources/opa/policies/main.rego")
   }
 
   lifecycle {
@@ -79,7 +79,7 @@ resource "kubernetes_config_map" "policy_cloud_platform_admission" {
   }
 
   data = {
-    main.rego = file(
+    main = file(
       "${path.module}/resources/opa/policies/cloud_platform_admission.rego",
     )
   }
@@ -100,7 +100,7 @@ resource "kubernetes_config_map" "policy_ingress_clash" {
   }
 
   data = {
-    main.rego = file("${path.module}/resources/opa/policies/ingress_clash.rego")
+    main = file("${path.module}/resources/opa/policies/ingress_clash.rego")
   }
 
   lifecycle {
@@ -119,7 +119,7 @@ resource "kubernetes_config_map" "policy_service_type" {
   }
 
   data = {
-    main.rego = file("${path.module}/resources/opa/policies/service_type.rego")
+    main = file("${path.module}/resources/opa/policies/service_type.rego")
   }
 
   lifecycle {
@@ -138,7 +138,7 @@ resource "kubernetes_config_map" "policy_pod_toleration_withkey" {
   }
 
   data = {
-    main.rego = file(
+    main = file(
       "${path.module}/resources/opa/policies/pod_toleration_withkey.rego",
     )
   }
@@ -159,7 +159,7 @@ resource "kubernetes_config_map" "policy_pod_toleration_withnullkey" {
   }
 
   data = {
-    main.rego = file(
+    main = file(
       "${path.module}/resources/opa/policies/pod_toleration_withnullkey.rego",
     )
   }
