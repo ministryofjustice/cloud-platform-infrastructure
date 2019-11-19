@@ -13,14 +13,14 @@ data "aws_iam_policy_document" "cluster_backup_checker_assume" {
 
     principals {
       type        = "AWS"
-      identifiers = ["${data.aws_iam_role.nodes.arn}"]
+      identifiers = [data.aws_iam_role.nodes.arn]
     }
   }
 }
 
 resource "aws_iam_role" "cluster_backup_checker" {
-  name               = "cluster-chckr.${data.terraform_remote_state.cluster.cluster_domain_name}"
-  assume_role_policy = "${data.aws_iam_policy_document.cluster_backup_checker_assume.json}"
+  name               = "cluster-chckr.${data.terraform_remote_state.cluster.outputs.cluster_domain_name}"
+  assume_role_policy = data.aws_iam_policy_document.cluster_backup_checker_assume.json
 }
 
 data "aws_iam_policy_document" "cluster_backup_checker" {
@@ -36,8 +36,8 @@ data "aws_iam_policy_document" "cluster_backup_checker" {
 
 resource "aws_iam_role_policy" "cluster_backup_checker" {
   name   = "cluster-checker"
-  role   = "${aws_iam_role.cluster_backup_checker.id}"
-  policy = "${data.aws_iam_policy_document.cluster_backup_checker.json}"
+  role   = aws_iam_role.cluster_backup_checker.id
+  policy = data.aws_iam_policy_document.cluster_backup_checker.json
 }
 
 resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
@@ -50,13 +50,14 @@ resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
     schedule = "0 17 * * *"
 
     job_template {
-      metadata = {}
+      metadata {
+      }
 
       spec {
         template {
-          metadata = {
-            annotations {
-              "iam.amazonaws.com/role" = "${aws_iam_role.cluster_backup_checker.name}"
+          metadata {
+            annotations = {
+              "iam.amazonaws.com/role" = aws_iam_role.cluster_backup_checker.name
             }
           }
 
@@ -67,12 +68,12 @@ resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
 
               env {
                 name  = "SLACK_WEBHOOK"
-                value = "${var.cloud_platform_slack_webhook}"
+                value = var.cloud_platform_slack_webhook
               }
 
               env {
                 name  = "KUBERNETES_CLUSTER"
-                value = "${format("%s.%s", local.live_workspace, local.live_domain)}"
+                value = format("%s.%s", local.live_workspace, local.live_domain)
               }
 
               env {
@@ -82,12 +83,12 @@ resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
 
               env {
                 name  = "ROLE_NAME"
-                value = "${aws_iam_role.cluster_backup_checker.name}"
+                value = aws_iam_role.cluster_backup_checker.name
               }
 
               env {
                 name  = "ACCOUNT_ID"
-                value = "${var.aws_master_account_id}"
+                value = var.aws_master_account_id
               }
             }
           }
@@ -96,3 +97,4 @@ resource "kubernetes_cron_job" "cluster_backup_checker_cronjob" {
     }
   }
 }
+

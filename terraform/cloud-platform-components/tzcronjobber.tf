@@ -4,7 +4,8 @@ resource "null_resource" "tzcronjobber" {
   }
 
   provisioner "local-exec" {
-    when    = "destroy"
+    when    = destroy
     command = "kubectl delete -n kube-system --ignore-not-found -f ${path.module}/resources/tzcronjobber/"
   }
 }
+
