@@ -90,7 +90,7 @@ module "cluster_vpc" {
   enable_dns_hostnames = true
 
   public_subnet_tags = {
-    SubnetType                                                = "Utility" # <--- Why this is called Utility =(
+    SubnetType                                                = "Utility"
     "kubernetes.io/cluster/${local.cluster_base_domain_name}" = "shared"
     "kubernetes.io/role/elb"                                  = "1"
   }
@@ -168,10 +168,6 @@ resource "auth0_client" "components" {
     ),
     format(
       "https://kibana-audit.%s/oauth2/callback",
-      local.services_base_domain,
-    ),
-    format(
-      "https://grafana.%s/login/generic_oauth",
       local.services_base_domain,
     ),
     format(
