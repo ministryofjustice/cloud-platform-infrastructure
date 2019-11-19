@@ -4,6 +4,8 @@ This README will detail the purpose of the Cloud Platform layer in Terraform. Th
 
 ## Contents
   - [Bastion](#bastion)
+  - [Cluster Dependences](#cluster-dependences)
+  - [EKS](#eks)
   - [When do I use this?](#when-do-I-use-this)
   - [How do I run this?](#terraform-modules)
 
@@ -11,12 +13,20 @@ This README will detail the purpose of the Cloud Platform layer in Terraform. Th
 
 ### Bastion
 
-The `bastion.tf` in this directory will create you all relevant components for a bastion host. You can use this host to ssh onto your worker nodes. 
+The `bastion.tf` file calls the bastion module, which creates a bastion instance inside a VPC that will grant access to internal subnets to the members of the team. You can use this host to ssh onto your worker nodes. 
 
 ### Cluster Dependences
 
-Within `main.tf` ...
+Within `main.tf` you'll find creation of:
 
+- VPCs: internal and external subnets, nat gateways, vpcs, etc
+- Route53 hostzones that your cluster will use
+- AWS Key pairs
+- etc
+
+### EKS 
+
+`eks.tf` holds the EKS definition, it is being used the official EKS module. Inside this file you'll specify workers, IAM permissions, etc.
 
 ## When do I use this?
 
