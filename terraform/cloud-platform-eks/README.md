@@ -26,7 +26,9 @@ Within `main.tf` you'll find creation of:
 
 ### EKS 
 
-`eks.tf` holds the EKS definition, it is being used the official EKS module. Inside this file you'll specify workers, IAM permissions, etc.
+`eks.tf` holds the EKS definition, it is being used the official EKS module. Inside this file you'll specify workers, IAM permissions, etc. 
+
+**NOTE**: Default cluster size is **21** nodes and default worker node types are **r5.2xlarge**. If you are just playing around or testing a feature it doesn't make sense to have these specs, please change them.
 
 ## When do I use this?
 

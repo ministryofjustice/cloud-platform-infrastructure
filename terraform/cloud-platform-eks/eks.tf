@@ -13,11 +13,11 @@ module "eks" {
 
   worker_groups = [
     {
-      instance_type        = "m4.large"
+      instance_type        = var.worker_node_machine_type
       subnets              = module.cluster_vpc.private_subnets
-      asg_max_size         = 5
-      asg_min_size         = 2
-      asg_desired_capacity = 2
+      asg_max_size         = 30
+      asg_min_size         = 0
+      asg_desired_capacity = var.cluster_node_count
       key_name             = local.cluster_base_domain_name
     }
   ]
