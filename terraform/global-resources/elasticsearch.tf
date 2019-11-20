@@ -22,14 +22,17 @@ locals {
   test_domain = "cloud-platform-test"
 
   allowed_test_ips = {
-    "81.134.202.29/32"   = "?"
-    "18.130.193.254/32"  = "?"
-    "18.130.140.174/32"  = "?"
-    "3.9.1.230/32"       = "?"
+    "3.10.134.18/32"     = "?"
+    "3.10.182.216/32"    = "?"
+    "3.10.148.25/32"     = "?"
+    "35.178.209.113/32"  = "?" 
+    "35.177.252.54/32"   = "?"
+    "3.8.51.207/32"      = "?"
     "88.98.227.149/32"   = "?"
-    "35.177.135.226/32"  = "?"
-    "18.130.212.151/32"  = "?"
-    "35.178.89.175/32"   = "?"
+    "82.46.130.162/32"   = "?"
+    "35.178.31.199/32"   = "?"
+    "3.9.196.241/32"     = "?"
+    "3.10.159.29/32"     = "?"
     "213.121.161.124/32" = "102PFWifi"
     "81.134.202.29/32"   = "MoJDigital"
   }
@@ -143,6 +146,9 @@ resource "aws_elasticsearch_domain" "live_1" {
     dedicated_master_type    = "m4.large.elasticsearch"
     dedicated_master_count   = "3"
     zone_awareness_enabled   = true
+    zone_awareness_config {
+      availability_zone_count = 3
+    }
   }
 
   ebs_options {
@@ -292,7 +298,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
 
   cluster_config {
     instance_type          = "m4.xlarge.elasticsearch"
-    instance_count         = "4"
+    instance_count         = "6"
     zone_awareness_enabled = true
   }
 
@@ -346,7 +352,7 @@ data "aws_iam_policy_document" "test" {
 resource "aws_elasticsearch_domain" "test" {
   domain_name           = "cloud-platform-test"
   provider              = "aws.cloud-platform"
-  elasticsearch_version = "6.5"
+  elasticsearch_version = "7.1"
 
   cluster_config {
     instance_type  = "r5.xlarge.elasticsearch"
@@ -356,7 +362,7 @@ resource "aws_elasticsearch_domain" "test" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp2"
-    volume_size = "128"
+    volume_size = "500"
   }
 
   access_policies = "${data.aws_iam_policy_document.test.json}"
