@@ -25,7 +25,7 @@ locals {
     "3.10.134.18/32"     = "?"
     "3.10.182.216/32"    = "?"
     "3.10.148.25/32"     = "?"
-    "35.178.209.113/32"  = "?" 
+    "35.178.209.113/32"  = "?"
     "35.177.252.54/32"   = "?"
     "3.8.51.207/32"      = "?"
     "88.98.227.149/32"   = "?"
@@ -146,6 +146,7 @@ resource "aws_elasticsearch_domain" "live_1" {
     dedicated_master_type    = "m4.large.elasticsearch"
     dedicated_master_count   = "3"
     zone_awareness_enabled   = true
+
     zone_awareness_config {
       availability_zone_count = 3
     }
