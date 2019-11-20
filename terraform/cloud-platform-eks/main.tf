@@ -1,11 +1,13 @@
 # Setup
 terraform {
   required_version = ">= 0.12"
+
   backend "s3" {
-    bucket  = "cloud-platform-terraform-state"
-    region  = "eu-west-1"
-    key     = "cloud-platform-eks/terraform.tfstate"
-    profile = "moj-cp"
+    bucket               = "cloud-platform-terraform-state"
+    region               = "eu-west-1"
+    key                  = "terraform.tfstate"
+    workspace_key_prefix = "cloud-platform-eks"
+    profile              = "moj-cp"
   }
 }
 
@@ -90,15 +92,15 @@ module "cluster_vpc" {
   enable_dns_hostnames = true
 
   public_subnet_tags = {
-    SubnetType                                                = "Utility"
-    "kubernetes.io/cluster/${local.cluster_base_domain_name}" = "shared"
-    "kubernetes.io/role/elb"                                  = "1"
+    SubnetType                                    = "Utility"
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/role/elb"                      = "1"
   }
 
   private_subnet_tags = {
-    SubnetType                                                = "Private"
-    "kubernetes.io/cluster/${local.cluster_base_domain_name}" = "shared"
-    "kubernetes.io/role/internal-elb"                         = "1"
+    SubnetType                                    = "Private"
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"             = "1"
   }
 
   tags = {

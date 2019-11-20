@@ -61,3 +61,13 @@ output "oidc_components_client_id" {
 output "oidc_components_client_secret" {
   value = auth0_client.components.client_secret
 }
+
+output "eks_worker_iam_role_arn" {
+  value = module.eks.worker_iam_role_arn
+}
+
+output "eks_worker_iam_role_name" {
+  value = module.eks.worker_iam_role_name
+}
+
+

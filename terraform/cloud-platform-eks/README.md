@@ -39,5 +39,5 @@ The idea of this directory is to collect all terraform that runs at cluster leve
 ```bash
 terraform init
 terraform workspace select/new <clusterName>
-terraform apply
+terraform apply -var-file="vars/stg.tfvars"
 ```
