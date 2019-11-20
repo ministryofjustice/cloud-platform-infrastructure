@@ -192,8 +192,9 @@ resource "aws_sns_topic_subscription" "GuardDuty-notifications_sns_subscription"
 # membership account provider
 # -----------------------------------------------------------
 
-provider "aws.member" {
+provider "aws" {
   region  = "${var.aws_region}"
+  alias   = "member"
   profile = "${var.aws_member_profile}"
 }
 
@@ -225,8 +226,9 @@ resource "aws_guardduty_member" "member" {
 # membership1 account provider
 # -----------------------------------------------------------
 
-provider "aws.member1" {
+provider "aws" {
   region  = "${var.aws_region}"
+  alias   = "member1"
   profile = "${var.aws_member1_profile}"
 }
 
@@ -258,8 +260,9 @@ resource "aws_guardduty_member" "member1" {
 # membership2 account provider
 # -----------------------------------------------------------
 
-provider "aws.member2" {
+provider "aws" {
   region  = "${var.aws_region}"
+  alias   = "member2"
   profile = "${var.aws_member2_profile}"
 }
 
@@ -291,8 +294,9 @@ resource "aws_guardduty_member" "member2" {
 # membership3 account provider
 # -----------------------------------------------------------
 
-provider "aws.member3" {
+provider "aws" {
   region  = "${var.aws_region}"
+  alias   = "member3"
   profile = "${var.aws_member3_profile}"
 }
 
@@ -324,8 +328,9 @@ resource "aws_guardduty_member" "member3" {
 # membership4 account provider
 # -----------------------------------------------------------
 
-provider "aws.member4" {
+provider "aws" {
   region  = "${var.aws_region}"
+  alias   = "member4"
   profile = "${var.aws_member4_profile}"
 }
 
@@ -357,8 +362,9 @@ resource "aws_guardduty_member" "member4" {
 # membership5 account provider
 # -----------------------------------------------------------
 
-provider "aws.member5" {
+provider "aws" {
   region  = "${var.aws_region}"
+  alias   = "member5"
   profile = "${var.aws_member5_profile}"
 }
 
@@ -390,8 +396,9 @@ resource "aws_guardduty_member" "member5" {
 # membership6 account provider
 # -----------------------------------------------------------
 
-provider "aws.member6" {
+provider "aws" {
   region  = "${var.aws_region}"
+  alias   = "member6"
   profile = "${var.aws_member6_profile}"
 }
 
@@ -423,8 +430,9 @@ resource "aws_guardduty_member" "member6" {
 # membership7 account provider
 # -----------------------------------------------------------
 
-provider "aws.member7" {
+provider "aws" {
   region  = "${var.aws_region}"
+  alias   = "member7"
   profile = "${var.aws_member7_profile}"
 }
 
