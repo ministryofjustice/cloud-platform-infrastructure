@@ -38,7 +38,7 @@ resource "aws_s3_bucket" "kops_state_store" {
 
 resource "aws_s3_bucket" "cloud_platform_kops_state" {
   bucket   = "cloud-platform-kops-state"
-  provider = "aws.cloud-platform-ireland"
+  provider = aws.cloud-platform-ireland
   acl      = "private"
 
   versioning {
@@ -104,3 +104,4 @@ resource "aws_s3_bucket" "cluster_components" {
     }
   }
 }
+

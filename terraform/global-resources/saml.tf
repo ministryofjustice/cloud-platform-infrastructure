@@ -3,7 +3,6 @@ resource "auth0_client" "saml" {
   description = "SAML provider for the cloud-platform-aws account"
   app_type    = "regular_web"
   callbacks   = ["https://signin.aws.amazon.com/saml"]
-
   # This does not currently work as intended. See the output below.
   #
   # addons {
@@ -65,6 +64,7 @@ Enable the SAML2 addon and use the following configuration:
 =------------------------------------------------------------------------------=
 
 EOF
+
 }
 
 data "external" "metadata" {
@@ -76,20 +76,20 @@ data "external" "metadata" {
 }
 
 resource "aws_iam_saml_provider" "auth0" {
-  provider               = "aws.cloud-platform"
+  provider               = aws.cloud-platform
   name                   = "auth0"
-  saml_metadata_document = "${data.external.metadata.result["content"]}"
+  saml_metadata_document = data.external.metadata.result["content"]
 }
 
 data "aws_iam_policy_document" "federated_role_trust_policy" {
-  provider = "aws.cloud-platform"
+  provider = aws.cloud-platform
 
   statement {
     effect = "Allow"
 
     principals {
       type        = "Federated"
-      identifiers = ["${aws_iam_saml_provider.auth0.arn}"]
+      identifiers = [aws_iam_saml_provider.auth0.arn]
     }
 
     actions = ["sts:AssumeRoleWithSAML"]
@@ -103,14 +103,15 @@ data "aws_iam_policy_document" "federated_role_trust_policy" {
 }
 
 resource "aws_iam_role" "github_webops" {
-  provider             = "aws.cloud-platform"
+  provider             = aws.cloud-platform
   name                 = "${auth0_rule_config.aws-saml-role-prefix.value}webops"
-  assume_role_policy   = "${data.aws_iam_policy_document.federated_role_trust_policy.json}"
-  max_session_duration = "${12 * 3600}"
+  assume_role_policy   = data.aws_iam_policy_document.federated_role_trust_policy.json
+  max_session_duration = 12 * 3600
 }
 
 resource "aws_iam_role_policy_attachment" "github_webops_admin" {
-  provider   = "aws.cloud-platform"
-  role       = "${aws_iam_role.github_webops.name}"
+  provider   = aws.cloud-platform
+  role       = aws_iam_role.github_webops.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
+
