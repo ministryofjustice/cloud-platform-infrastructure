@@ -79,9 +79,7 @@ data "aws_iam_policy_document" "live" {
       # If the expression in the following list itself returns a list, remove the
       # brackets to avoid interpretation as a list of lists. If the expression
       # returns a single list item then leave it as-is and remove this TODO comment.
-      values = [
-        keys(local.allowed_live_ips),
-      ]
+      values = keys(local.allowed_live_ips)
     }
   }
 }
@@ -113,9 +111,7 @@ data "aws_iam_policy_document" "live_1" {
       # If the expression in the following list itself returns a list, remove the
       # brackets to avoid interpretation as a list of lists. If the expression
       # returns a single list item then leave it as-is and remove this TODO comment.
-      values = [
-        keys(local.allowed_live_1_ips),
-      ]
+      values = keys(local.allowed_live_1_ips)
     }
   }
 }
@@ -231,9 +227,7 @@ data "aws_iam_policy_document" "audit" {
       # If the expression in the following list itself returns a list, remove the
       # brackets to avoid interpretation as a list of lists. If the expression
       # returns a single list item then leave it as-is and remove this TODO comment.
-      values = [
-        keys(local.allowed_audit_ips),
-      ]
+      values = keys(local.allowed_audit_ips)
     }
   }
 }
@@ -277,9 +271,7 @@ data "aws_iam_policy_document" "audit_1" {
       # If the expression in the following list itself returns a list, remove the
       # brackets to avoid interpretation as a list of lists. If the expression
       # returns a single list item then leave it as-is and remove this TODO comment.
-      values = [
-        keys(local.allowed_audit_1_ips),
-      ]
+      values = keys(local.allowed_audit_1_ips)
     }
   }
 }
@@ -386,9 +378,7 @@ data "aws_iam_policy_document" "test" {
       # If the expression in the following list itself returns a list, remove the
       # brackets to avoid interpretation as a list of lists. If the expression
       # returns a single list item then leave it as-is and remove this TODO comment.
-      values = [
-        keys(merge(local.allowed_live_1_ips, local.allowed_test_ips)),
-      ]
+      values = keys(merge(local.allowed_live_1_ips, local.allowed_test_ips))
     }
   }
 }
