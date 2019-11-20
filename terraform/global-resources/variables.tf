@@ -1,48 +1,100 @@
 # AWS GuardDuty variables:
 
-variable "aws_region" {}
-variable "integration_key" {}
-variable "endpoint" {}
-variable "topic_arn" {}
-variable "sns_arn" {}
+variable "aws_region" {
+}
 
-variable "aws_master_account_id" {}
-variable "aws_master_profile" {}
+variable "integration_key" {
+}
 
-variable "aws_member_account_id" {}
-variable "aws_member_profile" {}
-variable "member_email" {}
+variable "endpoint" {
+}
 
-variable "aws_member1_account_id" {}
-variable "aws_member1_profile" {}
-variable "member1_email" {}
+variable "topic_arn" {
+}
 
-variable "aws_member2_account_id" {}
-variable "aws_member2_profile" {}
-variable "member2_email" {}
+variable "sns_arn" {
+}
 
-variable "aws_member3_account_id" {}
-variable "aws_member3_profile" {}
-variable "member3_email" {}
+variable "aws_master_account_id" {
+}
 
-variable "aws_member4_account_id" {}
-variable "aws_member4_profile" {}
-variable "member4_email" {}
+variable "aws_master_profile" {
+}
 
-variable "aws_member5_account_id" {}
-variable "aws_member5_profile" {}
-variable "member5_email" {}
+variable "aws_member_account_id" {
+}
 
-variable "aws_member6_account_id" {}
-variable "aws_member6_profile" {}
-variable "member6_email" {}
+variable "aws_member_profile" {
+}
 
-variable "aws_member7_account_id" {}
-variable "aws_member7_profile" {}
-variable "member7_email" {}
+variable "member_email" {
+}
+
+variable "aws_member1_account_id" {
+}
+
+variable "aws_member1_profile" {
+}
+
+variable "member1_email" {
+}
+
+variable "aws_member2_account_id" {
+}
+
+variable "aws_member2_profile" {
+}
+
+variable "member2_email" {
+}
+
+variable "aws_member3_account_id" {
+}
+
+variable "aws_member3_profile" {
+}
+
+variable "member3_email" {
+}
+
+variable "aws_member4_account_id" {
+}
+
+variable "aws_member4_profile" {
+}
+
+variable "member4_email" {
+}
+
+variable "aws_member5_account_id" {
+}
+
+variable "aws_member5_profile" {
+}
+
+variable "member5_email" {
+}
+
+variable "aws_member6_account_id" {
+}
+
+variable "aws_member6_profile" {
+}
+
+variable "member6_email" {
+}
+
+variable "aws_member7_account_id" {
+}
+
+variable "aws_member7_profile" {
+}
+
+variable "member7_email" {
+}
 
 variable "users" {
-  type = "list"
+  type = list(string)
 }
 
 variable "bucket_prefix" {
@@ -65,3 +117,4 @@ variable "tags" {
     "runbook"                = "none"
   }
 }
+

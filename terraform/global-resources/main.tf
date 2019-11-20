@@ -12,7 +12,7 @@ locals {
 }
 
 provider "auth0" {
-  domain = "${local.auth0_tenant_domain}"
+  domain = local.auth0_tenant_domain
 }
 
 # default provider
@@ -36,7 +36,7 @@ provider "aws" {
 }
 
 data "aws_caller_identity" "cloud-platform" {
-  provider = "aws.cloud-platform"
+  provider = aws.cloud-platform
 }
 
 # https://mojdsd.signin.aws.amazon.com/console
@@ -46,4 +46,6 @@ provider "aws" {
   profile = "moj-dsd"
 }
 
-provider "external" {}
+provider "external" {
+}
+

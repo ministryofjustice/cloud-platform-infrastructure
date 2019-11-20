@@ -15,9 +15,9 @@ locals {
 
   audit_domain = "cloud-platform-audit"
 
-  allowed_audit_ips = "${local.allowed_live_ips}"
+  allowed_audit_ips = local.allowed_live_ips
 
-  allowed_audit_1_ips = "${local.allowed_live_1_ips}"
+  allowed_audit_1_ips = local.allowed_live_1_ips
 
   test_domain = "cloud-platform-test"
 
@@ -38,15 +38,18 @@ locals {
   }
 }
 
-data "aws_region" "moj-dsd" {}
-data "aws_caller_identity" "moj-dsd" {}
+data "aws_region" "moj-dsd" {
+}
+
+data "aws_caller_identity" "moj-dsd" {
+}
 
 data "aws_region" "moj-cp" {
-  provider = "aws.cloud-platform"
+  provider = aws.cloud-platform
 }
 
 data "aws_caller_identity" "moj-cp" {
-  provider = "aws.cloud-platform"
+  provider = aws.cloud-platform
 }
 
 data "aws_iam_policy_document" "live" {
@@ -68,8 +71,16 @@ data "aws_iam_policy_document" "live" {
       test     = "IpAddress"
       variable = "aws:SourceIp"
 
+      # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
+      # force an interpolation expression to be interpreted as a list by wrapping it
+      # in an extra set of list brackets. That form was supported for compatibility in
+      # v0.11, but is no longer supported in Terraform v0.12.
+      #
+      # If the expression in the following list itself returns a list, remove the
+      # brackets to avoid interpretation as a list of lists. If the expression
+      # returns a single list item then leave it as-is and remove this TODO comment.
       values = [
-        "${keys(local.allowed_live_ips)}",
+        keys(local.allowed_live_ips),
       ]
     }
   }
@@ -94,15 +105,23 @@ data "aws_iam_policy_document" "live_1" {
       test     = "IpAddress"
       variable = "aws:SourceIp"
 
+      # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
+      # force an interpolation expression to be interpreted as a list by wrapping it
+      # in an extra set of list brackets. That form was supported for compatibility in
+      # v0.11, but is no longer supported in Terraform v0.12.
+      #
+      # If the expression in the following list itself returns a list, remove the
+      # brackets to avoid interpretation as a list of lists. If the expression
+      # returns a single list item then leave it as-is and remove this TODO comment.
       values = [
-        "${keys(local.allowed_live_1_ips)}",
+        keys(local.allowed_live_1_ips),
       ]
     }
   }
 }
 
 resource "aws_elasticsearch_domain" "live" {
-  domain_name           = "${local.live_domain}"
+  domain_name           = local.live_domain
   elasticsearch_version = "6.4"
 
   cluster_config {
@@ -119,24 +138,24 @@ resource "aws_elasticsearch_domain" "live" {
     volume_size = "1024"
   }
 
-  advanced_options {
+  advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
   }
 
-  access_policies = "${data.aws_iam_policy_document.live.json}"
+  access_policies = data.aws_iam_policy_document.live.json
 
   snapshot_options {
     automated_snapshot_start_hour = 23
   }
 
-  tags {
-    Domain = "${local.live_domain}"
+  tags = {
+    Domain = local.live_domain
   }
 }
 
 resource "aws_elasticsearch_domain" "live_1" {
-  domain_name           = "${local.live_domain}"
-  provider              = "aws.cloud-platform"
+  domain_name           = local.live_domain
+  provider              = aws.cloud-platform
   elasticsearch_version = "6.4"
 
   cluster_config {
@@ -158,18 +177,18 @@ resource "aws_elasticsearch_domain" "live_1" {
     volume_size = "1024"
   }
 
-  advanced_options {
+  advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
   }
 
-  access_policies = "${data.aws_iam_policy_document.live_1.json}"
+  access_policies = data.aws_iam_policy_document.live_1.json
 
   snapshot_options {
     automated_snapshot_start_hour = 23
   }
 
-  tags {
-    Domain = "${local.live_domain}"
+  tags = {
+    Domain = local.live_domain
   }
 }
 
@@ -204,8 +223,16 @@ data "aws_iam_policy_document" "audit" {
       test     = "IpAddress"
       variable = "aws:SourceIp"
 
+      # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
+      # force an interpolation expression to be interpreted as a list by wrapping it
+      # in an extra set of list brackets. That form was supported for compatibility in
+      # v0.11, but is no longer supported in Terraform v0.12.
+      #
+      # If the expression in the following list itself returns a list, remove the
+      # brackets to avoid interpretation as a list of lists. If the expression
+      # returns a single list item then leave it as-is and remove this TODO comment.
       values = [
-        "${keys(local.allowed_audit_ips)}",
+        keys(local.allowed_audit_ips),
       ]
     }
   }
@@ -242,15 +269,23 @@ data "aws_iam_policy_document" "audit_1" {
       test     = "IpAddress"
       variable = "aws:SourceIp"
 
+      # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
+      # force an interpolation expression to be interpreted as a list by wrapping it
+      # in an extra set of list brackets. That form was supported for compatibility in
+      # v0.11, but is no longer supported in Terraform v0.12.
+      #
+      # If the expression in the following list itself returns a list, remove the
+      # brackets to avoid interpretation as a list of lists. If the expression
+      # returns a single list item then leave it as-is and remove this TODO comment.
       values = [
-        "${keys(local.allowed_audit_1_ips)}",
+        keys(local.allowed_audit_1_ips),
       ]
     }
   }
 }
 
 resource "aws_elasticsearch_domain" "audit" {
-  domain_name           = "${local.audit_domain}"
+  domain_name           = local.audit_domain
   elasticsearch_version = "6.4"
 
   cluster_config {
@@ -264,18 +299,18 @@ resource "aws_elasticsearch_domain" "audit" {
     volume_size = "1024"
   }
 
-  advanced_options {
+  advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
   }
 
-  access_policies = "${data.aws_iam_policy_document.audit.json}"
+  access_policies = data.aws_iam_policy_document.audit.json
 
   snapshot_options {
     automated_snapshot_start_hour = 23
   }
 
-  tags {
-    Domain = "${local.audit_domain}"
+  tags = {
+    Domain = local.audit_domain
   }
 
   log_publishing_options {
@@ -293,8 +328,8 @@ resource "aws_elasticsearch_domain" "audit" {
 
 # audit cluster for live-1
 resource "aws_elasticsearch_domain" "audit_1" {
-  domain_name           = "${local.audit_domain}"
-  provider              = "aws.cloud-platform"
+  domain_name           = local.audit_domain
+  provider              = aws.cloud-platform
   elasticsearch_version = "6.5"
 
   cluster_config {
@@ -309,18 +344,18 @@ resource "aws_elasticsearch_domain" "audit_1" {
     volume_size = "1024"
   }
 
-  advanced_options {
+  advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
   }
 
-  access_policies = "${data.aws_iam_policy_document.audit_1.json}"
+  access_policies = data.aws_iam_policy_document.audit_1.json
 
   snapshot_options {
     automated_snapshot_start_hour = 23
   }
 
-  tags {
-    Domain = "${local.audit_domain}"
+  tags = {
+    Domain = local.audit_domain
   }
 }
 
@@ -343,8 +378,16 @@ data "aws_iam_policy_document" "test" {
       test     = "IpAddress"
       variable = "aws:SourceIp"
 
+      # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
+      # force an interpolation expression to be interpreted as a list by wrapping it
+      # in an extra set of list brackets. That form was supported for compatibility in
+      # v0.11, but is no longer supported in Terraform v0.12.
+      #
+      # If the expression in the following list itself returns a list, remove the
+      # brackets to avoid interpretation as a list of lists. If the expression
+      # returns a single list item then leave it as-is and remove this TODO comment.
       values = [
-        "${keys(merge(local.allowed_live_1_ips, local.allowed_test_ips))}",
+        keys(merge(local.allowed_live_1_ips, local.allowed_test_ips)),
       ]
     }
   }
@@ -352,7 +395,7 @@ data "aws_iam_policy_document" "test" {
 
 resource "aws_elasticsearch_domain" "test" {
   domain_name           = "cloud-platform-test"
-  provider              = "aws.cloud-platform"
+  provider              = aws.cloud-platform
   elasticsearch_version = "7.1"
 
   cluster_config {
@@ -366,7 +409,7 @@ resource "aws_elasticsearch_domain" "test" {
     volume_size = "500"
   }
 
-  access_policies = "${data.aws_iam_policy_document.test.json}"
+  access_policies = data.aws_iam_policy_document.test.json
 
   log_publishing_options {
     cloudwatch_log_group_arn = ""
@@ -374,3 +417,4 @@ resource "aws_elasticsearch_domain" "test" {
     log_type                 = "ES_APPLICATION_LOGS"
   }
 }
+
