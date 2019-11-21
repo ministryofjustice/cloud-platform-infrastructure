@@ -18,10 +18,11 @@ locals {
 provider "aws" {
   version = ">= 1.44.0"
   region  = "eu-west-2"
-  profile = "${lookup(local.workspace_to_profile, terraform.workspace)}"
+  profile = local.workspace_to_profile[terraform.workspace]
 }
 
 provider "aws" {
   region = "eu-west-1"
   alias  = "ireland"
 }
+

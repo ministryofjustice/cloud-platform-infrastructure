@@ -20,3 +20,4 @@ variable "cloudtrail_bucket_name" {
 variable "slack_config_cloudwatch_lp" {
   description = "Add Slack webhook API URL for integration with slack."
 }
+
