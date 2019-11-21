@@ -16,6 +16,7 @@ resource "aws_iam_role" "dlm_lifecycle_role" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_policy" "dlm_policy" {
@@ -46,16 +47,17 @@ resource "aws_iam_policy" "dlm_policy" {
   ]
 }
 EOF
+
 }
 
 resource "aws_iam_role_policy_attachment" "dlm_attach" {
-  role       = "${aws_iam_role.dlm_lifecycle_role.name}"
-  policy_arn = "${aws_iam_policy.dlm_policy.arn}"
+  role       = aws_iam_role.dlm_lifecycle_role.name
+  policy_arn = aws_iam_policy.dlm_policy.arn
 }
 
 resource "aws_dlm_lifecycle_policy" "etcd_backup" {
   description        = "etcd data lifecycle policy"
-  execution_role_arn = "${aws_iam_role.dlm_lifecycle_role.arn}"
+  execution_role_arn = aws_iam_role.dlm_lifecycle_role.arn
   state              = "ENABLED"
 
   policy_details {
@@ -74,15 +76,16 @@ resource "aws_dlm_lifecycle_policy" "etcd_backup" {
         count = 14
       }
 
-      tags_to_add {
+      tags_to_add = {
         SnapshotCreator = "DLM"
       }
 
       copy_tags = true
     }
 
-    target_tags {
+    target_tags = {
       "k8s.io/role/master" = "1"
     }
   }
 }
+
