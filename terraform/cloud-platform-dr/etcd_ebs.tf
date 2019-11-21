@@ -3,11 +3,11 @@ provider "aws" {
 }
 
 locals {
-  common_tags = "${map(
-    "kubernetes.io/cluster/${var.cluster_restore}", "owned",
-    "KubernetesCluster", "${var.cluster_restore}",
-    "k8s.io/role/master", "1"
-  )}"
+  common_tags = {
+    "kubernetes.io/cluster/${var.cluster_restore}" = "owned"
+    "KubernetesCluster"                            = var.cluster_restore
+    "k8s.io/role/master"                           = "1"
+  }
 }
 
 data "aws_ebs_snapshot" "ebs_main_a" {
@@ -96,90 +96,91 @@ data "aws_ebs_snapshot" "ebs_events_c" {
 
 resource "aws_ebs_volume" "volume_from_snapshot_main_a" {
   availability_zone = "eu-west-2a"
-  snapshot_id       = "${data.aws_ebs_snapshot.ebs_main_a.snapshot_id}"
+  snapshot_id       = data.aws_ebs_snapshot.ebs_main_a.snapshot_id
   size              = 20
   type              = "gp2"
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
-    map(
-      "Name", "a.etcd-main.${var.cluster_restore}",
-      "k8s.io/etcd/main", "a/a,b,c"
-    )
-  )}"
+    {
+      "Name"             = "a.etcd-main.${var.cluster_restore}"
+      "k8s.io/etcd/main" = "a/a,b,c"
+    },
+  )
 }
 
 resource "aws_ebs_volume" "volume_from_snapshot_events_a" {
   availability_zone = "eu-west-2a"
-  snapshot_id       = "${data.aws_ebs_snapshot.ebs_events_a.snapshot_id}"
+  snapshot_id       = data.aws_ebs_snapshot.ebs_events_a.snapshot_id
   size              = 20
   type              = "gp2"
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
-    map(
-      "Name", "a.etcd-events.${var.cluster_restore}",
-      "k8s.io/etcd/events", "a/a,b,c"
-    )
-  )}"
+    {
+      "Name"               = "a.etcd-events.${var.cluster_restore}"
+      "k8s.io/etcd/events" = "a/a,b,c"
+    },
+  )
 }
 
 resource "aws_ebs_volume" "volume_from_snapshot_main_b" {
   availability_zone = "eu-west-2b"
-  snapshot_id       = "${data.aws_ebs_snapshot.ebs_main_b.snapshot_id}"
+  snapshot_id       = data.aws_ebs_snapshot.ebs_main_b.snapshot_id
   size              = 20
   type              = "gp2"
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
-    map(
-      "Name", "b.etcd-main.${var.cluster_restore}",
-      "k8s.io/etcd/main", "b/a,b,c"
-    )
-  )}"
+    {
+      "Name"             = "b.etcd-main.${var.cluster_restore}"
+      "k8s.io/etcd/main" = "b/a,b,c"
+    },
+  )
 }
 
 resource "aws_ebs_volume" "volume_from_snapshot_events_b" {
   availability_zone = "eu-west-2b"
-  snapshot_id       = "${data.aws_ebs_snapshot.ebs_events_b.snapshot_id}"
+  snapshot_id       = data.aws_ebs_snapshot.ebs_events_b.snapshot_id
   size              = 20
   type              = "gp2"
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
-    map(
-      "Name", "b.etcd-events.${var.cluster_restore}",
-      "k8s.io/etcd/events", "b/a,b,c"
-    )
-  )}"
+    {
+      "Name"               = "b.etcd-events.${var.cluster_restore}"
+      "k8s.io/etcd/events" = "b/a,b,c"
+    },
+  )
 }
 
 resource "aws_ebs_volume" "volume_from_snapshot_main_c" {
   availability_zone = "eu-west-2c"
-  snapshot_id       = "${data.aws_ebs_snapshot.ebs_main_c.snapshot_id}"
+  snapshot_id       = data.aws_ebs_snapshot.ebs_main_c.snapshot_id
   size              = 20
   type              = "gp2"
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
-    map(
-      "Name", "c.etcd-main.${var.cluster_restore}",
-      "k8s.io/etcd/main", "c/a,b,c"
-    )
-  )}"
+    {
+      "Name"             = "c.etcd-main.${var.cluster_restore}"
+      "k8s.io/etcd/main" = "c/a,b,c"
+    },
+  )
 }
 
 resource "aws_ebs_volume" "volume_from_snapshot_events_c" {
   availability_zone = "eu-west-2c"
-  snapshot_id       = "${data.aws_ebs_snapshot.ebs_events_c.snapshot_id}"
+  snapshot_id       = data.aws_ebs_snapshot.ebs_events_c.snapshot_id
   size              = 20
   type              = "gp2"
 
-  tags = "${merge(
+  tags = merge(
     local.common_tags,
-    map(
-      "Name", "c.etcd-events.${var.cluster_restore}",
-      "k8s.io/etcd/events", "c/a,b,c"
-    )
-  )}"
+    {
+      "Name"               = "c.etcd-events.${var.cluster_restore}"
+      "k8s.io/etcd/events" = "c/a,b,c"
+    },
+  )
 }
+
