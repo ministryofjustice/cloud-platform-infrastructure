@@ -1,2 +1,5 @@
 *.tfvars filter=git-crypt diff=git-crypt
 iplist.txt filter=git-crypt diff=git-crypt
+
+# The EKS kubeconfig files
+terraform/cloud-platform-eks/files/* filter=git-crypt diff=git-crypt
