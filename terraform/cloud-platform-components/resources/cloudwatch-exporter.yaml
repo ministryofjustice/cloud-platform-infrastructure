@@ -197,14 +197,6 @@ config: |-
     aws_dimensions: [DomainName,ClientId]
 
   - aws_namespace: AWS/ES
-    aws_metric_name: SearchableDocuments
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: DeletedDocuments
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
     aws_metric_name: CPUUtilization
     aws_dimensions: [DomainName,ClientId]
 
@@ -225,27 +217,7 @@ config: |-
     aws_dimensions: [DomainName,ClientId]
 
   - aws_namespace: AWS/ES
-    aws_metric_name: KibanaHealthyNodes
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
     aws_metric_name: ElasticsearchRequests
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: 2xx
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: 3xx
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: 4xx
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: 5xx
     aws_dimensions: [DomainName,ClientId]
 
   - aws_namespace: AWS/ES
