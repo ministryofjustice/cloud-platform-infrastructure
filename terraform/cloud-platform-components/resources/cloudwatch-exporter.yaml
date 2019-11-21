@@ -24,115 +24,47 @@ config: |-
   metrics:
   # RDS Metrics
   - aws_namespace: AWS/RDS
-    aws_metric_name: CPUCreditUsage
-    aws_dimensions: [DBInstanceIdentifier]
-
-  - aws_namespace: AWS/RDS
-    aws_metric_name: CPUCreditBalance
-    aws_dimensions: [DBInstanceIdentifier]
-  
-  - aws_namespace: AWS/RDS
-    aws_metric_name: DiskQueueDepth
-    aws_dimensions: [DBInstanceIdentifier]
-  
-  - aws_namespace: AWS/RDS
-    aws_metric_name: FailedSQLServerAgentJobsCount
-    aws_dimensions: [DBInstanceIdentifier]
-  
-  - aws_namespace: AWS/RDS
-    aws_metric_name: MaximumUsedTransactionIDs
-    aws_dimensions: [DBInstanceIdentifier]
-
-  - aws_namespace: AWS/RDS
-    aws_metric_name: NetworkReceiveThroughput
-    aws_dimensions: [DBInstanceIdentifier]
-
-  - aws_namespace: AWS/RDS
-    aws_metric_name: NetworkTransmitThroughput
-    aws_dimensions: [DBInstanceIdentifier]
-  
-  - aws_namespace: AWS/RDS
-    aws_metric_name: ReplicationSlotDiskUsage
-    aws_dimensions: [DBInstanceIdentifier]
-  
-  - aws_namespace: AWS/RDS
-    aws_metric_name: TransactionLogsDiskUsage
-    aws_dimensions: [DBInstanceIdentifier]
-  
-  - aws_namespace: AWS/RDS
-    aws_metric_name: TransactionLogsGeneration
-    aws_dimensions: [DBInstanceIdentifier]
-
-  - aws_namespace: AWS/RDS
-    aws_metric_name: WriteLatency
-    aws_dimensions: [DBInstanceIdentifier]
-
-  - aws_namespace: AWS/RDS
-    aws_metric_name: BinLogDiskUsage
-    aws_dimensions: [DBInstanceIdentifier]
-
-  - aws_namespace: AWS/RDS
     aws_metric_name: CPUUtilization
     aws_dimensions: [DBInstanceIdentifier]
-  
+ 
   - aws_namespace: AWS/RDS
     aws_metric_name: DatabaseConnections
     aws_dimensions: [DBInstanceIdentifier]
-  
+ 
   - aws_namespace: AWS/RDS
     aws_metric_name: FreeableMemory
     aws_dimensions: [DBInstanceIdentifier]
-  
+
   - aws_namespace: AWS/RDS
     aws_metric_name: FreeStorageSpace
     aws_dimensions: [DBInstanceIdentifier]
-  
+
   - aws_namespace: AWS/RDS
     aws_metric_name: ReadIOPS
     aws_dimensions: [DBInstanceIdentifier]
-  
+ 
   - aws_namespace: AWS/RDS
     aws_metric_name: ReadLatency
     aws_dimensions: [DBInstanceIdentifier]
-  
+
   - aws_namespace: AWS/RDS
     aws_metric_name: WriteIOPS
     aws_dimensions: [DBInstanceIdentifier]
-  
+
   - aws_namespace: AWS/RDS
     aws_metric_name: WriteLatency
     aws_dimensions: [DBInstanceIdentifier]
-  
+
     # S3 Metrics
   - aws_namespace: AWS/S3
     aws_metric_name: BucketSizeBytes
-    aws_dimensions: [StorageType,BucketName]
-  
+    aws_dimensions: [BucketName, StorageType]
+ 
   - aws_namespace: AWS/S3
     aws_metric_name: NumberOfObjects
     aws_dimensions: [BucketName, StorageType]
-  
+
     # SQS Metrics
-  - aws_namespace: AWS/SQS
-    aws_metric_name: ApproximateAgeOfOldestMessage
-    aws_dimensions: [QueueName]
-
-  - aws_namespace: AWS/SQS
-    aws_metric_name: ApproximateNumberOfMessagesDelayed
-    aws_dimensions: [QueueName]
-
-  - aws_namespace: AWS/SQS
-    aws_metric_name: ApproximateNumberOfMessagesNotVisible
-    aws_dimensions: [QueueName]
-
-  - aws_namespace: AWS/SQS
-    aws_metric_name: ApproximateNumberOfMessagesVisible
-    aws_dimensions: [QueueName]
-
-  - aws_namespace: AWS/SQS
-    aws_metric_name: NumberOfEmptyReceives
-    aws_dimensions: [QueueName]
-
   - aws_namespace: AWS/SQS
     aws_metric_name: NumberOfMessagesDeleted
     aws_dimensions: [QueueName]
@@ -140,11 +72,11 @@ config: |-
   - aws_namespace: AWS/SQS
     aws_metric_name: NumberOfMessagesReceived
     aws_dimensions: [QueueName]
-
+ 
   - aws_namespace: AWS/SQS
     aws_metric_name: NumberOfMessagesSent
     aws_dimensions: [QueueName]
-
+ 
   - aws_namespace: AWS/SQS
     aws_metric_name: SentMessageSize
     aws_dimensions: [QueueName]
@@ -153,25 +85,17 @@ config: |-
   - aws_namespace: AWS/SNS
     aws_metric_name: NumberOfMessagesPublished
     aws_dimensions: [TopicName]
-
+ 
   - aws_namespace: AWS/SNS
-    aws_metric_name: NumberOfNotificationsDelivered 
+    aws_metric_name: NumberOfNotificationsDelivered
     aws_dimensions: [TopicName]
-
+ 
   - aws_namespace: AWS/SNS
-    aws_metric_name: NumberOfNotificationsFailed 
+    aws_metric_name: NumberOfNotificationsFailed
     aws_dimensions: [TopicName]
 
   - aws_namespace: AWS/SNS
     aws_metric_name: NumberOfNotificationsFilteredOut
-    aws_dimensions: [TopicName]
-
-  - aws_namespace: AWS/SNS
-    aws_metric_name: NumberOfNotificationsFilteredOut-NoMessageAttributes
-    aws_dimensions: [TopicName]
-
-  - aws_namespace: AWS/SNS
-    aws_metric_name: NumberOfNotificationsFilteredOut-InvalidAttributes
     aws_dimensions: [TopicName]
 
   - aws_namespace: AWS/SNS
@@ -184,125 +108,38 @@ config: |-
 
   - aws_namespace: AWS/ElastiCache
     aws_metric_name: FreeableMemory
-
+ 
   - aws_namespace: AWS/ElastiCache
     aws_metric_name: NetworkBytesIn
 
   - aws_namespace: AWS/ElastiCache
     aws_metric_name: NetworkBytesOut
-
+ 
   - aws_namespace: AWS/ElastiCache
     aws_metric_name: NetworkPacketsIn
-
+ 
   - aws_namespace: AWS/ElastiCache
     aws_metric_name: NetworkPacketsOut
-
-  - aws_namespace: AWS/ElastiCache
-    aws_metric_name: SwapUsage
-
-    # DynamoDB Metrics
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: AccountMaxReads
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: AccountMaxTableLevelReads
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: AccountMaxTableLevelWrites
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: AccountMaxWrites
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: AccountProvisionedReadCapacityUtilization
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: AccountProvisionedWriteCapacityUtilization
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: ConditionalCheckFailedRequests
-    aws_dimensions: [TableName]
-
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: ConsumedReadCapacityUnits
-    aws_dimensions: [TableName]
-  
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: ConsumedWriteCapacityUnits
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: MaxProvisionedTableReadCapacityUtilization
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: MaxProvisionedTableWriteCapacityUtilization
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: OnlineIndexConsumedWriteCapacity
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: OnlineIndexPercentageProgress
-    aws_dimensions: [TableName]
-
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: OnlineIndexThrottleEvents
-    aws_dimensions: [TableName]
-
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: PendingReplicationCount
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: ProvisionedReadCapacityUnits
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: ProvisionedWriteCapacityUnits
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: ReadThrottleEvents
-    aws_dimensions: [TableName]
-    
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: ReplicationLatency
-    aws_dimensions: [TableName]
-
+ 
+    # DynamoDB Metrics   
   - aws_namespace: AWS/DynamoDB
     aws_metric_name: ReturnedBytes
     aws_dimensions: [TableName]
-    
+   
   - aws_namespace: AWS/DynamoDB
     aws_metric_name: ReturnedItemCount
     aws_dimensions: [TableName]
-    
+   
   - aws_namespace: AWS/DynamoDB
     aws_metric_name: ReturnedRecordsCount
     aws_dimensions: [TableName]
-
+ 
   - aws_namespace: AWS/DynamoDB
     aws_metric_name: SuccessfulRequestLatency
     aws_dimensions: [TableName]
-
+ 
   - aws_namespace: AWS/DynamoDB
     aws_metric_name: SystemErrors
-    aws_dimensions: [TableName]
-
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: TimeToLiveDeletedItemCount
-    aws_dimensions: [TableName]
-
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: ThrottledRequests
     aws_dimensions: [TableName]
 
   - aws_namespace: AWS/DynamoDB
@@ -313,55 +150,19 @@ config: |-
     aws_metric_name: UserErrors
     aws_dimensions: [TableName]
 
-  - aws_namespace: AWS/DynamoDB
-    aws_metric_name: WriteThrottleEvents
-    aws_dimensions: [TableName]
-
     # MQ Broker Metrics
   - aws_namespace: AWS/AmazonMQ
     aws_metric_name: CpuUtilization
-    aws_dimensions: [Broker] 
-  
+    aws_dimensions: [Broker]
+
   - aws_namespace: AWS/AmazonMQ
     aws_metric_name: CurrentConnectionsCount
     aws_dimensions: [Broker]
 
   - aws_namespace: AWS/AmazonMQ
-    aws_metric_name: EstablishedConnectionsCount
-    aws_dimensions: [Broker]
-
-  - aws_namespace: AWS/AmazonMQ
-    aws_metric_name: InactiveDurableTopicSubscribersCount
-    aws_dimensions: [Broker]
-
-  - aws_namespace: AWS/AmazonMQ
-    aws_metric_name: JournalFilesForFastRecovery
-    aws_dimensions: [Broker]
-
-  - aws_namespace: AWS/AmazonMQ
-    aws_metric_name: JournalFilesForFullRecovery
-    aws_dimensions: [Broker]
-
-  - aws_namespace: AWS/AmazonMQ
-    aws_metric_name: HeapUsage
-    aws_dimensions: [Broker]
-
-  - aws_namespace: AWS/AmazonMQ
-    aws_metric_name: NetworkIn
-    aws_dimensions: [Broker]
-
-  - aws_namespace: AWS/AmazonMQ
-    aws_metric_name: NetworkOut
-    aws_dimensions: [Broker]
-
-  - aws_namespace: AWS/AmazonMQ
-    aws_metric_name: 
-    aws_dimensions: [Broker]
-
-  - aws_namespace: AWS/AmazonMQ
     aws_metric_name: OpenTransactionCount
     aws_dimensions: [Broker]
-
+ 
   - aws_namespace: AWS/AmazonMQ
     aws_metric_name: StorePercentUsage
     aws_dimensions: [Broker]
@@ -369,14 +170,83 @@ config: |-
   - aws_namespace: AWS/AmazonMQ
     aws_metric_name: TotalConsumerCount
     aws_dimensions: [Broker]
-
+ 
   - aws_namespace: AWS/AmazonMQ
-    aws_metric_name: TotalMessageCount 
+    aws_metric_name: TotalMessageCount
     aws_dimensions: [Broker]
-
+ 
   - aws_namespace: AWS/AmazonMQ
     aws_metric_name: TotalProducerCount
-    aws_dimensions: [Broker]  
+    aws_dimensions: [Broker] 
+
+  # Elasticsearch Metrics
+  - aws_namespace: AWS/ES
+    aws_metric_name: ClusterStatus.green
+    aws_dimensions: [DomainName,ClientId]
+    
+  - aws_namespace: AWS/ES
+    aws_metric_name: ClusterStatus.yellow
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: ClusterStatus.red
+    aws_dimensions: [DomainName,ClientId]
+    
+  - aws_namespace: AWS/ES
+    aws_metric_name: Nodes
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: CPUUtilization
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: FreeStorageSpace
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: ClusterUsedSpace
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: JVMMemoryPressure
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: AutomatedSnapshotFailure
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: ElasticsearchRequests
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: IndexingLatency
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: IndexingRate
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: SearchLatency
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: SearchRate
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: SysMemoryUtilization
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: JVMGCYoungCollectionCount
+    aws_dimensions: [DomainName,ClientId]
+
+  - aws_namespace: AWS/ES
+    aws_metric_name: JVMGCYoungCollectionTime
+    aws_dimensions: [DomainName,ClientId] 
 
 serviceMonitor:
   # When set true then use a ServiceMonitor to configure scraping
