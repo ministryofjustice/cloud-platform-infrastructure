@@ -21,13 +21,55 @@ module "eks" {
       key_name             = local.cluster_base_domain_name
     }
   ]
-
+   
+  # Out of the box you can't specify groups to map, just users. Some people did some workarounds
+  # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
   map_users = [
     {
       userarn  = "arn:aws:iam::754256621582:user/AlejandroGarrido"
       username = "AlejandroGarrido"
       groups   = ["system:masters"]
     },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/PoornimaKrishnasamy"
+      username = "PoornimaKrishnasamy"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/MouradTrabelsi"
+      username = "MouradTrabelsi"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/DavidSalgado"
+      username = "DavidSalgado"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/paulWyborn"
+      username = "paulWyborn"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/RazvanCosma"
+      username = "RazvanCosma"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/SabluMiah"
+      username = "SabluMiah"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/jasonBirchall"
+      username = "jasonBirchall"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
+      username = "VijayVeeranki"
+      groups   = ["system:masters"]
+    }
   ]
 
   tags = {
