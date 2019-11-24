@@ -1,0 +1,16 @@
+# Being allowed to use the _privileged_ policy means binding it to the default serviceaccount of a namespace.
+# A simple RoleBinding resource needs to be created, as described below :
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: opa:psp-privileged
+  namespace: opa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: psp:privileged
+subjects:
+- kind: Group
+  name: system:serviceaccounts:opa
+  apiGroup: rbac.authorization.k8s.io

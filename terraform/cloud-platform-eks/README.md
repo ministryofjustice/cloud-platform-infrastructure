@@ -1,6 +1,6 @@
-# Cloud Platform - Terraform
+# Cloud Platform - EKS Cluster
 
-This README will detail the purpose of the Cloud Platform layer in Terraform. The Cloud Platform in this context refers to the Kubernetes platform built by the MoJ Cloud Platform team. All Terraform in this directory will create cluster specific infrastructure. 
+This README describes the main infrastructure components required to deliver a production-ready EKS cluster. Terraform is used as a main tool to bootstrap the infrastructure layer and EKS clusters. 
 
 ## Contents
   - [Bastion](#bastion)
@@ -8,6 +8,7 @@ This README will detail the purpose of the Cloud Platform layer in Terraform. Th
   - [EKS](#eks)
   - [When do I use this?](#when-do-I-use-this)
   - [How do I run this?](#terraform-modules)
+
 
 ## What it contains?
 
