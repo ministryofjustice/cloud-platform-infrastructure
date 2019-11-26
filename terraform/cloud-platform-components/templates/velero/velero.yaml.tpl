@@ -6,8 +6,8 @@
 # enabling restic). Required.
 image:
   repository: gcr.io/heptio-images/velero
-#  tag: v1.1.0
-  tag: latest
+  tag: v1.1.0
+#  tag: master
   pullPolicy: IfNotPresent
 
 # Annotations to add to the Velero deployment's pod template. Optional.
@@ -141,7 +141,7 @@ credentials:
   # Whether a secret should be used as the source of IAM account
   # credentials. Set to false if, for example, using kube2iam or
   # kiam to provide IAM credentials for the Velero pod.
-  useSecret: true
+  useSecret: false
   # Name of a pre-existing secret (if any) in the Velero namespace
   # that should be used to get IAM account credentials. Optional.
   existingSecret:
@@ -149,11 +149,10 @@ credentials:
   # true and `existingSecret` is empty. This should be the contents
   # of your IAM credentials file.
   secretContents:
-    cloud: |
-      [default]
-      aws_access_key_id=
-      aws_secret_access_key=
-
+#    cloud: |
+ #     [default]
+ #     aws_access_key_id = AKIAIQVVRUUOCPQBST3Q
+ #     aws_secret_access_key = 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
 # Wheter to create volumesnapshotlocation crd, if false => disable snapshot feature
 snapshotsEnabled: true
 

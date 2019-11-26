@@ -20,7 +20,9 @@ resource "aws_s3_bucket" "velero-test" {
     }
   }
 }
-
+# -----------------------------------------------------------
+# set up IAM role and in-line policy using Kiam
+# -----------------------------------------------------------
 # Velero
 # KIAM role and policy creation
 # expressing which roles are permitted to be assumed within that namespace.
@@ -66,14 +68,16 @@ data "aws_iam_policy_document" "velero" {
       "s3:ListMultipartUploadParts",
     ]
 
-    resources = ["arn:aws:s3:::$cloud-platform-velero-bucket-test/*"]
+#    resources = ["*"]
+    resources = ["arn:aws:s3:::cloud-platform-velero-bucket-test/*"]
   }
   statement {
     actions = [
       "s3:ListBucket",
     ]
 
-    resources = ["arn:aws:s3:::$cloud-platform-velero-bucket-test"]
+ #   resources = ["*"]
+    resources = ["arn:aws:s3:::cloud-platform-velero-bucket-test"]
   }
 }
 
@@ -82,6 +86,10 @@ resource "aws_iam_role_policy" "velero" {
   role   = aws_iam_role.velero.id
   policy = data.aws_iam_policy_document.velero.json
 }
+
+# -----------------------------------------------------------
+# Create Velero Namespace
+# -----------------------------------------------------------
 
 resource "kubernetes_namespace" "velero" {
   metadata {
@@ -97,28 +105,36 @@ resource "kubernetes_namespace" "velero" {
       "cloud-platform.justice.gov.uk/business-unit" = "cloud-platform"
       "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
       "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+      "iam.amazonaws.com/permitted"                 = aws_iam_role.velero.name
     }
   }
 }
 
 data "template_file" "velero" {
   template = file("./templates/velero/velero.yaml.tpl")
-  vars = {
-    cluster_domain_name = local.cluster_base_domain_name
-  }
+#  vars = {
+#    cluster_domain_name = local.cluster_base_domain_name
+#  }
 }
+
+# -----------------------------------------------------------
+# Create Velero Helm chart
+# -----------------------------------------------------------
 
 resource "helm_release" "velero" {
   name       = "velero"
   namespace  = "velero"
   repository = "stable"
   chart      = "velero"
-  version    = "2.1.7"
+  version    = "2.3.3"
 
   depends_on = [
     null_resource.kube_system_ns_label,
     kubernetes_namespace.velero,
     null_resource.deploy,
+    aws_iam_role.velero,
+    aws_iam_role_policy.velero,
+    aws_s3_bucket.velero-test,
   ]
   # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
   # force an interpolation expression to be interpreted as a list by wrapping it
@@ -129,7 +145,12 @@ resource "helm_release" "velero" {
   # brackets to avoid interpretation as a list of lists. If the expression
   # returns a single list item then leave it as-is and remove this TODO comment.
   values = [
-    data.template_file.values.rendered,
+    data.template_file.velero.rendered,
+<<EOF
+podAnnotations:
+  iam.amazonaws.com/role: "${aws_iam_role.velero.name}"
+EOF
+,
   ]
 
   lifecycle {
