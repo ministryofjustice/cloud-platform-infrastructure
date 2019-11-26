@@ -151,8 +151,6 @@ credentials:
   secretContents:
 #    cloud: |
  #     [default]
- #     aws_access_key_id = AKIAIQVVRUUOCPQBST3Q
- #     aws_secret_access_key = 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
 # Wheter to create volumesnapshotlocation crd, if false => disable snapshot feature
 snapshotsEnabled: true
 

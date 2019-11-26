@@ -68,7 +68,7 @@ data "aws_iam_policy_document" "velero" {
       "s3:ListMultipartUploadParts",
     ]
 
-#    resources = ["*"]
+    #    resources = ["*"]
     resources = ["arn:aws:s3:::cloud-platform-velero-bucket-test/*"]
   }
   statement {
@@ -76,7 +76,7 @@ data "aws_iam_policy_document" "velero" {
       "s3:ListBucket",
     ]
 
- #   resources = ["*"]
+    #   resources = ["*"]
     resources = ["arn:aws:s3:::cloud-platform-velero-bucket-test"]
   }
 }
@@ -112,9 +112,9 @@ resource "kubernetes_namespace" "velero" {
 
 data "template_file" "velero" {
   template = file("./templates/velero/velero.yaml.tpl")
-#  vars = {
-#    cluster_domain_name = local.cluster_base_domain_name
-#  }
+  #  vars = {
+  #    cluster_domain_name = local.cluster_base_domain_name
+  #  }
 }
 
 # -----------------------------------------------------------
@@ -146,11 +146,11 @@ resource "helm_release" "velero" {
   # returns a single list item then leave it as-is and remove this TODO comment.
   values = [
     data.template_file.velero.rendered,
-<<EOF
+    <<EOF
 podAnnotations:
   iam.amazonaws.com/role: "${aws_iam_role.velero.name}"
 EOF
-,
+    ,
   ]
 
   lifecycle {
