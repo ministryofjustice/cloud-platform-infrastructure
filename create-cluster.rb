@@ -14,7 +14,7 @@ MAX_CLUSTER_NAME_LENGTH = 12
 CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
 
 REQUIRED_ENV_VARS = %w[AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE]
-REQUIRED_EXECUTABLES = %w[git-crypt terraform helm aws kops ssh-keygen]
+REQUIRED_EXECUTABLES = %w[git-crypt terraform12 helm aws kops ssh-keygen]
 REQUIRED_AWS_PROFILES = %w[moj-cp moj-dsd]
 
 # Cluster sizes. Currently, this only alters the instance types used for the master & worker nodes,
@@ -66,7 +66,7 @@ def create_cluster(cluster_name, cluster_size)
   worker_node_machine_type = MACHINE_TYPES.dig(cluster_size, "worker_node_machine_type")
 
   tf_apply = [
-    "terraform apply",
+    "terraform12 apply",
     "-var master_node_machine_type=#{master_node_machine_type}",
     "-var worker_node_machine_type=#{worker_node_machine_type}",
     "-auto-approve",
@@ -105,7 +105,7 @@ def install_components(cluster_name)
   #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
   #
 
-  cmd = "cd #{dir}; terraform apply -auto-approve"
+  cmd = "cd #{dir}; terraform12 apply -auto-approve"
   if cmd_successful?(cmd)
     log "Cluster components installed."
   else
@@ -143,11 +143,11 @@ def wait_for_kops_validate
 end
 
 def switch_terraform_workspace(dir, name)
-  run_and_output "cd #{dir}; terraform init"
+  run_and_output "cd #{dir}; terraform12 init"
   # The workspace might already exist, so the workspace new is allowed to fail
   # but the workspace select must succeed
-  run_and_output "cd #{dir}; terraform workspace new #{name}", can_fail: true
-  run_and_output "cd #{dir}; terraform workspace select #{name}"
+  run_and_output "cd #{dir}; terraform12 workspace new #{name}", can_fail: true
+  run_and_output "cd #{dir}; terraform12 workspace select #{name}"
 end
 
 def check_prerequisites(cluster_name)
