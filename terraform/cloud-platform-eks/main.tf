@@ -120,6 +120,10 @@ resource "aws_key_pair" "cluster" {
   public_key = tls_private_key.cluster.public_key_openssh
 }
 
+#########
+# Auth0 #
+#########
+
 resource "auth0_client" "kubernetes" {
   name        = "${local.cluster_name}:kubernetes"
   description = "Cloud Platform kubernetes"

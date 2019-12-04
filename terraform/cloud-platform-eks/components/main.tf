@@ -20,12 +20,17 @@ provider "aws" {
 
 provider "kubernetes" {}
 
+provider "helm" {
+  service_account = "tiller"
+}
+
 ###############
 # Definitions #
 ###############
 
 module "components" {
-  source = "./cloud-platform-terraform-eks-components"
+  #source = "github.com/ministryofjustice/cloud-platform-terraform-eks-components"
+  source = "../../../../cloud-platform-terraform-eks-components/"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   pagerduty_config             = var.pagerduty_config
