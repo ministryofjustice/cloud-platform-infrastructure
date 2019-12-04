@@ -2,7 +2,7 @@
 # NOTE: This file is managed by Terraform  #
 # Don't make any manual modification to it #
 ############################################
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: Cluster
 metadata:
   creationTimestamp: null
@@ -238,7 +238,7 @@ spec:
     - ResourceQuota
     - PodSecurityPolicy
     runtimeConfig:
-      admissionregistration.k8s.io/v1: "true"
+      admissionregistration.k8s.io/v1beta1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
   kubernetesVersion: 1.15.6
@@ -308,7 +308,7 @@ spec:
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
@@ -335,7 +335,7 @@ spec:
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
@@ -362,7 +362,7 @@ spec:
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
@@ -389,7 +389,7 @@ spec:
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
