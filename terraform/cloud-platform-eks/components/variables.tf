@@ -7,8 +7,6 @@ variable "alertmanager_slack_receivers" {
   type        = list
 }
 
-#variable "aws_master_account_id" {}
-
 variable "cloud_platform_slack_webhook" {
   description = "Slack webhook to pass it to  script to send alerts"
 }
