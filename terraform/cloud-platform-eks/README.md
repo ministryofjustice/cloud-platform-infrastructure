@@ -10,6 +10,14 @@ This README describes the main infrastructure components required to deliver a p
   - [How do I run this?](#terraform-modules)
 
 
+## Requirements
+
+- Terraform
+- [aws-iam-authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+- Ensure you have `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` exported
+
+
 ## What it contains?
 
 ### Bastion
