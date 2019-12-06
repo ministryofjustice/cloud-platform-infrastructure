@@ -2,11 +2,11 @@
 # NOTE: This file is managed by Terraform  #
 # Don't make any manual modification to it #
 ############################################
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: Cluster
 metadata:
   creationTimestamp: null
-  name: ${cluster_domain_name}
+  name: ktest-ec2.cloud-platform.service.justice.gov.uk
 spec:
   fileAssets:
   - name: kubernetes-audit
@@ -17,7 +17,7 @@ spec:
       #   - the kubernetes docs example: https://raw.githubusercontent.com/kubernetes/website/master/content/en/examples/audit/audit-policy.yaml
       #   - the GCE reference policy: https://github.com/kubernetes/kubernetes/blob/master/cluster/gce/gci/configure-helper.sh#L784
       #
-      apiVersion: audit.k8s.io/v1beta1
+      apiVersion: audit.k8s.io/v1
       kind: Policy
       omitStages:
         - "RequestReceived"
@@ -174,40 +174,38 @@ spec:
     rbac: {}
   channel: stable
   cloudProvider: aws
-  sshKeyName: ${cluster_domain_name}
-  configBase: s3://${kops_state_store}/${cluster_domain_name}
-  dnsZone: ${cluster_domain_name}
+  sshKeyName: ktest-ec2.cloud-platform.service.justice.gov.uk
+  configBase: s3://cloud-platform-kops-state/ktest-ec2.cloud-platform.service.justice.gov.uk
+  dnsZone: ktest-ec2.cloud-platform.service.justice.gov.uk
   etcdClusters:
   - etcdMembers:
     - instanceGroup: master-eu-west-2a
       name: a
       encryptedVolume: true
-      kmsKeyId: "${ kms_key }"
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d3a610ec-8ae0-4ef4-a0cb-a75c50c71ac2"
     - instanceGroup: master-eu-west-2b
       name: b
       encryptedVolume: true
-      kmsKeyId: "${ kms_key }"
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d3a610ec-8ae0-4ef4-a0cb-a75c50c71ac2"
     - instanceGroup: master-eu-west-2c
       name: c
       encryptedVolume: true
-      kmsKeyId: "${ kms_key }"
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d3a610ec-8ae0-4ef4-a0cb-a75c50c71ac2"
     name: main
-    version: 3.3.10
   - etcdMembers:
     - instanceGroup: master-eu-west-2a
       name: a
       encryptedVolume: true
-      kmsKeyId: "${ kms_key }"
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d3a610ec-8ae0-4ef4-a0cb-a75c50c71ac2"
     - instanceGroup: master-eu-west-2b
       name: b
       encryptedVolume: true
-      kmsKeyId: "${ kms_key }"
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d3a610ec-8ae0-4ef4-a0cb-a75c50c71ac2"
     - instanceGroup: master-eu-west-2c
       name: c
       encryptedVolume: true
-      kmsKeyId: "${ kms_key }"
+      kmsKeyId: "arn:aws:kms:eu-west-2:754256621582:key/d3a610ec-8ae0-4ef4-a0cb-a75c50c71ac2"
     name: events
-    version: 3.3.10
   iam:
     allowContainerRegistry: true
     legacy: false
@@ -216,8 +214,8 @@ spec:
     readOnlyPort: 0
     authenticationTokenWebhook: true
   kubeAPIServer:
-    oidcClientID: ${oidc_client_id}
-    oidcIssuerURL: ${oidc_issuer_url}
+    oidcClientID: dReZg8mOL9nvAuTQXLvkd164Zr0vA2K0
+    oidcIssuerURL: https://justice-cloud-platform.eu.auth0.com/
     oidcUsernameClaim: nickname
     oidcGroupsClaim: https://k8s.integration.dsd.io/groups
     auditLogPath: /var/log/kube-apiserver-audit.log
@@ -226,26 +224,27 @@ spec:
     auditLogMaxSize: 100
     auditPolicyFile: /srv/kubernetes/audit.yaml
     enableAdmissionPlugins:
-    - Initializers
     - NamespaceLifecycle
     - LimitRanger
     - ServiceAccount
     - PersistentVolumeLabel
     - DefaultStorageClass
     - DefaultTolerationSeconds
+    - NodeRestriction
     - MutatingAdmissionWebhook
     - ValidatingAdmissionWebhook
     - NodeRestriction
+    - Priority
     - ResourceQuota
     - PodSecurityPolicy
     runtimeConfig:
-      admissionregistration.k8s.io/v1alpha1: "true"
+      admissionregistration.k8s.io/v1beta1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.13.11
-  masterPublicName: api.${cluster_domain_name}
-  networkCIDR: ${network_cidr_block}
-  networkID: ${network_id}
+  kubernetesVersion: 1.15.6
+  masterPublicName: api.ktest-ec2.cloud-platform.service.justice.gov.uk
+  networkCIDR: 172.20.0.0/16
+  networkID: vpc-0b9d879c2aa815938
   networking:
     calico: {}
   nonMasqueradeCIDR: 100.64.0.0/10
@@ -253,32 +252,32 @@ spec:
   - 0.0.0.0/0
   subnets:
   - cidr: 172.20.32.0/19
-    id: ${internal_subnets_id_a}
+    id: subnet-0fa6558e8c65a10de
     name: eu-west-2a
     type: Private
     zone: eu-west-2a
   - cidr: 172.20.64.0/19
-    id: ${internal_subnets_id_b}
+    id: subnet-0c104ea6608900889
     name: eu-west-2b
     type: Private
     zone: eu-west-2b
   - cidr: 172.20.96.0/19
-    id: ${internal_subnets_id_c}
+    id: subnet-022273f7daee720cd
     name: eu-west-2c
     type: Private
     zone: eu-west-2c
   - cidr: 172.20.0.0/22
-    id: ${external_subnets_id_a}
+    id: subnet-0211fd29522ccbd93
     name: utility-eu-west-2a
     type: Utility
     zone: eu-west-2a
   - cidr: 172.20.4.0/22
-    id: ${external_subnets_id_b}
+    id: subnet-0d102d96b533af5ba
     name: utility-eu-west-2b
     type: Utility
     zone: eu-west-2b
   - cidr: 172.20.8.0/22
-    id: ${external_subnets_id_c}
+    id: subnet-0e10c5efab5d4bbde
     name: utility-eu-west-2c
     type: Utility
     zone: eu-west-2c
@@ -293,20 +292,32 @@ spec:
     - Master
     - Node
     manifest: |
-      ${authorized_keys_manager_systemd_unit}
+      [Unit]
+      Description=authorized-keys-manager
+      [Service]
+      ExecStart=/bin/bash -c '\
+        while true; do \
+          ak=$(curl -Lfs https://s3-eu-west-2.amazonaws.com/cloud-platform-ab9d0cbde59c3b3112de9d117068515d/authorized_keys) \
+            && [ ! -z "$$ak" ] \
+            && echo "$$ak" > /home/admin/.ssh/authorized_keys; \
+          sleep 60; \
+        done;'
+      [Install]
+      WantedBy=multi-user.target
+      
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: ${cluster_domain_name}
+    kops.k8s.io/cluster: ktest-ec2.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2a
 spec:
-  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
-  machineType: ${master_node_machine_type}
+  image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2019-09-26
+  machineType: c4.large
   maxSize: 1
   minSize: 1
   nodeLabels:
@@ -324,16 +335,16 @@ spec:
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: ${cluster_domain_name}
+    kops.k8s.io/cluster: ktest-ec2.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2b
 spec:
-  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
-  machineType: ${master_node_machine_type}
+  image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2019-09-26
+  machineType: c4.large
   maxSize: 1
   minSize: 1
   nodeLabels:
@@ -351,16 +362,16 @@ spec:
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: ${cluster_domain_name}
+    kops.k8s.io/cluster: ktest-ec2.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2c
 spec:
-  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
-  machineType: ${master_node_machine_type}
+  image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2019-09-26
+  machineType: c4.large
   maxSize: 1
   minSize: 1
   nodeLabels:
@@ -378,18 +389,18 @@ spec:
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
-    kops.k8s.io/cluster: ${cluster_domain_name}
+    kops.k8s.io/cluster: ktest-ec2.cloud-platform.service.justice.gov.uk
   name: nodes
 spec:
-  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
-  machineType: ${worker_node_machine_type}
-  maxSize: ${cluster_node_count}
-  minSize: ${cluster_node_count}
+  image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2019-09-26
+  machineType: r5.large
+  maxSize: 3
+  minSize: 3
   rootVolumeSize: 256
   nodeLabels:
     kops.k8s.io/instancegroup: nodes
