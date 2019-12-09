@@ -3,15 +3,15 @@
 
 # Usage:
 #   export AWS_PROFILE=moj-cp
-#   Edit "K8S_CLUSTER_NAME" to specify the cluster to recycle old node. 
+#   Edit "K8S_CLUSTER_NAME" to specify the cluster to recycle old node.
 #   ./recycle-node.rb
 #
-#  Note: 
+#  Note:
 #   The `get_worker_instance_group_size` method looks for the instance group size in the kops manifest in our github repository, so it will always return the size of the live-1 cluster.
 #   To run this on a test cluster, update method `get_worker_instance_group_size` as shown below, to return number of worker nodes configured as minSize in kops/test-cluster.yaml.
-# 
+#
 #  def get_worker_instance_group_size
-#     return 3 
+#     return 3
 
 require 'json'
 require "yaml"
@@ -76,7 +76,7 @@ def get_worker_instance_group_size
   docs = []
   YAML.load_stream(get_kops_config) { |doc| docs << doc }
   worker_instance_group = docs.last
-  
+
   unless worker_instance_group.dig("metadata", "name") == "nodes"
     raise "Failed to parse kops config. Last document in YAML file is supposed to be worker instancegroup definition."
   end
@@ -121,7 +121,7 @@ def terminate_node(node)
   else
     raise "worker node #{name} was not cordoned."
   end
-end 
+end
 
 def aws_instance_id(node)
   node.dig("spec", "providerID").split("/").last
