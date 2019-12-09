@@ -17,7 +17,7 @@ require 'json'
 require "yaml"
 require "net/http"
 
-K8S_CLUSTER_NAME = "recycle-node.cloud-platform.service.justice.gov.uk"
+K8S_CLUSTER_NAME = "live-1.cloud-platform.service.justice.gov.uk"
 AWS_REGION = "eu-west-2"
 KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-infrastructure/master/kops/live-1.yaml"
 
