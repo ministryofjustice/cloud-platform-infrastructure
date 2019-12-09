@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-
 # Usage:
 #   export AWS_PROFILE=moj-cp
 #   Edit "K8S_CLUSTER_NAME" to specify the cluster to recycle old node.
@@ -13,7 +12,7 @@
 #  def get_worker_instance_group_size
 #     return 3
 
-require 'json'
+require "json"
 require "yaml"
 require "net/http"
 require "timeout"
@@ -92,8 +91,7 @@ end
 
 def get_oldest_worker_node
   get_worker_nodes
-    .sort_by {|node| node.dig("metadata", "creationTimestamp") }
-    .first
+    .min_by { |node| node.dig("metadata", "creationTimestamp") }
 end
 
 def drain_node(node)
