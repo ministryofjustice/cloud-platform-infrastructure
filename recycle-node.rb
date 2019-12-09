@@ -16,13 +16,15 @@
 require 'json'
 require "yaml"
 require "net/http"
+require "timeout"
 
 K8S_CLUSTER_NAME = "live-1.cloud-platform.service.justice.gov.uk"
 AWS_REGION = "eu-west-2"
 KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-infrastructure/master/kops/live-1.yaml"
+NODE_DRAIN_TIMEOUT = 360 # Draining a node usually takes around 2 minutes. If it takes >6 minutes, it's not going to complete.
+SIGTERM = 15 # The unix signal to send to kill a process
 
 def main
-
   config_cluster
 
   unless correct_number_of_workers_running?
@@ -98,8 +100,9 @@ def drain_node(node)
   name = node_name(node)
 
   cmd = "kubectl --ignore-daemonsets --delete-local-data drain #{name}"
+  success = exec_with_timeout(cmd, NODE_DRAIN_TIMEOUT)
 
-  if cmd_successful?(cmd)
+  if success
     log "worker node #{name} drained sucessfully."
   else
     raise "worker node #{name} failed to drain. Aborting."
@@ -163,6 +166,30 @@ end
 def execute(cmd)
   log cmd
   `#{cmd}`
+end
+
+# https://stackoverflow.com/questions/8292031/ruby-timeouts-and-system-commands
+def exec_with_timeout(cmd, timeout)
+  pid = Process.spawn(cmd)
+
+  begin
+    Timeout.timeout(timeout) do
+      Process.waitpid(pid, 0)
+      $?.exitstatus == 0
+    end
+  rescue Timeout::Error
+    begin
+      Process.kill(SIGTERM, -Process.getpgid(pid))
+      false # We never reach this point, although we should.
+    rescue SignalException
+      # https://ruby-doc.org/core-2.6.3/Process.html#method-c-kill
+      # For some reason, when we send SIGTERM to the spawned
+      # process, the parent process (us) also receives SIGTERM.
+      # AFAICT from the documentation, this shouldn't be happening,
+      # but it is, so we need to rescue it.
+      false
+    end
+  end
 end
 
 main
