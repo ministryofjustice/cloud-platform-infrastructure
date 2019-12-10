@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Edit this to specify the cluster to destroy
-CLUSTER=mourad-rds
+CLUSTER=david-test1
 
 main() {
   terraform_components
@@ -16,13 +16,13 @@ terraform_components() {
   kops export kubecfg ${CLUSTER}.cloud-platform.service.justice.gov.uk
   (
     cd terraform/cloud-platform-components
-    terraform12 init
-    terraform12 workspace select ${CLUSTER}
+    terraform init
+    terraform workspace select ${CLUSTER}
     # prometheus_operator often fails to delete cleanly if anything has
     # happened to the open policy agent beforehand. Delete it first to
     # avoid any issues
-    terraform12 destroy -target helm_release.prometheus_operator -auto-approve
-    terraform12 destroy -auto-approve
+    terraform destroy -target helm_release.prometheus_operator -auto-approve
+    terraform destroy -auto-approve
   )
 }
 
@@ -33,9 +33,9 @@ kops_cluster() {
 terraform_base() {
   (
     cd terraform/cloud-platform
-    terraform12 init
-    terraform12 workspace select ${CLUSTER}
-    terraform12 destroy -auto-approve
+    terraform init
+    terraform workspace select ${CLUSTER}
+    terraform destroy -auto-approve
   )
 }
 
@@ -43,8 +43,8 @@ terraform_workspaces() {
   for dir in terraform/cloud-platform terraform/cloud-platform-components; do
     (
       cd ${dir}
-      terraform12 workspace select default
-      terraform12 workspace delete ${CLUSTER}
+      terraform workspace select default
+      terraform workspace delete ${CLUSTER}
     )
   done
 }
