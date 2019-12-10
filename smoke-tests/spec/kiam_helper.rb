@@ -45,7 +45,6 @@ class KiamRole
     role
   end
 
-
   # If we leave this cluster's nodes in the trust relationships for the test role,
   # then, when the cluster is deleted, the role is left in a broken state, because
   # the deleted cluster's ARN in the trust relationships gets replaced with something
@@ -55,6 +54,24 @@ class KiamRole
   #
   # This method removes the cluster ARN from the role trust relationships, so that
   # this problem doesn't arise when the cluster is deleted.
+  #
+  # Sometimes this method is not called, or doesn't succeed, and we start to get
+  # tests failing with the message above, after a test cluster has been destroyed.
+  # If that happens, you need to delete the leftover entities from the trust
+  # relationships of the IAM role on this page:
+  #
+  # https://console.aws.amazon.com/iam/home?region=eu-west-1#/roles/integration-test-kiam-iam-role?section=trust
+  #
+  # In the list of "Trusted entities", correct entries look like this:
+  #
+  #     arn:aws:iam::777777777777:role/nodes.live-1.cloud-platform.service.justice.gov.uk
+  #
+  # So, delete anything that looks like this:
+  #
+  #     AROA27XXXXXXXXXXXXXXX
+  #
+  # After that, the tests should pass.
+  #
   def remove_cluster_nodes_from_trust_relationship(role)
     # Never try to remove live-1 from the trust relationships, because removing
     # the last trust relationship would leave the role in a broken state.
