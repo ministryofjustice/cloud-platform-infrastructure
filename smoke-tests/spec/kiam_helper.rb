@@ -45,7 +45,6 @@ class KiamRole
     role
   end
 
-
   # If we leave this cluster's nodes in the trust relationships for the test role,
   # then, when the cluster is deleted, the role is left in a broken state, because
   # the deleted cluster's ARN in the trust relationships gets replaced with something
