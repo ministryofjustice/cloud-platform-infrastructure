@@ -24,7 +24,7 @@ data "template_file" "kops" {
     external_subnets_id_a                = module.cluster_vpc.public_subnets[0]
     external_subnets_id_b                = module.cluster_vpc.public_subnets[1]
     external_subnets_id_c                = module.cluster_vpc.public_subnets[2]
-    authorized_keys_manager_systemd_unit = indent(6, data.template_file.authorized_keys_manager.rendered)
+    authorized_keys_manager_systemd_unit = indent(6, module.bastion.authorized_keys_manager)
     kms_key                              = aws_kms_key.kms.arn
     worker_node_machine_type             = var.worker_node_machine_type
     master_node_machine_type             = var.master_node_machine_type
