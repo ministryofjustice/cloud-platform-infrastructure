@@ -4,7 +4,7 @@
 ###########
 
 module "bastion" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.0.0"
 
   vpc_id         = module.cluster_vpc.vpc_id
   public_subnets = module.cluster_vpc.public_subnets
