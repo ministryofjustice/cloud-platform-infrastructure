@@ -98,6 +98,9 @@ controller:
 
   metrics:
     enabled: true
+    serviceMonitor:
+      enabled: true
+      namespace: ${kubernetes_namespace.ingress_controllers.id}
 
   service:
     annotations:
@@ -208,21 +211,3 @@ EOS
     )
   }
 }
-
-resource "null_resource" "nginx_ingress_servicemonitor" {
-  depends_on = [helm_release.prometheus_operator]
-
-  provisioner "local-exec" {
-    command = "kubectl apply -n ingress-controllers -f ${path.module}/resources/nginx-ingress/servicemonitor.yaml"
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = "kubectl delete -n ingress-controllers -f ${path.module}/resources/nginx-ingress/servicemonitor.yaml"
-  }
-
-  triggers = {
-    contents = filesha1("${path.module}/resources/nginx-ingress/servicemonitor.yaml")
-  }
-}
-
