@@ -26,7 +26,7 @@ describe "servicemonitors" do
     names = get_servicemonitors("ingress-controllers").map { |set| set.dig("metadata", "name") }.sort
 
     expected = [
-      "nginx-ingress",
+      "nginx-ingress-acme-controller",
     ]
     expect(names).to eq(expected)
   end
