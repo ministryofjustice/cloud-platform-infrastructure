@@ -168,6 +168,8 @@ end
 
 # https://stackoverflow.com/questions/8292031/ruby-timeouts-and-system-commands
 def exec_with_timeout(cmd, timeout)
+  log "CMD: #{cmd}, TIMEOUT: #{timeout}"
+
   pid = Process.spawn(cmd)
 
   begin
