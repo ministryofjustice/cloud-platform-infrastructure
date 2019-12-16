@@ -397,6 +397,7 @@ spec:
     application: moj-cloud-platform
     business-unit: platforms
     is-production: "true"
+    k8s.io/cluster/${cluster_domain_name}: ""
     role: node
     owner: cloud-platform:platforms@digital.justice.gov.uk
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
