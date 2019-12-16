@@ -27,7 +27,7 @@ Within `main.tf` you'll find creation of:
 - Auth0 registration
 - Route53 hostzones that your cluster will use
 - AWS Key pairs
-- Bastion
+- Bastion: It calls the bastion module which creates a bastion instance inside a VPC that will grant access to internal subnets to the members of the team. You can use this host to ssh onto your worker nodes.
 - etc
 
 ### EKS (`eks.tf`)

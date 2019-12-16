@@ -29,6 +29,46 @@ module "eks" {
       userarn  = "arn:aws:iam::754256621582:user/AlejandroGarrido"
       username = "AlejandroGarrido"
       groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/PoornimaKrishnasamy"
+      username = "PoornimaKrishnasamy"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/MouradTrabelsi"
+      username = "MouradTrabelsi"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/DavidSalgado"
+      username = "DavidSalgado"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/paulWyborn"
+      username = "paulWyborn"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/RazvanCosma"
+      username = "RazvanCosma"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/SabluMiah"
+      username = "SabluMiah"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/jasonBirchall"
+      username = "jasonBirchall"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
+      username = "VijayVeeranki"
+      groups   = ["system:masters"]
     }
   ]
 
