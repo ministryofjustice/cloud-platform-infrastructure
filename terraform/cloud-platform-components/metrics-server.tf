@@ -1,8 +1,8 @@
 resource "helm_release" "metrics_server" {
   name      = "metrics-server"
   chart     = "stable/metrics-server"
-  namespace = "kube-system"
-  version   = "2.0.4"
+  namespace = "monitoring"
+  version   = "2.8.8"
 
   set {
     name  = "args[0]"
