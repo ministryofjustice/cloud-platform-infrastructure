@@ -8,6 +8,8 @@ metadata:
   creationTimestamp: null
   name: live-1.cloud-platform.service.justice.gov.uk
 spec:
+  registryMirrors:
+  - https://docker-registry-cache.apps.${cluster_domain_name}
   fileAssets:
   - name: kubernetes-audit
     path: /srv/kubernetes/audit.yaml
@@ -305,7 +307,7 @@ spec:
         done;'
       [Install]
       WantedBy=multi-user.target
-      
+
 
 ---
 

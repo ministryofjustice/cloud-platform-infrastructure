@@ -8,6 +8,8 @@ metadata:
   creationTimestamp: null
   name: ${cluster_domain_name}
 spec:
+  registryMirrors:
+  - https://docker-registry-cache.apps.${cluster_domain_name}
   fileAssets:
   - name: kubernetes-audit
     path: /srv/kubernetes/audit.yaml
