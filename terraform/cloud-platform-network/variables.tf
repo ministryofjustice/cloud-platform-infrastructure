@@ -1,19 +1,3 @@
-variable "vpc_name" {
-  description = "The VPC name where the cluster(s) are going to be provisioned. VPCs are created in cloud-platform-network"
-  default     = ""
-}
-
-variable "cluster_node_count" {
-  description = "The number of worker node in the cluster"
-  default     = "21"
-}
-
-variable "worker_node_machine_type" {
-  description = "The AWS EC2 instance types to use for worker nodes"
-  default     = "r5.2xlarge"
-}
-
-# VPC vars
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   default     = "172.20.0.0/16"
@@ -35,4 +19,14 @@ variable "availability_zones" {
   type        = list(string)
   description = "a list of EC2 availability zones"
   default     = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
+}
+
+variable "cluster_node_count" {
+  description = "The number of worker node in the cluster"
+  default     = "21"
+}
+
+variable "worker_node_machine_type" {
+  description = "The AWS EC2 instance types to use for worker nodes"
+  default     = "r5.2xlarge"
 }

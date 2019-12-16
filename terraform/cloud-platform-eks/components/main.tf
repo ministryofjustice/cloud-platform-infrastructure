@@ -18,10 +18,15 @@ provider "aws" {
   profile = "moj-cp"
 }
 
-provider "kubernetes" {}
+provider "kubernetes" {
+  config_path = "../files/kubeconfig_${terraform.workspace}"
+}
 
 provider "helm" {
   service_account = "tiller"
+  kubernetes {
+    config_path = "../files/kubeconfig_${terraform.workspace}"
+  }
 }
 
 ###############
@@ -29,7 +34,7 @@ provider "helm" {
 ###############
 
 module "components" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-eks-components?ref=0.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-eks-components?ref=0.0.4"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   pagerduty_config             = var.pagerduty_config
