@@ -5,7 +5,6 @@ This README describes the main infrastructure components required to deliver a p
 ## Contents
 
   - [Requirements](#Requirements)
-  - [Bastion](#bastion)
   - [Cluster Dependences](#cluster-dependences)
   - [EKS](#eks)
   - [How do I run this?](#terraform-modules)
