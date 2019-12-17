@@ -35,7 +35,7 @@ MACHINE_TYPES = {
   },
   PRODUCTION => {
     "master_node_machine_type" => "c4.4xlarge",
-    "worker_node_machine_type" => "r5.2xlarge",
+    "worker_node_machine_type" => "r5.xlarge",
   },
 }
 
