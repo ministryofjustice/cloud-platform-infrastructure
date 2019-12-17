@@ -1,7 +1,6 @@
 require "spec_helper"
 
 describe "servicemonitors" do
-
   specify "expected prometheus servicemonitors" do
     names = get_servicemonitors("monitoring").map { |set| set.dig("metadata", "name") }.sort
 
@@ -39,5 +38,4 @@ describe "servicemonitors" do
     ]
     expect(names).to eq(expected)
   end
-
 end
