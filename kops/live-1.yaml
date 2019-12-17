@@ -396,7 +396,7 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
-  name: nodes
+  name: nodes-r52xl
 spec:
   image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
   machineType: r5.xlarge
