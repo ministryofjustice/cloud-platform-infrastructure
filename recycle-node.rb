@@ -22,6 +22,7 @@ AWS_REGION = "eu-west-2"
 KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-infrastructure/master/kops/live-1.yaml"
 NODE_DRAIN_TIMEOUT = 360 # Draining a node usually takes around 2 minutes. If it takes >6 minutes, it's not going to complete.
 SIGTERM = 15 # The unix signal to send to kill a process
+WORKER_NODE_INSTANCEGROUP = "nodes-r52xl" # The name of the worker nodes instancegroup in the kops config.
 
 def main
   config_cluster
@@ -78,7 +79,7 @@ def get_worker_instance_group_size
   YAML.load_stream(get_kops_config) { |doc| docs << doc }
   worker_instance_group = docs.last
 
-  unless worker_instance_group.dig("metadata", "name") == "nodes"
+  unless worker_instance_group.dig("metadata", "name") == WORKER_NODE_INSTANCEGROUP
     raise "Failed to parse kops config. Last document in YAML file is supposed to be worker instancegroup definition."
   end
 
