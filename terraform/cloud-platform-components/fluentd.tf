@@ -18,9 +18,10 @@ resource "kubernetes_namespace" "logging" {
 }
 
 resource "helm_release" "fluentd_es" {
-  name      = "fluentd-es"
-  chart     = "../../helm-charts/fluentd-es"
-  namespace = "logging"
+  name       = "fluentd-es"
+  repository = data.helm_repository.cloud_platform.metadata[0].name
+  chart      = "fluentd-es"
+  namespace  = "logging"
 
   set {
     name  = "fluent_elasticsearch_host"

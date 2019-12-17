@@ -1,5 +1,0 @@
-apiVersion: v1
-description: cloud-platform kuberos
-name: kuberos
-version: 0.1.0
-home: https://github.com/ministryofjustice/kuberos
