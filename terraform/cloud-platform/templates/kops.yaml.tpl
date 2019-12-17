@@ -384,7 +384,7 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: ${cluster_domain_name}
-  name: nodes
+  name: nodes-r52xl
 spec:
   image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
   machineType: ${worker_node_machine_type}
@@ -392,7 +392,7 @@ spec:
   minSize: ${cluster_node_count}
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: nodes
+    kops.k8s.io/instancegroup: nodes-r52xl
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
