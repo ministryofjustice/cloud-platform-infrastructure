@@ -2,9 +2,10 @@
 # set up S3 bucket
 # -----------------------------------------------------------
 
-resource "aws_s3_bucket" "velero-test" {
+resource "aws_s3_bucket" "velero" {
   #  provider      = "aws.cloud-platform-ireland"
   #  bucket_prefix = "${var.bucket_prefix}"
+  bucket = "cloud-platform-velero-backup-${local.cluster_name}" 
   acl    = "private"
   region = "eu-west-2"
 
@@ -19,6 +20,17 @@ resource "aws_s3_bucket" "velero-test" {
       }
     }
   }
+}
+resource "aws_s3_bucket_public_access_block" "velero" {
+  bucket = "cloud-platform-velero-backup-${local.cluster_name}"
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+locals {
+  cluster_name             = terraform.workspace
 }
 # -----------------------------------------------------------
 # set up IAM role and in-line policy using Kiam
@@ -69,7 +81,7 @@ data "aws_iam_policy_document" "velero" {
     ]
 
     #    resources = ["*"]
-    resources = ["arn:aws:s3:::cloud-platform-velero-bucket-test/*"]
+    resources = ["arn:aws:s3:::cloud-platform-velero-backup-${local.cluster_name}/*"]
   }
   statement {
     actions = [
@@ -77,7 +89,7 @@ data "aws_iam_policy_document" "velero" {
     ]
 
     #   resources = ["*"]
-    resources = ["arn:aws:s3:::cloud-platform-velero-bucket-test"]
+    resources = ["arn:aws:s3:::cloud-platform-velero-backup-${local.cluster_name}"]
   }
 }
 
@@ -112,9 +124,10 @@ resource "kubernetes_namespace" "velero" {
 
 data "template_file" "velero" {
   template = file("./templates/velero/velero.yaml.tpl")
-  #  vars = {
-  #    cluster_domain_name = local.cluster_base_domain_name
-  #  }
+    vars = {
+      cluster_name  = terraform.workspace
+    #  cluster_domain_name = local.cluster_base_domain_name
+    }
 }
 
 # -----------------------------------------------------------
@@ -134,7 +147,7 @@ resource "helm_release" "velero" {
     null_resource.deploy,
     aws_iam_role.velero,
     aws_iam_role_policy.velero,
-    aws_s3_bucket.velero-test,
+    aws_s3_bucket.velero,
   ]
   # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
   # force an interpolation expression to be interpreted as a list by wrapping it

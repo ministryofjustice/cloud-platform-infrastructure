@@ -69,7 +69,7 @@ configuration:
     # match `configuration.provider`. Required.
     name: aws
     # Bucket to store backups in. Required.
-    bucket: cloud-platform-velero-bucket-test
+    bucket: cloud-platform-velero-backup-${cluster_name}
     # Prefix within bucket under which to store backups. Optional.
     prefix:
     # Additional provider-specific configuration. See link above
