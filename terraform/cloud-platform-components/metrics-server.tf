@@ -1,8 +1,14 @@
 resource "helm_release" "metrics_server" {
   name      = "metrics-server"
   chart     = "stable/metrics-server"
-  namespace = "kube-system"
-  version   = "2.0.4"
+  namespace = "monitoring"
+  version   = "2.8.8"
+
+  depends_on = [null_resource.deploy]
+
+  lifecycle {
+    ignore_changes = [keyring]
+  }
 
   set {
     name  = "args[0]"
@@ -11,13 +17,13 @@ resource "helm_release" "metrics_server" {
 
   set {
     name  = "args[1]"
-    value = "--logtostderr"
+    value = "--kubelet-preferred-address-types=InternalIP"
   }
 
-  depends_on = [null_resource.deploy]
-
-  lifecycle {
-    ignore_changes = [keyring]
+  set {
+    name  = "hostNetwork.enabled"
+    value = "true"
   }
+
 }
 

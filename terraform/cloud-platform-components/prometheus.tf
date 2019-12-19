@@ -146,7 +146,6 @@ resource "helm_release" "prometheus_operator" {
     null_resource.deploy,
     kubernetes_secret.grafana_secret,
     helm_release.open-policy-agent,
-    helm_release.nginx_ingress_acme,
   ]
 
   provisioner "local-exec" {

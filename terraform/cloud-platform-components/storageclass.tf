@@ -1,11 +1,15 @@
-resource "null_resource" "storageclass" {
-  provisioner "local-exec" {
-    command = "kubectl apply -f ${path.module}/resources/storageclass.yaml"
+resource "kubernetes_storage_class" "storageclass" {
+
+  metadata {
+    name = "gp2-expand"
   }
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = "kubectl delete -f ${path.module}/resources/storageclass.yaml"
+  storage_provisioner    = "kubernetes.io/aws-ebs"
+  reclaim_policy         = "Delete"
+  allow_volume_expansion = "true"
+
+  parameters = {
+    type      = "gp2"
+    encrypted = "true"
   }
 }
-
