@@ -76,6 +76,67 @@ data "aws_subnet_ids" "public" {
   }
 }
 
+# Unfortunately data.template_file.kops resource only receives individual subnets with the 
+# AZs already mapped. Since terraform 0.12 there is a better way to do it using templatefile 
+# ( https://www.terraform.io/docs/configuration/functions/templatefile.html ) and passing 
+# the whole array of subnets with AZ included, it will involve using a something like 
+# %{ for subnets in subnets_all ~} # inside the templates/kops.yaml.tpl. For this PR the 
+# idea is to change the least possible, following PRs will be coming to make it better.
+
+data "aws_subnet" "private_a" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2a"
+
+  tags = {
+    SubnetType = "Private"
+  }
+}
+
+data "aws_subnet" "private_b" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2b"
+
+  tags = {
+    SubnetType = "Private"
+  }
+}
+
+data "aws_subnet" "private_c" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2c"
+
+  tags = {
+    SubnetType = "Private"
+  }
+}
+
+data "aws_subnet" "public_a" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2a"
+
+  tags = {
+    SubnetType = "Utility"
+  }
+}
+
+data "aws_subnet" "public_b" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2b"
+
+  tags = {
+    SubnetType = "Utility"
+  }
+}
+
+data "aws_subnet" "public_c" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2c"
+
+  tags = {
+    SubnetType = "Utility"
+  }
+}
+
 
 # Modules
 module "cluster_dns" {

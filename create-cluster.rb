@@ -35,21 +35,24 @@ MACHINE_TYPES = {
   },
   PRODUCTION => {
     "master_node_machine_type" => "c4.4xlarge",
-    "worker_node_machine_type" => "r5.2xlarge",
+    "worker_node_machine_type" => "r5.xlarge",
   },
 }
 
 def main(options)
   cluster_name = options[:cluster_name]
   cluster_size = options[:cluster_size]
+  vpc_name     = options[:vpc_name]
 
+  vpc_name = cluster_name if vpc_name.nil?
   usage if cluster_name.nil? || cluster_size.nil?
 
   check_prerequisites(cluster_name)
 
-  execute "git-crypt unlock"
+  #execute "git-crypt unlock"
 
-  create_cluster(cluster_name, cluster_size)
+  create_vpc(vpc_name)
+  create_cluster(cluster_name, cluster_size, vpc_name)
   run_kops(cluster_name)
   install_components(cluster_name)
   run_integration_tests(cluster_name)
@@ -57,7 +60,20 @@ def main(options)
   run_and_output "kubectl cluster-info"
 end
 
-def create_cluster(cluster_name, cluster_size)
+def create_vpc(vpc_name)
+  FileUtils.rm_rf("terraform/cloud-platform-network/.terraform")
+  dir = "terraform/cloud-platform-network"
+  switch_terraform_workspace(dir, vpc_name)
+
+  tf_apply = [
+    "terraform apply",
+    "-auto-approve",
+  ].join(" ")
+
+  run_and_output "cd #{dir}; #{tf_apply}"
+end
+
+def create_cluster(cluster_name, cluster_size, vpc_name)
   FileUtils.rm_rf("terraform/cloud-platform/.terraform")
   dir = "terraform/cloud-platform"
   switch_terraform_workspace(dir, cluster_name)
@@ -69,11 +85,13 @@ def create_cluster(cluster_name, cluster_size)
     "terraform apply",
     "-var master_node_machine_type=#{master_node_machine_type}",
     "-var worker_node_machine_type=#{worker_node_machine_type}",
+    *("-var vpc_name=\"#{vpc_name}\"" if vpc_name ),
     "-auto-approve",
   ].join(" ")
 
   run_and_output "cd #{dir}; #{tf_apply}"
 end
+
 
 def run_kops(cluster_name)
   run_and_output "kops create -f kops/#{cluster_name}.yaml"
@@ -238,6 +256,10 @@ def parse_options
       options[:cluster_name] = name
     end
 
+    opts.on("-v", "--vpc-name VPC-NAME", "VPC where to deploy the test cluster") do |name|
+      options[:vpc_name] = name
+    end
+
     opts.on("-s", "--size CLUSTER-SIZE", [SMALL, MEDIUM, PRODUCTION], "Cluster size (#{SMALL} | #{MEDIUM} | #{PRODUCTION})") do |size|
       options[:cluster_size] = size
     end
@@ -256,5 +278,7 @@ end
 abort("You must run this script from within the ministryofjustice/cloud-platform-tools docker container!") unless running_in_docker_container?
 
 options = parse_options
+
+puts options
 
 main(options)
