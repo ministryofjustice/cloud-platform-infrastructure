@@ -1,3 +1,8 @@
+variable "vpc_name" {
+  description = "The VPC name where the cluster(s) are going to be provisioned. VPCs are created in cloud-platform-network"
+  default     = ""
+}
+
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   default     = "172.20.0.0/16"
@@ -33,6 +38,6 @@ variable "master_node_machine_type" {
 
 variable "worker_node_machine_type" {
   description = "The AWS EC2 instance types to use for worker nodes"
-  default     = "r5.2xlarge"
+  default     = "r5.xlarge"
 }
 
