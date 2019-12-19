@@ -42,14 +42,14 @@ MACHINE_TYPES = {
 def main(options)
   cluster_name = options[:cluster_name]
   cluster_size = options[:cluster_size]
-  vpc_name     = options[:vpc_name]
+  vpc_name = options[:vpc_name]
 
   vpc_name = cluster_name if vpc_name.nil?
   usage if cluster_name.nil? || cluster_size.nil?
 
   check_prerequisites(cluster_name)
 
-  #execute "git-crypt unlock"
+  # execute "git-crypt unlock"
 
   create_vpc(vpc_name)
   create_cluster(cluster_name, cluster_size, vpc_name)
@@ -85,13 +85,12 @@ def create_cluster(cluster_name, cluster_size, vpc_name)
     "terraform apply",
     "-var master_node_machine_type=#{master_node_machine_type}",
     "-var worker_node_machine_type=#{worker_node_machine_type}",
-    *("-var vpc_name=\"#{vpc_name}\"" if vpc_name ),
+    *("-var vpc_name=\"#{vpc_name}\"" if vpc_name),
     "-auto-approve",
   ].join(" ")
 
   run_and_output "cd #{dir}; #{tf_apply}"
 end
-
 
 def run_kops(cluster_name)
   run_and_output "kops create -f kops/#{cluster_name}.yaml"
