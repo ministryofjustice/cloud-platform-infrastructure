@@ -49,7 +49,7 @@ def main(options)
 
   check_prerequisites(cluster_name)
 
-  #execute "git-crypt unlock"
+  execute "git-crypt unlock"
 
   create_vpc(vpc_name)
   create_cluster(cluster_name, cluster_size, vpc_name)
