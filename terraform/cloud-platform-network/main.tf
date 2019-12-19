@@ -46,11 +46,13 @@ module "vpc" {
   enable_dns_hostnames = true
 
   public_subnet_tags = {
-    SubnetType = "Public"
+    SubnetType               = "Utility"
+    "kubernetes.io/role/elb" = "1"
   }
 
   private_subnet_tags = {
-    SubnetType = "Private"
+    SubnetType                        = "Private"
+    "kubernetes.io/role/internal-elb" = "1"
   }
 
   tags = {

@@ -71,7 +71,7 @@ data "aws_subnet_ids" "public" {
   vpc_id = data.aws_vpc.selected.id
 
   tags = {
-    SubnetType = "Public"
+    SubnetType = "Utility"
   }
 }
 
