@@ -119,7 +119,7 @@ resource "aws_dlm_lifecycle_policy" "persistentvolume_backup" {
     }
 
     target_tags = {
-      "k8s.io/pvc/persistentvolume" = "1"
+      "k8s.io/pvc/persistentvolume" = "daily-backup"
     }
   }
 }
