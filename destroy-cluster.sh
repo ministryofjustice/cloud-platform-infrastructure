@@ -3,8 +3,8 @@
 set -euo pipefail
 
 # Edit this to specify the cluster to destroy
-CLUSTER=david-test1
-VPC_NAME=mogaal
+CLUSTER=david-test4
+VPC_NAME=david-test3
 
 main() {
   terraform_components
@@ -37,7 +37,8 @@ terraform_base() {
     cd terraform/cloud-platform
     terraform init
     terraform workspace select ${CLUSTER}
-    terraform destroy -auto-approve
+    local readonly vpc_name="${VPC_NAME:-${CLUSTER}}"
+    terraform destroy -var vpc_name="${vpc_name}" -auto-approve
   )
 }
 
