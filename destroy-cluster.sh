@@ -4,12 +4,14 @@ set -euo pipefail
 
 # Edit this to specify the cluster to destroy
 CLUSTER=david-test1
+VPC_NAME=mogaal
 
 main() {
   terraform_components
   kops_cluster
   terraform_base
   terraform_workspaces
+  # terraform_vpc # Un comment to destroy the VPC
 }
 
 terraform_components() {
@@ -35,6 +37,15 @@ terraform_base() {
     cd terraform/cloud-platform
     terraform init
     terraform workspace select ${CLUSTER}
+    terraform destroy -auto-approve
+  )
+}
+
+terraform_vpc() {
+  (
+    cd terraform/cloud-platform-network
+    terraform init
+    terraform workspace select ${VPC_NAME}
     terraform destroy -auto-approve
   )
 }
