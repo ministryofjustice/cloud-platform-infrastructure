@@ -106,8 +106,8 @@ resource "aws_s3_bucket" "cluster_components" {
 }
 
 resource "aws_s3_bucket" "velero" {
-  bucket = "cloud-platform-velero-backups"
-  acl    = "private"
+  bucket   = "cloud-platform-velero-backups"
+  acl      = "private"
   provider = aws.cloud-platform
 
   versioning {
@@ -124,7 +124,7 @@ resource "aws_s3_bucket" "velero" {
 }
 
 resource "aws_s3_bucket_public_access_block" "velero" {
-  bucket = "cloud-platform-velero-backups"
+  bucket   = "cloud-platform-velero-backups"
   provider = aws.cloud-platform
 
   block_public_acls       = true
