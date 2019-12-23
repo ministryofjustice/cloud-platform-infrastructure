@@ -1,16 +1,49 @@
 # -----------------------------------------------------------
+# Create Velero Namespace
+# -----------------------------------------------------------
+
+resource "kubernetes_namespace" "velero" {
+  metadata {
+    name = "velero"
+
+    labels = {
+      "component" = "velero"
+    }
+
+    annotations = {
+      "cloud-platform.justice.gov.uk/application"   = "Velero"
+      "cloud-platform.justice.gov.uk/business-unit" = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+      "iam.amazonaws.com/permitted"                 = ".*"
+    }
+  }
+}
+
+data "template_file" "velero" {
+  template = file("./templates/velero/velero.yaml.tpl")
+  vars = {
+    cluster_name = terraform.workspace
+    iam_role     = aws_iam_role.velero.name
+    #  cluster_domain_name = local.cluster_base_domain_name
+  }
+}
+
+# -----------------------------------------------------------
 # set up S3 bucket
 # -----------------------------------------------------------
 
 resource "aws_s3_bucket" "velero" {
-  #  provider      = "aws.cloud-platform-ireland"
-  #  bucket_prefix = "${var.bucket_prefix}"
-  bucket = "cloud-platform-velero-backup-${local.cluster_name}" 
+  bucket = "cloud-platform-velero-backup-${terraform.workspace}"
   acl    = "private"
   region = "eu-west-2"
 
+  versioning {
+    enabled = true
+  }
+
   lifecycle {
-    prevent_destroy = false
+    prevent_destroy = true
   }
 
   server_side_encryption_configuration {
@@ -21,25 +54,19 @@ resource "aws_s3_bucket" "velero" {
     }
   }
 }
+
 resource "aws_s3_bucket_public_access_block" "velero" {
-  bucket = "cloud-platform-velero-backup-${local.cluster_name}"
+  bucket = "cloud-platform-velero-backup-${terraform.workspace}"
 
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+
+  depends_on = [
+    aws_s3_bucket.velero,
+  ]
 }
-locals {
-  cluster_name             = terraform.workspace
-}
-# -----------------------------------------------------------
-# set up IAM role and in-line policy using Kiam
-# -----------------------------------------------------------
-# Velero
-# KIAM role and policy creation
-# expressing which roles are permitted to be assumed within that namespace.
-# Correct annotation are added to the Pod to indicate which role should be assumed.
-# Without correct Pod annotation Kiam cannot provide access to the Pod to execute required actions.
 
 data "aws_iam_policy_document" "velero_assume" {
   statement {
@@ -68,7 +95,6 @@ data "aws_iam_policy_document" "velero" {
       "ec2:CreateSnapshot",
       "ec2:DeleteSnapshot",
     ]
-
     resources = ["*"]
   }
   statement {
@@ -79,17 +105,13 @@ data "aws_iam_policy_document" "velero" {
       "s3:AbortMultipartUpload",
       "s3:ListMultipartUploadParts",
     ]
-
-    #    resources = ["*"]
-    resources = ["arn:aws:s3:::cloud-platform-velero-backup-${local.cluster_name}/*"]
+    resources = ["arn:aws:s3:::cloud-platform-velero-backup-${terraform.workspace}/*"]
   }
   statement {
     actions = [
       "s3:ListBucket",
     ]
-
-    #   resources = ["*"]
-    resources = ["arn:aws:s3:::cloud-platform-velero-backup-${local.cluster_name}"]
+    resources = ["arn:aws:s3:::cloud-platform-velero-backup-${terraform.workspace}"]
   }
 }
 
@@ -97,37 +119,6 @@ resource "aws_iam_role_policy" "velero" {
   name   = "velero"
   role   = aws_iam_role.velero.id
   policy = data.aws_iam_policy_document.velero.json
-}
-
-# -----------------------------------------------------------
-# Create Velero Namespace
-# -----------------------------------------------------------
-
-resource "kubernetes_namespace" "velero" {
-  metadata {
-    name = "velero"
-
-    labels = {
-      "name"                        = "velero"
-      "openpolicyagent.org/webhook" = "ignore"
-    }
-
-    annotations = {
-      "cloud-platform.justice.gov.uk/application"   = "Velero"
-      "cloud-platform.justice.gov.uk/business-unit" = "cloud-platform"
-      "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
-      "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
-      "iam.amazonaws.com/permitted"                 = aws_iam_role.velero.name
-    }
-  }
-}
-
-data "template_file" "velero" {
-  template = file("./templates/velero/velero.yaml.tpl")
-    vars = {
-      cluster_name  = terraform.workspace
-    #  cluster_domain_name = local.cluster_base_domain_name
-    }
 }
 
 # -----------------------------------------------------------
@@ -142,29 +133,14 @@ resource "helm_release" "velero" {
   version    = "2.3.3"
 
   depends_on = [
-    null_resource.kube_system_ns_label,
     kubernetes_namespace.velero,
-    null_resource.deploy,
     aws_iam_role.velero,
     aws_iam_role_policy.velero,
-    aws_s3_bucket.velero,
   ]
-  # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
-  # force an interpolation expression to be interpreted as a list by wrapping it
-  # in an extra set of list brackets. That form was supported for compatibility in
-  # v0.11, but is no longer supported in Terraform v0.12.
-  #
-  # If the expression in the following list itself returns a list, remove the
-  # brackets to avoid interpretation as a list of lists. If the expression
-  # returns a single list item then leave it as-is and remove this TODO comment.
-  values = [
-    data.template_file.velero.rendered,
-    <<EOF
-podAnnotations:
-  iam.amazonaws.com/role: "${aws_iam_role.velero.name}"
-EOF
-    ,
-  ]
+  values = [templatefile("${path.module}/templates/velero/velero.yaml.tpl", {
+    cluster_name = terraform.workspace
+    iam_role     = aws_iam_role.velero.name
+  })]
 
   lifecycle {
     ignore_changes = [keyring]
