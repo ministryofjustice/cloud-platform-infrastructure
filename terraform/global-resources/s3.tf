@@ -105,3 +105,36 @@ resource "aws_s3_bucket" "cluster_components" {
   }
 }
 
+resource "aws_s3_bucket" "velero" {
+  bucket = "cloud-platform-velero-backups"
+  acl    = "private"
+  provider = aws.cloud-platform
+
+  versioning {
+    enabled = true
+  }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "velero" {
+  bucket = "cloud-platform-velero-backups"
+  provider = aws.cloud-platform
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  depends_on = [
+    aws_s3_bucket.velero,
+  ]
+}
+
+
