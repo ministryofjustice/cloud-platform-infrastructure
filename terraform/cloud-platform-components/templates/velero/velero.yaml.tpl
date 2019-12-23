@@ -37,7 +37,7 @@ configuration:
     # Bucket to store backups in. Required.
     bucket: cloud-platform-velero-backup-${cluster_name}
     # Prefix within bucket under which to store backups. Optional.
-    prefix:
+    prefix: ${cluster_name}
     config:
       region: eu-west-2
     #  s3ForcePathStyle:
