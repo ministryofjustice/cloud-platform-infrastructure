@@ -35,7 +35,7 @@ configuration:
   backupStorageLocation:
     name: aws
     # Bucket to store backups in. Required.
-    bucket: cloud-platform-velero-backup-${cluster_name}
+    bucket: cloud-platform-velero-backups
     # Prefix within bucket under which to store backups. Optional.
     prefix: ${cluster_name}
     config:
