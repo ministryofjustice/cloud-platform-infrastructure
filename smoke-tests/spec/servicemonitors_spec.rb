@@ -38,8 +38,8 @@ describe "servicemonitors" do
     ]
     expect(names).to eq(expected)
   end
-  
-  specify "expected velero servicemonitors", cluster: "live-1" do
+
+  specify "expected velero servicemonitors" do
     names = get_servicemonitors("velero").map { |set| set.dig("metadata", "name") }.sort
 
     expected = [
