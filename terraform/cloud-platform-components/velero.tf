@@ -3,7 +3,9 @@ resource "kubernetes_namespace" "velero" {
     name = "velero"
 
     labels = {
-      "component" = "velero"
+      "component"                                      = "velero"
+      "cloud-platform.justice.gov.uk/environment-name" = "production"
+      "cloud-platform.justice.gov.uk/is-production"    = "true"
     }
 
     annotations = {
