@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Edit this to specify the cluster to destroy
-CLUSTER=david-test1
+CLUSTER=test-vpc
 
 main() {
   terraform_components
