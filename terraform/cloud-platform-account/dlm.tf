@@ -88,38 +88,3 @@ resource "aws_dlm_lifecycle_policy" "etcd_backup" {
     }
   }
 }
-
-resource "aws_dlm_lifecycle_policy" "persistentvolume_backup" {
-  description        = "PersistentVolume lifecycle policy"
-  execution_role_arn = aws_iam_role.dlm_lifecycle_role.arn
-  state              = "ENABLED"
-
-  policy_details {
-    resource_types = ["VOLUME"]
-
-    schedule {
-      name = "Daily 30 days persistentvolume snapshots"
-
-      create_rule {
-        interval      = 24
-        interval_unit = "HOURS"
-        times         = ["05:00"]
-      }
-
-      retain_rule {
-        count = 30
-      }
-
-      tags_to_add = {
-        SnapshotCreator = "DLM"
-        volume_type     = "persistentvolume"
-      }
-
-      copy_tags = true
-    }
-
-    target_tags = {
-      "k8s.io/pvc/persistentvolume" = "daily-backup"
-    }
-  }
-}
