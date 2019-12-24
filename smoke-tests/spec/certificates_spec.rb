@@ -6,8 +6,7 @@ describe "certificates" do
     names = get_certificates.map { |set| set.dig("metadata", "name") }.sort
 
     expected = [
-        "default",
-        "mourad"
+        "default", #ingress-controller certificate
     ]
     expect(names).to include(*expected)
   end
