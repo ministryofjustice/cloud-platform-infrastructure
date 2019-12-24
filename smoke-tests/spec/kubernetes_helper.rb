@@ -185,6 +185,11 @@ def get_prometheuses
   JSON.parse(`kubectl get prometheus --all-namespaces -o json`).fetch("items")
 end
 
+# CRD prometheusrules.monitoring.coreos.com
+def get_prometheus_rules
+  JSON.parse(`kubectl get prometheusrules --all-namespaces -o json`).fetch("items")
+end
+
 def get_servicemonitors(namespace)
   JSON.parse(`kubectl get servicemonitors -n #{namespace} -o json`).fetch("items")
 end
