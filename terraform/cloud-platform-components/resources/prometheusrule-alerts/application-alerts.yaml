@@ -252,4 +252,20 @@ spec:
       for: 5m
       labels:
         severity: warning
+    - alert: VeleroBackupFailed
+      annotations:
+        message: A Veleo backup has failed
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md
+      expr: sum(velero_backup_success_total{service="velero"}) / sum(velero_backup_attempt_total{service="velero"}) < 1
+      for: 1m
+      labels:
+        severity: warning
+    - alert: VeleroAllNamespaceBackupNotSuccessfulForOverFourHours
+      annotations:
+        message: The Velero backup schedule for AllNamespaceBackup does not have a successful timestamp for over 4 hours
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md
+      expr: (time() - velero_backup_last_successful_timestamp{schedule="velero-allnamespacebackup"}) / 60 / 60 > 4
+      for: 1m
+      labels:
+        severity: warning
         
