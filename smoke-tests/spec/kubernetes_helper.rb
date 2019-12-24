@@ -175,6 +175,11 @@ def get_crds
   JSON.parse(`kubectl get crds --all-namespaces -o json`).fetch("items")
 end
 
+# CRD certificates.certmanager.k8s.io
+def get_certificates
+  JSON.parse(`kubectl get certificate --all-namespaces -o json`).fetch("items")
+end
+
 def get_servicemonitors(namespace)
   JSON.parse(`kubectl get servicemonitors -n #{namespace} -o json`).fetch("items")
 end
