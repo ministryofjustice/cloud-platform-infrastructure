@@ -3,8 +3,7 @@ def current_cluster
 end
 
 def all_namespaces
-  json = `kubectl get namespaces -o json`
-  JSON.parse(json).fetch("items")
+  kubectl_items "get namespaces"
 end
 
 def create_namespace(namespace, opts = {})
@@ -99,7 +98,7 @@ def get_pod_logs(namespace, pod_name)
 end
 
 def get_pods(namespace)
-  JSON.parse(`kubectl -n #{namespace} get pods -o json`).fetch("items")
+  kubectl_items "get pods -n #{namespace}"
 end
 
 def get_running_app_pods(namespace, app, property = "app")
@@ -164,49 +163,57 @@ def filter_by_role(nodes, role)
 end
 
 def get_nodes
-  JSON.parse(`kubectl get nodes -o json`).fetch("items")
+  kubectl_items "get nodes"
 end
 
 def get_daemonsets
-  JSON.parse(`kubectl get daemonsets --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "daemonsets"
 end
 
 def get_crds
-  JSON.parse(`kubectl get crds --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "crds"
 end
 
 # CRD certificates.certmanager.k8s.io
 def get_certificates
-  JSON.parse(`kubectl get certificate --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "certificate"
 end
 
 # CRD issuers.certmanager.k8s.io
 def get_issuers
-  JSON.parse(`kubectl get issuers --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "issuers"
 end
 
 # CRD clusterissuers.certmanager.k8s.io
 def get_clusterissuers
-  JSON.parse(`kubectl get clusterissuers --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "clusterissuers"
 end
 
 # CRD prometheuses.monitoring.coreos.com
 def get_prometheuses
-  JSON.parse(`kubectl get prometheus --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "prometheus"
 end
 
 # CRD prometheusrules.monitoring.coreos.com
 def get_prometheus_rules
-  JSON.parse(`kubectl get prometheusrules --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "prometheusrules"
 end
 
 # CRD alertmanagers.monitoring.coreos.com
 def get_alertmanagers
-  JSON.parse(`kubectl get alertmanagers --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "alertmanagers"
+end
+
+def get_from_all_namespaces(entity)
+  kubectl_items "get #{entity} --all-namespaces"
 end
 
 def get_servicemonitors(namespace)
-  JSON.parse(`kubectl get servicemonitors -n #{namespace} -o json`).fetch("items")
+  kubectl_items "get servicemonitors -n #{namespace}"
+end
+
+def kubectl_items(cmd)
+  JSON.parse(`kubectl #{cmd} -o json`).fetch("items")
 end
 
 # Set the enable-modsecurity flag to false on the ingress annotation
