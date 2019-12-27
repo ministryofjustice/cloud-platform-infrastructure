@@ -200,6 +200,7 @@ def get_prometheus_rules
   JSON.parse(`kubectl get prometheusrules --all-namespaces -o json`).fetch("items")
 end
 
+# CRD alertmanagers.monitoring.coreos.com
 def get_alertmanagers
   JSON.parse(`kubectl get alertmanagers --all-namespaces -o json`).fetch("items")
 end
