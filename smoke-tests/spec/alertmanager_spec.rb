@@ -10,6 +10,3 @@ describe "Alertmanager resources" do
     expect(names).to include(*expected)
   end
 end
-
-
-
