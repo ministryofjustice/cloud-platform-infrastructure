@@ -11,3 +11,15 @@ describe "Clusterissuer" do
     expect(names).to include(*expected)
   end
 end
+
+describe "Issuer" do
+  specify "expected Issuer" do
+    names = get_issuers.map { |set| set.dig("metadata", "name") }.sort
+
+    expected = [
+      "cert-manager-webhook-ca",
+      "cert-manager-webhook-selfsign",
+    ]
+    expect(names).to include(*expected)
+  end
+end
