@@ -75,6 +75,13 @@ data "aws_subnet_ids" "public" {
   }
 }
 
+# This required by an output (internal_subnets) which is used by 
+# concourse. 
+data "aws_subnet" "private_cidrs" {
+  count = length(tolist(data.aws_subnet_ids.private.ids))
+  id    = tolist(data.aws_subnet_ids.private.ids)[count.index]
+}
+
 ############
 # Key Pair #
 ############
