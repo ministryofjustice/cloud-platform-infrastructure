@@ -180,6 +180,12 @@ def get_certificates
   JSON.parse(`kubectl get certificate --all-namespaces -o json`).fetch("items")
 end
 
+# CRD issuers.certmanager.k8s.io
+def get_issuers
+  JSON.parse(`kubectl get issuers --all-namespaces -o json`).fetch("items")
+end
+
+# CRD clusterissuers.certmanager.k8s.io
 def get_clusterissuers
   JSON.parse(`kubectl get clusterissuers --all-namespaces -o json`).fetch("items")
 end
