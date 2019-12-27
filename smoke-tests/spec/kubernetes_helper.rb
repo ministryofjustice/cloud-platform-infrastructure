@@ -168,41 +168,45 @@ def get_nodes
 end
 
 def get_daemonsets
-  JSON.parse(`kubectl get daemonsets --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "daemonsets"
 end
 
 def get_crds
-  JSON.parse(`kubectl get crds --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "crds"
 end
 
 # CRD certificates.certmanager.k8s.io
 def get_certificates
-  JSON.parse(`kubectl get certificate --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "certificate"
 end
 
 # CRD issuers.certmanager.k8s.io
 def get_issuers
-  JSON.parse(`kubectl get issuers --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "issuers"
 end
 
 # CRD clusterissuers.certmanager.k8s.io
 def get_clusterissuers
-  JSON.parse(`kubectl get clusterissuers --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "clusterissuers"
 end
 
 # CRD prometheuses.monitoring.coreos.com
 def get_prometheuses
-  JSON.parse(`kubectl get prometheus --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "prometheus"
 end
 
 # CRD prometheusrules.monitoring.coreos.com
 def get_prometheus_rules
-  JSON.parse(`kubectl get prometheusrules --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "prometheusrules"
 end
 
 # CRD alertmanagers.monitoring.coreos.com
 def get_alertmanagers
-  JSON.parse(`kubectl get alertmanagers --all-namespaces -o json`).fetch("items")
+  get_from_all_namespaces "alertmanagers"
+end
+
+def get_from_all_namespaces(entity)
+  JSON.parse(`kubectl get #{entity} --all-namespaces -o json`).fetch("items")
 end
 
 def get_servicemonitors(namespace)
