@@ -3,8 +3,7 @@ def current_cluster
 end
 
 def all_namespaces
-  json = `kubectl get namespaces -o json`
-  JSON.parse(json).fetch("items")
+  kubectl_items "get namespaces"
 end
 
 def create_namespace(namespace, opts = {})
@@ -99,7 +98,7 @@ def get_pod_logs(namespace, pod_name)
 end
 
 def get_pods(namespace)
-  JSON.parse(`kubectl -n #{namespace} get pods -o json`).fetch("items")
+  kubectl_items "get pods -n #{namespace}"
 end
 
 def get_running_app_pods(namespace, app, property = "app")
@@ -164,7 +163,7 @@ def filter_by_role(nodes, role)
 end
 
 def get_nodes
-  JSON.parse(`kubectl get nodes -o json`).fetch("items")
+  kubectl_items "get nodes"
 end
 
 def get_daemonsets
@@ -206,11 +205,15 @@ def get_alertmanagers
 end
 
 def get_from_all_namespaces(entity)
-  JSON.parse(`kubectl get #{entity} --all-namespaces -o json`).fetch("items")
+  kubectl_items "get #{entity} --all-namespaces"
 end
 
 def get_servicemonitors(namespace)
-  JSON.parse(`kubectl get servicemonitors -n #{namespace} -o json`).fetch("items")
+  kubectl_items "get servicemonitors -n #{namespace}"
+end
+
+def kubectl_items(cmd)
+  JSON.parse(`kubectl #{cmd} -o json`).fetch("items")
 end
 
 # Set the enable-modsecurity flag to false on the ingress annotation
