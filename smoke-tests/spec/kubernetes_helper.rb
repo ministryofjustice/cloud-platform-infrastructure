@@ -180,6 +180,10 @@ def get_certificates
   JSON.parse(`kubectl get certificate --all-namespaces -o json`).fetch("items")
 end
 
+def get_clusterissuers
+  JSON.parse(`kubectl get clusterissuers --all-namespaces -o json`).fetch("items")
+end
+
 # CRD prometheuses.monitoring.coreos.com
 def get_prometheuses
   JSON.parse(`kubectl get prometheus --all-namespaces -o json`).fetch("items")
