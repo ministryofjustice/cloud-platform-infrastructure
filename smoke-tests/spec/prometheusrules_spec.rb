@@ -34,6 +34,4 @@ describe "Prometheus Rules" do
     ]
     expect(names).to include(*expected)
   end
-
-
 end
