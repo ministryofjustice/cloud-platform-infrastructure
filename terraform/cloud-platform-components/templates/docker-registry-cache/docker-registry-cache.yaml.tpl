@@ -46,7 +46,7 @@ metadata:
   name: docker-registry-cache-ingress
   namespace: docker-registry-cache
   annotations:
-    nginx.ingress.kubernetes.io/whitelist-source-range: "3.8.0.0/16"
+    nginx.ingress.kubernetes.io/whitelist-source-range: "${[nat_gateway_ips]}"
 spec:
   tls:
   - hosts:
