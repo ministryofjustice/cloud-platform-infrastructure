@@ -1,10 +1,9 @@
 require "spec_helper"
 
 describe "authorized_keys", cluster: "live-1" do
-
   context "authorized-keys-provider namespace should exists" do
     it "Fail if namespace doesnt exist" do
-        expect(namespace_exists?('authorized-keys-provider')).to eq(true)
+      expect(namespace_exists?("authorized-keys-provider")).to eq(true)
     end
   end
 
@@ -12,7 +11,7 @@ describe "authorized_keys", cluster: "live-1" do
     let(:pods) { get_running_app_pods("authorized-keys-provider", "authorized-keys-provider") }
 
     it "all pods inside authorized-keys-provider are running" do
-        expect(all_containers_running?(pods)).to eq(true)
+      expect(all_containers_running?(pods)).to eq(true)
     end
   end
 
@@ -22,5 +21,4 @@ describe "authorized_keys", cluster: "live-1" do
         expect(response.status).to eq(["200", "OK"])
     end
   end
-
 end
