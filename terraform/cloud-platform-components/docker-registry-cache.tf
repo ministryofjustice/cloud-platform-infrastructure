@@ -22,6 +22,7 @@ data "template_file" "docker_registry_cache_template" {
   template = file("./templates/docker-registry-cache/docker-registry-cache.yaml.tpl")
   vars = {
     cluster_name = terraform.workspace
+    nat_gateway_ips = "${data.terraform_remote_state.cluster.outputs.nat_gateway_ips}"
   }
 }
 
