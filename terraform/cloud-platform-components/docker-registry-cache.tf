@@ -29,6 +29,16 @@ resource "null_resource" "docker-registry-cache-namespace-config" {
   provisioner "local-exec" {
     command = "kubectl apply -n docker-registry-cache -f ${path.module}/templates/docker-registry-cache/namespace.yaml"
   }
+
+  provisioner "local-exec" {
+    when = destroy
+    command = "exit 0"
+  }
+
+  triggers = {
+    namespace = filesha1("${path.module}/templates/docker-registry-cache/namespace.yaml")
+  }
+
   depends_on = [kubernetes_namespace.docker_registry_cache]
 }
 
