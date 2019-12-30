@@ -6,7 +6,7 @@ describe "servicemonitors" do
 
     expected = [
       "ecr-exporter-prometheus-ecr-exporter",
-      "cloudwatch-exporter-prometheus-cloudwatch-exporter", 
+      "cloudwatch-exporter-prometheus-cloudwatch-exporter",
       "prometheus-operator-alertmanager",
       "prometheus-operator-apiserver",
       "prometheus-operator-grafana",
