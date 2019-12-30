@@ -1,11 +1,10 @@
 require "spec_helper"
 
 describe "Prometheus Rules" do
-  specify "expected Prometheus Rule" do
+  specify "expected in all clusters" do
     names = get_prometheus_rules.map { |set| set.dig("metadata", "name") }.sort
 
     expected = [
-      "prometheus-custom-alerts-ecr-exporter",
       "prometheus-operator-alertmanager.rules",
       "prometheus-operator-custom-alerts-node.rules",
       "prometheus-operator-custom-kubernetes-apps.rules",
@@ -23,6 +22,15 @@ describe "Prometheus Rules" do
       "prometheus-operator-prometheus-operator",
       "prometheus-operator-prometheus.rules",
       "fluentd-es",
+    ]
+    expect(names).to include(*expected)
+  end
+
+  specify "in production", cluster: "live-1" do
+    names = get_prometheus_rules.map { |set| set.dig("metadata", "name") }.sort
+
+    expected = [
+      "prometheus-custom-alerts-ecr-exporter",
     ]
     expect(names).to include(*expected)
   end
