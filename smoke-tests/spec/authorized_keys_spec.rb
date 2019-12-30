@@ -17,8 +17,8 @@ describe "authorized_keys", cluster: "live-1" do
 
   context "expected authorized_keys file within the S3 bucket" do
     it "authorized_keys file exists and it can be downloaded" do
-        response = URI.open('https://s3-eu-west-2.amazonaws.com/cloud-platform-ab9d0cbde59c3b3112de9d117068515d/authorized_keys')
-        expect(response.status).to eq(["200", "OK"])
+      response = URI.open("https://s3-eu-west-2.amazonaws.com/cloud-platform-ab9d0cbde59c3b3112de9d117068515d/authorized_keys")
+      expect(response.status).to eq(["200", "OK"])
     end
   end
 end
