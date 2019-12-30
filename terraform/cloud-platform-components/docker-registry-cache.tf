@@ -1,0 +1,52 @@
+resource "kubernetes_namespace" "docker_registry_cache" {
+  metadata {
+    name = "docker-registry-cache"
+
+    labels = {
+      "name"                                           = "docker-registry-cache"
+      "component"                                      = "docker-registry"
+      "cloud-platform.justice.gov.uk/environment-name" = "production"
+      "cloud-platform.justice.gov.uk/is-production"    = "true"
+    }
+
+    annotations = {
+      "cloud-platform.justice.gov.uk/application"   = "docker-registry-cache"
+      "cloud-platform.justice.gov.uk/business-unit" = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/cloud-platform-docker-registry-cache"
+    }
+  }
+}
+
+data "template_file" "docker_registry_cache_template" {
+  template = file("./templates/docker-registry-cache/docker-registry-cache.yaml.tpl")
+  vars = {
+    cluster_name = terraform.workspace
+  }
+}
+
+resource "null_resource" "docker-registry-cache-namespace-config" {
+  provisioner "local-exec" {
+    command = "kubectl apply -n docker-registry-cache -f ${path.module}/templates/docker-registry-cache/namespace.yaml"
+  }
+  depends_on = [kubernetes_namespace.docker_registry_cache]
+}
+
+resource "null_resource" "docker-registry-cache" {
+  provisioner "local-exec" {
+    command = "kubectl apply -n docker-registry-cache -f - ${data.template_file.docker_registry_cache_template}"
+  }
+
+  provisioner "local-exec" {
+    when = destroy
+    command = "kubectl delete -n docker-registry-cache -f - ${data.template_file.docker_registry_cache_template}"
+  }
+
+  triggers = {
+    contents = filesha1("${path.module}/templates/docker-registry-cache/docker-registry-cache.yaml.tpl")
+  }
+
+  depends_on = [kubernetes_namespace.docker_registry_cache]
+}
+
+
