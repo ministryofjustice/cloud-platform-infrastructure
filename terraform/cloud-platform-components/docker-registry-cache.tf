@@ -18,21 +18,13 @@ resource "kubernetes_namespace" "docker_registry_cache" {
   }
 }
 
-data "template_file" "docker_registry_cache_template" {
-  template = file("./templates/docker-registry-cache/docker-registry-cache.yaml.tpl")
-  vars = {
-    cluster_name = terraform.workspace
-    nat_gateway_ips = "${data.terraform_remote_state.cluster.outputs.nat_gateway_ips}"
-  }
-}
-
 resource "null_resource" "docker-registry-cache-namespace-config" {
   provisioner "local-exec" {
     command = "kubectl apply -n docker-registry-cache -f ${path.module}/templates/docker-registry-cache/namespace.yaml"
   }
 
   provisioner "local-exec" {
-    when = destroy
+    when    = destroy
     command = "exit 0"
   }
 
@@ -44,19 +36,11 @@ resource "null_resource" "docker-registry-cache-namespace-config" {
 }
 
 resource "null_resource" "docker-registry-cache" {
-  provisioner "local-exec" {
-    command = <<EOS
-kubectl apply -n docker-registry-cache -f - <<EOF
-${data.template_file.docker_registry_cache_template.rendered}
-EOF
-EOS
-  }
-
   # Everything in the namespace will be destroyed when the namespace is deleted.
   # We need the `exit 0` here so that terraform thinks it has successfully
   # destroyed the resource, when it applies changes (by destroying then applying)
   provisioner "local-exec" {
-    when = destroy
+    when    = destroy
     command = "exit 0"
   }
 
@@ -65,6 +49,18 @@ EOS
   }
 
   depends_on = [kubernetes_namespace.docker_registry_cache]
+
+  provisioner "local-exec" {
+    command = <<EOS
+kubectl apply -n docker-registry-cache -f - <<EOF
+${
+    templatefile("./templates/docker-registry-cache/docker-registry-cache.yaml.tpl", {
+      cluster_name    = terraform.workspace,
+      nat_gateway_ips = data.terraform_remote_state.cluster.outputs.nat_gateway_ips,
+    })
+  }
+EOF
+EOS
 }
 
-
+}
