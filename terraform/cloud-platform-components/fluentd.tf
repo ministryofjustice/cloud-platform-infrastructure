@@ -47,6 +47,7 @@ resource "helm_release" "fluentd_es" {
 
   depends_on = [
     kubernetes_namespace.logging,
+    helm_release.prometheus_operator,
     null_resource.deploy,
     null_resource.priority_classes,
   ]
