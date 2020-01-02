@@ -36,7 +36,6 @@ describe "docker-registry-cache" do
       # container was launched.
       expect((after_lines - before_lines).count).to be > 0
     end
-
   end
 
   context "ingress" do
@@ -67,9 +66,8 @@ describe "docker-registry-cache" do
       cidr_ranges = whitelist.split(",")
       expect(cidr_ranges.length).to eq(3)
       cidr_ranges.each do |cidr|
-        expect(cidr).to match(%r[^\d+\.\d+\.\d+\.\d+/32$])  # e.g. 35.177.183.191/32
+        expect(cidr).to match(%r{^\d+\.\d+\.\d+\.\d+/32$}) # e.g. 35.177.183.191/32
       end
     end
   end
-
 end
