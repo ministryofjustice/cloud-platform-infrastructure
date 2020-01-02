@@ -1,17 +1,17 @@
 # Cloud Platform - EKS Cluster
 
-This README describes the main infrastructure components required to deliver a production-ready EKS cluster. Terraform is used as a main tool to bootstrap the infrastructure layer and EKS clusters. 
+This README describes the main infrastructure components required to deliver a production-ready EKS cluster. Terraform is used as a main tool to bootstrap the infrastructure layer and EKS clusters. This terraform code requires you already have a VPC provisioned. If no VPC is provided it'll look for a VPC named as your terraform workspace 
 
 ## Contents
 
-  - [Bastion](#bastion)
+  - [Requirements](#Requirements)
   - [Cluster Dependences](#cluster-dependences)
   - [EKS](#eks)
   - [How do I run this?](#terraform-modules)
 
 ## Requirements
 
-- Terraform
+- Terraform >= 12
 - [aws-iam-authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [Helm <= 2.14.3](https://github.com/helm/helm/releases/tag/v2.14.3) 
@@ -19,18 +19,14 @@ This README describes the main infrastructure components required to deliver a p
 
 ## What it contains?
 
-### Bastion (`bastion.tf`)
-
-The `bastion.tf` file calls the bastion module, which creates a bastion instance inside a VPC that will grant access to internal subnets to the members of the team. You can use this host to ssh onto your worker nodes. 
-
 ### Cluster Dependences (`main.tf`)
 
 Within `main.tf` you'll find creation of:
 
-- VPCs: internal and external subnets, nat gateways, vpcs, etc
 - Auth0 registration
 - Route53 hostzones that your cluster will use
 - AWS Key pairs
+- Bastion: It calls the bastion module which creates a bastion instance inside a VPC that will grant access to internal subnets to the members of the team. You can use this host to ssh onto your worker nodes.
 - etc
 
 ### EKS (`eks.tf`)
@@ -44,5 +40,5 @@ Within `main.tf` you'll find creation of:
 ```bash
 terraform init
 terraform workspace select/new <clusterName>
-terraform apply -var-file="vars/stg.tfvars"
+terraform apply -var-file="vars/$(terraform workspace show).tfvars"
 ```

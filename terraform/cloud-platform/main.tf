@@ -38,15 +38,105 @@ data "terraform_remote_state" "global" {
   }
 }
 
+###########################
+# Locals & Data Resources #
+###########################
+
 locals {
   cluster_name             = terraform.workspace
   cluster_base_domain_name = "${local.cluster_name}.cloud-platform.service.justice.gov.uk"
   auth0_tenant_domain      = "justice-cloud-platform.eu.auth0.com"
   oidc_issuer_url          = "https://${local.auth0_tenant_domain}/"
+  vpc                      = var.vpc_name == "" ? terraform.workspace : var.vpc_name
 
   is_live_cluster      = terraform.workspace == "live-1"
   services_base_domain = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
 }
+
+data "aws_vpc" "selected" {
+  filter {
+    name   = "tag:Name"
+    values = [local.vpc]
+  }
+}
+
+data "aws_subnet_ids" "private" {
+  vpc_id = data.aws_vpc.selected.id
+
+  tags = {
+    SubnetType = "Private"
+  }
+}
+
+data "aws_subnet_ids" "public" {
+  vpc_id = data.aws_vpc.selected.id
+
+  tags = {
+    SubnetType = "Utility"
+  }
+}
+
+# Unfortunately data.template_file.kops resource only receives individual subnets with the 
+# AZs already mapped. Since terraform 0.12 there is a better way to do it using templatefile 
+# ( https://www.terraform.io/docs/configuration/functions/templatefile.html ) and passing 
+# the whole array of subnets with AZ included, it will involve using a something like 
+# %{ for subnets in subnets_all ~} # inside the templates/kops.yaml.tpl. For this PR the 
+# idea is to change the least possible, following PRs will be coming to make it better.
+
+data "aws_subnet" "private_a" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2a"
+
+  tags = {
+    SubnetType = "Private"
+  }
+}
+
+data "aws_subnet" "private_b" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2b"
+
+  tags = {
+    SubnetType = "Private"
+  }
+}
+
+data "aws_subnet" "private_c" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2c"
+
+  tags = {
+    SubnetType = "Private"
+  }
+}
+
+data "aws_subnet" "public_a" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2a"
+
+  tags = {
+    SubnetType = "Utility"
+  }
+}
+
+data "aws_subnet" "public_b" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2b"
+
+  tags = {
+    SubnetType = "Utility"
+  }
+}
+
+data "aws_subnet" "public_c" {
+  vpc_id            = data.aws_vpc.selected.id
+  availability_zone = "eu-west-2c"
+
+  tags = {
+    SubnetType = "Utility"
+  }
+}
+
 
 # Modules
 module "cluster_dns" {
@@ -59,37 +149,6 @@ module "cluster_ssl" {
   source                   = "../modules/cluster_ssl"
   cluster_base_domain_name = local.cluster_base_domain_name
   dns_zone_id              = module.cluster_dns.cluster_dns_zone_id
-}
-
-module "cluster_vpc" {
-  version              = "2.18.0"
-  source               = "terraform-aws-modules/vpc/aws"
-  name                 = local.cluster_name
-  cidr                 = var.vpc_cidr
-  azs                  = var.availability_zones
-  private_subnets      = var.internal_subnets
-  public_subnets       = var.external_subnets
-  enable_nat_gateway   = true
-  enable_vpn_gateway   = false
-  enable_dns_hostnames = true
-
-  public_subnet_tags = {
-    SubnetType                                                = "Utility"
-    "kubernetes.io/cluster/${local.cluster_base_domain_name}" = "shared"
-    "kubernetes.io/role/elb"                                  = "1"
-  }
-
-  private_subnet_tags = {
-    SubnetType                                                = "Private"
-    "kubernetes.io/cluster/${local.cluster_base_domain_name}" = "shared"
-    "kubernetes.io/role/internal-elb"                         = "1"
-  }
-
-  tags = {
-    Terraform = "true"
-    Cluster   = local.cluster_name
-    Domain    = local.cluster_base_domain_name
-  }
 }
 
 resource "tls_private_key" "cluster" {
@@ -107,14 +166,6 @@ resource "auth0_client" "kubernetes" {
   description = "Cloud Platform kubernetes"
   app_type    = "regular_web"
 
-  # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
-  # force an interpolation expression to be interpreted as a list by wrapping it
-  # in an extra set of list brackets. That form was supported for compatibility in
-  # v0.11, but is no longer supported in Terraform v0.12.
-  #
-  # If the expression in the following list itself returns a list, remove the
-  # brackets to avoid interpretation as a list of lists. If the expression
-  # returns a single list item then leave it as-is and remove this TODO comment.
   callbacks = [format("https://login.%s/ui", local.services_base_domain)]
 
   custom_login_page_on = true
