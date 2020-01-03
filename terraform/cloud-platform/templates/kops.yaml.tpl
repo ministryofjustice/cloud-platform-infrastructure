@@ -8,6 +8,10 @@ metadata:
   creationTimestamp: null
   name: ${cluster_domain_name}
 spec:
+  docker:
+    registryMirrors:
+    # The docker-registry-cache is defined in terraform/cloud-platform-components/docker-registry-cache.tf
+    - https://docker-registry-cache.apps.${cluster_domain_name}
   fileAssets:
   - name: kubernetes-audit
     path: /srv/kubernetes/audit.yaml
