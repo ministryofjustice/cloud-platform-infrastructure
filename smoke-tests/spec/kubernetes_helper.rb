@@ -162,6 +162,10 @@ def filter_by_role(nodes, role)
   nodes.filter { |node| node.dig("metadata", "labels", "kubernetes.io/role") == role }
 end
 
+def get_ingresses(namespace)
+  kubectl_items "get ingresses -n #{namespace}"
+end
+
 def get_nodes
   kubectl_items "get nodes"
 end
