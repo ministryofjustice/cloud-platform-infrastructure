@@ -50,10 +50,6 @@ output "instance_key_name" {
   value = aws_key_pair.cluster.key_name
 }
 
-output "nat_gateway_ips" {
-  value = module.cluster_vpc.nat_public_ips
-}
-
 output "oidc_issuer_url" {
   value = local.oidc_issuer_url
 }
