@@ -112,6 +112,9 @@ alertmanager:
       - match:
           alertname: KubePersistentVolumeFullInFourDays
         receiver: 'null'
+      - match:
+          alertname: PrometheusTargetScrapesDuplicate
+        receiver: 'null'
       
       - match:
           severity: critical
