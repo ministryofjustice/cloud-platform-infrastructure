@@ -56,7 +56,7 @@ kubectl apply -n docker-registry-cache -f - <<EOF
 ${
     templatefile("./templates/docker-registry-cache/docker-registry-cache.yaml.tpl", {
       cluster_name    = terraform.workspace,
-      nat_gateway_ips = data.terraform_remote_state.cluster.outputs.nat_gateway_ips,
+      nat_gateway_ips = data.terraform_remote_state.network.outputs.nat_gateway_ips,
     })
   }
 EOF

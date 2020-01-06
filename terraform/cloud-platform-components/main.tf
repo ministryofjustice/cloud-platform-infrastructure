@@ -32,6 +32,17 @@ data "terraform_remote_state" "cluster" {
   }
 }
 
+data "terraform_remote_state" "network" {
+  backend = "s3"
+
+  config = {
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "cloud-platform-network/${terraform.workspace}/terraform.tfstate"
+    profile = "moj-cp"
+  }
+}
+
 data "terraform_remote_state" "global" {
   backend = "s3"
 

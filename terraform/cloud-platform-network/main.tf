@@ -46,15 +46,15 @@ module "vpc" {
   enable_dns_hostnames = true
 
   public_subnet_tags = {
-    SubnetType                                                           = "Utility"
-    "kubernetes.io/cluster/live-1.cloud-platform.service.justice.gov.uk" = "shared"
-    "kubernetes.io/role/elb"                                             = "1"
+    SubnetType                                                                           = "Utility"
+    "kubernetes.io/cluster/${terraform.workspace}.cloud-platform.service.justice.gov.uk" = "shared"
+    "kubernetes.io/role/elb"                                                             = "1"
   }
 
   private_subnet_tags = {
-    SubnetType                                                           = "Private"
-    "kubernetes.io/cluster/live-1.cloud-platform.service.justice.gov.uk" = "shared"
-    "kubernetes.io/role/internal-elb"                                    = "1"
+    SubnetType                                                                           = "Private"
+    "kubernetes.io/cluster/${terraform.workspace}.cloud-platform.service.justice.gov.uk" = "shared"
+    "kubernetes.io/role/internal-elb"                                                    = "1"
   }
 
   tags = {
