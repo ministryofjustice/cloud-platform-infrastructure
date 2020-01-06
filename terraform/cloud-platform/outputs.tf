@@ -7,11 +7,11 @@ output "cluster_domain_name" {
 }
 
 output "network_id" {
-  value = module.cluster_vpc.vpc_id
+  value = data.aws_vpc.selected.id
 }
 
 output "network_cidr_block" {
-  value = module.cluster_vpc.vpc_cidr_block
+  value = data.aws_vpc.selected.cidr_block
 }
 
 output "kops_state_store" {
@@ -23,7 +23,7 @@ output "availability_zones" {
 }
 
 output "vpc_id" {
-  value = module.cluster_vpc.vpc_id
+  value = data.aws_vpc.selected.id
 }
 
 output "internal_subnets" {
@@ -31,7 +31,7 @@ output "internal_subnets" {
 }
 
 output "internal_subnets_ids" {
-  value = module.cluster_vpc.private_subnets
+  value = data.aws_subnet_ids.private.ids
 }
 
 output "external_subnets" {
@@ -39,7 +39,7 @@ output "external_subnets" {
 }
 
 output "external_subnets_ids" {
-  value = module.cluster_vpc.public_subnets
+  value = data.aws_subnet_ids.public.ids
 }
 
 output "hosted_zone_id" {
