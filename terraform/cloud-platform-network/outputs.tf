@@ -37,3 +37,7 @@ output "external_subnets" {
 output "external_subnets_ids" {
   value = module.vpc.public_subnets
 }
+
+output "nat_gateway_ips" {
+  value = module.vpc.nat_public_ips
+}
