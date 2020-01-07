@@ -51,11 +51,6 @@ module "eks" {
       groups   = ["system:masters"]
     },
     {
-      userarn  = "arn:aws:iam::754256621582:user/RazvanCosma"
-      username = "RazvanCosma"
-      groups   = ["system:masters"]
-    },
-    {
       userarn  = "arn:aws:iam::754256621582:user/SabluMiah"
       username = "SabluMiah"
       groups   = ["system:masters"]
