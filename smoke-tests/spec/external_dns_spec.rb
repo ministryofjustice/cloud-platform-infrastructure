@@ -11,6 +11,24 @@ describe "external DNS", cluster: "live-1" do
   let(:parent_domain) { "parent.service.justice.gov.uk" }
   let(:fixture_name) { "spec/fixtures/external-dns-ingress.yaml.erb" }
 
+  # NOTE: Two specs in this file can fail with the following errors:
+  #
+  # 1) external DNS when zone matches ingress domain and an ingress is created it creates an A record
+  #    Failure/Error: expect(record_types).to include("A")
+  #      expected ["NS", "SOA"] to include "A"
+  #    # ./spec/external_dns_spec.rb:41:in `block (4 levels) in <top (required)>'
+  #
+  # 2) external DNS when zone does not match ingress domain when an ingress is created a record is created in the parent zone
+  #    Failure/Error: expect(record_types).to include("A")
+  #      expected ["NS", "SOA"] to include "A"
+  #    # ./spec/external_dns_spec.rb:66:in `block (4 levels) in <top (required)>'
+  #
+  # This happens when a previous test run leaves 'leftover' NS & TXT records in the hosted zone.
+  #
+  # To fix this, use the AWS console to find the hosted zone "parent.service.justice.gov.uk."
+  # and delete everything except the NS and SOA records, then delete the hosted zone itself.
+  # After that, the tests should pass.
+
   context "when zone matches ingress domain" do
     # Create a new zone per test
     before do
