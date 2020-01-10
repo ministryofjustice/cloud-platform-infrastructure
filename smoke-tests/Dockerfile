@@ -32,6 +32,8 @@ RUN gem install bundler
 
 COPY Gemfile* ./
 RUN bundle install
+RUN bundle binstubs bundler --force --path /usr/local/bin
+RUN bundle binstubs rspec-core --path /usr/local/bin
 
 COPY . .
 
