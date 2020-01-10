@@ -1,5 +1,6 @@
 IMAGE := ministryofjustice/cloud-platform-smoke-tests
 VERSION := 1.4
+TAGGED_IMAGE := $(IMAGE):$(VERSION)
 KUBE_CONFIG := ~/.kube/config
 AWS_PROFILE := moj-cp # Cloud Platform AWS account
 
@@ -24,7 +25,7 @@ shell:
 		-e AWS_PROFILE=$(AWS_PROFILE) \
 		-e AWS_SHARED_CREDENTIALS_FILE=/app/.aws/credentials \
 		-e KUBECONFIG=/app/config \
-		$(IMAGE) sh
+		$(TAGGED_IMAGE) sh
 
 # Runs all tests, against whichever cluster your .kube/config points to
 test:
@@ -36,7 +37,7 @@ test:
 		-e AWS_PROFILE=$(AWS_PROFILE) \
 		-e AWS_SHARED_CREDENTIALS_FILE=/app/.aws/credentials \
 		-e KUBECONFIG=/app/config \
-		$(IMAGE) rspec
+		$(TAGGED_IMAGE) rspec
 
 # Only run tests tagged with cluster: live-1
 test-live-1:
@@ -48,7 +49,7 @@ test-live-1:
 		-e AWS_PROFILE=$(AWS_PROFILE) \
 		-e AWS_SHARED_CREDENTIALS_FILE=/app/.aws/credentials \
 		-e KUBECONFIG=/app/config \
-		$(IMAGE) rspec --tag cluster:live-1
+		$(TAGGED_IMAGE) rspec --tag cluster:live-1
 
 # Only run tests NOT tagged with cluster: live-1
 test-non-live-1:
@@ -60,4 +61,4 @@ test-non-live-1:
 		-e AWS_PROFILE=$(AWS_PROFILE) \
 		-e AWS_SHARED_CREDENTIALS_FILE=/app/.aws/credentials \
 		-e KUBECONFIG=/app/config \
-		$(IMAGE) rspec --tag ~cluster:live-1
+		$(TAGGED_IMAGE) rspec --tag ~cluster:live-1
