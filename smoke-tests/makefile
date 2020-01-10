@@ -10,10 +10,13 @@ build: .built-docker-image
 	docker build -t $(IMAGE) .
 	touch .built-docker-image
 
-push:
-	docker tag $(IMAGE) $(IMAGE):$(VERSION)
-	docker push $(IMAGE):$(VERSION)
+tag: .built-docker-image
+	docker tag $(IMAGE) $(TAGGED_IMAGE)
 	docker tag $(IMAGE) $(IMAGE):latest
+
+push:
+	make tag
+	docker push $(TAGGED_IMAGE)
 	docker push $(IMAGE):latest
 
 shell:
