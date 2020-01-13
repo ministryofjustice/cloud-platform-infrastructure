@@ -246,7 +246,7 @@ spec:
       admissionregistration.k8s.io/v1alpha1: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.13.11
+  kubernetesVersion: 1.13.12
   masterPublicName: api.${cluster_domain_name}
   networkCIDR: ${network_cidr_block}
   networkID: ${network_id}
