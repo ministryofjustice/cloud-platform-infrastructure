@@ -244,7 +244,15 @@ end
 def run_integration_tests(cluster_name)
   dir = "smoke-tests/"
   output = "./#{cluster_name}-rspec.txt"
-  run_and_output "cd #{dir}; bundle install; rspec --tag ~cluster:live-1 --format progress --format documentation --out #{output}"
+
+  cmd = [
+    "cd #{dir}",
+    "bundle binstubs bundler --force --path /usr/local/bin",
+    "bundle binstubs rspec-core --path /usr/local/bin",
+    "rspec --tag ~cluster:live-1 --format progress --format documentation --out #{output}",
+  ].join("; ")
+
+  run_and_output(cmd)
 end
 
 def parse_options
