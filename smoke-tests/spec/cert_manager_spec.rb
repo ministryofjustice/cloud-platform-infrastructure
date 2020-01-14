@@ -1,7 +1,7 @@
 require "spec_helper"
 
 describe "cert-manager" do
-  let(:namespace) { "cert-manager-test-#{random_string}" }
+  let(:namespace) { "cert-manager-test-#{readable_timestamp}" }
 
   before do
     create_namespace(namespace)
@@ -32,7 +32,7 @@ describe "cert-manager" do
       expect(result).to match(/#{host}/)
     end
   end
-end 
+end
 
 def validate_certificate(host)
   cmd = %[echo | openssl s_client -showcerts -servername #{host} -connect #{host}:443 2>/dev/null | openssl x509 -inform pem -noout -text | grep DNS]
