@@ -35,46 +35,45 @@ describe "cert-manager" do
 end
 
 def validate_certificate(host)
-  cmd = %[echo | openssl s_client -showcerts -servername #{host} -connect #{host}:443 2>/dev/null | openssl x509 -inform pem -noout -text | grep DNS]
+  cmd = %(echo | openssl s_client -showcerts -servername #{host} -connect #{host}:443 2>/dev/null | openssl x509 -inform pem -noout -text | grep DNS)
 
   `#{cmd} 2>&1`
 end
 
 def create_certificate(namespace, host)
-
   json = <<~EOF
-  {
-    "apiVersion": "certmanager.k8s.io/v1alpha1",
-    "kind": "Certificate",
-    "metadata": {
-      "name": "cert-manager-integration-test",
-      "namespace": "#{namespace}"
-    },
-    "spec": {
-      "acme": {
-        "config": [
-          {
-            "dns01": {
-              "provider": "route53-cloud-platform"
-            },
-            "domains": [
-              "#{host}"
-            ]
-          }
-        ]
+    {
+      "apiVersion": "certmanager.k8s.io/v1alpha1",
+      "kind": "Certificate",
+      "metadata": {
+        "name": "cert-manager-integration-test",
+        "namespace": "#{namespace}"
       },
-      "commonName": "#{host}",
-      "issuerRef": {
-        "kind": "ClusterIssuer",
-        "name": "letsencrypt-staging"
-      },
-      "secretName": "hello-world-ssl"
+      "spec": {
+        "acme": {
+          "config": [
+            {
+              "dns01": {
+                "provider": "route53-cloud-platform"
+              },
+              "domains": [
+                "#{host}"
+              ]
+            }
+          ]
+        },
+        "commonName": "#{host}",
+        "issuerRef": {
+          "kind": "ClusterIssuer",
+          "name": "letsencrypt-staging"
+        },
+        "secretName": "hello-world-ssl"
+      }
     }
-  }
   EOF
 
   jsn = JSON.parse(json).to_json
 
-  cmd = %[echo '#{jsn}' | kubectl -n #{namespace} apply -f -]
+  cmd = %(echo '#{jsn}' | kubectl -n #{namespace} apply -f -)
   `#{cmd}`
 end
