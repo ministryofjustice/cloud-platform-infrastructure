@@ -30,3 +30,9 @@ variable "worker_node_machine_type" {
   description = "The AWS EC2 instance types to use for worker nodes"
   default     = "r5.2xlarge"
 }
+
+variable "cluster_names" {
+  description = "A list of every Kubernetes cluster present in the VPC"
+  type        = list(string)
+  default     = []
+}
