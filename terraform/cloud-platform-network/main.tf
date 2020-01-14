@@ -67,6 +67,6 @@ module "vpc" {
   tags = {
     Terraform = "true"
     Cluster   = local.vpc_name
-    Domain    = local.vpc_base_domain_name 
+    Domain    = local.vpc_base_domain_name
   }
 }
