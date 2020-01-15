@@ -1,4 +1,4 @@
-resource "kubernetes_namespace" "docker_registry_cache" {
+resource "kubernetes_namespace" "docker-registry-cache" {
   metadata {
     name = "docker-registry-cache"
 
@@ -32,7 +32,7 @@ resource "null_resource" "docker-registry-cache-namespace-config" {
     namespace = filesha1("${path.module}/templates/docker-registry-cache/namespace.yaml")
   }
 
-  depends_on = [kubernetes_namespace.docker_registry_cache]
+  depends_on = [kubernetes_namespace.docker-registry-cache]
 }
 
 resource "null_resource" "docker-registry-cache" {
@@ -48,7 +48,7 @@ resource "null_resource" "docker-registry-cache" {
     contents = filesha1("${path.module}/templates/docker-registry-cache/docker-registry-cache.yaml.tpl")
   }
 
-  depends_on = [kubernetes_namespace.docker_registry_cache]
+  depends_on = [kubernetes_namespace.docker-registry-cache]
 
   provisioner "local-exec" {
     command = <<EOS
