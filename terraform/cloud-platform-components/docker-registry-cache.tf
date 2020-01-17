@@ -18,6 +18,27 @@ resource "kubernetes_namespace" "docker-registry-cache" {
   }
 }
 
+resource "kubernetes_limit_range" "docker-registry-cache" {
+  metadata {
+    name      = "limitrange"
+    namespace = kubernetes_namespace.docker-registry-cache.id
+  }
+
+  spec {
+    limit {
+      type = "Container"
+      default = {
+        cpu    = "1"
+        memory = "1000Mi"
+      }
+      default_request = {
+        cpu    = "10m"
+        memory = "100Mi"
+      }
+    }
+  }
+}
+
 resource "null_resource" "docker-registry-cache-namespace-config" {
   provisioner "local-exec" {
     command = "kubectl apply -n docker-registry-cache -f ${path.module}/templates/docker-registry-cache/namespace.yaml"
