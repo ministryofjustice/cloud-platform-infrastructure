@@ -101,6 +101,7 @@ data "template_file" "alertmanager_receivers" {
     color: '{{ if eq .Status "firing" }}good{{ else }}good{{ end }}'
     footer: ${local.alertmanager_ingress}
     actions:
+    - type: button
       text: 'Runbook :blue_book:'
       url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
     - type: button
