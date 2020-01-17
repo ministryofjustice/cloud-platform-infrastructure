@@ -98,18 +98,12 @@ data "template_file" "alertmanager_receivers" {
     send_resolved: False
     title: '{{ template "slack.cp.title" . }}'
     text: '{{ template "slack.cp.text" . }}'
-    color: '{{ if eq .Status "firing" }}good{{ else }}good{{ end }}'
+    color: 'good'
     footer: ${local.alertmanager_ingress}
     actions:
     - type: button
-      text: 'Runbook :blue_book:'
-      url: '{{ (index .Alerts 0).Annotations.runbook_url }}'
-    - type: button
       text: 'Query :mag:'
       url: '{{ (index .Alerts 0).GeneratorURL }}'
-    - type: button
-      text: 'Silence :no_bell:'
-      url: '{{ template "__alert_silence_link" . }}'
 EOS
 
 
