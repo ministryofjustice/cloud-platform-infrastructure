@@ -94,22 +94,21 @@ resource "kubernetes_network_policy" "docker-registry-cache_allow_ingress_contro
   }
 }
 
-
-resource "null_resource" "docker-registry-cache-namespace-config" {
-  provisioner "local-exec" {
-    command = "kubectl apply -n docker-registry-cache -f ${path.module}/templates/docker-registry-cache/namespace.yaml"
+resource "kubernetes_role_binding" "docker-registry-cache" {
+  metadata {
+    name      = "docker-registry-cache-admin"
+    namespace = kubernetes_namespace.docker-registry-cache.id
   }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = "exit 0"
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "admin"
   }
-
-  triggers = {
-    namespace = filesha1("${path.module}/templates/docker-registry-cache/namespace.yaml")
+  subject {
+    kind      = "Group"
+    name      = "github:webops"
+    api_group = "rbac.authorization.k8s.io"
   }
-
-  depends_on = [kubernetes_namespace.docker-registry-cache]
 }
 
 resource "null_resource" "docker-registry-cache" {
