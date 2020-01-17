@@ -114,7 +114,7 @@ resource "kubernetes_role_binding" "docker-registry-cache" {
 
 resource "kubernetes_deployment" "docker-registry-cache" {
   metadata {
-    name = "docker-registry-cache"
+    name      = "docker-registry-cache"
     namespace = kubernetes_namespace.docker-registry-cache.id
     labels = {
       app = "docker-registry-cache"
@@ -127,6 +127,8 @@ resource "kubernetes_deployment" "docker-registry-cache" {
     kubernetes_limit_range.docker-registry-cache,
     kubernetes_network_policy.docker-registry-cache_default,
     kubernetes_network_policy.docker-registry-cache_allow_ingress_controllers,
+    kubernetes_service.docker-registry-cache-service,
+    kubernetes_ingress.docker-registry-cache-ingress,
   ]
 
   spec {
@@ -163,7 +165,7 @@ resource "kubernetes_deployment" "docker-registry-cache" {
               ]
             }
             initial_delay_seconds = 60
-            period_seconds = 1800
+            period_seconds        = 1800
           }
         }
       }
@@ -171,32 +173,55 @@ resource "kubernetes_deployment" "docker-registry-cache" {
   }
 }
 
-resource "null_resource" "docker-registry-cache" {
-  # Everything in the namespace will be destroyed when the namespace is deleted.
-  # We need the `exit 0` here so that terraform thinks it has successfully
-  # destroyed the resource, when it applies changes (by destroying then applying)
-  provisioner "local-exec" {
-    when    = destroy
-    command = "exit 0"
+
+resource "kubernetes_service" "docker-registry-cache-service" {
+  metadata {
+    name      = "docker-registry-cache-service"
+    namespace = kubernetes_namespace.docker-registry-cache.id
+    labels = {
+      app = "docker-registry-cache"
+    }
   }
 
-  triggers = {
-    contents = filesha1("${path.module}/templates/docker-registry-cache/docker-registry-cache.yaml.tpl")
+  spec {
+    selector = {
+      app = "docker-registry-cache"
+    }
+    port {
+      port        = 5000
+      name        = "http"
+      target_port = 5000
+    }
   }
-
-  depends_on = [kubernetes_namespace.docker-registry-cache]
-
-  provisioner "local-exec" {
-    command = <<EOS
-kubectl apply -n docker-registry-cache -f - <<EOF
-${
-    templatefile("./templates/docker-registry-cache/docker-registry-cache.yaml.tpl", {
-      cluster_name    = terraform.workspace,
-      nat_gateway_ips = data.terraform_remote_state.network.outputs.nat_gateway_ips,
-    })
-  }
-EOF
-EOS
 }
 
+resource "kubernetes_ingress" "docker-registry-cache-ingress" {
+  metadata {
+    name      = "docker-registry-cache-ingress"
+    namespace = kubernetes_namespace.docker-registry-cache.id
+    annotations = {
+      "nginx.ingress.kubernetes.io/whitelist-source-range" = join(",", [for ip in data.terraform_remote_state.network.outputs.nat_gateway_ips : "${ip}/32"])
+    }
+  }
+
+  spec {
+    rule {
+      host = "docker-registry-cache.apps.${terraform.workspace}.cloud-platform.service.justice.gov.uk"
+      http {
+        path {
+          backend {
+            service_name = "docker-registry-cache-service"
+            service_port = 5000
+          }
+          path = "/"
+        }
+      }
+    }
+
+    tls {
+      hosts = [
+        "docker-registry-cache.apps.${terraform.workspace}.cloud-platform.service.justice.gov.uk"
+      ]
+    }
+  }
 }
