@@ -51,10 +51,15 @@ resource "random_id" "password" {
   byte_length = 8
 }
 
+
 data "template_file" "alertmanager_routes" {
   count = length(var.alertmanager_slack_receivers)
 
   template = <<EOS
+- match:
+    severity: info-$${severity}
+  receiver: slack-info-$${severity}
+  continue: true
 - match:
     severity: $${severity}
   receiver: slack-$${severity}
@@ -86,6 +91,19 @@ data "template_file" "alertmanager_receivers" {
     - type: button
       text: 'Silence :no_bell:'
       url: '{{ template "__alert_silence_link" . }}'
+- name: 'slack-info-$${severity}'
+  slack_configs:
+  - api_url: "$${webhook}"
+    channel: "$${channel}"
+    send_resolved: False
+    title: '{{ template "slack.cp.title" . }}'
+    text: '{{ template "slack.cp.text" . }}'
+    color: 'good'
+    footer: ${local.alertmanager_ingress}
+    actions:
+    - type: button
+      text: 'Query :mag:'
+      url: '{{ (index .Alerts 0).GeneratorURL }}'
 EOS
 
 

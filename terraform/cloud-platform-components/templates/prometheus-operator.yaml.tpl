@@ -185,6 +185,8 @@ alertmanager:
           :warning:
           {{- else if eq .CommonLabels.severity "info" -}}
           :information_source:
+          {{- else if eq .CommonLabels.status_icon "information" -}}
+          :information_source:
           {{- else -}}
           :question:
           {{- end }}
