@@ -51,6 +51,50 @@ resource "kubernetes_resource_quota" "docker-registry-cache" {
   }
 }
 
+
+resource "kubernetes_network_policy" "docker-registry-cache_default" {
+  metadata {
+    name      = "default"
+    namespace = kubernetes_namespace.docker-registry-cache.id
+  }
+
+  spec {
+    pod_selector {}
+
+    ingress {
+      from {
+        pod_selector {}
+      }
+    }
+
+    policy_types = ["Ingress"]
+  }
+}
+
+resource "kubernetes_network_policy" "docker-registry-cache_allow_ingress_controllers" {
+  metadata {
+    name      = "allow-ingress-controllers"
+    namespace = kubernetes_namespace.docker-registry-cache.id
+  }
+
+  spec {
+    pod_selector {}
+
+    ingress {
+      from {
+        namespace_selector {
+          match_labels = {
+            component = "ingress-controllers"
+          }
+        }
+      }
+    }
+
+    policy_types = ["Ingress"]
+  }
+}
+
+
 resource "null_resource" "docker-registry-cache-namespace-config" {
   provisioner "local-exec" {
     command = "kubectl apply -n docker-registry-cache -f ${path.module}/templates/docker-registry-cache/namespace.yaml"
