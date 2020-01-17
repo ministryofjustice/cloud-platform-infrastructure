@@ -111,6 +111,66 @@ resource "kubernetes_role_binding" "docker-registry-cache" {
   }
 }
 
+
+resource "kubernetes_deployment" "docker-registry-cache" {
+  metadata {
+    name = "docker-registry-cache"
+    namespace = kubernetes_namespace.docker-registry-cache.id
+    labels = {
+      app = "docker-registry-cache"
+    }
+  }
+
+  depends_on = [
+    kubernetes_role_binding.docker-registry-cache,
+    kubernetes_resource_quota.docker-registry-cache,
+    kubernetes_limit_range.docker-registry-cache,
+    kubernetes_network_policy.docker-registry-cache_default,
+    kubernetes_network_policy.docker-registry-cache_allow_ingress_controllers,
+  ]
+
+  spec {
+    replicas = 1
+
+    selector {
+      match_labels = {
+        app = "docker-registry-cache"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "docker-registry-cache"
+        }
+      }
+
+      spec {
+        container {
+          name  = "registry"
+          image = "ministryofjustice/docker-registry-cache:1.4"
+
+          port {
+            container_port = 5000
+          }
+
+          liveness_probe {
+            exec {
+              command = [
+                "/bin/sh",
+                "-c",
+                "/usr/local/bin/disk-usage-high"
+              ]
+            }
+            initial_delay_seconds = 60
+            period_seconds = 1800
+          }
+        }
+      }
+    }
+  }
+}
+
 resource "null_resource" "docker-registry-cache" {
   # Everything in the namespace will be destroyed when the namespace is deleted.
   # We need the `exit 0` here so that terraform thinks it has successfully
