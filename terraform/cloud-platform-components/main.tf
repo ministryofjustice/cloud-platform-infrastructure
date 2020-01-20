@@ -59,7 +59,12 @@ data "aws_iam_role" "nodes" {
   name = "nodes.${data.terraform_remote_state.cluster.outputs.cluster_domain_name}"
 }
 
-data "aws_caller_identity" "current" {
+data "aws_caller_identity" "current" {}
+
+# Cloud Platform Helm Chart repository
+data "helm_repository" "cloud_platform" {
+  name = "cloud-platform"
+  url  = "https://ministryofjustice.github.io/cloud-platform-helm-charts"
 }
 
 provider "aws" {

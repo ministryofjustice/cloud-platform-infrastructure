@@ -38,7 +38,6 @@ run_docker_container() {
 
   docker run \
    -v $(pwd)/terraform:/opt/terraform \
-   -v $(pwd)/helm-charts:/opt/helm-charts \
    -v ${HOME}/.aws/credentials:/root/.aws/credentials \
    -v ${key}:/root/.ssh/id_rsa \
    -v ${key}.pub:/root/.ssh/id_rsa.pub \

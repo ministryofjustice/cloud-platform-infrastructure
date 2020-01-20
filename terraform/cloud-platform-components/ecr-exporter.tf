@@ -32,10 +32,11 @@ resource "aws_iam_role_policy" "ecr_exporter" {
 }
 
 resource "helm_release" "ecr_exporter" {
-  name      = "ecr-exporter"
-  count     = terraform.workspace == local.live_workspace ? 1 : 0
-  namespace = "monitoring"
-  chart     = "../../helm-charts/prometheus-ecr-exporter"
+  name       = "ecr-exporter"
+  count      = terraform.workspace == local.live_workspace ? 1 : 0
+  namespace  = "monitoring"
+  chart      = "prometheus-ecr-exporter"
+  repository = data.helm_repository.cloud_platform.metadata[0].name
 
   set {
     name  = "serviceMonitor.enabled"

@@ -1,7 +1,8 @@
 resource "helm_release" "kuberos" {
   name          = "kuberos"
   namespace     = "kuberos"
-  chart         = "../../helm-charts/kuberos"
+  chart         = "kuberos"
+  repository    = data.helm_repository.cloud_platform.metadata[0].name
   recreate_pods = true
 
   set {
