@@ -191,62 +191,7 @@ config: |-
   - aws_namespace: AWS/ES
     aws_metric_name: ClusterStatus.red
     aws_dimensions: [DomainName,ClientId]
-    
-  - aws_namespace: AWS/ES
-    aws_metric_name: Nodes
-    aws_dimensions: [DomainName,ClientId]
 
-  - aws_namespace: AWS/ES
-    aws_metric_name: CPUUtilization
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: FreeStorageSpace
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: ClusterUsedSpace
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: JVMMemoryPressure
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: AutomatedSnapshotFailure
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: ElasticsearchRequests
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: IndexingLatency
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: IndexingRate
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: SearchLatency
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: SearchRate
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: SysMemoryUtilization
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: JVMGCYoungCollectionCount
-    aws_dimensions: [DomainName,ClientId]
-
-  - aws_namespace: AWS/ES
-    aws_metric_name: JVMGCYoungCollectionTime
-    aws_dimensions: [DomainName,ClientId] 
 
 serviceMonitor:
   # When set true then use a ServiceMonitor to configure scraping
