@@ -66,38 +66,66 @@ config: |-
 
     # SQS Metrics
   - aws_namespace: AWS/SQS
+    aws_metric_name: ApproximateAgeOfOldestMessage
+    aws_dimensions: [QueueName]
+
+  - aws_namespace: AWS/SQS
+    aws_metric_name: ApproximateNumberOfMessagesDelayed
+    aws_dimensions: [QueueName]
+
+  - aws_namespace: AWS/SQS
+    aws_metric_name: ApproximateNumberOfMessagesNotVisible
+    aws_dimensions: [QueueName]
+
+  - aws_namespace: AWS/SQS
+    aws_metric_name: ApproximateNumberOfMessagesVisible
+    aws_dimensions: [QueueName]
+
+  - aws_namespace: AWS/SQS
+    aws_metric_name: NumberOfEmptyReceives
+    aws_dimensions: [QueueName]
+
+  - aws_namespace: AWS/SQS
     aws_metric_name: NumberOfMessagesDeleted
     aws_dimensions: [QueueName]
 
   - aws_namespace: AWS/SQS
     aws_metric_name: NumberOfMessagesReceived
     aws_dimensions: [QueueName]
- 
+
   - aws_namespace: AWS/SQS
     aws_metric_name: NumberOfMessagesSent
     aws_dimensions: [QueueName]
- 
+
   - aws_namespace: AWS/SQS
     aws_metric_name: SentMessageSize
     aws_dimensions: [QueueName]
-
+    
     # SNS Metrics
   - aws_namespace: AWS/SNS
     aws_metric_name: NumberOfMessagesPublished
     aws_dimensions: [TopicName]
- 
+
   - aws_namespace: AWS/SNS
-    aws_metric_name: NumberOfNotificationsDelivered
+    aws_metric_name: NumberOfNotificationsDelivered 
     aws_dimensions: [TopicName]
- 
+
   - aws_namespace: AWS/SNS
-    aws_metric_name: NumberOfNotificationsFailed
+    aws_metric_name: NumberOfNotificationsFailed 
     aws_dimensions: [TopicName]
 
   - aws_namespace: AWS/SNS
     aws_metric_name: NumberOfNotificationsFilteredOut
     aws_dimensions: [TopicName]
 
+  - aws_namespace: AWS/SNS
+    aws_metric_name: NumberOfNotificationsFilteredOut-NoMessageAttributes
+    aws_dimensions: [TopicName]
+
+  - aws_namespace: AWS/SNS
+    aws_metric_name: NumberOfNotificationsFilteredOut-InvalidAttributes
+    aws_dimensions: [TopicName]
+    
   - aws_namespace: AWS/SNS
     aws_metric_name: PublishSize
     aws_dimensions: [TopicName]
