@@ -70,7 +70,7 @@ end
 
 def create_job(namespace, yaml_file, args)
   job_name = args.fetch(:job_name)
-  search_url = args[:search_url]
+  search_url = args[:search_url] # This line is necessary to make 'search_url' available via 'binding'
 
   apply_template_file(namespace: namespace, file: yaml_file, binding: binding)
   wait_for_job_to_start(namespace, job_name)
