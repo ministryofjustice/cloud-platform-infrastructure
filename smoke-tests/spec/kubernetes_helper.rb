@@ -23,7 +23,8 @@ def create_namespace(namespace, opts = {})
 end
 
 def namespace_exists?(namespace)
-  execute("kubectl get namespace #{namespace} > /dev/null 2>&1")
+  _, _, status = execute("kubectl get namespace #{namespace} > /dev/null 2>&1")
+  status.success?
 end
 
 def delete_namespace(namespace)
@@ -63,7 +64,8 @@ def wait_for(namespace, type, name, seconds = 10)
 end
 
 def object_exists?(namespace, type, name)
-  execute("kubectl -n #{namespace} get #{type} #{name} > /dev/null")
+  _, _, status = execute("kubectl -n #{namespace} get #{type} #{name} > /dev/null")
+  status.success?
 end
 
 def create_job(namespace, yaml_file, args)
@@ -77,20 +79,19 @@ end
 def wait_for_job_to_start(namespace, job_name)
   controlled_by = "Job/#{job_name}"
   command = "kubectl describe pods -n #{namespace} | grep -B 2 #{controlled_by} | grep Succeeded > /dev/null"
-  done = execute(command)
+  _, _, status = execute(command)
 
   10.times do
-    break if done
+    break if status.success?
     sleep 1
-    done = execute(command)
+    _, _, status = execute(command)
   end
 
-  raise "Job failed to start in #{namespace}" unless done
+  raise "Job failed to start in #{namespace}" unless status.success?
 end
 
-def execute(command)
-  # puts command
-  system command
+def execute(cmd, can_fail: false)
+  Open3.capture3(cmd)
 end
 
 def get_pod_logs(namespace, pod_name)
