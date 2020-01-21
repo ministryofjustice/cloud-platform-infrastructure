@@ -1,5 +1,6 @@
 def current_cluster
-  `kubectl config current-context`.chomp
+  stdout, _, _ = execute("kubectl config current-context")
+  stdout.chomp
 end
 
 def all_namespaces
@@ -8,8 +9,8 @@ end
 
 def create_namespace(namespace, opts = {})
   unless namespace_exists?(namespace)
-    `kubectl create namespace #{namespace}`
-    `kubectl annotate --overwrite namespace #{namespace} 'cloud-platform-integration-test=default'`
+    execute("kubectl create namespace #{namespace}")
+    execute("kubectl annotate --overwrite namespace #{namespace} 'cloud-platform-integration-test=default'")
 
     10.times do
       break if namespace_exists?(namespace)
@@ -17,21 +18,22 @@ def create_namespace(namespace, opts = {})
     end
 
     if annotations = opts[:annotations]
-      `kubectl annotate --overwrite namespace #{namespace} '#{annotations}'`
+      execute("kubectl annotate --overwrite namespace #{namespace} '#{annotations}'")
     end
   end
 end
 
 def namespace_exists?(namespace)
-  execute("kubectl get namespace #{namespace} > /dev/null 2>&1")
+  _, _, status = execute("kubectl get namespace #{namespace} > /dev/null 2>&1")
+  status.success?
 end
 
 def delete_namespace(namespace)
-  `kubectl delete namespace #{namespace}`
+  execute("kubectl delete namespace #{namespace}")
 end
 
 def delete_deployment(namespace, deployment)
-  `kubectl -n #{namespace} delete deployment #{deployment}`
+  execute("kubectl -n #{namespace} delete deployment #{deployment}")
 end
 
 def apply_template_file(args)
@@ -63,12 +65,13 @@ def wait_for(namespace, type, name, seconds = 10)
 end
 
 def object_exists?(namespace, type, name)
-  execute("kubectl -n #{namespace} get #{type} #{name} > /dev/null")
+  _, _, status = execute("kubectl -n #{namespace} get #{type} #{name} > /dev/null")
+  status.success?
 end
 
 def create_job(namespace, yaml_file, args)
   job_name = args.fetch(:job_name)
-  search_url = args[:search_url]
+  search_url = args[:search_url] # This line is necessary to make 'search_url' available via 'binding'
 
   apply_template_file(namespace: namespace, file: yaml_file, binding: binding)
   wait_for_job_to_start(namespace, job_name)
@@ -77,24 +80,31 @@ end
 def wait_for_job_to_start(namespace, job_name)
   controlled_by = "Job/#{job_name}"
   command = "kubectl describe pods -n #{namespace} | grep -B 2 #{controlled_by} | grep Succeeded > /dev/null"
-  done = execute(command)
+  _, _, status = execute(command)
 
   10.times do
-    break if done
+    break if status.success?
     sleep 1
-    done = execute(command)
+    _, _, status = execute(command)
   end
 
-  raise "Job failed to start in #{namespace}" unless done
+  raise "Job failed to start in #{namespace}" unless status.success?
 end
 
-def execute(command)
-  # puts command
-  system command
+def execute(cmd, can_fail: false)
+  # When running in the integration test pipeline, we often see KubeAPILatencyHigh alerts.
+  # This seems to be caused by the tests sending commands to the kubernetes API too fast.
+  # So, if we are running in the integration-test-pipeline, add a delay before we execute
+  # any commands, to avoid spamming the API.
+  # The EXECUTION_CONTEXT env. var. is set in the pipeline definition
+  # https://github.com/ministryofjustice/cloud-platform-concourse/blob/master/pipelines/live-1/main/integration-tests.yaml
+  sleep 1 if ENV["EXECUTION_CONTEXT"] == "integration-test-pipeline"
+  Open3.capture3(cmd)
 end
 
 def get_pod_logs(namespace, pod_name)
-  `kubectl -n #{namespace} logs #{pod_name}`
+  stdout, _, _ = execute("kubectl -n #{namespace} logs #{pod_name}")
+  stdout
 end
 
 def get_pods(namespace)
@@ -217,18 +227,20 @@ def get_servicemonitors(namespace)
 end
 
 def kubectl_items(cmd)
-  JSON.parse(`kubectl #{cmd} -o json`).fetch("items")
+  json, _, _ = execute("kubectl #{cmd} -o json")
+  JSON.parse(json).fetch("items")
 end
 
 # Set the enable-modsecurity flag to false on the ingress annotation
 def set_modsec_ing_annotation_false(namespace, ingress_name)
-  `kubectl -n #{namespace} annotate --overwrite ingresses/#{ingress_name} nginx.ingress.kubernetes.io/enable-modsecurity='false'`.chomp
+  stdout, _, _ = execute("kubectl -n #{namespace} annotate --overwrite ingresses/#{ingress_name} nginx.ingress.kubernetes.io/enable-modsecurity='false'")
+  stdout.chomp
 end
 
 def scale_replicas(namespace, deployment, replicas = "")
-  `kubectl -n #{namespace} scale deployment #{deployment} --replicas=#{replicas}`
+  execute("kubectl -n #{namespace} scale deployment #{deployment} --replicas=#{replicas}")
 end
 
 def annotate_ingress(namespace, ingress, annotations)
-  `kubectl -n #{namespace} annotate ingress #{ingress} #{ing_annotations.join(" ")}`
+  execute("kubectl -n #{namespace} annotate ingress #{ingress} #{ing_annotations.join(" ")}")
 end

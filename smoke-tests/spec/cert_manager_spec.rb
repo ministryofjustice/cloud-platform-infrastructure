@@ -75,5 +75,5 @@ def create_certificate(namespace, host)
   jsn = JSON.parse(json).to_json
 
   cmd = %(echo '#{jsn}' | kubectl -n #{namespace} apply -f -)
-  `#{cmd}`
+  execute(cmd)
 end
