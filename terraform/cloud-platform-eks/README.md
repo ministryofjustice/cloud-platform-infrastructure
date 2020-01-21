@@ -2,6 +2,8 @@
 
 This README describes the main infrastructure components required to deliver a production-ready EKS cluster. Terraform is used as a main tool to bootstrap the infrastructure layer and EKS clusters. This terraform code requires you already have a VPC provisioned. If no VPC is provided it'll look for a VPC named as your terraform workspace 
 
+**IMPORTANT:** All cluster's names **must be unique**, each of them (EKS or kOps, doesn't matter) creates a Route53 hostzone which is unique
+
 ## Contents
 
   - [Requirements](#Requirements)
@@ -37,8 +39,21 @@ Within `main.tf` you'll find creation of:
 
 ## How do I use this?
 
-```bash
-terraform init
-terraform workspace select/new <clusterName>
-terraform apply -var-file="vars/$(terraform workspace show).tfvars"
+```console
+$ terraform init
+$ terraform workspace select/new <clusterName>
+```
+
+Now it is time to apply changes, you have two choices:
+
+1. Create (or copy from a exiting one) a *tf-var* file within `vars/${TerraformWorkspace}.tfvars` and apply terraform:
+
+```console
+$ terraform apply -var-file="vars/$(terraform workspace show).tfvars"
+```
+
+2. Set variables as terraform variables:
+
+```console
+$ terraform apply -var cluster_node_count=4 -var worker_node_machine_type=m4.large -var vpc_name="mogaal-eks"
 ```
