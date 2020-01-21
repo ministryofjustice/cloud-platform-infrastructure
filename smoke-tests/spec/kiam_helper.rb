@@ -197,8 +197,9 @@ def try_to_assume_role(args)
   role_arn = args.fetch(:role_arn)
   pod = args.fetch(:pod)
 
-  cmd = %(kubectl exec -n #{namespace} #{pod} -- aws sts assume-role --role-arn "#{role_arn}" --role-session-name dummy)
-  `#{cmd} 2>&1`
+  cmd = %(kubectl exec -n #{namespace} #{pod} -- aws sts assume-role --role-arn "#{role_arn}" --role-session-name dummy 2>&1)
+  stdout, _, _ = execute(cmd)
+  stdout
 end
 
 # Deploy a container into a namespace. The container just runs 'sleep 86400'.
@@ -241,8 +242,7 @@ def create_deployment(args)
   jsn = JSON.parse(json).to_json
 
   cmd = %(echo '#{jsn}' | kubectl -n #{namespace} apply -f -)
-
-  `#{cmd}`
+  execute(cmd)
 
   pods = []
 

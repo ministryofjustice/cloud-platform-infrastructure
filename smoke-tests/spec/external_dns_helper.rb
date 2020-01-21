@@ -11,13 +11,14 @@ end
 # delete ingress if namespace and ingress exist
 def delete_ingress(namespace, ingress_name)
   if namespace_exists?(namespace) && object_exists?(namespace, "ingress", ingress_name)
-    `kubectl delete ingress #{ingress_name} -n #{namespace}`
+    execute("kubectl delete ingress #{ingress_name} -n #{namespace}")
   end
 end
 
 # Returns an ingress endpoint (ELB enpoint)
 def get_ingress_endpoint(namespace, ingress_name)
-  `kubectl get ingress #{ingress_name} -n #{namespace} -o json -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'`
+  stdout, _, _ = execute("kubectl get ingress #{ingress_name} -n #{namespace} -o json -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'")
+  stdout
 end
 
 # Dedicated to A record created by External DNS

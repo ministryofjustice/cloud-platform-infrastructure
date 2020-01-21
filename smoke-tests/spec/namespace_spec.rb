@@ -2,7 +2,8 @@ require "spec_helper"
 
 describe "namespace" do
   def can_i_get(type, team, namespace = "kube-system")
-    `kubectl auth can-i get #{type} --namespace #{namespace} --as test --as-group github:#{team} --as-group system:authenticated`.chomp
+    stdout, _, _ = execute("kubectl auth can-i get #{type} --namespace #{namespace} --as test --as-group github:#{team} --as-group system:authenticated")
+    stdout.chomp
   end
 
   let(:yes) { "yes" }

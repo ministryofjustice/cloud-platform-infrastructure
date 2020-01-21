@@ -1,5 +1,6 @@
 def current_cluster
-  `kubectl config current-context`.chomp
+  stdout, _, _ = execute("kubectl config current-context")
+  stdout.chomp
 end
 
 def all_namespaces
@@ -8,8 +9,8 @@ end
 
 def create_namespace(namespace, opts = {})
   unless namespace_exists?(namespace)
-    `kubectl create namespace #{namespace}`
-    `kubectl annotate --overwrite namespace #{namespace} 'cloud-platform-integration-test=default'`
+    execute("kubectl create namespace #{namespace}")
+    execute("kubectl annotate --overwrite namespace #{namespace} 'cloud-platform-integration-test=default'")
 
     10.times do
       break if namespace_exists?(namespace)
@@ -17,7 +18,7 @@ def create_namespace(namespace, opts = {})
     end
 
     if annotations = opts[:annotations]
-      `kubectl annotate --overwrite namespace #{namespace} '#{annotations}'`
+      execute("kubectl annotate --overwrite namespace #{namespace} '#{annotations}'")
     end
   end
 end
@@ -28,11 +29,11 @@ def namespace_exists?(namespace)
 end
 
 def delete_namespace(namespace)
-  `kubectl delete namespace #{namespace}`
+  execute("kubectl delete namespace #{namespace}")
 end
 
 def delete_deployment(namespace, deployment)
-  `kubectl -n #{namespace} delete deployment #{deployment}`
+  execute("kubectl -n #{namespace} delete deployment #{deployment}")
 end
 
 def apply_template_file(args)
@@ -95,7 +96,8 @@ def execute(cmd, can_fail: false)
 end
 
 def get_pod_logs(namespace, pod_name)
-  `kubectl -n #{namespace} logs #{pod_name}`
+  stdout, _, _ = execute("kubectl -n #{namespace} logs #{pod_name}")
+  stdout
 end
 
 def get_pods(namespace)
@@ -218,18 +220,20 @@ def get_servicemonitors(namespace)
 end
 
 def kubectl_items(cmd)
-  JSON.parse(`kubectl #{cmd} -o json`).fetch("items")
+  json, _, _ = execute("kubectl #{cmd} -o json")
+  JSON.parse(json).fetch("items")
 end
 
 # Set the enable-modsecurity flag to false on the ingress annotation
 def set_modsec_ing_annotation_false(namespace, ingress_name)
-  `kubectl -n #{namespace} annotate --overwrite ingresses/#{ingress_name} nginx.ingress.kubernetes.io/enable-modsecurity='false'`.chomp
+  stdout, _, _ = execute("kubectl -n #{namespace} annotate --overwrite ingresses/#{ingress_name} nginx.ingress.kubernetes.io/enable-modsecurity='false'")
+  stdout.chomp
 end
 
 def scale_replicas(namespace, deployment, replicas = "")
-  `kubectl -n #{namespace} scale deployment #{deployment} --replicas=#{replicas}`
+  execute("kubectl -n #{namespace} scale deployment #{deployment} --replicas=#{replicas}")
 end
 
 def annotate_ingress(namespace, ingress, annotations)
-  `kubectl -n #{namespace} annotate ingress #{ingress} #{ing_annotations.join(" ")}`
+  execute("kubectl -n #{namespace} annotate ingress #{ingress} #{ing_annotations.join(" ")}")
 end
