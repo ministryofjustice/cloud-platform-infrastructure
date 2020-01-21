@@ -23,6 +23,7 @@ KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-pla
 NODE_DRAIN_TIMEOUT = 360 # Draining a node usually takes around 2 minutes. If it takes >6 minutes, it's not going to complete.
 SIGTERM = 15 # The unix signal to send to kill a process
 WORKER_NODE_INSTANCEGROUP = "nodes-r52xl" # The name of the worker nodes instancegroup in the kops config.
+STUCK_STATES = ["ImagePullBackOff", "CrashLoopBackOff"]
 
 def main
   config_cluster
@@ -32,10 +33,17 @@ def main
   end
 
   node = get_oldest_worker_node
+
+  cordon_node(node)
+  # Delete any stuck pods, so that they don't prevent the node from being drained.
+  stuck_pods(node).each { |pod| delete_pod(pod) }
   drain_node(node)
+
   sleep 30
+
   node = get_latest_node_details(node) # node status should have changed, after being drained
   terminate_node(node)
+
   sleep 60
 
   wait_for_node_to_be_replaced
@@ -93,6 +101,35 @@ end
 def get_oldest_worker_node
   get_worker_nodes
     .min_by { |node| node.dig("metadata", "creationTimestamp") }
+end
+
+def cordon_node(node)
+  name = node_name(node)
+  cmd = "kubectl cordon #{name}"
+  execute(cmd)
+end
+
+def stuck_pods(node)
+  name = node_name(node)
+  cmd = "kubectl get pods --all-namespaces -o json --field-selector spec.nodeName=#{name}"
+  all_pods = JSON.parse(execute(cmd)).fetch("items")
+
+  rtn = []
+
+  all_pods.map do |pod|
+    pod.dig("status", "containerStatuses").map do |c|
+      container_state = c.dig("state", "waiting", "reason") # If container is not 'waiting', this will be nil
+      rtn << pod if STUCK_STATES.include?(container_state)
+    end
+  end
+
+  rtn
+end
+
+def delete_pod(pod)
+  namespace = pod.dig("metadata", "namespace")
+  name = pod.dig("metadata", "name")
+  execute("kubectl -n #{namespace} delete pod #{name}")
 end
 
 def drain_node(node)
