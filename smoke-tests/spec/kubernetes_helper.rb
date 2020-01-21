@@ -92,6 +92,13 @@ def wait_for_job_to_start(namespace, job_name)
 end
 
 def execute(cmd, can_fail: false)
+  # When running in the integration test pipeline, we often see KubeAPILatencyHigh alerts.
+  # This seems to be caused by the tests sending commands to the kubernetes API too fast.
+  # So, if we are running in the integration-test-pipeline, add a delay before we execute
+  # any commands, to avoid spamming the API.
+  # The EXECUTION_CONTEXT env. var. is set in the pipeline definition
+  # https://github.com/ministryofjustice/cloud-platform-concourse/blob/master/pipelines/live-1/main/integration-tests.yaml
+  sleep 1 if ENV["EXECUTION_CONTEXT"] == "integration-test-pipeline"
   Open3.capture3(cmd)
 end
 
