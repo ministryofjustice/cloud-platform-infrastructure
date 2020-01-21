@@ -1,8 +1,8 @@
 # Cloud Platform - EKS Cluster
 
-This README describes the main infrastructure components required to deliver a production-ready EKS cluster. Terraform is used as a main tool to bootstrap the infrastructure layer and EKS clusters. This terraform code requires you already have a VPC provisioned. If no VPC is provided it'll look for a VPC named as your terraform workspace 
+This README describes the main infrastructure components required to deliver a production-ready EKS cluster. Terraform is used as a main tool to bootstrap the infrastructure layer and EKS clusters. This terraform code requires you already have a VPC provisioned (go to [`terraform/cloud-platform-network/` folder for more info](https://github.com/ministryofjustice/cloud-platform-infrastructure/tree/master/terraform/cloud-platform-network)). If no VPC is provided it'll look for a VPC named as your terraform workspace 
 
-**IMPORTANT:** All cluster's names **must be unique**, each of them (EKS or kOps, doesn't matter) creates a Route53 hostzone which is unique
+**IMPORTANT:** All cluster's names **must be globally unique**, each of them (EKS or kOps, doesn't matter) creates a Route53 hostzone which is unique
 
 ## Contents
 
