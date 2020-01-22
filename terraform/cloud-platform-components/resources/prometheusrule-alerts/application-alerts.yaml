@@ -252,15 +252,23 @@ spec:
       for: 5m
       labels:
         severity: warning
-    - alert: VeleroBackupFailed
+    - alert: VeleroBackupPartialFailure-velero-allnamespacebackup
       annotations:
-        message: A Velero backup has failed
+        message: A Velero backup partial failure in past 3 hours - velero-allnamespacebackup
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md
-      expr: sum(velero_backup_success_total{service="velero"}) / sum(velero_backup_attempt_total{service="velero"}) < 1
+      expr: sum(increase(velero_backup_partial_failure_total{schedule="velero-allnamespacebackup"}[3h])) > 0
       for: 1m
       labels:
         severity: warning
-    - alert: VeleroAllNamespaceBackupNotSuccessfulForOverFourHours
+    - alert: VeleroBackupFailure-velero-allnamespacebackup
+      annotations:
+        message: A Velero backup failure in past 3 hours - velero-allnamespacebackup
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md
+      expr: sum(increase(velero_backup_failure_total{schedule="velero-allnamespacebackup"}[3h])) > 0
+      for: 1m
+      labels:
+        severity: warning
+    - alert: VeleroBackupNotSuccessfulForOverFourHours-velero-allnamespacebackup
       annotations:
         message: The Velero backup schedule for AllNamespaceBackup does not have a successful timestamp for over 4 hours
         runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md
@@ -268,4 +276,20 @@ spec:
       for: 1m
       labels:
         severity: warning
+    - alert: VeleroBackupPartialFailure
+      annotations:
+        message: A Velero backup partial failure notification
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md
+      expr: sum(increase(velero_backup_partial_failure_total[2m])) > 0
+      for: 1m
+      labels:
+        severity: info-warning
+    - alert: VeleroBackupFailure
+      annotations:
+        message: A Velero backup failure notification
+        runbook_url: https://github.com/kubernetes-monitoring/kubernetes-mixin/tree/master/runbook.md
+      expr: sum(increase(velero_backup_failure_total[2m])) > 0
+      for: 1m
+      labels:
+        severity: info-warning
         
