@@ -50,6 +50,7 @@ class KiamRole
   # the deleted cluster's ARN in the trust relationships gets replaced with something
   # that looks like an access key ID, and you end up with errors like this:
   #
+  #   Aws::IAM::Errors::MalformedPolicyDocument:
   #     Invalid principal in policy: "AWS":"AROA27XXXXXXXXXXJ2R57"
   #
   # This method removes the cluster ARN from the role trust relationships, so that
