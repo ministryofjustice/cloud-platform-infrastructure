@@ -1,7 +1,7 @@
 resource "helm_release" "metrics_server" {
   name      = "metrics-server"
   chart     = "stable/metrics-server"
-  namespace = "monitoring"
+  namespace = "kube-system"
   version   = "2.8.8"
 
   depends_on = [null_resource.deploy]
