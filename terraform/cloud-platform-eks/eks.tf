@@ -88,7 +88,13 @@ module "eks" {
       userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
       username = "VijayVeeranki"
       groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/cloud-platform/manager-concourse"
+      username = "manager-concourse"
+      groups   = ["system:masters"]
     }
+
   ]
 
   tags = {
