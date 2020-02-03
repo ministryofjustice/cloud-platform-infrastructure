@@ -98,7 +98,10 @@ def execute(cmd, can_fail: false)
   # any commands, to avoid spamming the API.
   # The EXECUTION_CONTEXT env. var. is set in the pipeline definition
   # https://github.com/ministryofjustice/cloud-platform-concourse/blob/master/pipelines/live-1/main/integration-tests.yaml
-  sleep 3 if ENV["EXECUTION_CONTEXT"] == "integration-test-pipeline"
+  if ENV["EXECUTION_CONTEXT"] == "integration-test-pipeline"
+    sleep 3
+    puts [Time.now.strftime("%Y-%m-%d %H:%M:%S"), cmd].join(" ")
+  end
   Open3.capture3(cmd)
 end
 
