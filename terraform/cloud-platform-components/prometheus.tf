@@ -134,10 +134,10 @@ locals {
 }
 
 resource "helm_release" "prometheus_operator" {
-  name         = "prometheus-operator"
-  chart        = "stable/prometheus-operator"
-  namespace    = "monitoring"
-  version      = "8.7.0"
+  name      = "prometheus-operator"
+  chart     = "stable/prometheus-operator"
+  namespace = "monitoring"
+  version   = "8.7.0"
 
   values = [templatefile("${path.module}/templates/prometheus-operator.yaml.tpl", {
     alertmanager_ingress   = local.alertmanager_ingress
