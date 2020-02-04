@@ -133,31 +133,24 @@ locals {
   )
 }
 
-data "template_file" "prometheus_operator" {
-  template = file("${path.module}/templates/prometheus-operator.yaml.tpl")
+resource "helm_release" "prometheus_operator" {
+  name         = "prometheus-operator"
+  chart        = "stable/prometheus-operator"
+  namespace    = "monitoring"
+  version      = "7.4.0"
+  force_update = "true"
 
-  vars = {
+  values = [templatefile("${path.module}/templates/prometheus-operator.yaml.tpl", {
     alertmanager_ingress   = local.alertmanager_ingress
     grafana_ingress        = local.grafana_ingress
     grafana_root           = local.grafana_root
     pagerduty_config       = var.pagerduty_config
-    alertmanager_routes    = join("", data.template_file.alertmanager_routes.*.rendered)
-    alertmanager_receivers = join("", data.template_file.alertmanager_receivers.*.rendered)
+    alertmanager_routes    = "${join("", data.template_file.alertmanager_routes.*.rendered)}"
+    alertmanager_receivers = "${join("", data.template_file.alertmanager_receivers.*.rendered)}"
     prometheus_ingress     = local.prometheus_ingress
     random_username        = random_id.username.hex
     random_password        = random_id.password.hex
-  }
-}
-
-resource "helm_release" "prometheus_operator" {
-  name      = "prometheus-operator"
-  chart     = "stable/prometheus-operator"
-  namespace = "monitoring"
-  version   = "3.0.0"
-
-  values = [
-    data.template_file.prometheus_operator.rendered,
-  ]
+  })]
 
   # Depends on Helm being installed
   depends_on = [
