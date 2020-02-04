@@ -48,7 +48,7 @@ def expect_backend_error_page(url, message, body)
                           }
 end
 
-describe "http request error responses" do
+xdescribe "http request error responses" do
   let(:unmatched_url) { "https://foobar.apps.#{current_cluster}" }
 
   context "cluster default backend" do
