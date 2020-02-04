@@ -253,6 +253,37 @@ prometheus:
     ##
     externalUrl: "${ prometheus_ingress }"
 
+
+    ## Namespaces to be selected for PrometheusRules discovery.
+    ## If unspecified, only the same namespace as the Prometheus object is in is used.
+    ##
+    ruleNamespaceSelector:
+      any: true
+
+    ## Rules CRD selector
+    ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/design.md
+    ## If unspecified the release `app` and `release` will be used as the label selector
+    ## to load rules
+    ##
+    ruleSelector:
+      any: true
+
+    ## serviceMonitorSelector will limit which servicemonitors are used to create scrape
+    ## configs in Prometheus. See serviceMonitorSelectorUseHelmLabels
+    ##
+    serviceMonitorSelector:
+      any: true
+
+    # serviceMonitorSelector: {}
+    #   matchLabels:
+    #     prometheus: somelabel
+
+    ## serviceMonitorNamespaceSelector will limit namespaces from which serviceMonitors are used to create scrape
+    ## configs in Prometheus. By default all namespaces will be used
+    ##
+    serviceMonitorNamespaceSelector:
+      any: true
+
     ## How long to retain metrics
     ##
     retention: 30d
