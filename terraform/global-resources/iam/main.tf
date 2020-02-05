@@ -6,6 +6,20 @@ terraform {
   }
 }
 
+###############
+# AWS Account #
+###############
+
+module "iam_account" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-account"
+  version = "~> 2.0"
+
+  account_alias = "cloud-platform-aws"
+
+  minimum_password_length = 6
+}
+
+
 # CP Team
 module "iam_group_admins_with_policies" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-group-with-policies"
