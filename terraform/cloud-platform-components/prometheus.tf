@@ -137,8 +137,7 @@ resource "helm_release" "prometheus_operator" {
   name         = "prometheus-operator"
   chart        = "stable/prometheus-operator"
   namespace    = "monitoring"
-  version      = "7.4.0"
-  force_update = "true"
+  version      = "8.7.0"
 
   values = [templatefile("${path.module}/templates/prometheus-operator.yaml.tpl", {
     alertmanager_ingress   = local.alertmanager_ingress
@@ -163,8 +162,6 @@ resource "helm_release" "prometheus_operator" {
     command = "kubectl apply -n monitoring -f ${path.module}/resources/prometheusrule-alerts/"
   }
 
-  # Delete Prometheus leftovers
-  # Ref: https://github.com/coreos/prometheus-operator#removal
   # Delete Prometheus leftovers
   # Ref: https://github.com/coreos/prometheus-operator#removal
   provisioner "local-exec" {
