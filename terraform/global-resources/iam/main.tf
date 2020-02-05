@@ -16,7 +16,7 @@ module "iam_account" {
 
   account_alias = "cloud-platform-aws"
 
-  minimum_password_length = 6
+  minimum_password_length = 12
 }
 
 
@@ -58,7 +58,7 @@ module "iam_user_poornimakrishnasamy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-user"
   version = "~> 2.0"
 
-  name                          = "poornimakrishnasamy"
+  name                          = "PoornimaKrishnasamy"
   force_destroy                 = true
   create_iam_user_login_profile = false
   create_iam_access_key         = false
