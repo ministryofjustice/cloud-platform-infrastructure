@@ -30,15 +30,6 @@ describe "servicemonitors" do
     expect(names).to eq(expected)
   end
 
-  specify "expected concourse servicemonitors", cluster: "live-1" do
-    names = get_servicemonitors("concourse").map { |set| set.dig("metadata", "name") }.sort
-
-    expected = [
-      "concourse",
-    ]
-    expect(names).to eq(expected)
-  end
-
   specify "expected ECR and CloudWatch servicemonitors", cluster: "live-1" do
     names = get_servicemonitors("monitoring").map { |set| set.dig("metadata", "name") }.sort
 
