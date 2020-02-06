@@ -227,10 +227,19 @@ kubeControllerManager:
 kubeStateMetrics:
   enabled: true
 
+## Configuration for kube-state-metrics subchart
+##
+kube-state-metrics:
+  image:
+    tag: v1.7.0
+
 ## Manages Prometheus and Alertmanager components
 ##
 prometheusOperator:
   enabled: true
+
+  tlsProxy:
+    enabled: false
 
   admissionWebhooks:
     enabled: false
