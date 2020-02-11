@@ -215,12 +215,24 @@ kubeEtcd:
 ## Component scraping kube scheduler
 ##
 kubeScheduler:
-  enabled: false
+  enabled: true
+
+  ## If using kubeScheduler.endpoints only the port and targetPort are used
+  ##
+  service:
+    selector:
+      k8s-app: kube-scheduler
 
 ## Component scraping the kube controller manager
 ##
 kubeControllerManager:
-  enabled: false
+  enabled: true
+
+  ## If using kubeControllerManager.endpoints only the port and targetPort are used
+  ##
+  service:
+    selector:
+      k8s-app: kube-controller-manager
 
 ## Component scraping kube state metrics
 ##
