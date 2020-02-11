@@ -2,7 +2,7 @@ require "spec_helper"
 
 # This test fails on test clusters, but we don't know why
 # https://github.com/ministryofjustice/cloud-platform/issues/1618
-describe "tzcronjobs", cluster: "live-1" do
+xdescribe "tzcronjobs", cluster: "live-1" do
   let(:namespace) { "integrationtest-tzcronjob-#{readable_timestamp}" }
   let(:job_name) { "tzcronjob-integrationtest" }
 
