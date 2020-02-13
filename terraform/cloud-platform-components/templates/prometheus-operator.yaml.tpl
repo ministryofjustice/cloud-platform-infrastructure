@@ -158,6 +158,10 @@ grafana:
   adminUser: "${ random_username }"
   adminPassword: "${ random_password }"
 
+  ## Pod Annotations
+  podAnnotations: 
+    iam.amazonaws.com/role: "${ grafana_pod_annotation }"
+
   ingress:
     ## If true, Prometheus Ingress will be created
     ##
