@@ -201,6 +201,20 @@ grafana:
       enabled: true
       label: grafana_datasource
 
+  ## Configure additional grafana datasources
+  ## ref: http://docs.grafana.org/administration/provisioning/#datasources
+  additionalDataSources:
+  - name: Cloudwatch
+    type: cloudwatch
+    editable: true
+    access: proxy
+    jsonData:
+      authType: arn
+      defaultRegion: eu-west-2
+      assumeRoleArn: "${ grafana_assumerolearn }"
+    orgId: 1
+    version: 1
+
 ## Component scraping coreDns. Use either this or kubeDns
 ##
 coreDns:
