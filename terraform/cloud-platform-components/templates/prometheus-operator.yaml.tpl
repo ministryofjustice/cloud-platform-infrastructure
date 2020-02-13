@@ -339,3 +339,11 @@ prometheus:
             requests:
               storage: 750Gi
         selector: {}
+
+    thanos: 
+      baseImage: quay.io/thanos/thanos
+      version: v0.10.1
+      objectStorageConfig:
+        key: thanos.yaml
+        name: thanos-objstore-config 
+
