@@ -292,7 +292,7 @@ data "aws_iam_policy_document" "grafana_datasource" {
     resources = ["*"]
   }
   statement {
-    actions = ["sts:AssumeRole"]
+    actions   = ["sts:AssumeRole"]
     resources = [aws_iam_role.grafana_datasource.arn]
   }
 }
