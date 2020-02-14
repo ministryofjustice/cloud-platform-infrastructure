@@ -327,6 +327,10 @@ prometheus:
     ##
     retention: 30d
 
+    podMetadata:
+      annotations:
+        iam.amazonaws.com/role: "${monitoring_aws_role}"
+
     ## Prometheus StorageSpec for persistent data
     ## ref: https://github.com/coreos/prometheus-operator/blob/master/Documentation/user-guides/storage.md
     ##
