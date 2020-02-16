@@ -149,6 +149,8 @@ resource "helm_release" "prometheus_operator" {
     prometheus_ingress     = local.prometheus_ingress
     random_username        = random_id.username.hex
     random_password        = random_id.password.hex
+    grafana_pod_annotation = aws_iam_role.grafana_datasource.name
+    grafana_assumerolearn  = aws_iam_role.grafana_datasource.arn
     monitoring_aws_role    = aws_iam_role.monitoring.name
   })]
 
@@ -301,4 +303,48 @@ resource "aws_iam_role_policy" "monitoring" {
   name   = "route53"
   role   = aws_iam_role.monitoring.id
   policy = data.aws_iam_policy_document.monitoring.json
+}
+
+
+# Grafana datasource for cloudwatch
+# KIAM role creation
+# Ref: https://github.com/helm/charts/blob/master/stable/grafana/values.yaml
+
+data "aws_iam_policy_document" "grafana_datasource_assume" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "AWS"
+      identifiers = [data.aws_iam_role.nodes.arn]
+    }
+  }
+}
+
+resource "aws_iam_role" "grafana_datasource" {
+  name               = "datasource.${data.terraform_remote_state.cluster.outputs.cluster_domain_name}"
+  assume_role_policy = data.aws_iam_policy_document.grafana_datasource_assume.json
+}
+
+# Minimal policy permissions 
+# Ref: https://grafana.com/docs/grafana/latest/features/datasources/cloudwatch/#iam-policies
+
+data "aws_iam_policy_document" "grafana_datasource" {
+  statement {
+    actions = [
+      "cloudwatch:ListMetrics",
+      "cloudwatch:GetMetricStatistics",
+      "cloudwatch:GetMetricData",
+    ]
+    resources = ["*"]
+  }
+  statement {
+    actions   = ["sts:AssumeRole"]
+    resources = [aws_iam_role.grafana_datasource.arn]
+  }
+}
+
+resource "aws_iam_role_policy" "grafana_datasource" {
+  name   = "grafana-datasource"
+  role   = aws_iam_role.grafana_datasource.id
+  policy = data.aws_iam_policy_document.grafana_datasource.json
 }
