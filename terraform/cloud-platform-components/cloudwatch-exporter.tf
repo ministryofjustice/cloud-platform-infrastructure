@@ -51,7 +51,7 @@ resource "helm_release" "cloudwatch_exporter" {
 
   depends_on = [
     null_resource.deploy,
-    helm_release.prometheus_operator,
+    module.prometheus.helm_prometheus_operator_status,
   ]
 
   lifecycle {
