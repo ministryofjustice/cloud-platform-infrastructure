@@ -3,13 +3,13 @@
 
 data "aws_iam_policy_document" "kiam-trust-chain" {
   # KIAM trust chain to allow pods to assume roles defined below
-#   statement {
-#     principals {
-#       type        = "Service"
-#       identifiers = ["ec2.amazonaws.com"]
-#     }
-#     actions = ["sts:AssumeRole"]
-#   }
+  #   statement {
+  #     principals {
+  #       type        = "Service"
+  #       identifiers = ["ec2.amazonaws.com"]
+  #     }
+  #     actions = ["sts:AssumeRole"]
+  #   }
   statement {
     principals {
       type        = "AWS"
@@ -36,7 +36,7 @@ data "aws_iam_policy_document" "api" {
     ]
   }
 }
-  
+
 
 resource "aws_iam_policy" "api" {
   name   = "money-to-prisoners-test-iam-policy-api"
@@ -49,7 +49,7 @@ resource "aws_iam_role_policy_attachment" "api" {
 
 resource "kubernetes_secret" "api_output" {
   metadata {
-    name = "api-iam-role"
+    name      = "api-iam-role"
     namespace = "money-to-prisoners-test"
   }
 
