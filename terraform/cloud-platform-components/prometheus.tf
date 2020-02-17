@@ -333,7 +333,7 @@ resource "kubernetes_service" "thanos_sidecar" {
 # Thanos Query deployment
 resource "kubernetes_deployment" "thanos_query" {
   metadata {
-    name = "thanos-query"
+    name      = "thanos-query"
     namespace = kubernetes_namespace.monitoring.id
     labels = {
       app = "thanos-query"
@@ -371,12 +371,12 @@ resource "kubernetes_deployment" "thanos_query" {
           ]
 
           port {
-            name = "http"
+            name           = "http"
             container_port = 10902
           }
 
           port {
-            name = "grpc"
+            name           = "grpc"
             container_port = 10901
           }
 
