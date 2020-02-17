@@ -50,7 +50,7 @@ resource "aws_iam_role_policy_attachment" "api" {
 resource "kubernetes_secret" "api_output" {
   metadata {
     name = "api-iam-role"
-    namespace = "poornima-dev"
+    namespace = "money-to-prisoners-test"
   }
 
   data = {
