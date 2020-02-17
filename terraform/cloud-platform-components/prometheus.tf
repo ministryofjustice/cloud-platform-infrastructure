@@ -1,11 +1,12 @@
 
 module "prometheus" {
-  source = "/Users/mogaal/workspace/github/ministryofjustice/cloud-platform-terraform-prometheus"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-prometheus?ref=0.0.1"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   iam_role_nodes               = data.aws_iam_role.nodes.arn
   pagerduty_config             = var.pagerduty_config
-  enable_thanos                = true
+  enable_ecr_exporter          = terraform.workspace == local.live_workspace ? true : false
+  enable_cloudwatch_exporter   = terraform.workspace == local.live_workspace ? true : false
 
   dependence_deploy = null_resource.deploy
   dependence_opa    = helm_release.open-policy-agent
