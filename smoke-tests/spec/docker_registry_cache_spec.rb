@@ -27,7 +27,7 @@ describe "docker-registry-cache" do
       before_lines = get_pod_logs(namespace, pod_name).split("\n")
       execute("kubectl run --generator=run-pod/v1 output-date --image alpine date > /dev/null")
 
-      sleep 10
+      sleep 20
 
       after_lines = get_pod_logs(namespace, pod_name).split("\n")
       execute("kubectl delete pod output-date > /dev/null")
