@@ -15,11 +15,11 @@ data "aws_iam_policy_document" "prisoner-money-kiam-trust-chain" {
 variable "money-to-prisoners-test-tags" {
   type = map(string)
   default = {
-    business-unit    = "HMPPS"
-    application      = "money-to-prisoners"
-    is-production    = "false"
-    environment-name = "test"
-    owner            = "prisoner-money"
+    business-unit          = "HMPPS"
+    application            = "money-to-prisoners"
+    is-production          = "false"
+    environment-name       = "test"
+    owner                  = "prisoner-money"
     infrastructure-support = "platforms@digital.justice.gov.uk"
   }
 }
