@@ -23,6 +23,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
+  version         = "0.10.4"
   service_account = "tiller"
   kubernetes {
     config_path = "../files/kubeconfig_${terraform.workspace}"
