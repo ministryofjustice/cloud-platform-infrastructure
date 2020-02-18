@@ -35,6 +35,14 @@ data "aws_iam_policy_document" "api" {
       "arn:aws:s3:::money-to-prisoners-testing/cp/*",
     ]
   }
+  statement {
+    actions = [
+      "sts:AssumeRole"
+    ]
+    resources = [
+      aws_iam_role.api.arn,
+    ]
+  }
 }
 
 
