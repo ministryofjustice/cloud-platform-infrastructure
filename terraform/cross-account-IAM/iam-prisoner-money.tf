@@ -20,6 +20,7 @@ variable "money-to-prisoners-test-tags" {
     is-production    = "false"
     environment-name = "test"
     owner            = "prisoner-money"
+    infrastructure-support = "platforms@digital.justice.gov.uk"
   }
 }
 
