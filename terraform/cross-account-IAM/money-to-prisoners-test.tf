@@ -6,7 +6,7 @@ data "aws_iam_policy_document" "money-to-prisoners-test-kiam-trust-chain" {
   statement {
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::754256621582:role/nodes.live-1.cloud-platform.service.justice.gov.uk"]
+      identifiers = [data.aws_iam_role.nodes.arn]
     }
     actions = ["sts:AssumeRole"]
   }
