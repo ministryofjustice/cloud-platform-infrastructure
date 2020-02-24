@@ -90,6 +90,7 @@ resource "helm_release" "velero" {
     kubernetes_namespace.velero,
     aws_iam_role.velero,
     aws_iam_role_policy.velero,
+    helm_release.prometheus_operator,
   ]
   values = [templatefile("${path.module}/templates/velero/velero.yaml.tpl", {
     cluster_name = terraform.workspace
