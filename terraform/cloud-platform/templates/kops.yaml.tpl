@@ -230,11 +230,9 @@ spec:
     auditLogMaxSize: 100
     auditPolicyFile: /srv/kubernetes/audit.yaml
     enableAdmissionPlugins:
-    - Initializers
     - NamespaceLifecycle
     - LimitRanger
     - ServiceAccount
-    - PersistentVolumeLabel
     - DefaultStorageClass
     - DefaultTolerationSeconds
     - MutatingAdmissionWebhook
@@ -242,11 +240,14 @@ spec:
     - NodeRestriction
     - ResourceQuota
     - PodSecurityPolicy
-    runtimeConfig:
-      admissionregistration.k8s.io/v1alpha1: "true"
+    featureGates:
+      TTLAfterFinished: "true"
+  kubeControllerManager:
+    featureGates:
+      TTLAfterFinished: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.13.12
+  kubernetesVersion: 1.14.10
   masterPublicName: api.${cluster_domain_name}
   networkCIDR: ${network_cidr_block}
   networkID: ${network_id}
@@ -309,7 +310,7 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-2a
 spec:
-  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
+  image: kope.io/k8s-1.14-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: ${master_node_machine_type}
   maxSize: 1
   minSize: 1
@@ -336,7 +337,7 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-2b
 spec:
-  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
+  image: kope.io/k8s-1.14-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: ${master_node_machine_type}
   maxSize: 1
   minSize: 1
@@ -363,7 +364,7 @@ metadata:
     kops.k8s.io/cluster: ${cluster_domain_name}
   name: master-eu-west-2c
 spec:
-  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
+  image: kope.io/k8s-1.14-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: ${master_node_machine_type}
   maxSize: 1
   minSize: 1
@@ -388,9 +389,9 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: ${cluster_domain_name}
-  name: nodes-r52xl
+  name: nodes-1.14.10
 spec:
-  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
+  image: kope.io/k8s-1.14-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: ${worker_node_machine_type}
   maxSize: ${cluster_node_count}
   minSize: ${cluster_node_count}
