@@ -230,11 +230,9 @@ spec:
     auditLogMaxSize: 100
     auditPolicyFile: /srv/kubernetes/audit.yaml
     enableAdmissionPlugins:
-    - Initializers
     - NamespaceLifecycle
     - LimitRanger
     - ServiceAccount
-    - PersistentVolumeLabel
     - DefaultStorageClass
     - DefaultTolerationSeconds
     - MutatingAdmissionWebhook
@@ -242,11 +240,14 @@ spec:
     - NodeRestriction
     - ResourceQuota
     - PodSecurityPolicy
-    runtimeConfig:
-      admissionregistration.k8s.io/v1alpha1: "true"
+    featureGates:
+        TTLAfterFinished: "true"
+  kubeControllerManager:
+    featureGates:
+      TTLAfterFinished: "true"
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.13.12
+  kubernetesVersion: 1.14.10
   masterPublicName: api.live-1.cloud-platform.service.justice.gov.uk
   networkCIDR: 172.20.0.0/16
   networkID: vpc-0726ec279947067f8
@@ -321,7 +322,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2a
 spec:
-  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
+  image: kope.io/k8s-1.14-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
@@ -348,7 +349,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2b
 spec:
-  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
+  image: kope.io/k8s-1.14-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
@@ -375,7 +376,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2c
 spec:
-  image: kope.io/k8s-1.13-debian-stretch-amd64-hvm-ebs-2019-08-16
+  image: kope.io/k8s-1.14-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
