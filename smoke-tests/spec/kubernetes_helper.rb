@@ -230,8 +230,12 @@ def get_servicemonitors(namespace)
 end
 
 def kubectl_items(cmd)
+  kubectl_get(cmd).fetch("items")
+end
+
+def kubectl_get(cmd)
   json, _, _ = execute("kubectl #{cmd} -o json")
-  JSON.parse(json).fetch("items")
+  JSON.parse(json)
 end
 
 # Set the enable-modsecurity flag to false on the ingress annotation
