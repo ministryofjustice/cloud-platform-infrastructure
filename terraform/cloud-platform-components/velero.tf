@@ -88,9 +88,9 @@ resource "helm_release" "velero" {
 
   depends_on = [
     kubernetes_namespace.velero,
+    module.prometheus.helm_prometheus_operator_status,
     aws_iam_role.velero,
     aws_iam_role_policy.velero,
-    helm_release.prometheus_operator,
   ]
   values = [templatefile("${path.module}/templates/velero/velero.yaml.tpl", {
     cluster_name = terraform.workspace
