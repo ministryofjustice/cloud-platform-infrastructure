@@ -65,3 +65,16 @@ test-non-live-1:
 		-e AWS_SHARED_CREDENTIALS_FILE=/app/.aws/credentials \
 		-e KUBECONFIG=/app/config \
 		$(TAGGED_IMAGE) rspec --tag ~cluster:live-1
+
+# Only run tests tagged with speed: fast
+test-fast:
+	docker run --rm \
+		-v $(KUBE_CONFIG):/app/config \
+		-v $${PWD}/spec:/app/spec \
+		-v $${HOME}/.aws:/app/.aws \
+		-e AWS_CONFIG_FILE=/app/.aws/config \
+		-e AWS_PROFILE=$(AWS_PROFILE) \
+		-e AWS_SHARED_CREDENTIALS_FILE=/app/.aws/credentials \
+		-e KUBECONFIG=/app/config \
+		$(TAGGED_IMAGE) rspec --tag speed:fast
+
