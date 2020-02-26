@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "Clusterissuer" do
+describe "Clusterissuer", speed: "fast" do
   specify "expected Clusterissuer" do
     names = get_clusterissuers.map { |set| set.dig("metadata", "name") }.sort
 
@@ -12,7 +12,7 @@ describe "Clusterissuer" do
   end
 end
 
-describe "Issuer" do
+describe "Issuer", speed: "fast" do
   specify "expected Issuer" do
     names = get_issuers.map { |set| set.dig("metadata", "name") }.sort
 

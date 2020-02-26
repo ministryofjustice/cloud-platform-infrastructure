@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "Alertmanager resources" do
+describe "Alertmanager resources", speed: "fast" do
   specify "expected Alertmanager resources" do
     names = get_alertmanagers.map { |set| set.dig("metadata", "name") }.sort
 

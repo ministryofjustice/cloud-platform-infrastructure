@@ -7,11 +7,11 @@ describe "docker-registry-cache" do
     let(:pods) { get_running_pods(namespace) }
     let(:pod) { pods.first }
 
-    specify "one pod running" do
+    specify "one pod running", speed: "fast" do
       expect(pods.length).to eq(1)
     end
 
-    specify "running the cache image" do
+    specify "running the cache image", speed: "fast" do
       image = pod.dig("spec", "containers").first.fetch("image")
       expect(image).to match("ministryofjustice.docker-registry-cache")
     end
@@ -38,7 +38,7 @@ describe "docker-registry-cache" do
     end
   end
 
-  context "ingress" do
+  context "ingress", speed: "fast" do
     let(:ingresses) { get_ingresses(namespace) }
     let(:ingress) { ingresses.first }
 
