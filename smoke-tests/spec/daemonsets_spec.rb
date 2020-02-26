@@ -92,4 +92,11 @@ describe "daemonsets", speed: "fast" do
       expect(all_containers_running?(pods)).to eq(true)
     end
   end
+
+  context "calico-kube-controllers" do
+    specify "there can be only one" do
+      pods = get_running_app_pods("kube-system", "calico-kube-controllers", "k8s-app")
+      expect(pods.size).to eq(1)
+    end
+  end
 end
