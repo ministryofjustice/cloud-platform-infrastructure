@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "certificates" do
+describe "certificates", speed: "fast" do
   specify "expected Certificate" do
     names = get_certificates.map { |set| set.dig("metadata", "name") }.sort
 

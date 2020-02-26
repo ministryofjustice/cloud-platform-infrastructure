@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "daemonsets" do
+describe "daemonsets", speed: "fast" do
   let(:worker_ips) { node_ips worker_nodes }
   let(:master_ips) { node_ips master_nodes }
   let(:all_node_ips) { node_ips(get_nodes) }

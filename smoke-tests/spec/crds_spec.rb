@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "crds" do
+describe "crds", speed: "fast" do
 
   specify "expected crds" do
     names = get_crds.map { |set| set.dig("metadata", "name") }.sort
