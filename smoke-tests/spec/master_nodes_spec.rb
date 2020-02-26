@@ -1,7 +1,6 @@
 require "spec_helper"
 
 describe "master nodes", speed: "fast" do
-
   # normalise pod names for ease of comparison, e.g.
   #
   #   calico-node-mv48v -> calico-node
@@ -9,18 +8,20 @@ describe "master nodes", speed: "fast" do
   #
   def shorten_pod_name(name, node_name)
     name
-      .sub(node_name, '')  # remove node name
-      .sub(/-[^-]*$/, '')  # remove last '-' and everything after it
+      .sub(node_name, "") # remove node name
+      .sub(/-[^-]*$/, "") # remove last '-' and everything after it
   end
 
   # return a list of [namespace, shortened-pod-name] tuples, for
   # every pod running on a given node
   def pods_on_master(pods, node_name)
     node_pods = pods.find_all { |p| p.dig("spec", "nodeName") == node_name }
-    node_pods.map { |p| [
-      p.dig("metadata", "namespace"),
-      shorten_pod_name(p.dig("metadata", "name"), node_name)
-    ] }.sort
+    node_pods.map { |p|
+      [
+        p.dig("metadata", "namespace"),
+        shorten_pod_name(p.dig("metadata", "name"), node_name),
+      ]
+    } .sort
   end
 
   let(:masters) {
@@ -31,9 +32,9 @@ describe "master nodes", speed: "fast" do
   let(:pods) { kubectl_items("get pods --all-namespaces") }
 
   # We should have 3 masters
-  specify {
+  specify do
     expect(masters.size).to eq(3)
-  }
+  end
 
   # Every master should have these pods running, in these namespaces
   it "has standard pods" do
@@ -46,7 +47,7 @@ describe "master nodes", speed: "fast" do
       ["kube-system", "kube-proxy"],
       ["kube-system", "kube-scheduler"],
       ["logging", "fluentd-es"],
-      ["monitoring", "prometheus-operator-prometheus-node-exporter"]
+      ["monitoring", "prometheus-operator-prometheus-node-exporter"],
     ]
 
     masters.each do |node|
@@ -60,10 +61,10 @@ describe "master nodes", speed: "fast" do
 
   # Across all masters, there should be a single dns-controller pod running
   specify "only one dns-controller pod" do
-    all_master_pods = masters.map do |node|
+    all_master_pods = masters.map { |node|
       node_name = node.dig("metadata", "name")
-      pods_on_master(pods, node_name).map {|t| t[1]} # We only want the pod name
-    end.flatten
+      pods_on_master(pods, node_name).map { |t| t[1] } # We only want the pod name
+    }.flatten
 
     expect(all_master_pods.grep(/dns-controller/).size).to eq(1)
   end
