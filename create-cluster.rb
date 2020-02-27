@@ -50,10 +50,7 @@ def main(options)
 
   check_prerequisites(cluster_name)
 
-  puts "I have #{gitcrypt_unlock.inspect}"
   execute "git-crypt unlock" if gitcrypt_unlock == true
-
-  exit 1
 
   create_vpc(vpc_name)
   create_cluster(cluster_name, cluster_size, vpc_name)
