@@ -23,7 +23,7 @@ terraform_components() {
     # prometheus_operator often fails to delete cleanly if anything has
     # happened to the open policy agent beforehand. Delete it first to
     # avoid any issues
-    terraform destroy -target helm_release.prometheus_operator -auto-approve
+    terraform destroy -target module.prometheus -auto-approve
     terraform destroy -auto-approve
   )
 }
