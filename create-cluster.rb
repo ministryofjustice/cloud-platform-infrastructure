@@ -15,7 +15,7 @@ CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
 
 REQUIRED_ENV_VARS = %w[AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE]
 REQUIRED_EXECUTABLES = %w[git-crypt terraform helm aws kops ssh-keygen]
-REQUIRED_AWS_PROFILES = %w[moj-cp moj-dsd]
+REQUIRED_AWS_PROFILES = %w[moj-cp]
 
 # Cluster sizes. Currently, this only alters the instance types used for the master & worker nodes,
 # not the number of nodes which will be created.
@@ -43,13 +43,17 @@ def main(options)
   cluster_name = options[:cluster_name]
   cluster_size = options[:cluster_size]
   vpc_name = options[:vpc_name]
+  gitcrypt_unlock = options[:gitcrypt_unlock]
 
   vpc_name = cluster_name if vpc_name.nil?
   usage if cluster_name.nil? || cluster_size.nil?
 
   check_prerequisites(cluster_name)
 
-  execute "git-crypt unlock"
+  puts "I have #{gitcrypt_unlock.inspect}"
+  execute "git-crypt unlock" if gitcrypt_unlock == true
+
+  exit 1
 
   create_vpc(vpc_name)
   create_cluster(cluster_name, cluster_size, vpc_name)
@@ -194,8 +198,6 @@ def check_terraform_auth0
     unless Dir["#{ENV.fetch("HOME")}/.terraform.d/plugins/**/**"].grep(/auth0/).any?
 end
 
-# cluster is built in moj-cp, but cert-manager and external-dns need
-# credentials for moj-dsd
 def check_aws_profiles
   creds = File.read("#{ENV.fetch("HOME")}/.aws/credentials").split("\n")
   REQUIRED_AWS_PROFILES.each do |profile|
@@ -256,7 +258,7 @@ def run_integration_tests(cluster_name)
 end
 
 def parse_options
-  options = {cluster_size: SMALL}
+  options = {cluster_size: SMALL, gitcrypt_unlock: true}
 
   OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
@@ -265,6 +267,10 @@ def parse_options
 
     opts.on("-v", "--vpc-name VPC-NAME", "VPC where to deploy the test cluster") do |name|
       options[:vpc_name] = name
+    end
+
+    opts.on("-g", "--no-gitcrypt", "Avoid the execution of git-crypt unlock (example: pipeline tools might do that for you)") do |name|
+      options[:gitcrypt_unlock] = false
     end
 
     opts.on("-s", "--size CLUSTER-SIZE", [SMALL, MEDIUM, PRODUCTION], "Cluster size (#{SMALL} | #{MEDIUM} | #{PRODUCTION})") do |size|
