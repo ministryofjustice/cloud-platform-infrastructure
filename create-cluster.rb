@@ -44,6 +44,8 @@ def main(options)
   cluster_size = options[:cluster_size]
   vpc_name = options[:vpc_name]
   gitcrypt_unlock = options[:gitcrypt_unlock]
+  extra_wait = options[:extra_wait]
+  
 
   vpc_name = cluster_name if vpc_name.nil?
   usage if cluster_name.nil? || cluster_size.nil?
@@ -55,7 +57,7 @@ def main(options)
   create_vpc(vpc_name)
   create_cluster(cluster_name, cluster_size, vpc_name)
   run_kops(cluster_name)
-  sleep(600)
+  sleep(extra_wait) unless extra_wait.nil?
   install_components(cluster_name)
   run_integration_tests(cluster_name)
 
@@ -269,6 +271,10 @@ def parse_options
 
     opts.on("-g", "--no-gitcrypt", "Avoid the execution of git-crypt unlock (example: pipeline tools might do that for you)") do |name|
       options[:gitcrypt_unlock] = false
+    end
+
+    opts.on("-t", "--extra-wait N", Float, "The time between kops validate and deploy of components. We need to wait for DNS propagation") do |n|
+      options[:extra_wait] = n
     end
 
     opts.on("-s", "--size CLUSTER-SIZE", [SMALL, MEDIUM, PRODUCTION], "Cluster size (#{SMALL} | #{MEDIUM} | #{PRODUCTION})") do |size|
