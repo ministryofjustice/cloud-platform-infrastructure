@@ -52,14 +52,14 @@ def main(options)
 
   check_prerequisites(cluster_name)
 
-  execute "git-crypt unlock" if gitcrypt_unlock == true
+  execute "git-crypt unlock" if gitcrypt_unlock]
 
   create_vpc(vpc_name)
   create_cluster(cluster_name, cluster_size, vpc_name)
   run_kops(cluster_name)
-  sleep(extra_wait) unless extra_wait.nil?
+  sleep(extra_wait) unless extra_wait
   install_components(cluster_name)
-  run_integration_tests(cluster_name) if integration_tests == true
+  run_integration_tests(cluster_name) if integration_tests
 
   run_and_output "kubectl cluster-info"
 end
@@ -273,7 +273,7 @@ def parse_options
       options[:gitcrypt_unlock] = false
     end
 
-    opts.on("-i", "--no-integration-test", "Avoid the execution of git-crypt unlock (example: pipeline tools might do that for you)") do |name|
+    opts.on("-i", "--no-integration-test", "Don't run integration tests after creating the cluster") do |name|
       options[:integration_tests] = false
     end
 
