@@ -44,6 +44,7 @@ def main(options)
   cluster_size = options[:cluster_size]
   vpc_name = options[:vpc_name]
   gitcrypt_unlock = options[:gitcrypt_unlock]
+  integration_tests = options[:integration_tests]
   extra_wait = options[:extra_wait]
   
 
@@ -59,7 +60,7 @@ def main(options)
   run_kops(cluster_name)
   sleep(extra_wait) unless extra_wait.nil?
   install_components(cluster_name)
-  run_integration_tests(cluster_name)
+  run_integration_tests(cluster_name) if integration_tests == true
 
   run_and_output "kubectl cluster-info"
 end
@@ -258,7 +259,7 @@ def run_integration_tests(cluster_name)
 end
 
 def parse_options
-  options = {cluster_size: SMALL, gitcrypt_unlock: true}
+  options = {cluster_size: SMALL, gitcrypt_unlock: true, integration_tests: true}
 
   OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
@@ -272,6 +273,11 @@ def parse_options
     opts.on("-g", "--no-gitcrypt", "Avoid the execution of git-crypt unlock (example: pipeline tools might do that for you)") do |name|
       options[:gitcrypt_unlock] = false
     end
+
+    opts.on("-i", "--no-integration-test", "Avoid the execution of git-crypt unlock (example: pipeline tools might do that for you)") do |name|
+      options[:integration_tests] = false
+    end
+
 
     opts.on("-t", "--extra-wait N", Float, "The time between kops validate and deploy of components. We need to wait for DNS propagation") do |n|
       options[:extra_wait] = n
