@@ -27,16 +27,16 @@ PRODUCTION = "production"
 MACHINE_TYPES = {
   SMALL => {
     "master_node_machine_type" => "c4.large",
-    "worker_node_machine_type" => "r5.large",
+    "worker_node_machine_type" => "r5.large"
   },
   MEDIUM => {
     "master_node_machine_type" => "c4.2xlarge",
-    "worker_node_machine_type" => "r5.xlarge",
+    "worker_node_machine_type" => "r5.xlarge"
   },
   PRODUCTION => {
     "master_node_machine_type" => "c4.4xlarge",
-    "worker_node_machine_type" => "r5.xlarge",
-  },
+    "worker_node_machine_type" => "r5.xlarge"
+  }
 }
 
 def main(options)
@@ -46,7 +46,6 @@ def main(options)
   gitcrypt_unlock = options[:gitcrypt_unlock]
   integration_tests = options[:integration_tests]
   extra_wait = options[:extra_wait]
-  
 
   vpc_name = cluster_name if vpc_name.nil?
   usage if cluster_name.nil? || cluster_size.nil?
@@ -72,7 +71,7 @@ def create_vpc(vpc_name)
 
   tf_apply = [
     "terraform apply",
-    "-auto-approve",
+    "-auto-approve"
   ].join(" ")
 
   run_and_output "cd #{dir}; #{tf_apply}"
@@ -91,7 +90,7 @@ def create_cluster(cluster_name, cluster_size, vpc_name)
     "-var master_node_machine_type=#{master_node_machine_type}",
     "-var worker_node_machine_type=#{worker_node_machine_type}",
     *("-var vpc_name=\"#{vpc_name}\"" if vpc_name),
-    "-auto-approve",
+    "-auto-approve"
   ].join(" ")
 
   run_and_output "cd #{dir}; #{tf_apply}"
@@ -252,7 +251,7 @@ def run_integration_tests(cluster_name)
     "cd #{dir}",
     "bundle binstubs bundler --force --path /usr/local/bin",
     "bundle binstubs rspec-core --path /usr/local/bin",
-    "rspec --tag ~cluster:live-1 --format progress --format documentation --out #{output}",
+    "rspec --tag ~cluster:live-1 --format progress --format documentation --out #{output}"
   ].join("; ")
 
   run_and_output(cmd)
@@ -277,7 +276,6 @@ def parse_options
     opts.on("-i", "--no-integration-test", "Avoid the execution of git-crypt unlock (example: pipeline tools might do that for you)") do |name|
       options[:integration_tests] = false
     end
-
 
     opts.on("-t", "--extra-wait N", Float, "The time between kops validate and deploy of components. We need to wait for DNS propagation") do |n|
       options[:extra_wait] = n
