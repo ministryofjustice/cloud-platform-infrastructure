@@ -55,6 +55,7 @@ def main(options)
   create_vpc(vpc_name)
   create_cluster(cluster_name, cluster_size, vpc_name)
   run_kops(cluster_name)
+  sleep(300)
   install_components(cluster_name)
   run_integration_tests(cluster_name)
 
