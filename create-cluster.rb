@@ -15,7 +15,7 @@ CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
 
 REQUIRED_ENV_VARS = %w[AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE]
 REQUIRED_EXECUTABLES = %w[git-crypt terraform helm aws kops ssh-keygen]
-REQUIRED_AWS_PROFILES = %w[moj-cp moj-dsd]
+REQUIRED_AWS_PROFILES = %w[moj-cp]
 
 # Cluster sizes. Currently, this only alters the instance types used for the master & worker nodes,
 # not the number of nodes which will be created.
@@ -27,35 +27,39 @@ PRODUCTION = "production"
 MACHINE_TYPES = {
   SMALL => {
     "master_node_machine_type" => "c4.large",
-    "worker_node_machine_type" => "r5.large",
+    "worker_node_machine_type" => "r5.large"
   },
   MEDIUM => {
     "master_node_machine_type" => "c4.2xlarge",
-    "worker_node_machine_type" => "r5.xlarge",
+    "worker_node_machine_type" => "r5.xlarge"
   },
   PRODUCTION => {
     "master_node_machine_type" => "c4.4xlarge",
-    "worker_node_machine_type" => "r5.xlarge",
-  },
+    "worker_node_machine_type" => "r5.xlarge"
+  }
 }
 
 def main(options)
   cluster_name = options[:cluster_name]
   cluster_size = options[:cluster_size]
   vpc_name = options[:vpc_name]
+  gitcrypt_unlock = options[:gitcrypt_unlock]
+  integration_tests = options[:integration_tests]
+  extra_wait = options[:extra_wait]
 
   vpc_name = cluster_name if vpc_name.nil?
   usage if cluster_name.nil? || cluster_size.nil?
 
   check_prerequisites(cluster_name)
 
-  execute "git-crypt unlock"
+  execute "git-crypt unlock" if gitcrypt_unlock
 
   create_vpc(vpc_name)
   create_cluster(cluster_name, cluster_size, vpc_name)
   run_kops(cluster_name)
+  sleep(extra_wait) unless extra_wait
   install_components(cluster_name)
-  run_integration_tests(cluster_name)
+  run_integration_tests(cluster_name) if integration_tests
 
   run_and_output "kubectl cluster-info"
 end
@@ -67,7 +71,7 @@ def create_vpc(vpc_name)
 
   tf_apply = [
     "terraform apply",
-    "-auto-approve",
+    "-auto-approve"
   ].join(" ")
 
   run_and_output "cd #{dir}; #{tf_apply}"
@@ -86,7 +90,7 @@ def create_cluster(cluster_name, cluster_size, vpc_name)
     "-var master_node_machine_type=#{master_node_machine_type}",
     "-var worker_node_machine_type=#{worker_node_machine_type}",
     *("-var vpc_name=\"#{vpc_name}\"" if vpc_name),
-    "-auto-approve",
+    "-auto-approve"
   ].join(" ")
 
   run_and_output "cd #{dir}; #{tf_apply}"
@@ -194,8 +198,6 @@ def check_terraform_auth0
     unless Dir["#{ENV.fetch("HOME")}/.terraform.d/plugins/**/**"].grep(/auth0/).any?
 end
 
-# cluster is built in moj-cp, but cert-manager and external-dns need
-# credentials for moj-dsd
 def check_aws_profiles
   creds = File.read("#{ENV.fetch("HOME")}/.aws/credentials").split("\n")
   REQUIRED_AWS_PROFILES.each do |profile|
@@ -249,14 +251,14 @@ def run_integration_tests(cluster_name)
     "cd #{dir}",
     "bundle binstubs bundler --force --path /usr/local/bin",
     "bundle binstubs rspec-core --path /usr/local/bin",
-    "rspec --tag ~cluster:live-1 --format progress --format documentation --out #{output}",
+    "rspec --tag ~cluster:live-1 --format progress --format documentation --out #{output}"
   ].join("; ")
 
   run_and_output(cmd)
 end
 
 def parse_options
-  options = {cluster_size: SMALL}
+  options = {cluster_size: SMALL, gitcrypt_unlock: true, integration_tests: true}
 
   OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
@@ -265,6 +267,18 @@ def parse_options
 
     opts.on("-v", "--vpc-name VPC-NAME", "VPC where to deploy the test cluster") do |name|
       options[:vpc_name] = name
+    end
+
+    opts.on("-g", "--no-gitcrypt", "Avoid the execution of git-crypt unlock (example: pipeline tools might do that for you)") do |name|
+      options[:gitcrypt_unlock] = false
+    end
+
+    opts.on("-i", "--no-integration-test", "Don't run integration tests after creating the cluster") do |name|
+      options[:integration_tests] = false
+    end
+
+    opts.on("-t", "--extra-wait N", Float, "The time between kops validate and deploy of components. We need to wait for DNS propagation") do |n|
+      options[:extra_wait] = n
     end
 
     opts.on("-s", "--size CLUSTER-SIZE", [SMALL, MEDIUM, PRODUCTION], "Cluster size (#{SMALL} | #{MEDIUM} | #{PRODUCTION})") do |size|
