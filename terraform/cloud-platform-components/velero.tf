@@ -88,6 +88,7 @@ resource "helm_release" "velero" {
 
   depends_on = [
     kubernetes_namespace.velero,
+    module.prometheus.helm_prometheus_operator_status,
     aws_iam_role.velero,
     aws_iam_role_policy.velero,
   ]

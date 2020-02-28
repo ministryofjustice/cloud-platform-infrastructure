@@ -1,6 +1,6 @@
 # Cloud Platform - EKS Cluster
 
-This README describes the main infrastructure components required to deliver a production-ready EKS cluster. Terraform is used as a main tool to bootstrap the infrastructure layer and EKS clusters. This terraform code requires you already have a VPC provisioned (go to [`terraform/cloud-platform-network/` folder for more info](https://github.com/ministryofjustice/cloud-platform-infrastructure/tree/master/terraform/cloud-platform-network)). If no VPC is provided it'll look for a VPC named as your terraform workspace 
+This README describes the main infrastructure components required to deliver a production-ready EKS cluster. Terraform is used as a main tool to bootstrap the infrastructure layer and EKS clusters. This terraform code requires you already have a VPC provisioned (go to [`terraform/cloud-platform-network/` folder for more info](https://github.com/ministryofjustice/cloud-platform-infrastructure/tree/master/terraform/cloud-platform-network)). If no VPC is provided it'll look for a VPC named as your terraform workspace
 
 **IMPORTANT:** All cluster's names **must be globally unique**, each of them (EKS or kOps, doesn't matter) creates a Route53 hostzone which is unique
 
@@ -16,7 +16,7 @@ This README describes the main infrastructure components required to deliver a p
 - Terraform >= 12
 - [aws-iam-authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-- [Helm <= 2.14.3](https://github.com/helm/helm/releases/tag/v2.14.3) 
+- [Helm <= 2.14.3](https://github.com/helm/helm/releases/tag/v2.14.3)
 - Ensure you have `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` exported
 
 ## What it contains?
@@ -31,9 +31,9 @@ Within `main.tf` you'll find creation of:
 - Bastion: It calls the bastion module which creates a bastion instance inside a VPC that will grant access to internal subnets to the members of the team. You can use this host to ssh onto your worker nodes.
 - etc
 
-### EKS (`eks.tf`)
+### EKS (`cluster.tf`)
 
-`eks.tf` holds the EKS definition, it is being used the official EKS module. Inside this file you'll specify workers, IAM permissions, etc. 
+`cluster.tf` holds the EKS definition, it is being used the official EKS module. Inside this file you'll specify workers, IAM permissions, etc.
 
 **NOTE**: Default cluster size is **21** nodes and default worker node types are **r5.2xlarge**. If you are just playing around or testing a feature it doesn't make sense to have these specs, please change them.
 

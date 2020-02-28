@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "Prometheus Rules" do
+describe "Prometheus Rules", speed: "fast" do
   specify "expected in all clusters" do
     names = get_prometheus_rules.map { |set| set.dig("metadata", "name") }.sort
 

@@ -3,3 +3,4 @@ iplist.txt filter=git-crypt diff=git-crypt
 
 # The EKS kubeconfig files
 terraform/cloud-platform-eks/files/* filter=git-crypt diff=git-crypt
+terraform/cloud-platform-eks/cluster.tf filter=git-crypt diff=git-crypt

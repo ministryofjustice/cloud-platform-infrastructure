@@ -177,7 +177,7 @@ resource "null_resource" "cert_manager_issuers" {
 
 resource "null_resource" "cert_manager_monitoring" {
   depends_on = [
-    helm_release.prometheus_operator,
+    module.prometheus.helm_prometheus_operator_status,
     helm_release.cert-manager,
   ]
 

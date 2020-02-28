@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "Prometheus" do
+describe "Prometheus", speed: "fast" do
   specify "expected Prometheus resource" do
     names = get_prometheuses.map { |set| set.dig("metadata", "name") }.sort
     expected = [

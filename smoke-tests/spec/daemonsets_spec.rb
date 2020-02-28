@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "daemonsets" do
+describe "daemonsets", speed: "fast" do
   let(:worker_ips) { node_ips worker_nodes }
   let(:master_ips) { node_ips master_nodes }
   let(:all_node_ips) { node_ips(get_nodes) }
@@ -90,6 +90,13 @@ describe "daemonsets" do
 
     specify "all containers are running" do
       expect(all_containers_running?(pods)).to eq(true)
+    end
+  end
+
+  context "calico-kube-controllers" do
+    specify "there can be only one" do
+      pods = get_running_app_pods("kube-system", "calico-kube-controllers", "k8s-app")
+      expect(pods.size).to eq(1)
     end
   end
 end
