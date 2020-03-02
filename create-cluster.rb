@@ -258,7 +258,7 @@ def run_integration_tests(cluster_name)
 end
 
 def parse_options
-  options = {cluster_size: SMALL, gitcrypt_unlock: true, integration_tests: true}
+  options = {cluster_size: SMALL, gitcrypt_unlock: true, integration_tests: true, extra_wait: 0}
 
   OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
