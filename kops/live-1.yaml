@@ -241,7 +241,7 @@ spec:
     - ResourceQuota
     - PodSecurityPolicy
     featureGates:
-        TTLAfterFinished: "true"
+      TTLAfterFinished: "true"
   kubeControllerManager:
     featureGates:
       TTLAfterFinished: "true"
