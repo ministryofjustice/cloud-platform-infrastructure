@@ -397,7 +397,7 @@ spec:
   minSize: ${cluster_node_count}
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: nodes-r52xl
+    kops.k8s.io/instancegroup: nodes-1.14.10
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
