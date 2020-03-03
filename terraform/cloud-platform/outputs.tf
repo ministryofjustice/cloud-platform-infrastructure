@@ -59,7 +59,8 @@ output "oidc_kubernetes_client_id" {
 }
 
 output "oidc_kubernetes_client_secret" {
-  value = auth0_client.kubernetes.client_secret
+  value     = auth0_client.kubernetes.client_secret
+  sensitive = true
 }
 
 output "oidc_components_client_id" {
@@ -67,7 +68,8 @@ output "oidc_components_client_id" {
 }
 
 output "oidc_components_client_secret" {
-  value = auth0_client.components.client_secret
+  value     = auth0_client.components.client_secret
+  sensitive = true
 }
 
 output "certificate_arn" {
