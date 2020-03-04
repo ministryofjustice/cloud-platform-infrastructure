@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-container
+  template:
+    metadata:
+      labels:
+        app: postgres-container
+        tier: backend
+    spec:
+      containers:
+        - name: postgres-container
+          image: bitnami/postgresql:latest
+          env:
+            - name: POSTGRES_USER
+              value: ${postgres_user}
+
+            - name: POSTGRES_PASSWORD
+              value: ${postgres_password}
+
+            - name: POSTGRES_DB
+              value: multi_container_demo_app
+
+          ports:
+            - containerPort: 5432
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: multi-container-demo-postgres
+spec:
+  selector:
+    app: postgres-container
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432

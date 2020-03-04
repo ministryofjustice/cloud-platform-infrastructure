@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: helloworld-rubyapp
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: helloworld-rubyapp
+    spec:
+      containers:
+      - name: rubyapp
+        image: ministryofjustice/cloud-platform-helloworld-ruby:1.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 4567
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: helloworld-rubyapp-ingress
+spec:
+  tls:
+  - hosts:
+    - ${helloworld-rubyapp-ingress}
+  rules:
+  - host: ${helloworld-rubyapp-ingress}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rubyapp-service
+          servicePort: 4567
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rubyapp-service
+  labels:
+    app: rubyapp-service
+spec:
+  ports:
+  - port: 4567
+    name: http
+    targetPort: 4567
+  selector:
+    app: helloworld-rubyapp
