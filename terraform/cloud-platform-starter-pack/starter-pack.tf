@@ -50,7 +50,7 @@ resource "random_id" "password" {
 
 resource "kubernetes_secret" "postgres_secrets" {
   metadata {
-    name = "postgres-credentials"
+    name      = "postgres-credentials"
     namespace = kubernetes_namespace.starter-pack.id
   }
 
@@ -65,7 +65,7 @@ resource "kubernetes_secret" "postgres_secrets" {
 data "template_file" "postgres_deploy" {
   template = "${file("${path.module}/templates/multi-container-app/pg-deploy.yaml")}"
   vars = {
-    postgres_user = kubernetes_secret.postgres_secrets.data.user
+    postgres_user     = kubernetes_secret.postgres_secrets.data.user
     postgres_password = kubernetes_secret.postgres_secrets.data.password
   }
 }
