@@ -20,7 +20,7 @@ describe "Prometheus Rules", speed: "fast" do
       "prometheus-operator-node.rules",
       "prometheus-operator-prometheus-operator",
       "prometheus-operator-prometheus",
-      "fluentd-es",
+      "fluentd-es"
     ]
     expect(names).to include(*expected)
   end
@@ -29,7 +29,7 @@ describe "Prometheus Rules", speed: "fast" do
     names = get_prometheus_rules.map { |set| set.dig("metadata", "name") }.sort
 
     expected = [
-      "prometheus-custom-alerts-ecr-exporter",
+      "prometheus-custom-alerts-ecr-exporter"
     ]
     expect(names).to include(*expected)
   end
