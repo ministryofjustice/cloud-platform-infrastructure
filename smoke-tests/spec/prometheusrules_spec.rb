@@ -10,8 +10,6 @@ describe "Prometheus Rules", speed: "fast" do
       "prometheus-operator-etcd",
       "prometheus-operator-k8s.rules",
       "prometheus-operator-kube-apiserver.rules",
-      "prometheus-operator-kube-prometheus-node-alerting.rules",
-      "prometheus-operator-kube-prometheus-node-recording.rules",
       "prometheus-operator-kube-scheduler.rules",
       "prometheus-operator-kubernetes-absent",
       "prometheus-operator-kubernetes-resources",
