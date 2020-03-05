@@ -20,6 +20,13 @@ describe "Prometheus Rules", speed: "fast" do
       "prometheus-operator-node.rules",
       "prometheus-operator-prometheus-operator",
       "prometheus-operator-prometheus",
+      "prometheus-operator-kube-apiserver-error",
+      "prometheus-operator-kubernetes-system-scheduler",
+      "prometheus-operator-node-exporter.rules",
+      "prometheus-operator-kubernetes-system-controller-manager",
+      "prometheus-operator-kubernetes-system-apiserver",
+      "prometheus-operator-kubernetes-system-kubelet",
+      "prometheus-operator-node-exporter",
       "fluentd-es"
     ]
     expect(names).to include(*expected)
