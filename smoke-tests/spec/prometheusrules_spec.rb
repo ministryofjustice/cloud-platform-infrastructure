@@ -6,7 +6,6 @@ describe "Prometheus Rules", speed: "fast" do
 
     expected = [
       "prometheus-operator-alertmanager.rules",
-      "prometheus-operator-custom-alerts-node.rules",
       "prometheus-operator-custom-kubernetes-apps.rules",
       "prometheus-operator-etcd",
       "prometheus-operator-k8s.rules",
@@ -20,7 +19,7 @@ describe "Prometheus Rules", speed: "fast" do
       "prometheus-operator-kubernetes-system",
       "prometheus-operator-node.rules",
       "prometheus-operator-prometheus-operator",
-      "prometheus-operator-prometheus.rules",
+      "prometheus-operator-prometheus",
       "fluentd-es",
     ]
     expect(names).to include(*expected)
