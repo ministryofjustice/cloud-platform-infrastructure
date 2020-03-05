@@ -1,0 +1,120 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: content-api
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: content-api
+    spec:
+      containers:
+      - name: content-api
+        image: ministryofjustice/cloud-platform-multi-container-demo-app:content-api-1.4
+        ports:
+        - containerPort: 4567
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: content-api-service
+  labels:
+    app: content-api-service
+spec:
+  ports:
+  - port: 4567
+    name: http
+    targetPort: 4567
+  selector:
+    app: content-api
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rails-app
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rails-app
+    spec:
+      containers:
+      - name: rails-app
+        image: ministryofjustice/cloud-platform-multi-container-demo-app:rails-app-1.4
+        ports:
+        - containerPort: 3000
+        env:
+          - name: DATABASE_URL
+            value: ${postgres-url}
+          - name: CONTENT_API_URL
+            value: "http://content-api-service:4567/image_url.json"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rails-app-service
+  labels:
+    app: rails-app-service
+spec:
+  ports:
+  - port: 3000
+    name: http
+    targetPort: 3000
+  selector:
+    app: rails-app
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rails-migrations
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      containers:
+      - name: rails-app
+        image: ministryofjustice/cloud-platform-multi-container-demo-app:rails-app-1.4
+        command: [ "bundle", "exec", "rails", "db:migrate" ]
+        env:
+          - name: DATABASE_URL
+            value: ${postgres-url}
+      restartPolicy: OnFailure
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      containers:
+      - name: worker
+        image: ministryofjustice/cloud-platform-multi-container-demo-app:worker-1.4
+        ports:
+        - containerPort: 4567
+        env:
+          - name: DATABASE_URL
+            value: ${postgres-url}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: multi-container-app
+spec:
+  tls:
+  - hosts:
+    - ${multi-container-app-ingress}
+  rules:
+  - host: ${multi-container-app-ingress}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: rails-app-service
+          servicePort: 3000
