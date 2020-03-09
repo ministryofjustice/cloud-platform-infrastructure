@@ -27,7 +27,7 @@ describe "nginx ingress" do
         namespace: namespace,
         host: host,
         file: "spec/fixtures/helloworld-deployment.yaml.erb",
-        binding: binding,
+        binding: binding
       )
 
       wait_for(namespace, "ingress", "integration-test-app-ing")
@@ -46,7 +46,7 @@ describe "nginx ingress" do
         namespace: namespace,
         host: host,
         file: "spec/fixtures/invalid-nginx-syntax.yaml.erb",
-        binding: binding,
+        binding: binding
       )
       expect(stderr_str).to match(/admission webhook "validate.nginx.ingress.kubernetes.io" denied the request/)
     end
