@@ -20,7 +20,7 @@ provider "aws" {
 
 provider "kubernetes" {
   config_path = "../files/kubeconfig_${terraform.workspace}"
-  version = "v1.10.0"
+  version     = "v1.10.0"
 }
 
 provider "helm" {
