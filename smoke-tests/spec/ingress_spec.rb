@@ -40,7 +40,7 @@ describe "nginx ingress" do
     end
   end
 
-  xcontext "when ingress is deployed with invalid syntax" do
+  context "when ingress is deployed with invalid syntax" do
     it "is rejected by the admission webhook" do
       stdout_str, stderr_str, status = apply_template_file(
         namespace: namespace,
