@@ -273,7 +273,6 @@ def deploy_starter_pack(cluster_name)
   end
 end
 
-
 def parse_options
   options = {cluster_size: SMALL, gitcrypt_unlock: true, integration_tests: true, extra_wait: 0, starter_pack: true}
 
