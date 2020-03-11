@@ -46,7 +46,7 @@ def main(options)
   gitcrypt_unlock = options[:gitcrypt_unlock]
   integration_tests = options[:integration_tests]
   extra_wait = options[:extra_wait]
-  starter_pack = options[:starter-pack]
+  starter_pack = options[:starter_pack]
 
   vpc_name = cluster_name if vpc_name.nil?
   usage if cluster_name.nil? || cluster_size.nil?
@@ -302,7 +302,7 @@ def parse_options
       options[:cluster_size] = size
     end
 
-    opts.on("-sp", "--no-starter-pack", "Don't deploy starter-pack apps after creating the cluster") do |name|
+    opts.on("-d", "--no-starter-pack", "Don't deploy starter-pack apps after creating the cluster") do |name|
       options[:starter_pack] = false
     end
 
