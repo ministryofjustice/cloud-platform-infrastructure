@@ -46,7 +46,7 @@ def main(options)
   gitcrypt_unlock = options[:gitcrypt_unlock]
   integration_tests = options[:integration_tests]
   extra_wait = options[:extra_wait]
-  starter_pack = options[:starter-pack]
+  starter_pack = options[:starter - pack]
 
   vpc_name = cluster_name if vpc_name.nil?
   usage if cluster_name.nil? || cluster_size.nil?
@@ -272,7 +272,6 @@ def deploy_starter_pack(cluster_name)
     exit 1
   end
 end
-
 
 def parse_options
   options = {cluster_size: SMALL, gitcrypt_unlock: true, integration_tests: true, extra_wait: 0, starter_pack: true}
