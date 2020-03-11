@@ -260,7 +260,7 @@ def run_integration_tests(cluster_name)
 end
 
 def deploy_starter_pack(cluster_name)
-  dir = "cloud-platform-starter-pack/"
+  dir = "terraform/cloud-platform-starter-pack/"
   execute "cd #{dir}; rm -rf .terraform"
   switch_terraform_workspace(dir, cluster_name)
 
