@@ -302,7 +302,7 @@ def parse_options
       options[:cluster_size] = size
     end
 
-    opts.on("-s", "--no-starter-pack", "Don't deploy starter-pack apps after creating the cluster") do |name|
+    opts.on("-i", "--no-starter-pack", "Don't deploy starter-pack apps after creating the cluster") do |name|
       options[:starter_pack] = false
     end
 
