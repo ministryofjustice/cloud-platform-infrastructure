@@ -19,16 +19,12 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  config_path = "../files/kubeconfig_${terraform.workspace}"
   version     = "v1.10.0"
 }
 
 provider "helm" {
   version         = "0.10.4"
   service_account = "tiller"
-  kubernetes {
-    config_path = "../files/kubeconfig_${terraform.workspace}"
-  }
 }
 
 ###############
