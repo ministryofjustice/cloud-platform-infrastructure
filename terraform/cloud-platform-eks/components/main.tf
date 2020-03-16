@@ -19,7 +19,7 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  version     = "v1.10.0"
+  version = "v1.10.0"
 }
 
 provider "helm" {
