@@ -44,16 +44,18 @@ $ terraform init
 $ terraform workspace select/new <clusterName>
 ```
 
-Now it is time to apply changes, you have two choices:
-
-1. Create (or copy from a exiting one) a *tf-var* file within `vars/${TerraformWorkspace}.tfvars` and apply terraform:
+Now it is time to apply changes:
 
 ```console
-$ terraform apply -var-file="vars/$(terraform workspace show).tfvars"
+$ terraform apply -var="vpc_name=$VPC_NAME"
 ```
 
-2. Set variables as terraform variables:
+**NOTE**: Don't forget to set the `vpc_name` variable, if you want to increase the number of nodes and machine type use: `cluster_node_count` and `worker_node_machine_type`
+
+## How to access the cluster
+
+In order to access the cluster and generate your kubeconfig file you must use the AWS-CLI as follows:
 
 ```console
-$ terraform apply -var cluster_node_count=4 -var worker_node_machine_type=m4.large -var vpc_name="mogaal-eks"
+aws eks --region eu-west-2 update-kubeconfig --name mogaal-eks
 ```
