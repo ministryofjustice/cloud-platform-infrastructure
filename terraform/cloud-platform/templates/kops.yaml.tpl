@@ -411,3 +411,38 @@ spec:
   - eu-west-2a
   - eu-west-2b
   - eu-west-2c
+
+%{ if enable_large_nodesgroup }
+
+---
+
+apiVersion: kops/v1alpha2
+kind: InstanceGroup
+metadata:
+  creationTimestamp: null
+  labels:
+    kops.k8s.io/cluster: ${cluster_domain_name}
+  name: 2xlarge-nodes-1.14.10
+spec:
+  image: kope.io/k8s-1.14-debian-stretch-amd64-hvm-ebs-2020-01-17
+  machineType: r5.2xlarge
+  maxSize: 2
+  minSize: 1
+  rootVolumeSize: 256
+  nodeLabels:
+    kops.k8s.io/instancegroup: 2xlarge-nodes-1.14.10
+  cloudLabels:
+    application: moj-cloud-platform
+    business-unit: platforms
+    is-production: "true"
+    k8s.io/cluster/${cluster_domain_name}: ""
+    role: node
+    owner: cloud-platform:platforms@digital.justice.gov.uk
+    source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
+  role: Node
+  subnets:
+  - eu-west-2a
+  - eu-west-2b
+  - eu-west-2c
+
+%{ endif }
