@@ -3,6 +3,9 @@
 variable "aws_region" {
 }
 
+variable "aws_region-london" {
+}
+
 variable "integration_key" {
 }
 
@@ -21,13 +24,10 @@ variable "aws_master_account_id" {
 variable "aws_master_profile" {
 }
 
-variable "aws_member_account_id" {
+variable "aws_master-london_account_id" {
 }
 
-variable "aws_member_profile" {
-}
-
-variable "member_email" {
+variable "aws_master-london_profile" {
 }
 
 variable "aws_member1_account_id" {
@@ -66,14 +66,14 @@ variable "aws_member4_profile" {
 variable "member4_email" {
 }
 
-variable "aws_member5_account_id" {
-}
+#variable "aws_member5_account_id" {
+#}
 
-variable "aws_member5_profile" {
-}
+#variable "aws_member5_profile" {
+#}
 
-variable "member5_email" {
-}
+#variable "member5_email" {
+#}
 
 variable "aws_member6_account_id" {
 }
