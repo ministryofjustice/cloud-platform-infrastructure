@@ -1,5 +1,20 @@
 # -----------------------------------------------------------
 # enable guard duty
+# London - Master
+# https://eu-west-2.console.aws.amazon.com/guardduty/home?region=eu-west-2#/findings?macros=current
+# -----------------------------------------------------------
+
+resource "aws_guardduty_detector" "master-london" {
+  provider = aws.master-london
+
+  enable                       = true
+  finding_publishing_frequency = "FIFTEEN_MINUTES"
+}
+
+# -----------------------------------------------------------
+# enable guard duty
+# Ireland - Master
+# https://eu-west-1.console.aws.amazon.com/guardduty/home?region=eu-west-1#/findings?macros=current
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "guardduty" {
@@ -10,6 +25,8 @@ resource "aws_guardduty_detector" "guardduty" {
 
 # -----------------------------------------------------------
 # set up S3 bucket
+# Global
+# https://s3.console.aws.amazon.com/s3/buckets/security20190204113202786400000001/?region=eu-west-1&tab=overview
 # -----------------------------------------------------------
 
 resource "aws_s3_bucket" "security" {
@@ -49,6 +66,11 @@ resource "aws_s3_bucket_object" "ip_list" {
 
 # -----------------------------------------------------------
 # set up iam group with appropriate iam policy
+# Global
+# https://console.aws.amazon.com/iam/home?region=eu-west-2#/groups/guardduty-admin
+# https://console.aws.amazon.com/iam/home?region=eu-west-2#/roles/AWSServiceRoleForAmazonGuardDuty
+# https://console.aws.amazon.com/iam/home?region=eu-west-2#/policies/arn:aws:iam::754256621582:policy/enable-guardduty
+# https://console.aws.amazon.com/iam/home?region=eu-west-2#/policies/arn:aws:iam::754256621582:policy/security/access-security-bucket
 # -----------------------------------------------------------
 
 resource "aws_iam_policy" "enable_guardduty" {
@@ -158,6 +180,22 @@ resource "aws_iam_group_membership" "guardduty" {
 # -----------------------------------------------------------
 # set up AWS Cloudwatch Event rule for Guardduty Findings
 # also to set up an event pattern (json file)
+# London - Master
+# https://eu-west-2.console.aws.amazon.com/cloudwatch/home?region=eu-west-2#rules:name=guardduty-finding-events-london
+# -----------------------------------------------------------
+
+resource "aws_cloudwatch_event_rule" "main-london" {
+  provider      = aws.cloud-platform
+  name          = "guardduty-finding-events-london"
+  description   = "AWS GuardDuty event findings"
+  event_pattern = file("${path.module}/resources/event-pattern.json")
+}
+
+# -----------------------------------------------------------
+# set up AWS Cloudwatch Event rule for Guardduty Findings
+# also to set up an event pattern (json file)
+# Ireland - Master
+# https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1#rules:name=guardduty-finding-events 
 # -----------------------------------------------------------
 
 resource "aws_cloudwatch_event_rule" "main" {
@@ -169,6 +207,21 @@ resource "aws_cloudwatch_event_rule" "main" {
 
 # -----------------------------------------------------------
 # set up AWS Cloudwatch Event to target an sns topic for above event rule
+# London  - Master
+# https://eu-west-2.console.aws.amazon.com/cloudwatch/home?region=eu-west-2#rules:name=guardduty-finding-events-london
+# -----------------------------------------------------------
+
+resource "aws_cloudwatch_event_target" "main-london" {
+  provider  = aws.cloud-platform
+  rule      = aws_cloudwatch_event_rule.main-london.name
+  target_id = "send-to-sns"
+  arn       = aws_sns_topic.GuardDuty-notifications-london.arn
+}
+
+# -----------------------------------------------------------
+# set up AWS Cloudwatch Event to target an sns topic for above event rule
+# Ireland - Master
+# https://eu-west-1.console.aws.amazon.com/cloudwatch/home?region=eu-west-1#rules:name=guardduty-finding-events
 # -----------------------------------------------------------
 
 resource "aws_cloudwatch_event_target" "main" {
@@ -180,6 +233,35 @@ resource "aws_cloudwatch_event_target" "main" {
 
 # -----------------------------------------------------------
 # set up AWS sns topic and subscription
+# London - Master
+# https://eu-west-2.console.aws.amazon.com/sns/v3/home?region=eu-west-2#/topic/arn:aws:sns:eu-west-2:754256621582:GuardDuty-notifications-london
+# https://eu-west-2.console.aws.amazon.com/sns/v3/home?region=eu-west-2#/subscriptions
+# -----------------------------------------------------------
+
+resource "aws_sns_topic" "GuardDuty-notifications-london" {
+  provider = aws.cloud-platform
+  name     = "GuardDuty-notifications-london"
+}
+
+resource "aws_sns_topic_subscription" "GuardDuty-notifications_sns_subscription-london" {
+  provider               = aws.cloud-platform
+  topic_arn              = aws_sns_topic.GuardDuty-notifications-london.arn
+  protocol               = "https"
+  endpoint               = var.endpoint
+  endpoint_auto_confirms = true
+}
+
+provider "aws" {
+  region  = var.aws_region-london
+  alias   = "master-london"
+  profile = var.aws_master-london_profile
+}
+
+# -----------------------------------------------------------
+# set up AWS sns topic and subscription
+# Ireland - Master
+# https://eu-west-1.console.aws.amazon.com/sns/v3/home?region=eu-west-1#/topic/arn:aws:sns:eu-west-1:754256621582:GuardDuty-notifications
+# https://eu-west-1.console.aws.amazon.com/sns/v3/home?region=eu-west-1#/subscriptions
 # -----------------------------------------------------------
 
 resource "aws_sns_topic" "GuardDuty-notifications" {
@@ -195,42 +277,18 @@ resource "aws_sns_topic_subscription" "GuardDuty-notifications_sns_subscription"
   endpoint_auto_confirms = true
 }
 
-# -----------------------------------------------------------
-# membership account provider
-# -----------------------------------------------------------
-
 provider "aws" {
   region  = var.aws_region
-  alias   = "member"
-  profile = var.aws_member_profile
+  alias   = "master"
+  profile = var.aws_master_profile
 }
 
-# -----------------------------------------------------------
-# membership account GuardDuty detector
-# -----------------------------------------------------------
-
-resource "aws_guardduty_detector" "member" {
-  provider = aws.member
-
-  enable                       = true
-  finding_publishing_frequency = "FIFTEEN_MINUTES"
-}
-
-# -----------------------------------------------------------
-# membership account GuardDuty member
-# -----------------------------------------------------------
-
-resource "aws_guardduty_member" "member" {
-  provider           = aws.cloud-platform-ireland
-  account_id         = aws_guardduty_detector.member.account_id
-  detector_id        = aws_guardduty_detector.guardduty.id
-  email              = var.member_email
-  invite             = true
-  invitation_message = "please accept guardduty invitation"
-}
+# All of the following are members in Ireland region
+# and can be found at https://eu-west-1.console.aws.amazon.com/guardduty/home?region=eu-west-1#/linked-accounts
 
 # -----------------------------------------------------------
 # membership1 account provider
+# Ireland
 # -----------------------------------------------------------
 
 provider "aws" {
@@ -241,6 +299,7 @@ provider "aws" {
 
 # -----------------------------------------------------------
 # membership1 account GuardDuty detector
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member1" {
@@ -252,6 +311,7 @@ resource "aws_guardduty_detector" "member1" {
 
 # -----------------------------------------------------------
 # membership1 account GuardDuty member
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member1" {
@@ -265,6 +325,7 @@ resource "aws_guardduty_member" "member1" {
 
 # -----------------------------------------------------------
 # membership2 account provider
+# Ireland
 # -----------------------------------------------------------
 
 provider "aws" {
@@ -275,6 +336,7 @@ provider "aws" {
 
 # -----------------------------------------------------------
 # membership2 account GuardDuty detector
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member2" {
@@ -286,6 +348,7 @@ resource "aws_guardduty_detector" "member2" {
 
 # -----------------------------------------------------------
 # membership2 account GuardDuty member
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member2" {
@@ -299,6 +362,7 @@ resource "aws_guardduty_member" "member2" {
 
 # -----------------------------------------------------------
 # membership3 account provider
+# Ireland
 # -----------------------------------------------------------
 
 provider "aws" {
@@ -309,6 +373,7 @@ provider "aws" {
 
 # -----------------------------------------------------------
 # membership3 account GuardDuty detector
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member3" {
@@ -320,6 +385,7 @@ resource "aws_guardduty_detector" "member3" {
 
 # -----------------------------------------------------------
 # membership3 account GuardDuty member
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member3" {
@@ -333,6 +399,7 @@ resource "aws_guardduty_member" "member3" {
 
 # -----------------------------------------------------------
 # membership4 account provider
+# Ireland
 # -----------------------------------------------------------
 
 provider "aws" {
@@ -343,6 +410,7 @@ provider "aws" {
 
 # -----------------------------------------------------------
 # membership4 account GuardDuty detector
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member4" {
@@ -354,6 +422,7 @@ resource "aws_guardduty_detector" "member4" {
 
 # -----------------------------------------------------------
 # membership4 account GuardDuty member
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member4" {
@@ -367,40 +436,44 @@ resource "aws_guardduty_member" "member4" {
 
 # -----------------------------------------------------------
 # membership5 account provider
+# Ireland
 # -----------------------------------------------------------
 
-provider "aws" {
-  region  = var.aws_region
-  alias   = "member5"
-  profile = var.aws_member5_profile
-}
+#provider "aws" {
+#  region  = var.aws_region
+#  alias   = "member5"
+#  profile = var.aws_member5_profile
+#}
 
 # -----------------------------------------------------------
 # membership5 account GuardDuty detector
+# Ireland
 # -----------------------------------------------------------
 
-resource "aws_guardduty_detector" "member5" {
-  provider = aws.member5
+#resource "aws_guardduty_detector" "member5" {
+#  provider = aws.member5
 
-  enable                       = true
-  finding_publishing_frequency = "FIFTEEN_MINUTES"
-}
+#  enable                       = true
+#  finding_publishing_frequency = "FIFTEEN_MINUTES"
+#}
 
 # -----------------------------------------------------------
 # membership5 account GuardDuty member
+# Ireland
 # -----------------------------------------------------------
 
-resource "aws_guardduty_member" "member5" {
-  provider           = aws.cloud-platform-ireland
-  account_id         = aws_guardduty_detector.member5.account_id
-  detector_id        = aws_guardduty_detector.guardduty.id
-  email              = var.member5_email
-  invite             = true
-  invitation_message = "please accept guardduty invitation"
-}
+#resource "aws_guardduty_member" "member5" {
+#  provider           = aws.cloud-platform-ireland
+#  account_id         = aws_guardduty_detector.member5.account_id
+#  detector_id        = aws_guardduty_detector.guardduty.id
+#  email              = var.member5_email
+#  invite             = true
+#  invitation_message = "please accept guardduty invitation"
+#}
 
 # -----------------------------------------------------------
 # membership6 account provider
+# Ireland
 # -----------------------------------------------------------
 
 provider "aws" {
@@ -411,6 +484,7 @@ provider "aws" {
 
 # -----------------------------------------------------------
 # membership6 account GuardDuty detector
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member6" {
@@ -422,6 +496,7 @@ resource "aws_guardduty_detector" "member6" {
 
 # -----------------------------------------------------------
 # membership6 account GuardDuty member
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member6" {
@@ -435,6 +510,7 @@ resource "aws_guardduty_member" "member6" {
 
 # -----------------------------------------------------------
 # membership7 account provider
+# Ireland
 # -----------------------------------------------------------
 
 provider "aws" {
@@ -445,6 +521,7 @@ provider "aws" {
 
 # -----------------------------------------------------------
 # membership7 account GuardDuty detector
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_detector" "member7" {
@@ -456,6 +533,7 @@ resource "aws_guardduty_detector" "member7" {
 
 # -----------------------------------------------------------
 # membership7 account GuardDuty member
+# Ireland
 # -----------------------------------------------------------
 
 resource "aws_guardduty_member" "member7" {

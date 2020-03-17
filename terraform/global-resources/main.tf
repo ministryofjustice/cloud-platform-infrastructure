@@ -17,10 +17,9 @@ provider "auth0" {
 }
 
 # default provider
-# https://mojds-platforms-integration.signin.aws.amazon.com/console
 provider "aws" {
-  region  = "eu-west-1"
-  profile = "moj-pi"
+  region  = "eu-west-2"
+  profile = "moj-cp"
 }
 
 # https://cloud-platform-aws.signin.aws.amazon.com/console
