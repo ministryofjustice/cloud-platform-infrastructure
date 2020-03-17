@@ -427,7 +427,7 @@ spec:
   image: kope.io/k8s-1.14-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: r5.2xlarge
   maxSize: 2
-  minSize: 1
+  minSize: 2
   rootVolumeSize: 256
   nodeLabels:
     kops.k8s.io/instancegroup: 2xlarge-nodes-1.14.10
@@ -443,6 +443,5 @@ spec:
   subnets:
   - eu-west-2a
   - eu-west-2b
-  - eu-west-2c
 
 %{ endif }
