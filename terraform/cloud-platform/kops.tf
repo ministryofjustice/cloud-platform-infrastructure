@@ -1,16 +1,7 @@
 resource "local_file" "kops" {
-  content  = data.template_file.kops.rendered
   filename = "../../kops/${terraform.workspace}.yaml"
-}
 
-resource "aws_kms_key" "kms" {
-  description = "Creates KMS key for etcd volume encryption"
-}
-
-data "template_file" "kops" {
-  template = file("./templates/kops.yaml.tpl")
-
-  vars = {
+  content = templatefile("${path.module}/templates/kops.yaml.tpl", {
     cluster_domain_name                  = local.cluster_base_domain_name
     cluster_node_count                   = local.is_live_cluster ? var.cluster_node_count : 3
     kops_state_store                     = data.terraform_remote_state.global.outputs.cloud_platform_kops_state
@@ -28,6 +19,11 @@ data "template_file" "kops" {
     kms_key                              = aws_kms_key.kms.arn
     worker_node_machine_type             = var.worker_node_machine_type
     master_node_machine_type             = var.master_node_machine_type
-  }
+    enable_large_nodesgroup              = var.enable_large_nodesgroup
+  })
+}
+
+resource "aws_kms_key" "kms" {
+  description = "Creates KMS key for etcd volume encryption"
 }
 

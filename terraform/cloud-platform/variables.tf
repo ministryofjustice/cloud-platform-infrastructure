@@ -41,3 +41,8 @@ variable "worker_node_machine_type" {
   default     = "r5.xlarge"
 }
 
+variable "enable_large_nodesgroup" {
+  description = "Due to Prometheus resource consumption we added a larger node groups (r5.2xlarge), this variable you enable the creation of it"
+  type        = bool
+  default     = true
+}
