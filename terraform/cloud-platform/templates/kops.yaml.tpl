@@ -397,6 +397,8 @@ spec:
   machineType: r5.2xlarge
   maxSize: 2
   minSize: 2
+  taints:
+  - monitoring-node=true:NoSchedule
   rootVolumeSize: 256
   nodeLabels:
     kops.k8s.io/instancegroup: 2xlarge-nodes-1.14.10
