@@ -79,7 +79,8 @@ def node_ready?(node)
 end
 
 def worker_node?(node)
-  node.dig("metadata", "labels")["kubernetes.io/role"] == "node"
+  node.dig("metadata", "labels")["kubernetes.io/role"] == "node" \
+    && node.dig("metadata", "labels", "kops.k8s.io/instancegroup") == WORKER_NODE_INSTANCEGROUP
 end
 
 def get_worker_instance_group_size
