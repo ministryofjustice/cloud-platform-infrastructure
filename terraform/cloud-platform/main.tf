@@ -205,6 +205,11 @@ resource "auth0_client" "components" {
       "https://kibana-audit.%s/oauth2/callback",
       local.services_base_domain,
     ),
+    #This call back is for kibana in dsd account.
+    format(
+      "https://dsd-kibana.apps.live-1.%s/oauth2/callback",
+      local.services_base_domain,
+    ),
     format(
       "https://grafana.%s/login/generic_oauth",
       local.services_base_domain,
