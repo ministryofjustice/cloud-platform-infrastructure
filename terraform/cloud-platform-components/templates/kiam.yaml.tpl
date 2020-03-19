@@ -13,11 +13,11 @@ agent:
     port: 8181
     interface: cali+
 
-  ## Node labels for pod assignment
-  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
-  nodeSelector:
-    # kubernetes.io/role: node
+  tolerations:
+    - key: "monitoring-node"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
 
   ## Additional container hostPath mounts
   ##
