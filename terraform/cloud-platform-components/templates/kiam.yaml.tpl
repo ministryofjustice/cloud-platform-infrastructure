@@ -6,6 +6,12 @@ agent:
 
   gatewayTimeoutCreation: 5000ms
 
+  tolerations:
+    - key: "monitoring-node"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+
   ## Host networking settings
   ##
   host:
@@ -51,7 +57,12 @@ server:
   ## Pod tolerations
   ## Ref https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
-  tolerations: []
+  tolerations:
+    - key: "monitoring-node"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
+
   # - key: node-role.kubernetes.io/master
   #   effect: NoSchedule
 
