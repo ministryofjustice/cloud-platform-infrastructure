@@ -421,6 +421,8 @@ spec:
     owner: cloud-platform:platforms@digital.justice.gov.uk
     source-code: https://github.com/ministryofjustice/cloud-platform-infrastructure
   role: Node
+  taints:
+  - monitoring-node=true:NoSchedule
   subnets:
   - eu-west-2a
   - eu-west-2b
