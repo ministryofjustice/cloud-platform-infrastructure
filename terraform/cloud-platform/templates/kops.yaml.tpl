@@ -412,7 +412,6 @@ spec:
   taints:
   - monitoring-node=true:NoSchedule
   subnets:
-  - eu-west-2a
   - eu-west-2b
 
 %{ endif }
