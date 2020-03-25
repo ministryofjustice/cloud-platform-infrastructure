@@ -34,7 +34,7 @@ def terraform_base
   dir = "terraform/cloud-platform"
   tf_init dir
   tf_workspace_select(dir, CLUSTER)
-  execute %[cd #{dir}; terraform destroy -var vpc_name="#{VPC_NAME}" -auto-approve]
+  execute %(cd #{dir}; terraform destroy -var vpc_name="#{VPC_NAME}" -auto-approve)
 end
 
 def terraform_workspaces
