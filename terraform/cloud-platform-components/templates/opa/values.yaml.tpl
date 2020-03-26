@@ -1,12 +1,15 @@
 
+#
+# The 'opa' key embeds an OPA configuration file. See
+# https://www.openpolicyagent.org/docs/configuration.html for more details.
+# Default value is no default config. For custom config, the opa key
+# needs to include the opa config yaml, eg:
+opa:
+
 # To _fail closed_ on failures, change to Fail. During initial testing, we
 # recommend leaving the failure policy as Ignore.
 admissionControllerFailurePolicy: Fail
 
-# Adds a namespace selector to the admission controller webhook
-admissionControllerNamespaceSelector:
-  matchExpressions:
-    - {key: openpolicyagent.org/webhook, operator: NotIn, values: [ignore]}
 # To restrict the kinds of operations and resources that are subject to OPA
 # policy checks, see the settings below. By default, all resources and
 # operations are subject to OPA policy checks.
@@ -27,6 +30,7 @@ admissionControllerRules:
 mgmt:
   configmapPolicies:
     enabled: true
+    namespaces: [opa]
   replicate:
     cluster:
       - "v1/namespaces"
