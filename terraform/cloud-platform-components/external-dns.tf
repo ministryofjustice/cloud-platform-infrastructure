@@ -49,10 +49,11 @@ resource "aws_iam_role_policy" "external_dns" {
 }
 
 resource "helm_release" "external_dns" {
-  name      = "external-dns"
-  chart     = "stable/external-dns"
-  namespace = "kube-system"
-  version   = "2.6.4"
+  name       = "external-dns"
+  chart      = "external-dns"
+  repository = data.helm_repository.stable.metadata[0].name
+  namespace  = "kube-system"
+  version    = "2.6.4"
 
   values = [
     <<EOF
