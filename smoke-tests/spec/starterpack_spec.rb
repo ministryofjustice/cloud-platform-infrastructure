@@ -12,5 +12,4 @@ describe "Starter pack Apps", speed: "fast", cluster: "test-cluster-only" do
       end
     end
   end
-  
 end
