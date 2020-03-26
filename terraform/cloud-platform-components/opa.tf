@@ -16,26 +16,19 @@ resource "kubernetes_namespace" "opa" {
   }
 }
 
-data "template_file" "values" {
-  template = file("${path.module}/templates/opa/values.yaml.tpl")
-}
-
 resource "helm_release" "open-policy-agent" {
   name       = "opa"
-  namespace  = "opa"
+  namespace  = kubernetes_namespace.opa.id
   repository = "stable"
   chart      = "opa"
-  version    = "1.8.0"
+  version    = "1.13.4"
 
   depends_on = [
     null_resource.kube_system_ns_label,
-    kubernetes_namespace.opa,
     null_resource.deploy,
   ]
 
-  values = [
-    data.template_file.values.rendered,
-  ]
+  values = [templatefile("${path.module}/templates/opa/values.yaml.tpl", {})]
 
   lifecycle {
     ignore_changes = [keyring]
