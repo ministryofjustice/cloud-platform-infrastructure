@@ -225,6 +225,12 @@ def get_from_all_namespaces(entity)
   kubectl_items "get #{entity} --all-namespaces"
 end
 
+def get_url(ingress)
+  host = ingress.dig("spec", "rules").first.dig("host")
+  uri = URI("https://" + host)
+  response = Net::HTTP.get_response(uri)
+end
+
 def get_servicemonitors(namespace)
   kubectl_items "get servicemonitors -n #{namespace}"
 end
