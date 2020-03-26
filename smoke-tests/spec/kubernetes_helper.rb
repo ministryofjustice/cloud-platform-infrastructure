@@ -227,7 +227,7 @@ end
 
 def get_url(ingress)
   host = ingress.dig("spec", "rules").first.dig("host")
-  uri = URI('https://'+host)
+  uri = URI("https://" + host)
   response = Net::HTTP.get_response(uri)
 end
 
