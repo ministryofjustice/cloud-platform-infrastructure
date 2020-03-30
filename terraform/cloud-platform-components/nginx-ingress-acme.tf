@@ -23,7 +23,7 @@ resource "helm_release" "nginx_ingress_acme" {
   name      = "nginx-ingress-acme"
   chart     = "stable/nginx-ingress"
   namespace = "ingress-controllers"
-  version   = "v1.24.0"
+  version   = "1.34.2"
 
   values = [
     <<EOF
@@ -98,6 +98,9 @@ controller:
 
   metrics:
     enabled: true
+    service:
+      omitClusterIP: true
+      
     serviceMonitor:
       enabled: true
       namespace: ${kubernetes_namespace.ingress_controllers.id}
@@ -114,28 +117,10 @@ controller:
   
   admissionWebhooks:
     enabled: true
-    failurePolicy: Fail
-    port: 8443
-
+    
     service:
-      annotations: {}
-      omitClusterIP: false
-      clusterIP: ""
-      externalIPs: []
-      loadBalancerIP: ""
-      loadBalancerSourceRanges: []
-      servicePort: 443
-      type: ClusterIP
+      omitClusterIP: true
 
-    patch:
-      enabled: true
-      image:
-        repository: jettech/kube-webhook-certgen
-        tag: v1.0.0
-        pullPolicy: IfNotPresent
-      priorityClassName: ""
-      podAnnotations: {}
-      nodeSelector: {}
 
 defaultBackend:
   enabled: true
@@ -147,6 +132,9 @@ defaultBackend:
     pullPolicy: IfNotPresent
 
   extraArgs: {}
+
+  service:
+    omitClusterIP: true
 
   port: 8080
 
