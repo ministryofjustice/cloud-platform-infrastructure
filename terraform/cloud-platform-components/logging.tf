@@ -10,5 +10,5 @@ module "logging" {
 
   dependence_prometheus       = module.prometheus.helm_prometheus_operator_status
   dependence_deploy           = null_resource.deploy
-  dependence_priority_classes = null_resource.priority_classes
+  dependence_priority_classes = kubernetes_priority_class.node_critical
 }
