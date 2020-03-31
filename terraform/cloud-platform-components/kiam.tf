@@ -123,7 +123,7 @@ resource "helm_release" "kiam" {
 
   depends_on = [
     null_resource.deploy,
-    helm_release.open-policy-agent,
+    module.opa.helm_opa_status,
   ]
 
   lifecycle {
@@ -134,7 +134,7 @@ resource "helm_release" "kiam" {
 resource "kubernetes_service" "server-metrics" {
   depends_on = [
     helm_release.kiam,
-    helm_release.open-policy-agent,
+    module.opa.helm_opa_status,
   ]
 
   metadata {
@@ -164,7 +164,7 @@ resource "kubernetes_service" "server-metrics" {
 resource "kubernetes_service" "agent-metrics" {
   depends_on = [
     helm_release.kiam,
-    helm_release.open-policy-agent,
+    module.opa.helm_opa_status,
   ]
 
   metadata {
