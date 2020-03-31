@@ -164,7 +164,7 @@ EOF
     null_resource.deploy,
     module.prometheus.helm_prometheus_operator_status,
     kubernetes_namespace.ingress_controllers,
-    helm_release.open-policy-agent,
+    module.opa.helm_opa_status,
   ]
 
   lifecycle {

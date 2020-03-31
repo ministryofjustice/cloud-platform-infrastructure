@@ -136,7 +136,7 @@ EOF
     null_resource.deploy,
     null_resource.cert-manager-crds,
     kubernetes_namespace.cert_manager,
-    helm_release.open-policy-agent,
+    module.opa.helm_opa_status,
   ]
 
   lifecycle {
