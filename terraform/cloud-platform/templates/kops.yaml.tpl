@@ -2,7 +2,7 @@
 # NOTE: This file is managed by Terraform  #
 # Don't make any manual modification to it #
 ############################################
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: Cluster
 metadata:
   creationTimestamp: null
@@ -302,7 +302,7 @@ spec:
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
@@ -329,7 +329,7 @@ spec:
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
@@ -356,7 +356,7 @@ spec:
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
@@ -385,13 +385,13 @@ spec:
 
 ---
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: ${cluster_domain_name}
-  name: 2xlarge-nodes-1.14.10
+  name: 2xlarge-nodes-1.15.10
 spec:
   image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: r5.2xlarge
@@ -399,7 +399,7 @@ spec:
   minSize: 2
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: 2xlarge-nodes-1.14.10
+    kops.k8s.io/instancegroup: 2xlarge-nodes-1.15.10
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -426,13 +426,13 @@ spec:
 #                                                                                                                                      #
 ########################################################################################################################################
 
-apiVersion: kops/v1alpha2
+apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
 metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: ${cluster_domain_name}
-  name: nodes-1.14.10
+  name: nodes-1.15.10
 spec:
   image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: ${worker_node_machine_type}
@@ -440,7 +440,7 @@ spec:
   minSize: ${cluster_node_count}
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: nodes-1.14.10
+    kops.k8s.io/instancegroup: nodes-1.15.10
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
