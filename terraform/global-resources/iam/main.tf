@@ -29,6 +29,7 @@ module "iam_group_admins_with_policies" {
 
   group_users = [
     module.iam_user_alejandro_garrido.this_iam_user_name,
+    module.iam_user_imranawan.this_iam_user_name,
     module.iam_user_poornimakrishnasamy.this_iam_user_name,
     module.iam_user_paulwyborn.this_iam_user_name,
     module.iam_user_kops.this_iam_user_name,
@@ -49,6 +50,16 @@ module "iam_user_alejandro_garrido" {
   version = "~> 2.0"
 
   name                          = "AlejandroGarrido"
+  force_destroy                 = true
+  create_iam_user_login_profile = false
+  create_iam_access_key         = false
+}
+
+module "iam_user_imranawan" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+  version = "~> 2.0"
+
+  name                          = "imranawan"
   force_destroy                 = true
   create_iam_user_login_profile = false
   create_iam_access_key         = false
