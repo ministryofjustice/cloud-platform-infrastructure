@@ -8,9 +8,9 @@ resource "kubernetes_priority_class" "cluster_critical" {
     name = "cluster-critical"
   }
 
-  value = 999999000
+  value          = 999999000
   global_default = false
-  description = "This priority class is meant to be used as the system-cluster-critical class, outside of the kube-system namespace."
+  description    = "This priority class is meant to be used as the system-cluster-critical class, outside of the kube-system namespace."
 }
 
 resource "kubernetes_priority_class" "node_critical" {
@@ -18,9 +18,9 @@ resource "kubernetes_priority_class" "node_critical" {
     name = "node-critical"
   }
 
-  value = 1000000000
+  value          = 1000000000
   global_default = false
-  description = "This priority class is meant to be used as the system-node-critical class, outside of the kube-system namespace."
+  description    = "This priority class is meant to be used as the system-node-critical class, outside of the kube-system namespace."
 }
 
 ###################
