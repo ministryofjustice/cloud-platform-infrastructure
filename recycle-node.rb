@@ -22,7 +22,7 @@ AWS_REGION = "eu-west-2"
 KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-infrastructure/master/kops/live-1.yaml"
 NODE_DRAIN_TIMEOUT = 360 # Draining a node usually takes around 2 minutes. If it takes >6 minutes, it's not going to complete.
 SIGTERM = 15 # The unix signal to send to kill a process
-WORKER_NODE_INSTANCEGROUP = "nodes-1.14.10" # The name of the worker nodes instancegroup in the kops config.
+WORKER_NODE_INSTANCEGROUP = "nodes-1.15.10" # The name of the worker nodes instancegroup in the kops config.
 STUCK_STATES = ["ImagePullBackOff", "CrashLoopBackOff"]
 
 def main
