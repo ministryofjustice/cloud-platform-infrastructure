@@ -19,12 +19,13 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  version = "~> 1.11"
+  version = "~> 1.10.0"
 }
 
 provider "helm" {
   version         = "0.10.4"
   service_account = "tiller"
+  kubernetes {}
 }
 
 ###############
@@ -32,7 +33,7 @@ provider "helm" {
 ###############
 
 module "components" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-eks-components?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-eks-components?ref=0.0.7"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   pagerduty_config             = var.pagerduty_config
