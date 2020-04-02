@@ -19,7 +19,15 @@ Within `main.tf` you will have the resource to create namespace and module to de
 ## How to use this module
 
 ```bash
-terraform init
+
+export CLUSTER_NAME = <cluster name>
+
+terraform init \
+  -backend-config="bucket=cloud-platform-terraform-state" \
+  -backend-config="key=cloud-platform-starter-pack/${CLUSTER_NAME}/terraform.tfstate" \
+  -backend-config="region=eu-west-1"
+
 terraform workspace select/new <clusterName>
+
 terraform apply
 ```

@@ -17,13 +17,7 @@ resource "kubernetes_namespace" "starter-pack" {
 
 
 module "starter_pack" {
-  source                      = "github.com/ministryofjustice/cloud-platform-starter-pack?ref=1.0"
-  cluster_name                = var.cluster_name
-  cluster_state_bucket        = var.cluster_state_bucket
-  namespace                   = var.namespace
-
-  providers = {
-    # Can be either "aws.london" or "aws.ireland"
-    aws = aws.london
-  }
+  source                      = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack"
+  namespace                   = kubernetes_namespace.starter-pack.id
 }
+
