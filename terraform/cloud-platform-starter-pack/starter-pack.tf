@@ -17,7 +17,7 @@ resource "kubernetes_namespace" "starter-pack" {
 
 
 module "starter_pack" {
-  source                      = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.0.1"
-  namespace                   = kubernetes_namespace.starter-pack.id
+  source    = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.0.1"
+  namespace = kubernetes_namespace.starter-pack.id
 }
 

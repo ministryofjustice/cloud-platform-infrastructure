@@ -62,7 +62,7 @@ def main(options)
   install_components(cluster_name)
   deploy_starter_pack(cluster_name) if starter_pack
   run_integration_tests(cluster_name) if integration_tests
-  
+
   run_and_output "kubectl cluster-info"
 end
 
