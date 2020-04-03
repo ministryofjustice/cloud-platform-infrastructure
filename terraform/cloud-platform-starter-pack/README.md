@@ -14,7 +14,7 @@ This README describes how to create and deploy starter pack apps to a kubernetes
 
 ## `main.tf` 
 
-Within `main.tf` you will have the resource to create namespace and module to deploy the apps into your kubernetes cluster. For more details of how to create multiple copies of the deployment in different namespace refer [cloud-platform-terraform-starter-pack](https://github.com/ministryofjustice/cloud-platform-terraform-starter-pack)
+Within `main.tf` you will have the resource to create namespace and module to deploy the apps into your kubernetes cluster. For more details of how to deploy in different namespace refer [cloud-platform-terraform-starter-pack](https://github.com/ministryofjustice/cloud-platform-terraform-starter-pack)
 
 ## How to use this module
 
@@ -22,6 +22,5 @@ Within `main.tf` you will have the resource to create namespace and module to de
 
 terraform init 
 terraform workspace select/new <clusterName>
-
 terraform apply
 ```
