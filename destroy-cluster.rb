@@ -13,7 +13,7 @@ def main
   kops_cluster
   terraform_base
   terraform_workspaces
-  # terraform_vpc # Un comment to destroy the VPC
+  terraform_vpc # Un comment to destroy the VPC
 end
 
 def target_cluster
