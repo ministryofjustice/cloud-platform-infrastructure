@@ -7,6 +7,8 @@ VPC_NAME = CLUSTER
 require "open3"
 
 def main
+  target_cluster
+
   terraform_components
   kops_cluster
   terraform_base
@@ -14,9 +16,12 @@ def main
   # terraform_vpc # Un comment to destroy the VPC
 end
 
+def target_cluster
+  execute "kops export kubecfg #{cluster_long_name}"
+end
+
 def terraform_components
   dir = "terraform/cloud-platform-components"
-  execute "kops export kubecfg #{cluster_long_name}"
   tf_init dir
   tf_workspace_select(dir, CLUSTER)
   # prometheus_operator often fails to delete cleanly if anything has
