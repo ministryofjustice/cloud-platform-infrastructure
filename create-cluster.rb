@@ -60,8 +60,8 @@ def main(options)
   run_kops(cluster_name)
   sleep(extra_wait)
   install_components(cluster_name)
-  run_integration_tests(cluster_name) if integration_tests
   deploy_starter_pack(cluster_name) if starter_pack
+  run_integration_tests(cluster_name) if integration_tests
 
   run_and_output "kubectl cluster-info"
 end
