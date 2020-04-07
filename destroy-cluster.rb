@@ -4,6 +4,24 @@
 CLUSTER = "cp-2503-1123"
 VPC_NAME = CLUSTER
 
+# If any namespaces exist in the cluster which are not
+# listed here, the destroy script will abort.
+SYSTEM_NAMESPACES = %w(
+  cert-manager
+  default
+  docker-registry-cache
+  ingress-controllers
+  kiam
+  kube-node-lease
+  kube-public
+  kube-system
+  kuberos
+  logging
+  monitoring
+  opa
+  velero
+)
+
 require "open3"
 
 def main
@@ -11,6 +29,7 @@ def main
 
   target_cluster
 
+  abort_if_user_namespaces_exist
   terraform_components
   kops_cluster
   terraform_base
@@ -20,6 +39,22 @@ end
 
 def target_cluster
   execute "kops export kubecfg #{cluster_long_name}"
+end
+
+# If someone has deployed something into this cluster, there might be
+# associated AWS resources which would be left orphaned if the cluster were
+# destroyed. So, we check for any unexpected namespaces, and abort if we find
+# any.
+def abort_if_user_namespaces_exist
+  stdout, _, _ = execute( "kubectl get ns -o name | sed 's/namespace.//'" )
+  namespaces = stdout.split("\n")
+  user_namespaces = namespaces - SYSTEM_NAMESPACES
+  if user_namespaces.any?
+    puts "\nPlease delete these namespaces, and any associated AWS resources, before destroying this cluster:"
+    user_namespaces.each { |ns| puts "  * #{ns}" }
+    puts
+    raise
+  end
 end
 
 def terraform_components
