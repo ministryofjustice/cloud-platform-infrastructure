@@ -6,7 +6,7 @@ VPC_NAME = CLUSTER
 
 # If any namespaces exist in the cluster which are not
 # listed here, the destroy script will abort.
-SYSTEM_NAMESPACES = %w(
+SYSTEM_NAMESPACES = %w[
   cert-manager
   default
   docker-registry-cache
@@ -20,7 +20,7 @@ SYSTEM_NAMESPACES = %w(
   monitoring
   opa
   velero
-)
+]
 
 require "open3"
 
@@ -46,7 +46,7 @@ end
 # destroyed. So, we check for any unexpected namespaces, and abort if we find
 # any.
 def abort_if_user_namespaces_exist
-  stdout, _, _ = execute( "kubectl get ns -o name | sed 's/namespace.//'" )
+  stdout, _, _ = execute("kubectl get ns -o name | sed 's/namespace.//'")
   namespaces = stdout.split("\n")
   user_namespaces = namespaces - SYSTEM_NAMESPACES
   if user_namespaces.any?
