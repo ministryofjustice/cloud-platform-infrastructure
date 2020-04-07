@@ -7,6 +7,8 @@ VPC_NAME = CLUSTER
 require "open3"
 
 def main
+  raise "Please check the code carefully before executing this script."
+
   target_cluster
 
   terraform_components
