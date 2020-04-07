@@ -40,7 +40,7 @@ end
 def target_cluster
   execute "kops export kubecfg #{cluster_long_name}"
 end
-  
+
 def terraform_starter_pack
   dir = "terraform/cloud-platform-starter-pack"
   tf_init dir
