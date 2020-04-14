@@ -51,7 +51,7 @@ data "aws_iam_policy_document" "offender-search-dev-delius-elastic-search" {
 
 resource "aws_iam_policy" "offender-search-dev-delius-elastic-search-policy" {
   name   = "offender-search-dev-delius-elastic-search-policy"
-  policy = data.aws_iam_policy_document.offender-search-dev-kiam-trust-chain.json
+  policy = data.aws_iam_policy_document.offender-search-dev-delius-elastic-search.json
 }
 
 resource "aws_iam_role_policy_attachment" "offender-search-dev-delius-elastic-search-policy" {
