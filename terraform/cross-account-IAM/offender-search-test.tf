@@ -45,7 +45,7 @@ data "aws_iam_policy_document" "offender-search-test-delius-elastic-search" {
 
   statement {
     actions   = ["sts:AssumeRole"]
-    resources = [aws_iam_role.offender-search-test-delius-elastic-search.arn]
+    resources = ["arn:aws:iam::754256621582:cp-pcs-newtech-es-service-role-dev"]
   }
 }
 
