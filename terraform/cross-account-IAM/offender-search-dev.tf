@@ -21,40 +21,40 @@ variable "offender-search-dev-tags" {
   }
 }
 
-resource "aws_iam_role" "offender-search-dev-delius-elastic-search" {
-  name               = "offender-search-dev-delius-elastic-search"
+resource "aws_iam_role" "offender-search-elastic-search-delius-dev" {
+  name               = "offender-search-elastic-search-delius-dev"
   description        = "IAM role for Delius elastic search in dev"
   tags               = var.offender-search-dev-tags
   assume_role_policy = data.aws_iam_policy_document.offender-search-dev-kiam-trust-chain.json
 }
 
-resource "kubernetes_secret" "offender-search-dev-delius-elastic-search-secret" {
+resource "kubernetes_secret" "offender-search-elastic-search-delius-dev-secret" {
   metadata {
     name      = "offender-search-delius-elastic-search-secret"
     namespace = "offender-search-dev"
   }
 
   data = {
-    arn       = aws_iam_role.offender-search-dev-delius-elastic-search.arn
-    name      = aws_iam_role.offender-search-dev-delius-elastic-search.name
-    unique_id = aws_iam_role.offender-search-dev-delius-elastic-search.unique_id
+    arn       = aws_iam_role.offender-search-elastic-search-delius-dev.arn
+    name      = aws_iam_role.offender-search-elastic-search-delius-dev.name
+    unique_id = aws_iam_role.offender-search-elastic-search-delius-dev.unique_id
   }
 }
 
-data "aws_iam_policy_document" "offender-search-dev-delius-elastic-search" {
+data "aws_iam_policy_document" "offender-search-elastic-search-delius-dev" {
 
   statement {
     actions   = ["sts:AssumeRole"]
-    resources = ["arn:aws:iam::723123699647:role/cp-pcs-newtech-es-service-role-delius-core-dev"]
+    resources = ["arn:aws:iam::723123699647:role/cp-offender-search-es-service-role-delius-core-dev"]
   }
 }
 
-resource "aws_iam_policy" "offender-search-dev-delius-elastic-search-policy" {
-  name   = "offender-search-dev-delius-elastic-search-policy"
-  policy = data.aws_iam_policy_document.offender-search-dev-delius-elastic-search.json
+resource "aws_iam_policy" "offender-search-elastic-search-delius-dev-policy" {
+  name   = "offender-search-elastic-search-delius-dev-policy"
+  policy = data.aws_iam_policy_document.offender-search-elastic-search-delius-dev.json
 }
 
-resource "aws_iam_role_policy_attachment" "offender-search-dev-delius-elastic-search-policy" {
-  role       = aws_iam_role.offender-search-dev-delius-elastic-search.name
-  policy_arn = aws_iam_policy.offender-search-dev-delius-elastic-search-policy.arn
+resource "aws_iam_role_policy_attachment" "offender-search-elastic-search-delius-dev-policy" {
+  role       = aws_iam_role.offender-search-elastic-search-delius-dev.name
+  policy_arn = aws_iam_policy.offender-search-elastic-search-delius-dev-policy.arn
 }
