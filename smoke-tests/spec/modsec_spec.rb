@@ -14,10 +14,10 @@ describe "Testing modsec" do
     apply_template_file(
       namespace: namespace,
       file: "spec/fixtures/modsec-integrationtest.yaml.erb",
-      binding: binding,
+      binding: binding
     )
     wait_for(namespace, "ingress", ingress_name)
-    sleep 20
+    sleep 60
   end
 
   after(:all) do
@@ -45,7 +45,7 @@ describe "Testing modsec" do
   context "when modsec disabled" do
     before do
       set_modsec_ing_annotation_false(namespace, ingress_name)
-      sleep 5
+      sleep 30
     end
 
     context "when the url is benign" do
