@@ -14,7 +14,7 @@ describe "Testing modsec" do
     apply_template_file(
       namespace: namespace,
       file: "spec/fixtures/modsec-integrationtest.yaml.erb",
-      binding: binding,
+      binding: binding
     )
     wait_for(namespace, "ingress", ingress_name)
     sleep 60
