@@ -15,7 +15,7 @@ describe "crds", speed: "fast" do
       "prometheuses.monitoring.coreos.com",
       "prometheusrules.monitoring.coreos.com",
       "servicemonitors.monitoring.coreos.com",
-      "tzcronjobs.cronjobber.hidde.co",
+      "tzcronjobs.cronjobber.hidde.co"
     ]
     expect(names).to include(*expected)
   end
