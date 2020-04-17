@@ -43,30 +43,21 @@ end
 def create_certificate(namespace, host)
   json = <<~EOF
     {
-      "apiVersion": "certmanager.k8s.io/v1alpha1",
+      "apiVersion": "cert-manager.io/v1alpha3",
       "kind": "Certificate",
       "metadata": {
         "name": "cert-manager-integration-test",
         "namespace": "#{namespace}"
       },
       "spec": {
-        "acme": {
-          "config": [
-            {
-              "dns01": {
-                "provider": "route53-cloud-platform"
-              },
-              "domains": [
-                "#{host}"
-              ]
-            }
-          ]
-        },
         "commonName": "#{host}",
         "issuerRef": {
           "kind": "ClusterIssuer",
           "name": "letsencrypt-staging"
         },
+        "dnsNames": [
+          "#{host}"
+        ],
         "secretName": "hello-world-ssl"
       }
     }
