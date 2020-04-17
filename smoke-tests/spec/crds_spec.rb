@@ -6,11 +6,12 @@ describe "crds", speed: "fast" do
 
     expected = [
       "alertmanagers.monitoring.coreos.com",
-      "certificates.certmanager.k8s.io",
-      "challenges.certmanager.k8s.io",
-      "clusterissuers.certmanager.k8s.io",
-      "issuers.certmanager.k8s.io",
-      "orders.certmanager.k8s.io",
+      "certificaterequests.cert-manager.io",
+      "certificates.cert-manager.io",
+      "challenges.acme.cert-manager.io",
+      "clusterissuers.cert-manager.io",
+      "issuers.cert-manager.io",
+      "orders.acme.cert-manager.io",
       "prometheuses.monitoring.coreos.com",
       "prometheusrules.monitoring.coreos.com",
       "servicemonitors.monitoring.coreos.com",
