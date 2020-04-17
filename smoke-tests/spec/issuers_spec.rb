@@ -6,9 +6,8 @@ describe "Clusterissuer", speed: "fast" do
 
     expected = [
       "letsencrypt-production",
-      "letsencrypt-staging",
+      "letsencrypt-staging"
     ]
     expect(names).to include(*expected)
   end
 end
-
