@@ -6,8 +6,6 @@ describe "certificates", speed: "fast" do
 
     expected = [
       "default", # ingress-controller certificate
-      "cert-manager-webhook-ca",
-      "cert-manager-webhook-webhook-tls",
     ]
     expect(names).to include(*expected)
   end
