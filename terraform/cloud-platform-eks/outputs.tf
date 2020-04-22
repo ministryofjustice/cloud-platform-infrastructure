@@ -49,3 +49,12 @@ output "oidc_components_client_id" {
 output "oidc_components_client_secret" {
   value = module.auth0.oidc_components_client_secret
 }
+
+# EKS
+output "cluster_oidc_issuer_url" {
+  value = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
+}
+
+output "cluster_id" {
+  value = module.eks.cluster_id
+}
