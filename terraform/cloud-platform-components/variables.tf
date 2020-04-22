@@ -25,6 +25,6 @@ variable "github_secret_key" {
 
 variable "cluster_r53_resource_maps" {
   default = {
-    live-1  = ["arn:aws:route53:::hostedzone/*"]
+    live-1 = ["arn:aws:route53:::hostedzone/*"]
   }
 }
