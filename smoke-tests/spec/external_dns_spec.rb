@@ -1,7 +1,7 @@
 require "spec_helper"
 
 # This test can only be ran against live-1. Test clusters do not have enough privileges.
-describe "external DNS", cluster: "live-1" do
+describe "external DNS", "live-1": true do
   namespace = "integrationtest-dns-#{readable_timestamp}"
   zone = nil
   parent_zone = nil

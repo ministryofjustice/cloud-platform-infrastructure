@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "docker-registry-cache" do
+describe "docker-registry-cache",kops: true do
   let(:namespace) { "docker-registry-cache" }
 
   context "pod" do

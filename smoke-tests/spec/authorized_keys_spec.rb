@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "authorized_keys", cluster: "live-1", speed: "fast" do
+describe "authorized_keys", "live-1": true, speed: "fast" do
   context "authorized-keys-provider namespace should exists" do
     it "Fail if namespace doesnt exist" do
       expect(namespace_exists?("authorized-keys-provider")).to eq(true)

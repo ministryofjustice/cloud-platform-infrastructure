@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "namespaces", cluster: "live-1", speed: "fast" do
+describe "namespaces", "live-1": true, speed: "fast" do
   # Monitoring is automatically set up for all namespaces which have specific
   # annotations. So, if any namespaces don't have any, it's a problem.
   specify "must have annotations" do
