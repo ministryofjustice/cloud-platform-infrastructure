@@ -15,7 +15,7 @@ describe "daemonsets", speed: "fast" do
       "fluentd-es",
       "kiam-agent",
       "kiam-server",
-      "prometheus-operator-prometheus-node-exporter",
+      "prometheus-operator-prometheus-node-exporter"
     ]
 
     expect(names).to eq(expected)
@@ -29,8 +29,8 @@ describe "daemonsets", speed: "fast" do
       "calico-node",
       "fluentd-es",
       "kube-proxy",
-      "kube2iam", 
-      "prometheus-operator-prometheus-node-exporter",
+      "kube2iam",
+      "prometheus-operator-prometheus-node-exporter"
     ]
 
     expect(names).to eq(expected)
@@ -128,7 +128,7 @@ describe "daemonsets", speed: "fast" do
     end
   end
 
-  context "calico-kube-controllers",kops: true do
+  context "calico-kube-controllers", kops: true do
     specify "there can be only one" do
       pods = get_running_app_pods("kube-system", "calico-kube-controllers", "k8s-app")
       expect(pods.size).to eq(1)

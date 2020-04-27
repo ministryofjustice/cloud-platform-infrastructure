@@ -16,7 +16,7 @@ describe "kiam", kops: true do
     role_name: KIAM_ROLE_NAME,
     account_id: AWS[:account_id],
     aws_region: AWS[:region],
-    kubernetes_cluster: current_cluster,
+    kubernetes_cluster: current_cluster
   }
 
   pod = "" # name of the running pod in our test namespace
@@ -31,7 +31,7 @@ describe "kiam", kops: true do
       namespace: namespace,
       pod: pod,
       role_arn: role.arn,
-      pod_annotations: pod_annotations,
+      pod_annotations: pod_annotations
     }
   }
 

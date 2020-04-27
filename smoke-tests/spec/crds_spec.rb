@@ -28,4 +28,4 @@ describe "crds", speed: "fast" do
     ]
     expect(names).to include(*expected)
   end
-end   
+end

@@ -19,7 +19,7 @@ describe "master nodes", speed: "fast", kops: true do
     node_pods.map { |p|
       [
         p.dig("metadata", "namespace"),
-        shorten_pod_name(p.dig("metadata", "name"), node_name),
+        shorten_pod_name(p.dig("metadata", "name"), node_name)
       ]
     } .sort
   end
@@ -47,7 +47,7 @@ describe "master nodes", speed: "fast", kops: true do
       ["kube-system", "kube-proxy"],
       ["kube-system", "kube-scheduler"],
       ["logging", "fluentd-es"],
-      ["monitoring", "prometheus-operator-prometheus-node-exporter"],
+      ["monitoring", "prometheus-operator-prometheus-node-exporter"]
     ]
 
     masters.each do |node|
