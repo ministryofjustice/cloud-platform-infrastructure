@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "master nodes", speed: "fast" do
+describe "master nodes", speed: "fast", kops: true do
   # normalise pod names for ease of comparison, e.g.
   #
   #   calico-node-mv48v -> calico-node
