@@ -32,7 +32,7 @@ describe "Log collection", "live-1": true do
     # this job queries elasticsearch, looking for all log data for our namespace, today
     create_job(namespace, "spec/fixtures/logging-job.yaml.erb", {
       job_name: "smoketest-logging-job",
-      search_url: search_url,
+      search_url: search_url
     })
 
     pod = get_pod_matching_name(namespace, "smoketest-logging-job")
