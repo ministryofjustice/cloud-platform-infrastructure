@@ -254,7 +254,7 @@ def run_integration_tests(cluster_name)
     "cd #{dir}",
     "bundle binstubs bundler --force --path /usr/local/bin",
     "bundle binstubs rspec-core --path /usr/local/bin",
-    "rspec --tag ~cluster:live-1 --format progress --format documentation --out #{output}"
+    "rspec --tag ~live-1 --tag ~eks-manager --format progress --format documentation --out #{output}"
   ].join("; ")
 
   run_and_output(cmd)
