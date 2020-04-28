@@ -20,9 +20,12 @@ describe "kiam", kops: true do
   }
 
   pod = "" # name of the running pod in our test namespace
+  role = ""
 
   # we want to use the same role every time, so we're not going to clean this up
-  role = fetch_or_create_role(role_args)
+  before(:all, :kops => true) do
+    role = fetch_or_create_role(role_args)
+  end
 
   let(:namespace) { "integrationtest-kiam-#{random_string}-#{readable_timestamp}" }
 
@@ -44,7 +47,7 @@ describe "kiam", kops: true do
     delete_namespace(namespace)
   end
 
-  after(:all) do
+  after(:all, :kops => true) do
     remove_cluster_nodes_from_trust_relationship(role_args, role)
   end
 
