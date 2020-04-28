@@ -23,7 +23,7 @@ describe "kiam", kops: true do
   role = ""
 
   # we want to use the same role every time, so we're not going to clean this up
-  before(:all, :kops => true) do
+  before(:all, kops: true) do
     role = fetch_or_create_role(role_args)
   end
 
@@ -47,7 +47,7 @@ describe "kiam", kops: true do
     delete_namespace(namespace)
   end
 
-  after(:all, :kops => true) do
+  after(:all, kops: true) do
     remove_cluster_nodes_from_trust_relationship(role_args, role)
   end
 
