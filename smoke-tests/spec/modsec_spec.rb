@@ -17,7 +17,7 @@ describe "Testing modsec" do
       binding: binding
     )
     wait_for(namespace, "ingress", ingress_name)
-    sleep 60
+    sleep 90
   end
 
   after(:all) do
@@ -45,7 +45,7 @@ describe "Testing modsec" do
   context "when modsec disabled" do
     before do
       set_modsec_ing_annotation_false(namespace, ingress_name)
-      sleep 30
+      sleep 60
     end
 
     context "when the url is benign" do
