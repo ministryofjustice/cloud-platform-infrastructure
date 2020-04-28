@@ -35,17 +35,17 @@ def delete_a_record(zone_id, domain_name, namespace, ingress_name)
         # ZD4D7Y8KGAS4G this zone is the default AWS zone for ELB records, in eu-west-2
         "hosted_zone_id": "ZD4D7Y8KGAS4G",
         "dns_name": get_ingress_endpoint(namespace, ingress_name) + ".",
-        "evaluate_target_health": true,
+        "evaluate_target_health": true
       },
-      type: "A",
-    },
+      type: "A"
+    }
   }
 
   client.change_resource_record_sets({
     hosted_zone_id: zone_id,
     change_batch: {
-      changes: [a_record],
-    },
+      changes: [a_record]
+    }
   })
 end
 
@@ -61,18 +61,18 @@ def delete_txt_record(zone_id, domain_name, namespace)
       ttl: 300,
       resource_records: [
         {
-          value: %("heritage=external-dns,external-dns/owner=default,external-dns/resource=ingress/#{namespace}/#{domain_name}"),
-        },
+          value: %("heritage=external-dns,external-dns/owner=default,external-dns/resource=ingress/#{namespace}/#{domain_name}")
+        }
       ],
-      type: "TXT",
-    },
+      type: "TXT"
+    }
   }
 
   client.change_resource_record_sets({
     hosted_zone_id: zone_id,
     change_batch: {
-      changes: [txt_record],
-    },
+      changes: [txt_record]
+    }
   })
 end
 
