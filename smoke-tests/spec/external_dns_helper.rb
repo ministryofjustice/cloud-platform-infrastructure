@@ -23,7 +23,7 @@ end
 
 # Dedicated to A record created by External DNS
 # TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
-def delete_a_record(zone_id, zone_name, domain_name, namespace, ingress_name)
+def delete_a_record(zone_id, domain_name, namespace, ingress_name)
   sleep 1
   client = Aws::Route53::Client.new
 
@@ -35,23 +35,23 @@ def delete_a_record(zone_id, zone_name, domain_name, namespace, ingress_name)
         # ZD4D7Y8KGAS4G this zone is the default AWS zone for ELB records, in eu-west-2
         "hosted_zone_id": "ZD4D7Y8KGAS4G",
         "dns_name": get_ingress_endpoint(namespace, ingress_name) + ".",
-        "evaluate_target_health": true,
+        "evaluate_target_health": true
       },
-      type: "A",
-    },
+      type: "A"
+    }
   }
 
   client.change_resource_record_sets({
     hosted_zone_id: zone_id,
     change_batch: {
-      changes: [a_record],
-    },
+      changes: [a_record]
+    }
   })
 end
 
 # Dedicated to deleting TXT records created by external-dns
 # TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
-def delete_txt_record(zone_id, zone_name, domain_name, namespace)
+def delete_txt_record(zone_id, domain_name, namespace)
   sleep 1
   client = Aws::Route53::Client.new
   txt_record = {
@@ -61,30 +61,29 @@ def delete_txt_record(zone_id, zone_name, domain_name, namespace)
       ttl: 300,
       resource_records: [
         {
-          value: %("heritage=external-dns,external-dns/owner=default,external-dns/resource=ingress/#{namespace}/#{domain_name}"),
-        },
+          value: %("heritage=external-dns,external-dns/owner=default,external-dns/resource=ingress/#{namespace}/#{domain_name}")
+        }
       ],
-      type: "TXT",
-    },
+      type: "TXT"
+    }
   }
 
   client.change_resource_record_sets({
     hosted_zone_id: zone_id,
     change_batch: {
-      changes: [txt_record],
-    },
+      changes: [txt_record]
+    }
   })
 end
 
 # Checks if the zone is empty, then deletes
 # if not empty, it will assume it contains one A record and one TXT record created by external-dns
-def cleanup_zone(zone, domain, namespace, ingress_name)
-  if is_zone_empty?(zone.hosted_zone.id)
-    delete_zone(zone.hosted_zone.id)
+def cleanup_zone(zone_id, domain, namespace, ingress_name)
+  if is_zone_empty?(zone_id)
+    # delete_zone(zone_id)
   else
-    delete_a_record(zone.hosted_zone.id, zone.hosted_zone.name, domain, namespace, ingress_name)
-    delete_txt_record(zone.hosted_zone.id, zone.hosted_zone.name, domain, namespace)
-    delete_zone(zone.hosted_zone.id)
+    delete_a_record(zone_id, domain, namespace, ingress_name)
+    delete_txt_record(zone_id, domain, namespace)
   end
 end
 
