@@ -39,15 +39,6 @@ describe "Prometheus Rules", speed: "fast" do
     expect(names).to include(*expected)
   end
 
-  specify "expected in eks", "eks-manager": true do
-    names = get_prometheus_rules.map { |set| set.dig("metadata", "name") }.sort
-
-    expected = [
-      "prometheus-operator-kubernetes-apps"
-    ]
-    expect(names).to include(*expected)
-  end
-
   specify "in production", "live-1": true do
     names = get_prometheus_rules.map { |set| set.dig("metadata", "name") }.sort
 
