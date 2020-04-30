@@ -11,7 +11,7 @@ describe "external DNS", "live-1": true do
   let(:ingress_name) { domain }
   let(:fixture_name) { "spec/fixtures/external-dns-ingress.yaml.erb" }
 
-  # NOTE: Two specs in this file can fail with the following errors:
+  # NOTE: The spec in this file can fail with the following error:
   #
   # 1) external DNS when zone matches ingress domain and an ingress is created it creates an A record
   #    Failure/Error: expect(record_types).to include("A")
@@ -24,11 +24,12 @@ describe "external DNS", "live-1": true do
 
   context "when zone matches ingress domain" do
     before do
+      cleanup_zone(domain, namespace, ingress_name)
       create_namespace(namespace)
     end
 
     after do
-      cleanup_zone(zone, domain, namespace, ingress_name)
+      cleanup_zone(domain, namespace, ingress_name, zone)
       delete_namespace(namespace)
     end
 
@@ -47,5 +48,4 @@ describe "external DNS", "live-1": true do
       end
     end
   end
-
 end

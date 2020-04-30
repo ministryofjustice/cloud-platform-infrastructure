@@ -1,3 +1,19 @@
+
+# Return the zone_id of a zone, found by name (domain)
+# This will only use the first result
+def get_zone_by_name(domain)
+  client = Aws::Route53::Client.new
+
+  zones = client.list_hosted_zones_by_name({
+    dns_name: domain,
+    max_items: 1,
+  })
+
+  zone_id = zones.hosted_zones[0].id.tr("/hostedzone/", "")
+
+end
+
+
 # Expects a the ingress template to exist at fixture_name
 def create_ingress(namespace, ingress_name, fixture_name)
   apply_template_file(
@@ -85,6 +101,20 @@ def cleanup_zone(zone_id, domain, namespace, ingress_name)
     delete_a_record(zone_id, domain, namespace, ingress_name)
     delete_txt_record(zone_id, domain, namespace)
   end
+end
+
+# Checks if the zone is empty, then deletes
+# if not empty, it will assume it contains one A record and one TXT record created by external-dns
+def cleanup_zone(domain, namespace, ingress_name, zone_id = nil)
+  if zone_id.nil?
+    zone_id = get_zone_by_name(domain)
+  end
+
+  if !is_zone_empty?(zone_id)
+    delete_a_record(zone_id, domain, namespace, ingress_name)
+    delete_txt_record(zone_id, domain, namespace)
+  end
+  
 end
 
 # Checks if a zone is empty
