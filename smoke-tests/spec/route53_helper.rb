@@ -14,29 +14,6 @@ def create_zone(domain)
   )
 end
 
-# Delegate a Route53 zone (child -> Parent)
-# Expect a Route53 zone object and the parent zone_id
-def create_delegation_set(child_zone, parent_id)
-  sleep 1
-  client = Aws::Route53::Client.new
-  client.change_resource_record_sets(
-    change_batch: {
-      changes: [
-        {
-          action: "CREATE",
-          resource_record_set: {
-            name: child_zone.hosted_zone.name,
-            resource_records: child_zone.delegation_set.name_servers.map { |ns| {value: ns} },
-            ttl: 60,
-            type: "NS"
-          }
-        }
-      ],
-      comment: "integrationtest"
-    },
-    hosted_zone_id: parent_id
-  )
-end
 
 # Retrieves a list of records from an existing Route53 zones
 # Expect a zone_id in input
@@ -67,26 +44,3 @@ def delete_zone(zone_id)
   )
 end
 
-# Deletes a Delegation set (NS)
-# Expects a parent Zone ID and child zone, see create_delegation_set
-def delete_delegation_set(child_zone, parent_id)
-  sleep 1
-  client = Aws::Route53::Client.new
-  client.change_resource_record_sets(
-    change_batch: {
-      changes: [
-        {
-          action: "DELETE",
-          resource_record_set: {
-            name: child_zone.hosted_zone.name,
-            resource_records: child_zone.delegation_set.name_servers.map { |ns| {value: ns} },
-            ttl: 60,
-            type: "NS"
-          }
-        }
-      ],
-      comment: "integrationtest"
-    },
-    hosted_zone_id: parent_id
-  )
-end
