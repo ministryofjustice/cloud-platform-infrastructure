@@ -30,30 +30,16 @@ def delete_ingress(namespace, ingress_name)
   end
 end
 
-# Returns an ingress endpoint (ELB enpoint)
-def get_ingress_endpoint(namespace, ingress_name)
-  stdout, _, _ = execute("kubectl get ingress #{ingress_name} -n #{namespace} -o json -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'")
-  stdout
-end
 
 # Dedicated to A record created by External DNS
 # TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
-def delete_a_record(zone_id, a_name)
-  sleep 1
+def delete_a_record(zone_id, record)
+  sleep 1 # for throttling
   client = Aws::Route53::Client.new
 
   a_record = {
     action: "DELETE",
-    resource_record_set: {
-      name: a_name,
-      alias_target: {
-        # ZD4D7Y8KGAS4G this zone is the default AWS zone for ELB records, in eu-west-2
-        "hosted_zone_id": "ZD4D7Y8KGAS4G",
-        "dns_name": get_endpoint + ".",
-        "evaluate_target_health": true,
-      },
-      type: "A",
-    },
+    resource_record_set: record
   }
 
   client.change_resource_record_sets({
@@ -64,23 +50,13 @@ def delete_a_record(zone_id, a_name)
   })
 end
 
-# Dedicated to deleting TXT records created by external-dns
 # TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
-def delete_txt_record(zone_id, txt_name, txt_value)
-  sleep 1
+def delete_txt_record(zone_id, record)
+  sleep 1 # for throttling
   client = Aws::Route53::Client.new
   txt_record = {
     action: "DELETE",
-    resource_record_set: {
-      name: txt_name,
-      ttl: 300,
-      resource_records: [
-        {
-          value: txt_value,
-        },
-      ],
-      type: "TXT",
-    },
+    resource_record_set: record
   }
 
   client.change_resource_record_sets({
@@ -100,16 +76,15 @@ def cleanup_zone(domain, namespace, ingress_name, zone_id = nil)
   end
   
   records=get_zone_records(zone_id)
+
   if !is_zone_empty?(records)
     records.each do |record| 
-
       case record[:type]
         when "A"
-          delete_a_record(zone_id, record[:name])
+          delete_a_record(zone_id, record)
         when "TXT"
-          delete_txt_record(zone_id, record[:name], record[:value][0])
+          delete_txt_record(zone_id, record)
        end
-
     end
   end
 
