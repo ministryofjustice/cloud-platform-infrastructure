@@ -8,7 +8,6 @@ def get_zone_by_name(domain)
     dns_name: domain,
     max_items: 1,
   })
-
   zone_id = zones.hosted_zones[0].id.tr("/hostedzone/", "")
 
 end
@@ -39,18 +38,18 @@ end
 
 # Dedicated to A record created by External DNS
 # TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
-def delete_a_record(zone_id, domain_name, namespace, ingress_name)
+def delete_a_record(zone_id, a_name)
   sleep 1
   client = Aws::Route53::Client.new
 
   a_record = {
     action: "DELETE",
     resource_record_set: {
-      name: domain_name,
+      name: a_name,
       alias_target: {
         # ZD4D7Y8KGAS4G this zone is the default AWS zone for ELB records, in eu-west-2
         "hosted_zone_id": "ZD4D7Y8KGAS4G",
-        "dns_name": get_ingress_endpoint(namespace, ingress_name) + ".",
+        "dns_name": get_endpoint + ".",
         "evaluate_target_health": true,
       },
       type: "A",
@@ -67,17 +66,17 @@ end
 
 # Dedicated to deleting TXT records created by external-dns
 # TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
-def delete_txt_record(zone_id, domain_name, namespace)
+def delete_txt_record(zone_id, txt_name, txt_value)
   sleep 1
   client = Aws::Route53::Client.new
   txt_record = {
     action: "DELETE",
     resource_record_set: {
-      name: "_external_dns.#{domain_name}",
+      name: txt_name,
       ttl: 300,
       resource_records: [
         {
-          value: %("heritage=external-dns,external-dns/owner=default,external-dns/resource=ingress/#{namespace}/#{domain_name}"),
+          value: txt_value,
         },
       ],
       type: "TXT",
@@ -92,16 +91,6 @@ def delete_txt_record(zone_id, domain_name, namespace)
   })
 end
 
-# Checks if the zone is empty, then deletes
-# if not empty, it will assume it contains one A record and one TXT record created by external-dns
-def cleanup_zone(zone_id, domain, namespace, ingress_name)
-  if is_zone_empty?(zone_id)
-    # delete_zone(zone_id)
-  else
-    delete_a_record(zone_id, domain, namespace, ingress_name)
-    delete_txt_record(zone_id, domain, namespace)
-  end
-end
 
 # Checks if the zone is empty, then deletes
 # if not empty, it will assume it contains one A record and one TXT record created by external-dns
@@ -109,20 +98,26 @@ def cleanup_zone(domain, namespace, ingress_name, zone_id = nil)
   if zone_id.nil?
     zone_id = get_zone_by_name(domain)
   end
-
-  if !is_zone_empty?(zone_id)
-    delete_a_record(zone_id, domain, namespace, ingress_name)
-    delete_txt_record(zone_id, domain, namespace)
-  end
   
+  records=get_zone_records(zone_id)
+  if !is_zone_empty?(records)
+    records.each do |record| 
+
+      case record[:type]
+        when "A"
+          delete_a_record(zone_id, record[:name])
+        when "TXT"
+          delete_txt_record(zone_id, record[:name], record[:value][0])
+       end
+
+    end
+  end
+
 end
 
 # Checks if a zone is empty
 # A zone is considered empty if it only contains one SOA and one NS record
-# TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
-def is_zone_empty?(zone_id)
-  sleep 1
-  records = get_zone_records(zone_id)
+def is_zone_empty?(records)
   # If there is any more than 2 records, the zone is not empty
   !(records.size > 2)
 end
