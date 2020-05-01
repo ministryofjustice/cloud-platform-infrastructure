@@ -179,11 +179,6 @@ def get_ingresses(namespace)
   kubectl_items "get ingresses -n #{namespace}"
 end
 
-def get_endpoint
-  json=kubectl_get "get svc -n ingress-controllers nginx-ingress-acme-controller"
-  json.dig("status", "loadBalancer", "ingress")[0]["hostname"]
-end
-
 def get_nodes
   kubectl_items "get nodes"
 end
