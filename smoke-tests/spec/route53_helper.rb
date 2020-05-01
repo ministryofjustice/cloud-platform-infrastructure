@@ -14,7 +14,6 @@ def create_zone(domain)
   )
 end
 
-
 # Retrieves a list of records from an existing Route53 zones
 # Expect a zone_id in input
 # Returns an array of hashes {type, name, value} of records.
@@ -43,4 +42,3 @@ def delete_zone(zone_id)
     id: zone_id
   )
 end
-
