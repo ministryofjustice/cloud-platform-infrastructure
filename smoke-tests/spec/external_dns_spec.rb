@@ -1,10 +1,9 @@
 require "spec_helper"
 
-
 # This test can only be ran against live-1. Test clusters do not have enough privileges.
 describe "external DNS", "live-1": true do
   let(:domain) { "integrationtest.service.justice.gov.uk" } # That zone already exists
-  zone_id = "Z02429076QQMAO8KXV68"  # integrationtest.service.justice.gov.uk zone_id
+  zone_id = "Z02429076QQMAO8KXV68" # integrationtest.service.justice.gov.uk zone_id
 
   namespace = "integrationtest-dns-#{readable_timestamp}"
   let(:ingress_domain) { domain }
@@ -43,7 +42,7 @@ describe "external DNS", "live-1": true do
       # an A record should be created
       it "it creates an A record" do
         records = get_zone_records(zone_id)
-        A_record = records.select {|r| r.type == "A" }
+        A_record = records.select { |r| r.type == "A" }
         expect(A_record).not_to be_empty
       end
     end

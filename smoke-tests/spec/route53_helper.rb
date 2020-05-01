@@ -9,8 +9,8 @@ def create_zone(domain)
     caller_reference: readable_timestamp, # required, different each time
     hosted_zone_config: {
       comment: "integrationtest",
-      private_zone: false,
-    },
+      private_zone: false
+    }
   )
 end
 
@@ -28,13 +28,13 @@ def create_delegation_set(child_zone, parent_id)
             name: child_zone.hosted_zone.name,
             resource_records: child_zone.delegation_set.name_servers.map { |ns| {value: ns} },
             ttl: 60,
-            type: "NS",
-          },
-        },
+            type: "NS"
+          }
+        }
       ],
-      comment: "integrationtest",
+      comment: "integrationtest"
     },
-    hosted_zone_id: parent_id,
+    hosted_zone_id: parent_id
   )
 end
 
@@ -50,7 +50,7 @@ def get_zone_records(zone_id)
   sleep 1
   client = Aws::Route53::Client.new
   records = client.list_resource_record_sets(
-    hosted_zone_id: zone_id, # required
+    hosted_zone_id: zone_id # required
   )
 
   records.resource_record_sets
@@ -63,7 +63,7 @@ def delete_zone(zone_id)
   sleep 1
   client = Aws::Route53::Client.new
   client.delete_hosted_zone(
-    id: zone_id,
+    id: zone_id
   )
 end
 
@@ -81,12 +81,12 @@ def delete_delegation_set(child_zone, parent_id)
             name: child_zone.hosted_zone.name,
             resource_records: child_zone.delegation_set.name_servers.map { |ns| {value: ns} },
             ttl: 60,
-            type: "NS",
-          },
-        },
+            type: "NS"
+          }
+        }
       ],
-      comment: "integrationtest",
+      comment: "integrationtest"
     },
-    hosted_zone_id: parent_id,
+    hosted_zone_id: parent_id
   )
 end
