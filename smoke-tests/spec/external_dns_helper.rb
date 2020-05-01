@@ -45,8 +45,8 @@ def delete_a_record(zone_id, record)
   client.change_resource_record_sets({
     hosted_zone_id: zone_id,
     change_batch: {
-      changes: [a_record],
-    },
+      changes: [a_record]
+    }
   })
 end
 
@@ -62,8 +62,8 @@ def delete_txt_record(zone_id, record)
   client.change_resource_record_sets({
     hosted_zone_id: zone_id,
     change_batch: {
-      changes: [txt_record],
-    },
+      changes: [txt_record]
+    }
   })
 end
 
