@@ -53,7 +53,7 @@ def get_zone_records(zone_id)
     hosted_zone_id: zone_id, # required
   )
 
-  records.resource_record_sets.collect { |r| {type: r.type, name: r.name, value: r.resource_records.map { |item| item.value }} }
+  records.resource_record_sets
 end
 
 # Deletes a hosted zone.
