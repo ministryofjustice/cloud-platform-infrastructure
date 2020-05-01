@@ -4,7 +4,7 @@ require "spec_helper"
 describe "external DNS", "live-1": true do
 
   let(:domain) { "integrationtest.service.justice.gov.uk" } # That zone already exists
-  zone = "Z02429076QQMAO8KXV68"  # integrationtest.service.justice.gov.uk zone_id
+  zone_id = "Z02429076QQMAO8KXV68"  # integrationtest.service.justice.gov.uk zone_id
 
   namespace = "integrationtest-dns-#{readable_timestamp}"
   let(:ingress_domain) { domain }
@@ -29,7 +29,7 @@ describe "external DNS", "live-1": true do
     end
 
     after do
-      cleanup_zone(domain, namespace, ingress_name, zone)
+      cleanup_zone(domain, namespace, ingress_name, zone_id)
       delete_namespace(namespace)
     end
 
@@ -42,7 +42,7 @@ describe "external DNS", "live-1": true do
 
       # an A record should be created
       it "it creates an A record" do
-        records = get_zone_records(zone)
+        records = get_zone_records(zone_id)
         record_types = records.map { |rec| rec.fetch(:type) }
         expect(record_types).to include("A")
       end
