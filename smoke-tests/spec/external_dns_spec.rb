@@ -4,7 +4,6 @@ ZONE_ID = "Z02429076QQMAO8KXV68" # integrationtest.service.justice.gov.uk zone_i
 
 # This test can only be ran against live-1. Test clusters do not have enough privileges.
 describe "external DNS", "live-1": true do
-
   let(:domain) { "integrationtest.service.justice.gov.uk" } # That zone already exists
   namespace = "integrationtest-dns-#{readable_timestamp}"
   let(:ingress_domain) { domain }
