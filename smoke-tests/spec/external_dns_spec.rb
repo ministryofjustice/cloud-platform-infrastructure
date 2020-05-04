@@ -1,16 +1,16 @@
 require "spec_helper"
 
+ZONE_ID = "Z02429076QQMAO8KXV68" # integrationtest.service.justice.gov.uk zone_id
+
 # This test can only be ran against live-1. Test clusters do not have enough privileges.
 describe "external DNS", "live-1": true do
   let(:domain) { "integrationtest.service.justice.gov.uk" } # That zone already exists
-  zone = "Z02429076QQMAO8KXV68" # integrationtest.service.justice.gov.uk zone_id
-
   namespace = "integrationtest-dns-#{readable_timestamp}"
   let(:ingress_domain) { domain }
   let(:ingress_name) { domain }
   let(:fixture_name) { "spec/fixtures/external-dns-ingress.yaml.erb" }
 
-  # NOTE: Two specs in this file can fail with the following errors:
+  # NOTE: The spec in this file can fail with the following error:
   #
   # 1) external DNS when zone matches ingress domain and an ingress is created it creates an A record
   #    Failure/Error: expect(record_types).to include("A")
@@ -23,11 +23,12 @@ describe "external DNS", "live-1": true do
 
   context "when zone matches ingress domain" do
     before do
+      cleanup_zone(domain, namespace, ingress_name)
       create_namespace(namespace)
     end
 
     after do
-      cleanup_zone(zone, domain, namespace, ingress_name)
+      cleanup_zone(domain, namespace, ingress_name, ZONE_ID)
       delete_namespace(namespace)
     end
 
@@ -40,9 +41,9 @@ describe "external DNS", "live-1": true do
 
       # an A record should be created
       it "it creates an A record" do
-        records = get_zone_records(zone)
-        record_types = records.map { |rec| rec.fetch(:type) }
-        expect(record_types).to include("A")
+        records = get_zone_records(ZONE_ID)
+        A_record = records.select { |r| r.type == "A" }
+        expect(A_record).not_to be_empty
       end
     end
   end
