@@ -27,7 +27,6 @@ def delete_ingress(namespace, ingress_name)
   end
 end
 
-
 # Dedicated to A record created by External DNS
 # TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
 def delete_a_record(zone_id, record)
@@ -86,17 +85,17 @@ def cleanup_zone(domain, namespace, ingress_name, zone_id = nil)
   if zone_id.nil?
     zone_id = get_zone_by_name(domain)
   end
-  
-  records=get_zone_records(zone_id)
+
+  records = get_zone_records(zone_id)
 
   if records.size > 2
-    records.each do |record| 
+    records.each do |record|
       case record[:type]
         when "A"
           delete_record(zone_id, record)
         when "TXT"
           delete_record(zone_id, record)
-       end
+      end
     end
   end
 end
