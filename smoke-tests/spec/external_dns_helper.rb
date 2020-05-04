@@ -27,43 +27,6 @@ def delete_ingress(namespace, ingress_name)
   end
 end
 
-
-# Dedicated to A record created by External DNS
-# TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
-def delete_a_record(zone_id, record)
-  sleep 1 # for throttling
-  client = Aws::Route53::Client.new
-
-  a_record = {
-    action: "DELETE",
-    resource_record_set: record
-  }
-
-  client.change_resource_record_sets({
-    hosted_zone_id: zone_id,
-    change_batch: {
-      changes: [a_record]
-    }
-  })
-end
-
-# TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
-def delete_txt_record(zone_id, record)
-  sleep 1 # for throttling
-  client = Aws::Route53::Client.new
-  txt_record = {
-    action: "DELETE",
-    resource_record_set: record
-  }
-
-  client.change_resource_record_sets({
-    hosted_zone_id: zone_id,
-    change_batch: {
-      changes: [txt_record]
-    }
-  })
-end
-
 def delete_record(zone_id, record)
   sleep 1 # for throttling
   client = Aws::Route53::Client.new
