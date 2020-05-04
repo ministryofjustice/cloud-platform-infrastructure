@@ -7,7 +7,7 @@ def get_zone_by_name(domain)
     dns_name: domain,
     max_items: 1
   })
-  zone_id = zones.hosted_zones[0].id.tr("/hostedzone/", "")
+  zones.hosted_zones[0].id.tr("/hostedzone/", "")
 end
 
 # Expects a the ingress template to exist at fixture_name
@@ -26,6 +26,7 @@ def delete_ingress(namespace, ingress_name)
     execute("kubectl delete ingress #{ingress_name} -n #{namespace}")
   end
 end
+
 
 # Dedicated to A record created by External DNS
 # TODO: sleep added to avoid AWS Route53 API throttling errors. Remove once that issue is resolved.
@@ -63,30 +64,39 @@ def delete_txt_record(zone_id, record)
   })
 end
 
+def delete_record(zone_id, record)
+  sleep 1 # for throttling
+  client = Aws::Route53::Client.new
+  record_change = {
+    action: "DELETE",
+    resource_record_set: record
+  }
+
+  client.change_resource_record_sets({
+    hosted_zone_id: zone_id,
+    change_batch: {
+      changes: [record_change]
+    }
+  })
+end
+
 # Checks if the zone is empty, then deletes
 # if not empty, it will assume it contains one A record and one TXT record created by external-dns
 def cleanup_zone(domain, namespace, ingress_name, zone_id = nil)
   if zone_id.nil?
     zone_id = get_zone_by_name(domain)
   end
+  
+  records=get_zone_records(zone_id)
 
-  records = get_zone_records(zone_id)
-
-  unless is_zone_empty?(records)
-    records.each do |record|
+  if records.size > 2
+    records.each do |record| 
       case record[:type]
         when "A"
-          delete_a_record(zone_id, record)
+          delete_record(zone_id, record)
         when "TXT"
-          delete_txt_record(zone_id, record)
-      end
+          delete_record(zone_id, record)
+       end
     end
   end
-end
-
-# Checks if a zone is empty
-# A zone is considered empty if it only contains one SOA and one NS record
-def is_zone_empty?(records)
-  # If there is any more than 2 records, the zone is not empty
-  !(records.size > 2)
 end
