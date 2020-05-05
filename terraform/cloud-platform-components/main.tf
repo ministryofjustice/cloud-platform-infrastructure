@@ -69,12 +69,6 @@ data "helm_repository" "cloud_platform" {
   url  = "https://ministryofjustice.github.io/cloud-platform-helm-charts"
 }
 
-provider "aws" {
-  alias   = "dsd"
-  profile = "moj-dsd"
-  region  = "eu-west-1"
-}
-
 locals {
   live_workspace = "live-1"
   live_domain    = "cloud-platform.service.justice.gov.uk"
