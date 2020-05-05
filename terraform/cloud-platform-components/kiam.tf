@@ -141,7 +141,6 @@ resource "helm_release" "kiam" {
   namespace     = kubernetes_namespace.kiam.id
   version       = "2.4.0"
   recreate_pods = "true"
-  version       = "2.4.0"
 
   values = [
     data.template_file.kiam.rendered,
