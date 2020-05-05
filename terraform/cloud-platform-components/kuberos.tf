@@ -1,6 +1,29 @@
+#############
+# Namespace #
+#############
+
+resource "kubernetes_namespace" "kuberos" {
+  metadata {
+    name = "kuberos"
+
+    labels = {
+      "name"                                           = "kuberos"
+      "cloud-platform.justice.gov.uk/environment-name" = "production"
+      "cloud-platform.justice.gov.uk/is-production"    = "true"
+    }
+
+    annotations = {
+      "cloud-platform.justice.gov.uk/application"   = "Kuberos"
+      "cloud-platform.justice.gov.uk/business-unit" = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/kuberos"
+    }
+  }
+}
+
 resource "helm_release" "kuberos" {
   name          = "kuberos"
-  namespace     = "kuberos"
+  namespace     = kubernetes_namespace.kuberos.id
   chart         = "kuberos"
   repository    = data.helm_repository.cloud_platform.metadata[0].name
   recreate_pods = true
