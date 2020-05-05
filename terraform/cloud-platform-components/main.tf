@@ -75,12 +75,6 @@ data "helm_repository" "stable" {
   url  = "https://kubernetes-charts.storage.googleapis.com"
 }
 
-provider "aws" {
-  alias   = "dsd"
-  profile = "moj-dsd"
-  region  = "eu-west-1"
-}
-
 locals {
   live_workspace = "live-1"
   live_domain    = "cloud-platform.service.justice.gov.uk"
