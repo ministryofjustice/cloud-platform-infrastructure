@@ -69,6 +69,12 @@ data "helm_repository" "cloud_platform" {
   url  = "https://ministryofjustice.github.io/cloud-platform-helm-charts"
 }
 
+# Stable Helm Chart repository
+data "helm_repository" "stable" {
+  name = "stable"
+  url  = "https://kubernetes-charts.storage.googleapis.com"
+}
+
 provider "aws" {
   alias   = "dsd"
   profile = "moj-dsd"
