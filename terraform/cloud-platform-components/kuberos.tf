@@ -8,17 +8,15 @@ resource "kubernetes_namespace" "kuberos" {
 
     labels = {
       "name"                                           = "kuberos"
-      "component"                                      = "kuberos"
       "cloud-platform.justice.gov.uk/environment-name" = "production"
       "cloud-platform.justice.gov.uk/is-production"    = "true"
     }
 
     annotations = {
-      "cloud-platform.justice.gov.uk/application"                   = "Kubernetes kuberos component"
-      "cloud-platform.justice.gov.uk/business-unit"                 = "cloud-platform"
-      "cloud-platform.justice.gov.uk/owner"                         = "Cloud Platform: platforms@digital.justice.gov.uk"
-      "cloud-platform.justice.gov.uk/source-code"                   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
-      "cloud-platform.justice.gov.uk/can-use-loadbalancer-services" = "true"
+      "cloud-platform.justice.gov.uk/application"   = "Kuberos"
+      "cloud-platform.justice.gov.uk/business-unit" = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/kuberos"
     }
   }
 }

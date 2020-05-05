@@ -14,11 +14,10 @@ resource "kubernetes_namespace" "kiam" {
     }
 
     annotations = {
-      "cloud-platform.justice.gov.uk/application"                   = "Kubernetes kiam component"
-      "cloud-platform.justice.gov.uk/business-unit"                 = "cloud-platform"
-      "cloud-platform.justice.gov.uk/owner"                         = "Cloud Platform: platforms@digital.justice.gov.uk"
-      "cloud-platform.justice.gov.uk/source-code"                   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
-      "cloud-platform.justice.gov.uk/can-use-loadbalancer-services" = "true"
+      "cloud-platform.justice.gov.uk/application"   = "KIAM"
+      "cloud-platform.justice.gov.uk/business-unit" = "cloud-platform"
+      "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/kiam.tf"
     }
   }
 }
