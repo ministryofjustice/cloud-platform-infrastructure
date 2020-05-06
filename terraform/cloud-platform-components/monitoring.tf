@@ -15,7 +15,7 @@ module "prometheus" {
   oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
 
-  dependence_deploy = null_resource.deploy
+  dependence_deploy = "null_resource.deploy"
   dependence_opa    = module.opa.helm_opa_status
 }
 
