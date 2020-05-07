@@ -33,7 +33,8 @@ provider "helm" {
 ###############
 
 module "components" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-eks-components?ref=0.3.2"
+  #source = "github.com/ministryofjustice/cloud-platform-terraform-eks-components?ref=0.3.2"
+  source = "/Users/mogaal/workspace/github/ministryofjustice/cloud-platform-terraform-eks-components"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   pagerduty_config             = var.pagerduty_config
