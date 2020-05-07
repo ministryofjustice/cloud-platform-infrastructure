@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Edit this to specify the cluster and VPC to destroy
-CLUSTER = "helm-3"
+CLUSTER = "cp-2503-1123"
 VPC_NAME = CLUSTER
 
 # If any namespaces exist in the cluster which are not
@@ -25,9 +25,10 @@ SYSTEM_NAMESPACES = %w[
 require "open3"
 
 def main
+  raise "Please check the code carefully before executing this script."
 
   target_cluster
-  #terraform_starter_pack
+  terraform_starter_pack
   abort_if_user_namespaces_exist
   terraform_components
   kops_cluster
