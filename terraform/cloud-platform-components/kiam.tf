@@ -139,8 +139,8 @@ resource "helm_release" "kiam" {
   chart         = "kiam"
   repository    = data.helm_repository.stable.metadata[0].name
   namespace     = kubernetes_namespace.kiam.id
-  version       = "2.4.0"
   recreate_pods = "true"
+  version       = "2.4.0"
 
   values = [
     data.template_file.kiam.rendered,
