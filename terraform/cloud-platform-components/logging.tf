@@ -9,6 +9,6 @@ module "logging" {
   elasticsearch_audit_host = replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-audit-dq5bdnjokj4yt7qozshmifug6e.eu-west-2.es.amazonaws.com" : ""
 
   dependence_prometheus       = module.prometheus.helm_prometheus_operator_status
-  dependence_deploy           = "nothing-helm-3-is-live-now"
+  dependence_deploy           = "null_resource.deploy"
   dependence_priority_classes = kubernetes_priority_class.node_critical
 }
