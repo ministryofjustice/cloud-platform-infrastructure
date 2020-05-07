@@ -25,9 +25,8 @@ SYSTEM_NAMESPACES = %w[
 require "open3"
 
 def main
-
   target_cluster
-  #terraform_starter_pack
+  # terraform_starter_pack
   abort_if_user_namespaces_exist
   terraform_components
   kops_cluster
