@@ -9,7 +9,6 @@ describe "Prometheus Rules", speed: "fast" do
       "prometheus-operator-custom-kubernetes-apps.rules",
       "prometheus-operator-k8s.rules",
       "prometheus-operator-kube-apiserver.rules",
-      "prometheus-operator-kubernetes-absent",
       "prometheus-operator-kubernetes-resources",
       "prometheus-operator-kubernetes-storage",
       "prometheus-operator-kubernetes-system",
@@ -31,7 +30,6 @@ describe "Prometheus Rules", speed: "fast" do
 
     expected = [
       "prometheus-operator-etcd",
-      "prometheus-operator-kube-apiserver-error",
       "prometheus-operator-kube-scheduler.rules",
       "prometheus-operator-kubernetes-system-controller-manager",
       "prometheus-operator-kubernetes-system-scheduler"
