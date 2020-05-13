@@ -18,6 +18,7 @@ SYSTEM_NAMESPACES = %w[
   kuberos
   logging
   monitoring
+  starter-pack
   opa
   velero
 ]
