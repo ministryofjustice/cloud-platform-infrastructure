@@ -18,6 +18,7 @@ SYSTEM_NAMESPACES = %w[
   kuberos
   logging
   monitoring
+  starter-pack
   opa
   velero
 ]
@@ -28,7 +29,6 @@ def main
   raise "Please check the code carefully before executing this script."
 
   target_cluster
-  terraform_starter_pack
   abort_if_user_namespaces_exist
   terraform_components
   kops_cluster
@@ -39,13 +39,6 @@ end
 
 def target_cluster
   execute "kops export kubecfg #{cluster_long_name}"
-end
-
-def terraform_starter_pack
-  dir = "terraform/cloud-platform-starter-pack"
-  tf_init dir
-  tf_workspace_select(dir, CLUSTER)
-  tf_destroy(dir)
 end
 
 # If someone has deployed something into this cluster, there might be
@@ -87,7 +80,7 @@ def terraform_base
 end
 
 def terraform_workspaces
-  ["terraform/cloud-platform", "terraform/cloud-platform-components", "terraform/cloud-platform-starter-pack"].each do |dir|
+  ["terraform/cloud-platform", "terraform/cloud-platform-components"].each do |dir|
     execute "cd #{dir}; terraform workspace select default; terraform workspace delete #{CLUSTER}"
   end
 end
