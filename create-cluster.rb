@@ -46,7 +46,6 @@ def main(options)
   gitcrypt_unlock = options[:gitcrypt_unlock]
   integration_tests = options[:integration_tests]
   extra_wait = options[:extra_wait]
-  starter_pack = options[:starter_pack]
 
   vpc_name = cluster_name if vpc_name.nil?
   usage if cluster_name.nil? || cluster_size.nil?
@@ -60,7 +59,6 @@ def main(options)
   run_kops(cluster_name)
   sleep(extra_wait)
   install_components(cluster_name)
-  deploy_starter_pack(cluster_name) if starter_pack
   run_integration_tests(cluster_name) if integration_tests
 
   run_and_output "kubectl cluster-info"
@@ -260,22 +258,8 @@ def run_integration_tests(cluster_name)
   run_and_output(cmd)
 end
 
-def deploy_starter_pack(cluster_name)
-  dir = "terraform/cloud-platform-starter-pack/"
-  execute "cd #{dir}; rm -rf .terraform"
-  switch_terraform_workspace(dir, cluster_name)
-
-  cmd = "cd #{dir}; terraform apply -auto-approve"
-  if cmd_successful?(cmd)
-    log "Starter pack deployed successfully"
-  else
-    log "Starter pack failed to deploy. Aborting."
-    exit 1
-  end
-end
-
 def parse_options
-  options = {cluster_size: SMALL, gitcrypt_unlock: true, integration_tests: true, extra_wait: 0, starter_pack: true}
+  options = {cluster_size: SMALL, gitcrypt_unlock: true, integration_tests: true, extra_wait: 0}
 
   OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
@@ -300,10 +284,6 @@ def parse_options
 
     opts.on("-s", "--size CLUSTER-SIZE", [SMALL, MEDIUM, PRODUCTION], "Cluster size (#{SMALL} | #{MEDIUM} | #{PRODUCTION})") do |size|
       options[:cluster_size] = size
-    end
-
-    opts.on("-d", "--no-starter-pack", "Don't deploy starter-pack apps after creating the cluster") do |name|
-      options[:starter_pack] = false
     end
 
     opts.on_tail("-h", "--help", "Show help message") do
