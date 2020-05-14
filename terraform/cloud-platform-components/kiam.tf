@@ -147,7 +147,6 @@ resource "helm_release" "kiam" {
   ]
 
   depends_on = [
-    null_resource.deploy,
     module.opa.helm_opa_status,
   ]
 
