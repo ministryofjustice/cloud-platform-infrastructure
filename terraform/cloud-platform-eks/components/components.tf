@@ -17,7 +17,7 @@ module "cert_manager" {
 }
 
 module "cluster_autoscaler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=0.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=0.0.2"
 
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_id              = data.terraform_remote_state.cluster.outputs.cluster_id
