@@ -1,6 +1,6 @@
 
 module "prometheus" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.3.1"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
