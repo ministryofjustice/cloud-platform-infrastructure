@@ -1,6 +1,6 @@
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.5"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -17,7 +17,7 @@ module "cert_manager" {
 }
 
 module "cluster_autoscaler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=0.0.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=0.0.3"
 
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_id              = data.terraform_remote_state.cluster.outputs.cluster_id
@@ -25,7 +25,7 @@ module "cluster_autoscaler" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.0.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.0.4"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -65,7 +65,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.2.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.3.1"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   iam_role_nodes               = data.aws_iam_role.nodes.arn
@@ -93,7 +93,7 @@ module "opa" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.4"
 
   iam_role_nodes        = data.aws_iam_role.nodes.arn
   dependence_prometheus = module.monitoring.helm_prometheus_operator_status
