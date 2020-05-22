@@ -29,7 +29,6 @@ describe "daemonsets", speed: "fast" do
       "calico-node",
       "fluentd-es",
       "kube-proxy",
-      "kube2iam",
       "prometheus-operator-prometheus-node-exporter"
     ]
 
@@ -80,26 +79,6 @@ describe "daemonsets", speed: "fast" do
 
       it "doesn't run on masters" do
         expect(app_node_ips & master_ips).to be_empty
-      end
-    end
-  end
-
-  context "kube2iam", "eks-manager": true do
-    let(:pods) { get_running_app_pods("kube2iam", "kube2iam") }
-
-    let(:app_node_ips) {
-      pod_ips(pods.filter { |pod| pod.dig("metadata", "labels", "component") == component })
-    }
-
-    specify "all containers are running" do
-      expect(all_containers_running?(pods)).to eq(true)
-    end
-
-    context "agent" do
-      let(:component) { "agent" }
-
-      it "runs on workers" do
-        expect(worker_ips).to eq(app_node_ips)
       end
     end
   end
