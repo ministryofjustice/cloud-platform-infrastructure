@@ -64,7 +64,14 @@ def terraform_components
   # prometheus_operator often fails to delete cleanly if anything has
   # happened to the open policy agent beforehand. Delete it first to
   # avoid any issues
-  tf_destroy(dir, "module.prometheus")
+  begin
+    retries ||= 0
+    puts "Retry ##{ retries } to destroy prometheus due to CRDs missing and deleting prometheus resources"
+    tf_destroy(dir, "module.prometheus")
+    raise
+  rescue
+    retry if (retries += 1) < 2  
+  end
   tf_destroy(dir)
 end
 
