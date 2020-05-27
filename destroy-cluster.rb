@@ -66,11 +66,11 @@ def terraform_components
   # avoid any issues
   begin
     retries ||= 0
-    puts "Retry ##{ retries } to destroy prometheus due to CRDs missing and deleting prometheus resources"
+    puts "Retry ##{retries} to destroy prometheus due to CRDs missing and deleting prometheus resources"
     tf_destroy(dir, "module.prometheus")
     raise
   rescue
-    retry if (retries += 1) < 2  
+    retry if (retries += 1) < 2
   end
   tf_destroy(dir)
 end
