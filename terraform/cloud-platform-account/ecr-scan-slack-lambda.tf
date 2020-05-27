@@ -13,7 +13,7 @@ module "webops_ecr_scan_repos_s3_bucket" {
   }
 }
 
-module "example_team_lambda" {
+module "webops_ecr_scan_slack_lambda" {
 
   source = "git::ssh://git@github.com/ministryofjustice/cloud-platform-terraform-lambda?ref=v1.4"
   team_name                = "webops"
