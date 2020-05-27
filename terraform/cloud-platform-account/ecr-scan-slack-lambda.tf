@@ -15,13 +15,7 @@ module "webops_ecr_scan_repos_s3_bucket" {
 
 module "webops_ecr_scan_slack_lambda" {
 
-  source                     = "git::ssh://git@github.com/ministryofjustice/cloud-platform-terraform-lambda?ref=v1.4"
-  team_name                  = "webops"
-  business-unit              = "webops"
-  application                = "webops-ecr-slack-app"
-  is-production              = "true"
-  environment-name           = "development"
-  infrastructure-support     = "example-team@digtal.justice.gov.uk"
+  source                     = "git::ssh://git@github.com/ministryofjustice/cloud-platform-terraform-lambda?ref=v1.0"
   policy_file                = file("resources/ecr-scan-results-slack/policy-lambda.json")
   function_name              = "ecr-scan-results-to-slack"
   handler                    = "lambda_ecr-scan-slack.lambda_handler"
