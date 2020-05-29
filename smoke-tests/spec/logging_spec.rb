@@ -23,7 +23,7 @@ describe "Log collection", "live-1": true do
     # is no easy way to figure out when this has/hasn't happened. This sleep seems to work
     # consistently, but it's possible it may break unexpectedly, at some point.
 
-    sleep 120 # TODO: this is an experimental change (from 60), to see if a longer sleep fixes
+    sleep 180 # TODO: this is an experimental change (from 60), to see if a longer sleep fixes
     #       intermittent pipeline failures
 
     date = Date.today.strftime("%Y.%m.%d")
