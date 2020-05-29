@@ -1,9 +1,12 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: integration-test-helloworld
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: integration-test-app
   template:
     metadata:
       labels:
@@ -29,7 +32,7 @@ spec:
   selector:
     app: integration-test-app
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: integration-test-app-ing
