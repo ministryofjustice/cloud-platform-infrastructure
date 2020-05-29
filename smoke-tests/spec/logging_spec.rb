@@ -39,7 +39,7 @@ describe "Log collection", "live-1": true do
     pod_name = pod.dig("metadata", "name")
     json = get_pod_logs(namespace, pod_name) # results from the elasticsearch query
     hash = JSON.parse(json)
-    total_hits = hash.fetch("hits").fetch("total")
+    total_hits = hash.fetch("hits").fetch("total").fetch("value")
     expect(total_hits).to be > 0 # i.e. there are some log events for our namespace
   end
 end
