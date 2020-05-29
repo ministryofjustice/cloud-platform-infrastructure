@@ -79,7 +79,7 @@ data "aws_iam_policy_document" "live_1" {
 resource "aws_elasticsearch_domain" "live_1" {
   domain_name           = local.live_domain
   provider              = aws.cloud-platform
-  elasticsearch_version = "6.8"
+  elasticsearch_version = "7.4"
 
   cluster_config {
     instance_type            = "m4.2xlarge.elasticsearch"
