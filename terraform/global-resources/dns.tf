@@ -1,22 +1,4 @@
 # Reference to existing base DNS zone
-data "aws_route53_zone" "integration_dsd_io" {
-  name = "integration.dsd.io."
-}
-
-# parent DNS zone for all clusters
-resource "aws_route53_zone" "k8s_integration_dsd_io" {
-  name = "k8s.integration.dsd.io."
-}
-
-resource "aws_route53_record" "k8s_integration_dsd_io_NS" {
-  zone_id = data.aws_route53_zone.integration_dsd_io.zone_id
-  name    = aws_route53_zone.k8s_integration_dsd_io.name
-  type    = "NS"
-  ttl     = "300"
-
-  records = aws_route53_zone.k8s_integration_dsd_io.name_servers
-}
-
 data "aws_route53_zone" "justice_gov_uk" {
   provider = aws.dsd
   name     = "service.justice.gov.uk."
