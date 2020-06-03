@@ -26,8 +26,6 @@ SYSTEM_NAMESPACES = %w[
 require "open3"
 
 def main
-  raise "Please check the code carefully before executing this script."
-
   target_cluster
   abort_if_user_namespaces_exist
   terraform_components
