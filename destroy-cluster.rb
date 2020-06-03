@@ -220,8 +220,7 @@ def parse_options
   options = {
     dry_run: true,
     cluster_name: nil,
-    vpc_name: nil,
-    destroy_vpc: true
+    destroy_vpc: true,
   }
 
   OptionParser.new { |opts|
@@ -230,7 +229,7 @@ def parse_options
     end
 
     opts.on("-v", "--vpc-name VPC-NAME", "VPC to destroy, defaults to CLUSTER-NAME") do |name|
-      options[:vpc_name] = name || options[:cluster_name]
+      options[:vpc_name] = name
     end
 
     opts.on("-d", "--dont-destroy-vpc", "Supply this flag to leave the VPC intact") do |dont_destroy_vpc|
@@ -246,6 +245,9 @@ def parse_options
       exit
     end
   }.parse!
+
+  # By default, we name our VPCs the same as the cluster
+  options[:vpc_name] ||= options[:cluster_name]
 
   options
 end
