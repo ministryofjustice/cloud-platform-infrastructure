@@ -25,7 +25,7 @@ module "cluster_autoscaler" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.1.0"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -33,7 +33,6 @@ module "external_dns" {
 
   # EKS doesn't use KIAM but it is a requirement for the module.
   dependence_kiam   = ""
-  dependence_deploy = "null_resource.deploy"
 
   # This section is for EKS
   eks                         = true
