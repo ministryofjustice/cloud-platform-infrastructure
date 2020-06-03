@@ -1,9 +1,5 @@
 #!/usr/bin/env ruby
 
-# Edit this to specify the cluster and VPC to destroy
-CLUSTER = "cp-2503-1123"
-VPC_NAME = CLUSTER
-
 # If any namespaces exist in the cluster which are not
 # listed here, the destroy script will abort.
 SYSTEM_NAMESPACES = %w[
@@ -23,18 +19,14 @@ SYSTEM_NAMESPACES = %w[
   velero
 ]
 
+MAX_CLUSTER_NAME_LENGTH = 12
 REQUIRED_ENV_VARS = %w[AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE]
 REQUIRED_EXECUTABLES = %w[git-crypt terraform helm aws kops ssh-keygen]
 REQUIRED_AWS_PROFILES = %w[moj-cp]
-
-# copied from create-cluster.rb
-MAX_CLUSTER_NAME_LENGTH = 12
-
 LIVE_CLUSTER_NAME_REXP = /live/
 
 require "open3"
 require "optparse"
-require "pry-byebug"
 
 class ClusterDeleter
   attr_reader :options
@@ -44,29 +36,26 @@ class ClusterDeleter
   end
 
   def run
-    if dry_run?
-      puts "DRY-RUN: No changes will be made to the cluster"
-    end
+    puts "DRY-RUN: No changes will be made to the cluster" if dry_run?
 
     check_prerequisites
-
-    cluster_name = options.fetch(:cluster_name)
-    target_cluster(cluster_long_name(cluster_name))
-
-    # TODO abort_if_user_namespaces_exist
-
+    target_cluster
+    abort_if_user_namespaces_exist
     terraform_components
-
     kops_cluster
     terraform_base
     terraform_workspaces
-    # terraform_vpc if destroy_vpc? # Un comment to destroy the VPC
+    terraform_vpc if destroy_vpc? # Un comment to destroy the VPC
   end
 
   private
 
   def dry_run?
     !!(options[:dry_run])
+  end
+
+  def destroy_vpc?
+    !!(options[:destroy_vpc])
   end
 
   def check_prerequisites
@@ -78,7 +67,6 @@ class ClusterDeleter
   end
 
   def check_options
-    cluster_name = options[:cluster_name]
     raise "No cluster name supplied" if cluster_name.nil?
     raise "You may not destroy production clusters" if LIVE_CLUSTER_NAME_REXP.match(cluster_name)
   end
@@ -111,14 +99,13 @@ class ClusterDeleter
   end
 
   def check_name_length
-    cluster_name = options[:cluster_name]
     l = cluster_name.length
     raise "ERROR Cluster name #{cluster_name} too long (#{l} chars). Max. is #{MAX_CLUSTER_NAME_LENGTH}." \
       unless l <= MAX_CLUSTER_NAME_LENGTH
   end
 
-  def target_cluster(cluster)
-    execute("kops export kubecfg #{cluster}", true)
+  def target_cluster
+    execute("kops export kubecfg #{cluster_long_name}", true)
   end
 
   # If someone has deployed something into this cluster, there might be
@@ -143,7 +130,7 @@ class ClusterDeleter
   def terraform_components
     dir = "terraform/cloud-platform-components"
     tf_init dir
-    tf_workspace_select(dir, CLUSTER)
+    tf_workspace_select(dir, cluster_name)
     # prometheus_operator often fails to delete cleanly if anything has
     # happened to the open policy agent beforehand. Delete it first to
     # avoid any issues
@@ -159,8 +146,7 @@ class ClusterDeleter
   end
 
   def kops_cluster
-    name = options.fetch(:cluster_name)
-    execute "kops delete cluster --name #{cluster_long_name(name)} --yes"
+    execute "kops delete cluster --name #{cluster_long_name} --yes"
   end
 
   def terraform_base
@@ -196,8 +182,12 @@ class ClusterDeleter
     execute "cd #{dir}; terraform destroy #{tgt} -auto-approve"
   end
 
-  def cluster_long_name(name)
-    "#{name}.cloud-platform.service.justice.gov.uk"
+  def cluster_name
+    options[:cluster_name]
+  end
+
+  def cluster_long_name
+    "#{cluster_name}.cloud-platform.service.justice.gov.uk"
   end
 
   def execute(cmd, execute_in_dry_run = false)
@@ -228,7 +218,7 @@ def parse_options
     dry_run: true,
     cluster_name: nil,
     vpc_name: nil,
-    destroy_vpc: false,
+    destroy_vpc: true,
   }
 
   OptionParser.new { |opts|
@@ -236,12 +226,12 @@ def parse_options
       options[:cluster_name] = name
     end
 
-    opts.on("-v", "--vpc-name VPC-NAME", "VPC to destroy (if --destroy-vpc is specified, defaults to CLUSTER-NAME)") do |name|
+    opts.on("-v", "--vpc-name VPC-NAME", "VPC to destroy, defaults to CLUSTER-NAME") do |name|
       options[:vpc_name] = name || options[:cluster_name]
     end
 
-    opts.on("-d", "--destroy-vpc", "Supply this flag to actually destroy the VPC") do |destroy_vpc|
-      options[:destroy_vpc] = destroy_vpc
+    opts.on("-d", "--dont-destroy-vpc", "Supply this flag to leave the VPC intact") do |dont_destroy_vpc|
+      options[:destroy_vpc] = !dont_destroy_vpc
     end
 
     opts.on("-y", "--yes", "Actually destroy the cluster") do |yes|
