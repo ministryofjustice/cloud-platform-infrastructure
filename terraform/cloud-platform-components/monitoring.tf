@@ -1,6 +1,6 @@
 
 module "prometheus" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.3.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.3.3"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
@@ -15,7 +15,6 @@ module "prometheus" {
   oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
 
-  dependence_deploy = "null_resource.deploy"
-  dependence_opa    = module.opa.helm_opa_status
+  dependence_opa = module.opa.helm_opa_status
 }
 
