@@ -44,15 +44,18 @@ end
 # destroyed. So, we check for any unexpected namespaces, and abort if we find
 # any.
 def abort_if_user_namespaces_exist
-  stdout, _, _ = execute("kubectl get ns -o name | sed 's/namespace.//'")
-  namespaces = stdout.split("\n")
-  user_namespaces = namespaces - SYSTEM_NAMESPACES
   if user_namespaces.any?
     puts "\nPlease delete these namespaces, and any associated AWS resources, before destroying this cluster:"
     user_namespaces.each { |ns| puts "  * #{ns}" }
     puts
     raise
   end
+end
+
+def user_namespaces
+  stdout, _, _ = execute("kubectl get ns -o name | sed 's/namespace.//'")
+  namespaces = stdout.split("\n")
+  namespaces - SYSTEM_NAMESPACES
 end
 
 def terraform_components
