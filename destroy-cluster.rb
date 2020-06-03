@@ -51,11 +51,11 @@ class ClusterDeleter
   private
 
   def dry_run?
-    !!(options[:dry_run])
+    !!options[:dry_run]
   end
 
   def destroy_vpc?
-    !!(options[:destroy_vpc])
+    !!options[:destroy_vpc]
   end
 
   def check_prerequisites
@@ -95,7 +95,7 @@ class ClusterDeleter
     REQUIRED_AWS_PROFILES.each do |profile|
       raise "ERROR Required AWS Profile #{profile} not found." \
         unless creds.grep(/\[#{profile}\]/).any?
-      end
+    end
   end
 
   def check_name_length
@@ -211,14 +211,13 @@ class ClusterDeleter
   end
 end
 
-
 def parse_options
   # set defaults
   options = {
     dry_run: true,
     cluster_name: nil,
     vpc_name: nil,
-    destroy_vpc: true,
+    destroy_vpc: true
   }
 
   OptionParser.new { |opts|
