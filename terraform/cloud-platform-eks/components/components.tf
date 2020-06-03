@@ -72,7 +72,7 @@ module "monitoring" {
   oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
 
-  dependence_opa    = module.opa.helm_opa_status
+  dependence_opa = module.opa.helm_opa_status
 
   # This section is for EKS
   eks                         = true
