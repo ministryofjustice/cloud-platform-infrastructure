@@ -32,7 +32,7 @@ module "external_dns" {
   hostzone            = lookup(var.cluster_r53_resource_maps, terraform.workspace, ["arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}"])
 
   # EKS doesn't use KIAM but it is a requirement for the module.
-  dependence_kiam   = ""
+  dependence_kiam = ""
 
   # This section is for EKS
   eks                         = true
