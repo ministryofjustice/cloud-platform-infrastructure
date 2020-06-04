@@ -28,7 +28,6 @@ describe "external DNS", "live-1": true do
     end
 
     after do
-      cleanup_zone(domain, namespace, ingress_name, ZONE_ID)
       delete_namespace(namespace)
     end
 
@@ -42,8 +41,23 @@ describe "external DNS", "live-1": true do
       # an A record should be created
       it "it creates an A record" do
         records = get_zone_records(ZONE_ID)
-        A_record = records.select { |r| r.type == "A" }
-        expect(A_record).not_to be_empty
+        add_A_record = records.select { |r| r.type == "A" }
+        expect(add_A_record).not_to be_empty
+      end
+    end
+
+    # We have sync configured in external-dns, It should delete the A record, when ingress is deleted.
+    context "and an ingress is deleted" do
+      before do
+        delete_ingress(namespace, ingress_name)
+        sleep 120 # waiting for ext-dns to detect the change
+      end
+
+      # an A record should be deleted
+      it "it deletes an A record" do
+        records = get_zone_records(ZONE_ID)
+        del_A_record = records.select { |r| r.type == "A" }
+        expect(del_A_record).to be_empty
       end
     end
   end
