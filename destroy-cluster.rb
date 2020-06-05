@@ -129,8 +129,8 @@ class ClusterDeleter
 
   def terraform_components
     dir = "terraform/cloud-platform-components"
-    tf_workspace_select(dir, cluster_name)
     tf_init dir
+    tf_workspace_select(dir, cluster_name)
     # prometheus_operator often fails to delete cleanly if anything has
     # happened to the open policy agent beforehand. Delete it first to
     # avoid any issues
@@ -151,8 +151,8 @@ class ClusterDeleter
 
   def terraform_base
     dir = "terraform/cloud-platform"
-    tf_workspace_select(dir, cluster_name)
     tf_init dir
+    tf_workspace_select(dir, cluster_name)
     execute %(cd #{dir}; terraform destroy -var vpc_name="#{vpc_name}" -auto-approve)
   end
 
@@ -164,8 +164,8 @@ class ClusterDeleter
 
   def terraform_vpc
     dir = "terraform/cloud-platform-network"
-    tf_workspace_select(dir, vpc_name)
     tf_init dir
+    tf_workspace_select(dir, vpc_name)
     tf_destroy(dir)
   end
 
