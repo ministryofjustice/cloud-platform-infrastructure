@@ -42,6 +42,7 @@ MACHINE_TYPES = {
 def main(options)
   cluster_name = options[:cluster_name]
   cluster_size = options[:cluster_size]
+  kind = options[:kind]
   vpc_name = options[:vpc_name]
   gitcrypt_unlock = options[:gitcrypt_unlock]
   integration_tests = options[:integration_tests]
@@ -55,12 +56,18 @@ def main(options)
   execute "git-crypt unlock" if gitcrypt_unlock
 
   create_vpc(vpc_name)
-  create_cluster(cluster_name, cluster_size, vpc_name)
-  run_kops(cluster_name)
-  sleep(extra_wait)
-  install_components(cluster_name)
-  run_integration_tests(cluster_name) if integration_tests
+  if kind == "eks"
+    create_cluster_eks(cluster_name, vpc_name)
+    sleep(extra_wait)
+    install_components_eks(cluster_name)
+  else
+    create_cluster_kops(cluster_name, cluster_size, vpc_name)
+    run_kops(cluster_name)
+    sleep(extra_wait)
+    install_components_kops(cluster_name)
+  end
 
+  run_integration_tests(cluster_name) if integration_tests
   run_and_output "kubectl cluster-info"
 end
 
@@ -77,7 +84,7 @@ def create_vpc(vpc_name)
   run_and_output "cd #{dir}; #{tf_apply}"
 end
 
-def create_cluster(cluster_name, cluster_size, vpc_name)
+def create_cluster_kops(cluster_name, cluster_size, vpc_name)
   FileUtils.rm_rf("terraform/cloud-platform/.terraform")
   dir = "terraform/cloud-platform"
   switch_terraform_workspace(dir, cluster_name)
@@ -90,6 +97,20 @@ def create_cluster(cluster_name, cluster_size, vpc_name)
     "-var master_node_machine_type=#{master_node_machine_type}",
     "-var worker_node_machine_type=#{worker_node_machine_type}",
     "-var enable_large_nodesgroup=false",
+    *("-var vpc_name=\"#{vpc_name}\"" if vpc_name),
+    "-auto-approve"
+  ].join(" ")
+
+  run_and_output "cd #{dir}; #{tf_apply}"
+end
+
+def create_cluster_eks(cluster_name, vpc_name)
+  FileUtils.rm_rf("terraform/cloud-platform-eks/.terraform")
+  dir = "terraform/cloud-platform-eks"
+  switch_terraform_workspace(dir, cluster_name)
+
+  tf_apply = [
+    "terraform apply",
     *("-var vpc_name=\"#{vpc_name}\"" if vpc_name),
     "-auto-approve"
   ].join(" ")
@@ -114,7 +135,7 @@ end
 # For some reason, the first terraform apply sometimes fails with an error "could not find a ready tiller pod"
 # This seems to be quite misleading, since adding a delay after 'helm init' makes no difference.
 # A second run of the terraform apply usually works correctly.
-def install_components(cluster_name)
+def install_components_kops(cluster_name)
   dir = "terraform/cloud-platform-components"
   execute "cd #{dir}; rm -rf .terraform"
   switch_terraform_workspace(dir, cluster_name)
@@ -126,6 +147,28 @@ def install_components(cluster_name)
   #
   #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
   #
+
+  cmd = "cd #{dir}; terraform apply -auto-approve"
+  if cmd_successful?(cmd)
+    log "Cluster components installed."
+  else
+    log "Cluster components failed to install. Aborting."
+    exit 1
+  end
+end
+
+def install_components_eks(cluster_name)
+  dir = "terraform/cloud-platform-eks/components"
+  execute "cd #{dir}; rm -rf .terraform"
+  switch_terraform_workspace(dir, cluster_name)
+
+  cmd_update_kubeconfig = "aws eks update-kubeconfig --name #{cluster_name}"
+  if cmd_successful?(cmd_update_kubeconfig)
+    log "Set kubeconfig to the new cluster"
+  else
+    log "Could not set kubeconfig to the new cluster. Aborting."
+    exit 1
+  end
 
   cmd = "cd #{dir}; terraform apply -auto-approve"
   if cmd_successful?(cmd)
@@ -259,7 +302,7 @@ def run_integration_tests(cluster_name)
 end
 
 def parse_options
-  options = {cluster_size: SMALL, gitcrypt_unlock: true, integration_tests: true, extra_wait: 0}
+  options = {cluster_size: SMALL, gitcrypt_unlock: true, integration_tests: true, extra_wait: 0, kind: 'kops' }
 
   OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
@@ -276,6 +319,10 @@ def parse_options
 
     opts.on("-i", "--no-integration-test", "Don't run integration tests after creating the cluster") do |name|
       options[:integration_tests] = false
+    end
+
+    opts.on("-k", "--kind EKS_OR_KOPS", "eks or kops? Create cluster script now supoort EKS, default to kops") do |name|
+      options[:kind] = name
     end
 
     opts.on("-t", "--extra-wait N", Float, "The time between kops validate and deploy of components. We need to wait for DNS propagation") do |n|
