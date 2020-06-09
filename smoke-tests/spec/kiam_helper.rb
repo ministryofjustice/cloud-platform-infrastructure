@@ -30,6 +30,7 @@ class KiamRole
       ensure_cluster_nodes_are_trusted(role)
     else
       role = create_role
+      sleep 90 # waiting for role to get created.
     end
 
     assume_role_policy = fetch_or_create_policy(
