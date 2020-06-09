@@ -7,13 +7,13 @@ class KiamRole
       {
         Effect: "Allow",
         Action: [
-          "sts:AssumeRole",
+          "sts:AssumeRole"
         ],
         Resource: [
-          "*",
-        ],
-      },
-    ],
+          "*"
+        ]
+      }
+    ]
   }
 
   def initialize(args)
@@ -141,16 +141,16 @@ class KiamRole
         {
           Effect: "Allow",
           Principal: {
-            AWS: [cluster_nodes_policy_principal.to_s],
+            AWS: [cluster_nodes_policy_principal.to_s]
           },
-          Action: "sts:AssumeRole",
-        },
-      ],
+          Action: "sts:AssumeRole"
+        }
+      ]
     }
 
     role = iam.create_role(
       role_name: role_name,
-      assume_role_policy_document: node_assume_role_policy_doc.to_json,
+      assume_role_policy_document: node_assume_role_policy_doc.to_json
     )
 
     client.wait_until(:role_exists, role_name: role_name)
