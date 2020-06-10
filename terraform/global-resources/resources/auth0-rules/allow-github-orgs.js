@@ -1,6 +1,6 @@
 function (user, context, callback) {
   var request = require('request');
-  var github_org_whitelist = ['ministryofjustice'];
+  var github_org_allow_list = ['ministryofjustice'];
   // Apply to 'github' connections only
   if(context.connection === 'github'){
     // Get user's Github profile info (an Auth0 user can have multiple
@@ -25,8 +25,8 @@ function (user, context, callback) {
       var user_orgs = JSON.parse(body).map(function(org){
         return org.login;
       });
-      // Check if user is in a whitelisted org, return HTTP 401 if not
-      var authorized = github_org_whitelist.some(function(org){
+      // Check if user is in a permitted org, return HTTP 401 if not
+      var authorized = github_org_allow_list.some(function(org){
         return user_orgs.indexOf(org) !== -1;
       });
       if (!authorized) {
