@@ -1,7 +1,7 @@
-resource "auth0_rule" "whitelist-github-orgs" {
-  name = "whitelist-github-orgs"
+resource "auth0_rule" "allow-github-orgs" {
+  name = "allow-github-orgs"
   script = file(
-    "${path.module}/resources/auth0-rules/whitelist-github-orgs.js",
+    "${path.module}/resources/auth0-rules/allow-github-orgs.js",
   )
   order   = 10
   enabled = true
