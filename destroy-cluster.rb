@@ -157,7 +157,7 @@ class ClusterDeleter
   end
 
   def terraform_workspaces
-    ["terraform/cloud-platform", "terraform/cloud-platform-components"].each do |dir|
+    ["terraform/cloud-platform", "terraform/cloud-platform-components", "terraform/cloud-platform-network"].each do |dir|
       execute "cd #{dir}; terraform workspace select default; terraform workspace delete #{cluster_name}"
     end
   end
