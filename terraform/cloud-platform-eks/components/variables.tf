@@ -35,3 +35,23 @@ variable "cluster_r53_domainfilters" {
     manager = ["manager.cloud-platform.service.justice.gov.uk.", "cloud-platform.service.justice.gov.uk."]
   }
 }
+
+#Concourse vars
+variable "kops_or_eks" {}
+variable "github_auth_client_id" {}      
+variable "github_auth_client_secret" {}    
+variable "github_org" {} 
+variable "github_teams" {}                  
+variable "tf_provider_auth0_client_id" {}              
+variable "tf_provider_auth0_client_secret" {}          
+variable "cloud_platform_infrastructure_git_crypt_key" {}
+variable "slack_hook_id" {}
+variable "concourse-git-crypt" {}   
+variable "environments-git-crypt" {}
+variable "github_token" {}
+variable "pingdom_user" {}
+variable "pingdom_password" {}
+variable "pingdom_api_key" {}
+variable "dockerhub_username" {}
+variable "dockerhub_access_token" {}
+variable "how_out_of_date_are_we_github_token" {} 
