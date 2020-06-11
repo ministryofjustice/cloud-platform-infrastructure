@@ -245,6 +245,8 @@ spec:
   kubeControllerManager:
     featureGates:
       TTLAfterFinished: "true"
+  kubeProxy:
+    metricsBindAddress: 0.0.0.0
   kubernetesApiAccess:
   - 0.0.0.0/0
   kubernetesVersion: 1.15.10
