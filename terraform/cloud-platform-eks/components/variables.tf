@@ -38,15 +38,15 @@ variable "cluster_r53_domainfilters" {
 
 #Concourse vars
 variable "kops_or_eks" {}
-variable "github_auth_client_id" {}      
-variable "github_auth_client_secret" {}    
-variable "github_org" {} 
-variable "github_teams" {}                  
-variable "tf_provider_auth0_client_id" {}              
-variable "tf_provider_auth0_client_secret" {}          
+variable "github_auth_client_id" {}
+variable "github_auth_client_secret" {}
+variable "github_org" {}
+variable "github_teams" {}
+variable "tf_provider_auth0_client_id" {}
+variable "tf_provider_auth0_client_secret" {}
 variable "cloud_platform_infrastructure_git_crypt_key" {}
 variable "slack_hook_id" {}
-variable "concourse-git-crypt" {}   
+variable "concourse-git-crypt" {}
 variable "environments-git-crypt" {}
 variable "github_token" {}
 variable "pingdom_user" {}
