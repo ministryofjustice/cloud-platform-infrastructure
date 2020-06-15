@@ -1,7 +1,6 @@
 
 module "concourse" {
-  #source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=v1.0"
-  source = "/Users/imranawan/projects/moj/modules/cloud-platform-terraform-concourse"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=v1.0"
   vpc_id                                      = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                            = data.terraform_remote_state.cluster.outputs.internal_subnets
   internal_subnets_ids                        = data.terraform_remote_state.cluster.outputs.internal_subnets_ids
