@@ -196,6 +196,11 @@ def get_certificates
   get_from_all_namespaces "certificate"
 end
 
+# Pod Security Policies
+def get_psp
+  get_from_all_namespaces "psp"
+end
+
 # CRD issuers.certmanager.k8s.io
 def get_issuers
   get_from_all_namespaces "issuers"
