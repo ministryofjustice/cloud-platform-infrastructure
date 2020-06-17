@@ -26,5 +26,3 @@ describe "concourse-test", "eks-manager": true do
   end
  
 end
-
-
