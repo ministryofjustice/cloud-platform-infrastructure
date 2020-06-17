@@ -41,3 +41,11 @@ output "external_subnets_ids" {
 output "nat_gateway_ips" {
   value = module.vpc.nat_public_ips
 }
+
+output "private_route_tables" {
+  value = module.vpc.private_route_table_ids
+}
+
+output "public_route_tables" {
+  value = module.vpc.public_route_table_ids
+}
