@@ -72,7 +72,3 @@ output "oidc_components_client_secret" {
   sensitive = true
 }
 
-output "certificate_arn" {
-  value = module.cluster_ssl.apps_acm_arn
-}
-

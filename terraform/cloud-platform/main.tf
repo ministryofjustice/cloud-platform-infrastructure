@@ -145,12 +145,6 @@ module "cluster_dns" {
   parent_zone_id           = data.terraform_remote_state.global.outputs.cp_zone_id
 }
 
-module "cluster_ssl" {
-  source                   = "../modules/cluster_ssl"
-  cluster_base_domain_name = local.cluster_base_domain_name
-  dns_zone_id              = module.cluster_dns.cluster_dns_zone_id
-}
-
 resource "tls_private_key" "cluster" {
   algorithm = "RSA"
   rsa_bits  = "2048"
