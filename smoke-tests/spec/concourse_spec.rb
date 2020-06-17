@@ -7,6 +7,12 @@ describe "concourse-test", "eks-manager": true do
     end
   end
 
+  context "concourse-main namespace should exists" do
+    it "Fail if namespace doesnt exist" do
+      expect(namespace_exists?("concourse-main")).to eq(true)
+    end
+  end
+
   context "expected all concourse-worker pods running inside concourse namespace" do
     let(:pods) { get_running_app_pods("concourse", "concourse-worker") }
 
