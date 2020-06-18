@@ -69,6 +69,24 @@ def object_exists?(namespace, type, name)
   status.success?
 end
 
+# Creates a deplyoment using the postgres image with a privileged container.
+def create_privileged_deploy(namespace)
+  apply_template_file(
+    namespace: namespace,
+    file: "spec/fixtures/privileged-deployment.yaml.erb",
+    binding: binding
+  )
+end
+
+# Creates a deployment using the bitnami/nginx image with a unprivileged container.
+def create_unprivileged_deploy(namespace)
+  apply_template_file(
+    namespace: namespace,
+    file: "spec/fixtures/unprivileged-deployment.yaml.erb",
+    binding: binding
+  )
+end
+
 def create_job(namespace, yaml_file, args)
   job_name = args.fetch(:job_name)
   search_url = args[:search_url] # This line is necessary to make 'search_url' available via 'binding'
@@ -240,6 +258,10 @@ def get_servicemonitors(namespace)
   kubectl_items "get servicemonitors -n #{namespace}"
 end
 
+def delete_clusterrolebinding(name)
+  kubectl_delete "clusterrolebinding #{name}"
+end
+
 def kubectl_items(cmd)
   kubectl_get(cmd).fetch("items")
 end
@@ -247,6 +269,10 @@ end
 def kubectl_get(cmd)
   json, _, _ = execute("kubectl #{cmd} -o json")
   JSON.parse(json)
+end
+
+def kubectl_delete(cmd)
+  execute("kubectl delete #{cmd}")
 end
 
 # Set the enable-modsecurity flag to false on the ingress annotation
