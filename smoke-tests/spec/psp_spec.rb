@@ -20,48 +20,56 @@ describe "pod security policies" do
     expect(names).to include(*expected)
   end
 
+  # Runs a privilege namespace and confirms both privilege and
+  # non-privilege containers can run. 
+  context "when namespace is privileged" do
+    before do
+      create_namespace(namespace)
+      make_namespace_privileged(namespace)
+    end
 
-  # Checks a privileged container i.e. something that can either run
-  # as root or esculate its privilege in someway, can only run
-  # inside select namespaces.
-  context "a privileged container" do
+    after do
+      delete_namespace(namespace)
+      delete_clusterrolebinding(namespace)
+    end
 
+    it "privileged containers run" do
+      create_privileged_deploy(namespace)
+      # On occasion the expect runs before the container runs.
+      # Sleep for ten seconds to avoid this. 
+      sleep 10
+
+      expect(all_containers_running?(pods)).to eq(true)
+    end
+
+    it "unprivileged containers run" do
+      create_unprivileged_deploy(namespace)
+
+      expect(all_containers_running?(pods)).to eq(true)
+    end
+  end
+
+  # Runs a unprivileged namespace and confirms only
+  # on-privilege containers can run. 
+  context "when namespace is unprivileged" do
     before do
       create_namespace(namespace)
     end
 
-    # after do
-    #   # delete_namespace(namespace)
-    # end
+    after do
+      delete_namespace(namespace)
+    end
 
-    it "cannot run inside non-privileged namespaces" do
+    it "privileged containers fail" do
       create_privileged_deploy(namespace)
+
       expect(all_containers_running?(pods)).to eq(false)
     end
 
-    it "can run inside privileged namespaces" do
-      make_namespace_privileged(namespace)
-      create_privileged_deploy(namespace)
-
-      expect(all_containers_running?(pods)).to eq(true)
-      delete_clusterrolebinding(namespace)
-    end
-  end
-
-  # Checks unprivileged containers i.e. non-root user, can run
-  # anywhere.
-  context "restricted containers" do
-    it "can run inside non-privileged namespaces" do
-      create_unprivileged_deploy(namespace)
-      expect(all_containers_running?(pods)).to eq(true)
-    end
-
-    it "can run inside privileged namespaces" do
-      make_namespace_privileged(namespace)
+    it "unprivileged containers run" do
       create_unprivileged_deploy(namespace)
 
       expect(all_containers_running?(pods)).to eq(true)
-      delete_clusterrolebinding(namespace)
     end
   end
 end
