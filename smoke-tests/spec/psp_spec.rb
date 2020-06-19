@@ -20,38 +20,43 @@ describe "pod security policies" do
     expect(names).to include(*expected)
   end
 
-  # Runs a privilege namespace and confirms both privilege and
-  # non-privilege containers can run. 
-  context "when namespace is privileged" do
+  # Creates a privileged container in a privileged and unprivileged namespace. 
+  # Expected behaviour, the privileged container will run in the privileged namespace
+  # and fail in the unprivileged namespace. 
+  context "when a container requires privileges" do
+    let(:deployment_file) { "spec/fixtures/privileged-deployment.yaml.erb" }
+
     before do
       create_namespace(namespace)
-      make_namespace_privileged(namespace)
     end
 
     after do
       delete_namespace(namespace)
-      delete_clusterrolebinding(namespace)
     end
 
-    it "privileged containers run" do
-      create_privileged_deploy(namespace)
+    it "runs in a privileged namespace" do
+      make_namespace_privileged(namespace)
+      create_psp_deployment(namespace, deployment_file)
       # On occasion the expect runs before the container runs.
       # Sleep for ten seconds to avoid this. 
       sleep 10
 
       expect(all_containers_running?(pods)).to eq(true)
+      delete_clusterrolebinding(namespace)
     end
 
-    it "unprivileged containers run" do
-      create_unprivileged_deploy(namespace)
+    it "fails in an unprivileged namespace" do
+      create_psp_deployment(namespace, deployment_file)
 
-      expect(all_containers_running?(pods)).to eq(true)
+      expect(all_containers_running?(pods)).to eq(false)
     end
   end
 
-  # Runs a unprivileged namespace and confirms only
-  # on-privilege containers can run. 
-  context "when namespace is unprivileged" do
+  # Creates an unprivileged container in a privileged and unprivileged namespace.
+  # Expected behaviour, the container is able to run in both namespaces.
+  context "when a container doesn't requires privileges" do
+    let(:deployment_file) { "spec/fixtures/unprivileged-deployment.yaml.erb" }
+
     before do
       create_namespace(namespace)
     end
@@ -60,14 +65,16 @@ describe "pod security policies" do
       delete_namespace(namespace)
     end
 
-    it "privileged containers fail" do
-      create_privileged_deploy(namespace)
+    it "runs in a privileged namespace" do
+      make_namespace_privileged(namespace)
+      create_psp_deployment(namespace, deployment_file)
 
-      expect(all_containers_running?(pods)).to eq(false)
+      expect(all_containers_running?(pods)).to eq(true)
+      delete_clusterrolebinding(namespace)
     end
 
-    it "unprivileged containers run" do
-      create_unprivileged_deploy(namespace)
+    it "runs in a unprivileged namespace" do
+      create_psp_deployment(namespace, deployment_file)
 
       expect(all_containers_running?(pods)).to eq(true)
     end
@@ -103,4 +110,13 @@ def make_namespace_privileged(namespace)
 
   cmd = %(echo '#{jsn}' | kubectl -n #{namespace} apply -f -)
   execute(cmd)
+end
+
+# Creates a deplyoment using the arguments defined
+def create_psp_deployment(namespace, deployment_file)
+  apply_template_file(
+    namespace: namespace,
+    file: deployment_file,
+    binding: binding
+  )
 end
