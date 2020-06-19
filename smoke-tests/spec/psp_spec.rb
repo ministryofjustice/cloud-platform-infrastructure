@@ -54,7 +54,7 @@ describe "pod security policies" do
 
   # Creates an unprivileged container in a privileged and unprivileged namespace.
   # Expected behaviour, the container is able to run in both namespaces.
-  context "when a container doesn't requires privileges" do
+  context "when a container doesn't require privileges" do
     let(:deployment_file) { "spec/fixtures/unprivileged-deployment.yaml.erb" }
 
     before do
