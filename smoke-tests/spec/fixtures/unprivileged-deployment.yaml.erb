@@ -1,10 +1,13 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: unprivileged-integration-test
   namespace: <%= namespace %>
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: unprivileged-integration-test
   template:
     metadata:
       labels:
