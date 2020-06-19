@@ -249,7 +249,7 @@ spec:
     metricsBindAddress: 0.0.0.0
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.15.10
+  kubernetesVersion: 1.15.12
   masterPublicName: api.${cluster_domain_name}
   networkCIDR: ${network_cidr_block}
   networkID: ${network_id}
@@ -393,7 +393,7 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: ${cluster_domain_name}
-  name: 2xlarge-nodes-1.15.10
+  name: 2xlarge-nodes-1.15.12
 spec:
   image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: r5.2xlarge
@@ -401,7 +401,7 @@ spec:
   minSize: 2
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: 2xlarge-nodes-1.15.10
+    kops.k8s.io/instancegroup: 2xlarge-nodes-1.15.12
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -434,7 +434,7 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: ${cluster_domain_name}
-  name: nodes-1.15.10
+  name: nodes-1.15.12
 spec:
   image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: ${worker_node_machine_type}
@@ -442,7 +442,7 @@ spec:
   minSize: ${cluster_node_count}
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: nodes-1.15.10
+    kops.k8s.io/instancegroup: nodes-1.15.12
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
