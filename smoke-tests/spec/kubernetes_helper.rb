@@ -196,6 +196,11 @@ def get_certificates
   get_from_all_namespaces "certificate"
 end
 
+# Pod Security Policies
+def get_psp
+  get_from_all_namespaces "psp"
+end
+
 # CRD issuers.certmanager.k8s.io
 def get_issuers
   get_from_all_namespaces "issuers"
@@ -235,6 +240,10 @@ def get_servicemonitors(namespace)
   kubectl_items "get servicemonitors -n #{namespace}"
 end
 
+def delete_clusterrolebinding(name)
+  kubectl_delete "clusterrolebinding #{name}"
+end
+
 def kubectl_items(cmd)
   kubectl_get(cmd).fetch("items")
 end
@@ -242,6 +251,10 @@ end
 def kubectl_get(cmd)
   json, _, _ = execute("kubectl #{cmd} -o json")
   JSON.parse(json)
+end
+
+def kubectl_delete(cmd)
+  execute("kubectl delete #{cmd}")
 end
 
 # Set the enable-modsecurity flag to false on the ingress annotation
