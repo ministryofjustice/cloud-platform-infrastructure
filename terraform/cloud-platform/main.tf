@@ -156,7 +156,7 @@ resource "aws_key_pair" "cluster" {
 }
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=reduce-to-one-auth0-app"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.0.0"
 
   cluster_name         = local.cluster_name
   services_base_domain = local.services_base_domain
