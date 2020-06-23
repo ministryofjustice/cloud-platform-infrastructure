@@ -4,9 +4,9 @@ require "spec_helper"
 # controls security sensitive aspects of the pod specification.
 # This spec confirms the Cloud Platform psp's are operational
 # within its cluster.
-describe "pod security policies" do
+describe "pod security policies", kops: true do
   let(:namespace) { "integrationtest-psp-#{readable_timestamp}" }
-  let(:pods) { get_running_pods(namespace)}
+  let(:pods) { get_running_pods(namespace) }
 
   # Confirms the main psp's currently exist
   specify "has the expected policies" do
@@ -20,9 +20,9 @@ describe "pod security policies" do
     expect(names).to include(*expected)
   end
 
-  # Creates a privileged container in a privileged and unprivileged namespace. 
+  # Creates a privileged container in a privileged and unprivileged namespace.
   # Expected behaviour, the privileged container will run in the privileged namespace
-  # and fail in the unprivileged namespace. 
+  # and fail in the unprivileged namespace.
   context "when a container requires privileges" do
     let(:deployment_file) { "spec/fixtures/privileged-deployment.yaml.erb" }
 
@@ -38,7 +38,7 @@ describe "pod security policies" do
       make_namespace_privileged(namespace)
       create_psp_deployment(namespace, deployment_file)
       # On occasion the expect runs before the container runs.
-      # Sleep for ten seconds to avoid this. 
+      # Sleep for ten seconds to avoid this.
       sleep 10
 
       expect(all_containers_running?(pods)).to eq(true)
