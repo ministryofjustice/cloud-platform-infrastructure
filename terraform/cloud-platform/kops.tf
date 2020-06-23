@@ -6,7 +6,7 @@ resource "local_file" "kops" {
     cluster_node_count                   = local.is_live_cluster ? var.cluster_node_count : 3
     kops_state_store                     = data.terraform_remote_state.global.outputs.cloud_platform_kops_state
     oidc_issuer_url                      = local.oidc_issuer_url
-    oidc_client_id                       = auth0_client.kubernetes.client_id
+    oidc_client_id                       = module.auth0.oidc_components_client_id
     network_cidr_block                   = data.aws_vpc.selected.cidr_block
     network_id                           = data.aws_vpc.selected.id
     internal_subnets_id_a                = data.aws_subnet.private_a.id

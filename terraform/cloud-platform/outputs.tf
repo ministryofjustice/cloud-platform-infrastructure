@@ -55,20 +55,20 @@ output "oidc_issuer_url" {
 }
 
 output "oidc_kubernetes_client_id" {
-  value = auth0_client.kubernetes.client_id
+  value = module.auth0.oidc_components_client_id
 }
 
 output "oidc_kubernetes_client_secret" {
-  value     = auth0_client.kubernetes.client_secret
+  value     = module.auth0.oidc_components_client_secret
   sensitive = true
 }
 
 output "oidc_components_client_id" {
-  value = auth0_client.components.client_id
+  value = module.auth0.oidc_components_client_id
 }
 
 output "oidc_components_client_secret" {
-  value     = auth0_client.components.client_secret
+  value     = module.auth0.oidc_components_client_secret
   sensitive = true
 }
 

@@ -46,3 +46,11 @@ variable "enable_large_nodesgroup" {
   type        = bool
   default     = true
 }
+
+variable "auth0_tenant_domain" {
+  description = "The AWS EC2 instance types to use for master nodes"
+  default = {
+    live-1  = "justice-cloud-platform.eu.auth0.com"
+    default = "moj-cloud-platforms-dev.eu.auth0.com"
+  }
+}
