@@ -4,7 +4,7 @@ require "spec_helper"
 # controls security sensitive aspects of the pod specification.
 # This spec confirms the Cloud Platform psp's are operational
 # within its cluster.
-describe "pod security policies" do
+describe "pod security policies", kops: true do
   let(:namespace) { "integrationtest-psp-#{readable_timestamp}" }
   let(:pods) { get_running_pods(namespace)}
 
