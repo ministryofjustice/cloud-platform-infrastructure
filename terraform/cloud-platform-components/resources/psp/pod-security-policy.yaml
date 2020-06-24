@@ -1,3 +1,6 @@
+# Policy recommendation from the Kubernetes community page
+# https://kubernetes.io/docs/concepts/policy/pod-security-policy/
+# https://kubernetes.io/docs/concepts/security/pod-security-standards/
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
@@ -31,8 +34,8 @@ kind: PodSecurityPolicy
 metadata:
   name: restricted
   annotations:
-    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default'
-    seccomp.security.alpha.kubernetes.io/defaultProfileName:  'docker/default'
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default,runtime/default'
+    seccomp.security.alpha.kubernetes.io/defaultProfileName:  'runtime/default'
 spec:
   privileged: false
   # Required to prevent escalations to root.
