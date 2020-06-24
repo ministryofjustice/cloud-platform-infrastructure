@@ -220,7 +220,7 @@ spec:
     readOnlyPort: 0
     authenticationTokenWebhook: true
   kubeAPIServer:
-    oidcClientID: Ug30lt9mPkLaL5nWL6hhAweTTGN7DQUe
+    oidcClientID: u227Y0U1q6QNYWSLHZXsF8LET6pOAOBq
     oidcIssuerURL: https://justice-cloud-platform.eu.auth0.com/
     oidcUsernameClaim: nickname
     oidcGroupsClaim: https://k8s.integration.dsd.io/groups
