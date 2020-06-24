@@ -45,7 +45,7 @@ data "terraform_remote_state" "global" {
 locals {
   cluster_name             = terraform.workspace
   cluster_base_domain_name = "${local.cluster_name}.cloud-platform.service.justice.gov.uk"
-  auth0_tenant_domain      = "justice-cloud-platform.eu.auth0.com"
+  auth0_tenant_domain      = lookup(var.auth0_tenant_domain, terraform.workspace, var.auth0_tenant_domain["default"])
   oidc_issuer_url          = "https://${local.auth0_tenant_domain}/"
   vpc                      = var.vpc_name == "" ? terraform.workspace : var.vpc_name
 
@@ -155,73 +155,9 @@ resource "aws_key_pair" "cluster" {
   public_key = tls_private_key.cluster.public_key_openssh
 }
 
-resource "auth0_client" "kubernetes" {
-  name        = "${local.cluster_name}:kubernetes"
-  description = "Cloud Platform kubernetes"
-  app_type    = "regular_web"
+module "auth0" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.0.0"
 
-  callbacks = [format("https://login.%s/ui", local.services_base_domain)]
-
-  custom_login_page_on = true
-  is_first_party       = true
-  oidc_conformant      = true
-  sso                  = true
-
-  jwt_configuration {
-    alg                 = "RS256"
-    lifetime_in_seconds = "2592000"
-  }
+  cluster_name         = local.cluster_name
+  services_base_domain = local.services_base_domain
 }
-
-resource "auth0_client" "components" {
-  name        = "${local.cluster_name}:components"
-  description = "Cloud Platform components"
-  app_type    = "regular_web"
-
-  callbacks = [
-    format(
-      "https://prometheus.%s/oauth2/callback",
-      local.services_base_domain,
-    ),
-    format(
-      "https://alertmanager.%s/oauth2/callback",
-      local.services_base_domain,
-    ),
-    format(
-      "https://concourse.%s/sky/issuer/callback",
-      local.services_base_domain,
-    ),
-    format(
-      "https://kibana.%s/oauth2/callback",
-      local.services_base_domain,
-    ),
-    format(
-      "https://kibana-audit.%s/oauth2/callback",
-      local.services_base_domain,
-    ),
-    #This call back is for kibana in dsd account.
-    format(
-      "https://dsd-kibana.apps.live-1.%s/oauth2/callback",
-      local.services_base_domain,
-    ),
-    format(
-      "https://grafana.%s/login/generic_oauth",
-      local.services_base_domain,
-    ),
-    format(
-      "https://kube-ops.%s/login/authorized",
-      local.services_base_domain,
-    ),
-  ]
-
-  custom_login_page_on = true
-  is_first_party       = true
-  oidc_conformant      = true
-  sso                  = true
-
-  jwt_configuration {
-    alg                 = "RS256"
-    lifetime_in_seconds = "36000"
-  }
-}
-
