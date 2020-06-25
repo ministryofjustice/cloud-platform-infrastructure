@@ -46,10 +46,6 @@ output "hosted_zone_id" {
   value = module.cluster_dns.cluster_dns_zone_id
 }
 
-output "instance_key_name" {
-  value = aws_key_pair.cluster.key_name
-}
-
 output "oidc_issuer_url" {
   value = local.oidc_issuer_url
 }
