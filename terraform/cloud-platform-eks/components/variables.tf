@@ -44,6 +44,8 @@ variable "github_org" {}
 variable "github_teams" {}
 variable "tf_provider_auth0_client_id" {}
 variable "tf_provider_auth0_client_secret" {}
+variable "tf_provider_auth0_client_id_dev" {}
+variable "tf_provider_auth0_client_secret_dev" {}
 variable "cloud_platform_infrastructure_git_crypt_key" {}
 variable "slack_hook_id" {}
 variable "concourse-git-crypt" {}
