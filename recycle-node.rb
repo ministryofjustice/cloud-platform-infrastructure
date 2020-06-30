@@ -19,7 +19,7 @@ require "timeout"
 
 K8S_CLUSTER_NAME = "live-1.cloud-platform.service.justice.gov.uk"
 AWS_REGION = "eu-west-2"
-KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-infrastructure/master/kops/live-1.yaml"
+KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-infrastructure/main/kops/live-1.yaml"
 NODE_DRAIN_TIMEOUT = 360 # Draining a node usually takes around 2 minutes. If it takes >6 minutes, it's not going to complete.
 SIGTERM = 15 # The unix signal to send to kill a process
 WORKER_NODE_INSTANCEGROUP = "nodes-1.15.12" # The name of the worker nodes instancegroup in the kops config.
