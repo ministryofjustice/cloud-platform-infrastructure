@@ -137,8 +137,8 @@ When a policy has been successfully loaded into OPA, the openpolicyagent.org/pol
 If loading fails for some reason (e.g., because of a parse error), the openpolicyagent.org/policy-status annotation is set as below, where the error field contains details about the failure. 
 ```json
 {"status": "error", "error": ...}
-``` 
-IMP NOTE: This [opa-default-system-main.yaml](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/master/terraform/cloud-platform-components/resources/opa/opa-default-system-main.yaml) applies a ConfigMap that contains the main OPA policy and default response. This policy is used as an entry-point for policy evaluations and returns allowed:true if policies are not matched to inbound data.
+```
+IMP NOTE: This [opa-default-system-main.yaml](https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/cloud-platform-components/resources/opa/opa-default-system-main.yaml) applies a ConfigMap that contains the main OPA policy and default response. This policy is used as an entry-point for policy evaluations and returns allowed:true if policies are not matched to inbound data.
 
  ### How to write Policies
 
