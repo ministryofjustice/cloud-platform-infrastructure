@@ -82,12 +82,6 @@ class ClusterDeleter
     REQUIRED_EXECUTABLES.each do |exe|
       raise "ERROR Required executable #{exe} not found." unless system("which #{exe}")
     end
-    check_terraform_auth0
-  end
-
-  def check_terraform_auth0
-    raise "ERROR Terraform auth0 provider plugin not found." \
-      unless Dir["#{ENV.fetch("HOME")}/.terraform.d/plugins/**/**"].grep(/auth0/).any?
   end
 
   def check_aws_profiles

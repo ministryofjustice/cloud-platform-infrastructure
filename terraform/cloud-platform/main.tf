@@ -14,16 +14,12 @@ provider "aws" {
   profile = "moj-cp"
 }
 
-#
-# See instructions here: https://github.com/ministryofjustice/kubernetes-investigations/tree/master/auth0
-#              and here: https://github.com/yieldr/terraform-provider-auth0
-#
 # The empty configuration assumes that you have the appropriate environment
 # variables exported as explained in the upstream repo and is similar to the way
 # the AWS providr credentials are handled.
 #
 provider "auth0" {
-  version = ">= 0.2.1"
+  version = "= 0.12.2"
   domain  = local.auth0_tenant_domain
 }
 
