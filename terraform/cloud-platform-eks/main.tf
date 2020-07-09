@@ -20,7 +20,7 @@ provider "aws" {
 }
 
 provider "auth0" {
-  version = ">= 0.2.0"
+  version = "= 0.12.2"
   domain  = local.auth0_tenant_domain
 }
 
