@@ -252,24 +252,4 @@ data "aws_iam_policy_document" "test" {
 #   }
 # }
 
-# This is to for manual snapshort before ES 7.4 upgrade, we will leave it for couple of weeks.
-# https://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/es-managedomains-snapshots.html
-
-resource "aws_s3_bucket" "cp-elasticsearch" {
-  bucket   = "cloud-platform-live-elasticsearch-snapshot"
-  acl      = "private"
-  provider = aws.cloud-platform
-
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-}
 
