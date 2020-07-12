@@ -14,6 +14,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+      - name: Remove files before linting
+        run: | 
+          find . -iname *.tfvars -exec rm -rf {} \;
+          rm -rf terraform/cloud-platform-eks/cluster.tf 
       - name: Lint Code Base
         uses: docker://github/super-linter:v3.1.0
         env:
