@@ -14,8 +14,7 @@ describe "pod security policies", kops: true do
 
     expected = [
       "privileged",
-      "restricted",
-      "kube-system"
+      "restricted"
     ]
     expect(names).to include(*expected)
   end
