@@ -1,5 +1,6 @@
 # Setup
 terraform {
+  required_version = ">= 0.12"
   backend "s3" {
     bucket               = "cloud-platform-terraform-state"
     region               = "eu-west-1"
@@ -49,90 +50,28 @@ locals {
   services_base_domain = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
 }
 
-data "aws_vpc" "selected" {
-  filter {
-    name   = "tag:Name"
-    values = [local.vpc]
-  }
+########
+# KOPS #
+########
+
+module "kops" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.0.1"
+
+  vpc_name            = local.vpc
+  cluster_domain_name = trimsuffix(local.cluster_base_domain_name, ".")
+  kops_state_store    = data.terraform_remote_state.global.outputs.cloud_platform_kops_state
+  #auth0_client_id         = module.auth0.oidc_kubernetes_client_id  # This must be updated with this value when we get auth0 enterprise 
+  auth0_client_id         = module.auth0.oidc_components_client_id
+  authorized_keys_manager = module.bastion.authorized_keys_manager
+
+  cluster_node_count       = lookup(var.cluster_node_count, terraform.workspace, var.cluster_node_count["default"])
+  master_node_machine_type = lookup(var.master_node_machine_type, terraform.workspace, var.master_node_machine_type["default"])
+  worker_node_machine_type = lookup(var.worker_node_machine_type, terraform.workspace, var.worker_node_machine_type["default"])
+  enable_large_nodesgroup  = lookup(var.enable_large_nodesgroup, terraform.workspace, var.enable_large_nodesgroup["default"])
+
+  template_path   = "../../kops"
+  oidc_issuer_url = "https://${local.auth0_tenant_domain}/"
 }
-
-data "aws_subnet_ids" "private" {
-  vpc_id = data.aws_vpc.selected.id
-
-  tags = {
-    SubnetType = "Private"
-  }
-}
-
-data "aws_subnet_ids" "public" {
-  vpc_id = data.aws_vpc.selected.id
-
-  tags = {
-    SubnetType = "Utility"
-  }
-}
-
-# Unfortunately data.template_file.kops resource only receives individual subnets with the 
-# AZs already mapped. Since terraform 0.12 there is a better way to do it using templatefile 
-# ( https://www.terraform.io/docs/configuration/functions/templatefile.html ) and passing 
-# the whole array of subnets with AZ included, it will involve using a something like 
-# %{ for subnets in subnets_all ~} # inside the templates/kops.yaml.tpl. For this PR the 
-# idea is to change the least possible, following PRs will be coming to make it better.
-
-data "aws_subnet" "private_a" {
-  vpc_id            = data.aws_vpc.selected.id
-  availability_zone = "eu-west-2a"
-
-  tags = {
-    SubnetType = "Private"
-  }
-}
-
-data "aws_subnet" "private_b" {
-  vpc_id            = data.aws_vpc.selected.id
-  availability_zone = "eu-west-2b"
-
-  tags = {
-    SubnetType = "Private"
-  }
-}
-
-data "aws_subnet" "private_c" {
-  vpc_id            = data.aws_vpc.selected.id
-  availability_zone = "eu-west-2c"
-
-  tags = {
-    SubnetType = "Private"
-  }
-}
-
-data "aws_subnet" "public_a" {
-  vpc_id            = data.aws_vpc.selected.id
-  availability_zone = "eu-west-2a"
-
-  tags = {
-    SubnetType = "Utility"
-  }
-}
-
-data "aws_subnet" "public_b" {
-  vpc_id            = data.aws_vpc.selected.id
-  availability_zone = "eu-west-2b"
-
-  tags = {
-    SubnetType = "Utility"
-  }
-}
-
-data "aws_subnet" "public_c" {
-  vpc_id            = data.aws_vpc.selected.id
-  availability_zone = "eu-west-2c"
-
-  tags = {
-    SubnetType = "Utility"
-  }
-}
-
 
 # Modules
 module "cluster_dns" {
