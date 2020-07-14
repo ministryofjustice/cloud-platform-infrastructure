@@ -48,3 +48,23 @@ output "oidc_components_client_secret" {
   sensitive = true
 }
 
+# This outputs are used by cloud-platform-environment repo
+output "vpc_id" {
+  value = module.kops.vpc_id
+}
+
+output "internal_subnets_ids" {
+  value = module.kops.internal_subnets_ids
+}
+
+output "external_subnets_ids" {
+  value = module.kops.external_subnets_ids
+}
+
+output "network_id" {
+  value = module.kops.network_id
+}
+
+output "network_cidr_block" {
+  value = module.kops.network_cidr_block
+}
