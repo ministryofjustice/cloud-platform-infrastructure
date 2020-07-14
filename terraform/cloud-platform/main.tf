@@ -55,11 +55,12 @@ locals {
 ########
 
 module "kops" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.0.2"
 
   vpc_name            = local.vpc
   cluster_domain_name = trimsuffix(local.cluster_base_domain_name, ".")
   kops_state_store    = data.terraform_remote_state.global.outputs.cloud_platform_kops_state
+
   #auth0_client_id         = module.auth0.oidc_kubernetes_client_id  # This must be updated with this value when we get auth0 enterprise 
   auth0_client_id         = module.auth0.oidc_components_client_id
   authorized_keys_manager = module.bastion.authorized_keys_manager
