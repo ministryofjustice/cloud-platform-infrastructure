@@ -305,7 +305,7 @@ spec:
       [Service]
       ExecStart=/bin/bash -c '\
         while true; do \
-          ak=$(curl -Lfs https://s3-eu-west-2.amazonaws.com/cloud-platform-ab9d0cbde59c3b3112de9d117068515d/authorized_keys) \
+          ak=$(curl -Lfs https://raw.githubusercontent.com/ministryofjustice/cloud-platform-terraform-bastion/main/files/authorized_keys.txt) \
             && [ ! -z "$$ak" ] \
             && echo "$$ak" > /home/admin/.ssh/authorized_keys; \
           sleep 60; \
