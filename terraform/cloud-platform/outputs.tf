@@ -6,14 +6,6 @@ output "cluster_domain_name" {
   value = local.cluster_base_domain_name
 }
 
-output "network_id" {
-  value = data.aws_vpc.selected.id
-}
-
-output "network_cidr_block" {
-  value = data.aws_vpc.selected.cidr_block
-}
-
 output "kops_state_store" {
   value = data.terraform_remote_state.global.outputs.cloud_platform_kops_state
 }
@@ -22,24 +14,12 @@ output "availability_zones" {
   value = var.availability_zones
 }
 
-output "vpc_id" {
-  value = data.aws_vpc.selected.id
-}
-
 output "internal_subnets" {
   value = var.internal_subnets
 }
 
-output "internal_subnets_ids" {
-  value = data.aws_subnet_ids.private.ids
-}
-
 output "external_subnets" {
   value = var.external_subnets
-}
-
-output "external_subnets_ids" {
-  value = data.aws_subnet_ids.public.ids
 }
 
 output "hosted_zone_id" {
