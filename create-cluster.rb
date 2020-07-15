@@ -94,9 +94,6 @@ def create_cluster_kops(cluster_name, cluster_size, vpc_name)
 
   tf_apply = [
     "terraform apply",
-    "-var master_node_machine_type=#{master_node_machine_type}",
-    "-var worker_node_machine_type=#{worker_node_machine_type}",
-    "-var enable_large_nodesgroup=false",
     *("-var vpc_name=\"#{vpc_name}\"" if vpc_name),
     "-auto-approve"
   ].join(" ")
