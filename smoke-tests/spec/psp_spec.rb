@@ -67,15 +67,20 @@ describe "pod security policies", kops: true do
 
     it "runs in a privileged namespace" do
       make_namespace_privileged(namespace)
-      create_psp_deployment(namespace, deployment_file)
 
+      create_psp_deployment(namespace, deployment_file)
+      # On occasion the expect runs before the container runs.
+      # Sleep for ten seconds to avoid this.
+      sleep 10
       expect(all_containers_running?(pods)).to eq(true)
       delete_clusterrolebinding(namespace)
     end
 
     it "runs in a unprivileged namespace" do
       create_psp_deployment(namespace, deployment_file)
-
+      # On occasion the expect runs before the container runs.
+      # Sleep for ten seconds to avoid this.
+      sleep 10
       expect(all_containers_running?(pods)).to eq(true)
     end
   end
