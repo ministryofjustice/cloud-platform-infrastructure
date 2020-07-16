@@ -1,6 +1,6 @@
 
 module "concourse" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.2.1"
 
   vpc_id                                      = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                            = data.terraform_remote_state.cluster.outputs.internal_subnets
@@ -13,8 +13,6 @@ module "concourse" {
   github_teams                                = var.github_teams
   tf_provider_auth0_client_id                 = var.tf_provider_auth0_client_id
   tf_provider_auth0_client_secret             = var.tf_provider_auth0_client_secret
-  tf_provider_auth0_client_id_dev             = var.tf_provider_auth0_client_id_dev
-  tf_provider_auth0_client_secret_dev         = var.tf_provider_auth0_client_secret_dev
   cloud_platform_infrastructure_git_crypt_key = var.cloud_platform_infrastructure_git_crypt_key
   slack_hook_id                               = var.slack_hook_id
   concourse-git-crypt                         = var.concourse-git-crypt
