@@ -15,9 +15,9 @@ describe "authorized_keys", "live-1": true, speed: "fast" do
     end
   end
 
-  context "expected authorized_keys file within the S3 bucket" do
+  context "expected authorized_keys file within the bastion repo" do
     it "authorized_keys file exists and it can be downloaded" do
-      response = URI.open("https://s3-eu-west-2.amazonaws.com/cloud-platform-ab9d0cbde59c3b3112de9d117068515d/authorized_keys")
+      response = URI.open("https://github.com/ministryofjustice/cloud-platform-terraform-bastion/blob/main/files/authorized_keys.txt")
       expect(response.status).to eq(["200", "OK"])
     end
   end
