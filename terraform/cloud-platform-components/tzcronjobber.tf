@@ -8,4 +8,3 @@ resource "null_resource" "tzcronjobber" {
     command = "kubectl delete -n kube-system --ignore-not-found -f ${path.module}/resources/tzcronjobber/"
   }
 }
-
