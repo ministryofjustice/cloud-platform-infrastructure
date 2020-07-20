@@ -7,6 +7,9 @@ metadata:
   name: privileged
   annotations:
     seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+  labels:
+    kubernetes.io/cluster-service: "true"
+    eks.amazonaws.com/component: pod-security-policy
 spec:
   privileged: true
   allowPrivilegeEscalation: true
@@ -81,7 +84,7 @@ kind: ClusterRole
 metadata:
   name: psp:privileged
 rules:
-- apiGroups: ['extensions']
+- apiGroups: ['policy']
   resources: ['podsecuritypolicies']
   verbs:     ['use']
   resourceNames:
@@ -92,7 +95,7 @@ kind: ClusterRole
 metadata:
   name: psp:restricted
 rules:
-- apiGroups: ['extensions']
+- apiGroups: ['policy']
   resources: ['podsecuritypolicies']
   verbs:     ['use']
   resourceNames:
@@ -120,6 +123,12 @@ roleRef:
   kind: ClusterRole
   name: psp:privileged
 subjects:
+- kind: ServiceAccount
+  name: cluster-autoscaler-aws-cluster-autoscaler
+  namespace: kube-system
+- kind: ServiceAccount
+  name: typha-cpha
+  namespace: kube-system
 - kind: Group
   name: system:serviceaccounts:cert-manager
   apiGroup: rbac.authorization.k8s.io
