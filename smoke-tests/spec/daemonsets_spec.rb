@@ -17,7 +17,7 @@ describe "daemonsets", speed: "fast" do
       "kiam-server",
       "kops-controller",
       "prometheus-operator-prometheus-node-exporter"
-     
+
     ]
 
     expect(names).to eq(expected)
