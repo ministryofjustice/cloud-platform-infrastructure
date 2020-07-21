@@ -15,7 +15,8 @@ describe "daemonsets", speed: "fast" do
       "fluentd-es",
       "kiam-agent",
       "kiam-server",
-      "prometheus-operator-prometheus-node-exporter"
+      "prometheus-operator-prometheus-node-exporter",
+      "kops-controller"
     ]
 
     expect(names).to eq(expected)

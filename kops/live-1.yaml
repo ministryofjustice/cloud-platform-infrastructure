@@ -249,7 +249,7 @@ spec:
     metricsBindAddress: 0.0.0.0
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.15.12
+  kubernetesVersion: 1.16.13
   masterPublicName: api.live-1.cloud-platform.service.justice.gov.uk
   networkCIDR: 172.20.0.0/16
   networkID: vpc-0726ec279947067f8
@@ -324,7 +324,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2a
 spec:
-  image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
@@ -351,7 +351,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2b
 spec:
-  image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
@@ -378,7 +378,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2c
 spec:
-  image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: c4.4xlarge
   maxSize: 1
   minSize: 1
@@ -405,15 +405,15 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
-  name: 2xlarge-nodes-1.15.12
+  name: 2xlarge-nodes-1.16.13
 spec:
-  image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: r5.2xlarge
   maxSize: 2
   minSize: 2
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: 2xlarge-nodes-1.15.12
+    kops.k8s.io/instancegroup: 2xlarge-nodes-1.16.13
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -427,6 +427,7 @@ spec:
   - monitoring-node=true:NoSchedule
   subnets:
   - eu-west-2b
+
 
 
 
@@ -446,15 +447,15 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
-  name: nodes-1.15.12
+  name: nodes-1.16.13
 spec:
-  image: kope.io/k8s-1.15-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
   machineType: r5.xlarge
   maxSize: 21
   minSize: 21
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: nodes-1.15.12
+    kops.k8s.io/instancegroup: nodes-1.16.13
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -468,3 +469,4 @@ spec:
   - eu-west-2a
   - eu-west-2b
   - eu-west-2c
+
