@@ -258,7 +258,7 @@ The restricted policy is the default one for anyone on the cluster. Unless a tea
  
 
 ```yaml
-apiVersion: extensions/v1beta1
+apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: restricted
@@ -324,7 +324,7 @@ The privileged policy allows all of the above, but needs to be specifically assi
 For example, the logging and monitoring namespaces, amongst others, are both allowed to run root containers.
 
 ```yaml
-apiVersion: extensions/v1beta1
+apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
   name: privileged
