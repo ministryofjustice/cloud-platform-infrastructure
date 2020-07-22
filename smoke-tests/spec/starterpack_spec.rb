@@ -1,6 +1,6 @@
 require "spec_helper"
 
-xdescribe "Starter pack Apps", speed: "fast", cluster: "test-cluster-only" do
+describe "Starter pack Apps", speed: "fast", cluster: "test-cluster-only" do
   let(:namespace) { "starter-pack" }
   let(:ingresses) { get_ingresses(namespace) }
 
