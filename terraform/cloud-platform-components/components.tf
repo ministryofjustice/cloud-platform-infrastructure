@@ -99,12 +99,12 @@ module "opa" {
   enable_invalid_hostname_policy = terraform.workspace == local.live_workspace ? false : true
 }
 
-# module "starter_pack" {
-#   source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.0.7"
+module "starter_pack" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.0.8"
 
-#   enable_starter_pack = terraform.workspace == local.live_workspace ? false : true
-#   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-# }
+  enable_starter_pack = terraform.workspace == local.live_workspace ? false : true
+  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+}
 
 module "velero" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.4"
