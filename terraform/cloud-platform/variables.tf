@@ -60,8 +60,6 @@ variable "enable_large_nodesgroup" {
 }
 
 variable "auth0_tenant_domain" {
-  description = "The auth0 domain/tenant used, different for live/test clusters"
-  default = {
-    default = "justice-cloud-platform.eu.auth0.com"
-  }
+  description = "The auth0 domain/tenant used, same for live/test clusters"
+  default     = "justice-cloud-platform.eu.auth0.com"
 }

@@ -42,7 +42,7 @@ data "terraform_remote_state" "global" {
 locals {
   cluster_name             = terraform.workspace
   cluster_base_domain_name = "${local.cluster_name}.cloud-platform.service.justice.gov.uk"
-  auth0_tenant_domain      = lookup(var.auth0_tenant_domain, terraform.workspace, var.auth0_tenant_domain["default"])
+  auth0_tenant_domain      = var.auth0_tenant_domain
   oidc_issuer_url          = "https://${local.auth0_tenant_domain}/"
   vpc                      = var.vpc_name == "" ? terraform.workspace : var.vpc_name
 
@@ -61,8 +61,7 @@ module "kops" {
   cluster_domain_name = trimsuffix(local.cluster_base_domain_name, ".")
   kops_state_store    = data.terraform_remote_state.global.outputs.cloud_platform_kops_state
 
-  #auth0_client_id         = module.auth0.oidc_kubernetes_client_id  # This must be updated with this value when we get auth0 enterprise 
-  auth0_client_id         = module.auth0.oidc_components_client_id
+  auth0_client_id         = module.auth0.oidc_kubernetes_client_id
   authorized_keys_manager = module.bastion.authorized_keys_manager
 
   cluster_node_count       = lookup(var.cluster_node_count, terraform.workspace, var.cluster_node_count["default"])
@@ -98,7 +97,7 @@ module "bastion" {
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.0"
 
   cluster_name         = local.cluster_name
   services_base_domain = local.services_base_domain
