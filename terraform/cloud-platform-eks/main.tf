@@ -39,6 +39,8 @@ locals {
   auth0_tenant_domain  = "justice-cloud-platform.eu.auth0.com"
   is_live_cluster      = terraform.workspace == "live-1"
   services_base_domain = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
+  is_manager_cluster   = terraform.workspace == "manager"
+  services_eks_domain  = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
 }
 
 data "terraform_remote_state" "global" {
@@ -122,8 +124,10 @@ module "bastion" {
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.1"
 
   cluster_name         = local.cluster_name
   services_base_domain = local.services_base_domain
+  services_eks_domain  = local.services_eks_domain
+  eks                  = true
 }
