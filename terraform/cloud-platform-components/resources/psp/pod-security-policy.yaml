@@ -9,7 +9,6 @@ metadata:
     seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
   labels:
     kubernetes.io/cluster-service: "true"
-    eks.amazonaws.com/component: pod-security-policy
 spec:
   privileged: true
   allowPrivilegeEscalation: true
