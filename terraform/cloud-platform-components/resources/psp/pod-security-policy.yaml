@@ -7,6 +7,8 @@ metadata:
   name: privileged
   annotations:
     seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+  labels:
+    kubernetes.io/cluster-service: "true"
 spec:
   privileged: true
   allowPrivilegeEscalation: true
@@ -81,7 +83,7 @@ kind: ClusterRole
 metadata:
   name: psp:privileged
 rules:
-- apiGroups: ['extensions']
+- apiGroups: ['policy']
   resources: ['podsecuritypolicies']
   verbs:     ['use']
   resourceNames:
@@ -92,7 +94,7 @@ kind: ClusterRole
 metadata:
   name: psp:restricted
 rules:
-- apiGroups: ['extensions']
+- apiGroups: ['policy']
   resources: ['podsecuritypolicies']
   verbs:     ['use']
   resourceNames:
@@ -120,6 +122,30 @@ roleRef:
   kind: ClusterRole
   name: psp:privileged
 subjects:
+- kind: ServiceAccount
+  name: metrics-server
+  namespace: kube-system
+- kind: ServiceAccount
+  name: coredns
+  namespace: kube-system
+- kind: ServiceAccount
+  name: kube-proxy
+  namespace: kube-system
+- kind: ServiceAccount
+  name: aws-node
+  namespace: kube-system
+- kind: ServiceAccount
+  name: sonarqube-sonarqube
+  namespace: sonarqube
+- kind: ServiceAccount
+  name: calico-node
+  namespace: kube-system
+- kind: ServiceAccount
+  name: cluster-autoscaler-aws-cluster-autoscaler
+  namespace: kube-system
+- kind: ServiceAccount
+  name: typha-cpha
+  namespace: kube-system
 - kind: Group
   name: system:serviceaccounts:cert-manager
   apiGroup: rbac.authorization.k8s.io
