@@ -124,6 +124,24 @@ roleRef:
   name: psp:privileged
 subjects:
 - kind: ServiceAccount
+  name: metrics-server
+  namespace: kube-system
+- kind: ServiceAccount
+  name: coredns
+  namespace: kube-system
+- kind: ServiceAccount
+  name: kube-proxy
+  namespace: kube-system
+- kind: ServiceAccount
+  name: aws-node
+  namespace: kube-system
+- kind: ServiceAccount
+  name: sonarqube-sonarqube
+  namespace: sonarqube
+- kind: ServiceAccount
+  name: calico-node
+  namespace: kube-system
+- kind: ServiceAccount
   name: cluster-autoscaler-aws-cluster-autoscaler
   namespace: kube-system
 - kind: ServiceAccount
