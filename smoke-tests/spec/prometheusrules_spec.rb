@@ -37,5 +37,4 @@ describe "Prometheus Rules", speed: "fast" do
     ]
     expect(names).to include(*expected)
   end
-
 end
