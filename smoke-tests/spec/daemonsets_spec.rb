@@ -12,6 +12,7 @@ describe "daemonsets", speed: "fast" do
 
     expected = [
       "calico-node",
+      "fluent-bit",
       "fluentd-es",
       "kiam-agent",
       "kiam-server",
@@ -45,6 +46,18 @@ describe "daemonsets", speed: "fast" do
     end
 
     specify "all fluentd containers are running" do
+      expect(all_containers_running?(pods)).to eq(true)
+    end
+  end
+
+  context "fluent-bit" do
+    let(:pods) { get_running_app_pods("logging", "fluent-bit") }
+
+    it "runs fluent-bit" do
+      expect(all_node_ips).to eq(app_node_ips)
+    end
+
+    specify "all fluent-bit containers are running" do
       expect(all_containers_running?(pods)).to eq(true)
     end
   end
