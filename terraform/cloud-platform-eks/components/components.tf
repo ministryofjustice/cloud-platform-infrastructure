@@ -1,6 +1,6 @@
 
 module "concourse" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.2.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.2.2"
 
   vpc_id                                      = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                            = data.terraform_remote_state.cluster.outputs.internal_subnets
@@ -24,6 +24,7 @@ module "concourse" {
   dockerhub_username                          = var.dockerhub_username
   dockerhub_access_token                      = var.dockerhub_access_token
   how_out_of_date_are_we_github_token         = var.how_out_of_date_are_we_github_token
+  authorized_keys_github_token = var.authorized_keys_github_token
 
 }
 
