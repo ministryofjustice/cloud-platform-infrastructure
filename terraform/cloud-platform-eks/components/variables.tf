@@ -55,3 +55,4 @@ variable "pingdom_api_key" {}
 variable "dockerhub_username" {}
 variable "dockerhub_access_token" {}
 variable "how_out_of_date_are_we_github_token" {}
+variable "authorized_keys_github_token" {}
