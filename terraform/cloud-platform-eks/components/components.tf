@@ -24,7 +24,7 @@ module "concourse" {
   dockerhub_username                          = var.dockerhub_username
   dockerhub_access_token                      = var.dockerhub_access_token
   how_out_of_date_are_we_github_token         = var.how_out_of_date_are_we_github_token
-  authorized_keys_github_token = var.authorized_keys_github_token
+  authorized_keys_github_token                = var.authorized_keys_github_token
 
 }
 
