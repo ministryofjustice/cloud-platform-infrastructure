@@ -50,7 +50,7 @@ describe "daemonsets", speed: "fast" do
     end
   end
 
-  context "fluent-bit" do
+  context "fluent-bit", kops: true do
     let(:pods) { get_running_app_pods("logging", "fluent-bit") }
 
     it "runs fluent-bit" do
