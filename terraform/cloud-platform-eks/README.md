@@ -59,3 +59,5 @@ In order to access the cluster and generate your kubeconfig file you must use th
 ```console
 aws eks --region eu-west-2 update-kubeconfig --name mogaal-eks
 ```
+
+More guidance on how to install components on EKS cluster and delete the cluster can be found in the [Cloud Platform Runbook](https://runbooks.cloud-platform.service.justice.gov.uk/eks-tools-cluster.html#provisioning-eks-clusters)
