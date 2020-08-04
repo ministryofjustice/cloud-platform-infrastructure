@@ -6,10 +6,10 @@ This README describes the main infrastructure components required to deliver a p
 
 ## Contents
 
-  - [Requirements](#Requirements)
-  - [Cluster Dependences](#cluster-dependences)
-  - [EKS](#eks)
-  - [How do I run this?](#terraform-modules)
+- [Requirements](#Requirements)
+- [Cluster Dependences](#cluster-dependences)
+- [EKS](#eks)
+- [How do I run this?](#terraform-modules)
 
 ## Requirements
 
@@ -40,14 +40,14 @@ Within `main.tf` you'll find creation of:
 ## How do I use this?
 
 ```console
-$ terraform init
-$ terraform workspace select/new <clusterName>
+terraform init
+terraform workspace select/new <clusterName>
 ```
 
 Now it is time to apply changes:
 
 ```console
-$ terraform apply -var="vpc_name=$VPC_NAME"
+terraform apply -var="vpc_name=$VPC_NAME"
 ```
 
 **NOTE**: Don't forget to set the `vpc_name` variable, if you want to increase the number of nodes and machine type use: `cluster_node_count` and `worker_node_machine_type`
