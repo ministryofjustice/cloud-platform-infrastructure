@@ -33,3 +33,14 @@ module "iam" {
   aws_account_name = "cloud-platform-aws"
 }
 
+module "baselines" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=main"
+
+  account_name = var.aws_account_name
+  region       = var.aws_region
+
+  enable_logging = true
+  slack_webhook    = var.baselines_alerts_slack_webhook
+  slack_channel    = var.baselines_alerts_slack_channel
+}
+
