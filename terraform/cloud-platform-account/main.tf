@@ -1,4 +1,5 @@
 terraform {
+  required_version = ">= 0.12"
   backend "s3" {
     bucket               = "cloud-platform-terraform-state"
     region               = "eu-west-1"
@@ -34,13 +35,14 @@ module "iam" {
 }
 
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=main"
+  #source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=main"
+  source = "/home/mogaal/workspace/github/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines"
 
-  account_name = var.aws_account_name
-  region       = var.aws_region
+  enable_logging           = true
+  enable_slack_integration = true
 
-  enable_logging = true
-  slack_webhook    = var.baselines_alerts_slack_webhook
-  slack_channel    = var.baselines_alerts_slack_channel
+  region        = var.aws_region
+  slack_webhook = var.slack_config_cloudwatch_lp
+  slack_channel = "lower-priority-alarms"
 }
 
