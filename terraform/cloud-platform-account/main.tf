@@ -35,8 +35,7 @@ module "iam" {
 }
 
 module "baselines" {
-  #source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=main"
-  source = "/home/mogaal/workspace/github/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.1"
 
   enable_logging           = true
   enable_slack_integration = true
