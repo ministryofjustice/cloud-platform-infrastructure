@@ -31,6 +31,7 @@ describe "pod security policies" do
 
     after do
       delete_namespace(namespace)
+      delete_clusterrolebinding(namespace)
     end
 
     it "runs in a privileged namespace" do
@@ -41,7 +42,6 @@ describe "pod security policies" do
       sleep 10
 
       expect(all_containers_running?(pods)).to eq(true)
-      delete_clusterrolebinding(namespace)
     end
 
     it "fails in an unprivileged namespace" do
@@ -62,6 +62,7 @@ describe "pod security policies" do
 
     after do
       delete_namespace(namespace)
+      delete_clusterrolebinding(namespace)
     end
 
     it "runs in a privileged namespace" do
@@ -72,7 +73,6 @@ describe "pod security policies" do
       # Sleep for ten seconds to avoid this.
       sleep 10
       expect(all_containers_running?(pods)).to eq(true)
-      delete_clusterrolebinding(namespace)
     end
 
     it "runs in a unprivileged namespace" do
