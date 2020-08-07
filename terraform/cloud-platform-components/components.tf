@@ -105,6 +105,7 @@ module "starter_pack" {
 
   enable_starter_pack = terraform.workspace == local.live_workspace ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  multi_container_app = false
 }
 
 module "velero" {
