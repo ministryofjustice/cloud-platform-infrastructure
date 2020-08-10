@@ -53,14 +53,12 @@ def cleanup_zone(domain, namespace, ingress_name, zone_id = nil)
   records = get_zone_records(zone_id)
 
   if records.size > 2
-    begin
-      records.each do |record|
-        case record[:type]
-        when "A"
-          delete_record(zone_id, record)
-        when "TXT"
-          delete_record(zone_id, record)
-        end
+    records.each do |record|
+      case record[:type]
+      when "A"
+        delete_record(zone_id, record)
+      when "TXT"
+        delete_record(zone_id, record)
       end
     rescue Aws::Route53::Errors::InvalidChangeBatch => e
       puts "Caught error when deleting record:\n#{record}\nContinuing..."
