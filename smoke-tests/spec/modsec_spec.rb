@@ -17,7 +17,7 @@ describe "Testing modsec" do
       binding: binding
     )
     wait_for(namespace, "ingress", ingress_name)
-    sleep 90
+    sleep 180 # We need to wait for a while *after* the ingress is created before we try to test it, or we get failures.
   end
 
   after(:all) do
