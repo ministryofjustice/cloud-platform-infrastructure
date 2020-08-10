@@ -79,7 +79,7 @@ end
 
 def wait_for_job_to_start(namespace, job_name)
   controlled_by = "Job/#{job_name}"
-  command = "kubectl describe pods -n #{namespace} | grep -B 2 #{controlled_by} | grep Succeeded > /dev/null"
+  command = "kubectl describe pods -n #{namespace} | grep -B 4 #{controlled_by} | grep Succeeded > /dev/null"
   _, _, status = execute(command)
 
   10.times do
