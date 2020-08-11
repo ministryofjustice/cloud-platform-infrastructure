@@ -23,7 +23,7 @@ module "iam" {
 
 # Baselines: cloudtrail, cloudwatch, lambda. Everything that our accounts should have
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.3"
 
   enable_logging           = true
   enable_slack_integration = true
@@ -31,5 +31,11 @@ module "baselines" {
   region        = var.aws_region
   slack_webhook = var.slack_config_cloudwatch_lp
   slack_channel = "lower-priority-alarms"
+
+  s3_bucket_block_publicaccess_exceptions = [
+    "cloud-platform-9025c5a1a81bca7eaefd78a38df7d7de",
+    "cloud-platform-fdc5e4b70a599d8ea84b4ffd31a832b3",
+    "cloud-platform-6cf3132ef8fce52bb371b1d02f40c36d"
+  ]
 }
 
