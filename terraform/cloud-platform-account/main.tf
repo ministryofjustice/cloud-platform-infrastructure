@@ -9,22 +9,9 @@ terraform {
   }
 }
 
-locals {
-  workspace_to_profile = {
-    "cloud-platform"              = "moj-cp"
-    "mojdsd-platform-integration" = "moj-pi"
-  }
-}
-
 provider "aws" {
-  version = ">= 1.44.0"
   region  = "eu-west-2"
-  profile = local.workspace_to_profile[terraform.workspace]
-}
-
-provider "aws" {
-  region = "eu-west-1"
-  alias  = "ireland"
+  profile = "moj-cp"
 }
 
 # IAM configuration for cloud-platform. Users, groups, etc
@@ -34,8 +21,9 @@ module "iam" {
   aws_account_name = "cloud-platform-aws"
 }
 
+# Baselines: cloudtrail, cloudwatch, lambda. Everything that our accounts should have
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.2"
 
   enable_logging           = true
   enable_slack_integration = true
