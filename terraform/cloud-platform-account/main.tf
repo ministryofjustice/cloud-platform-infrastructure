@@ -33,7 +33,6 @@ module "baselines" {
   slack_channel = "lower-priority-alarms"
 
   s3_bucket_block_publicaccess_exceptions = [
-    "cloud-platform-ab9d0cbde59c3b3112de9d117068515d",
     "cloud-platform-9025c5a1a81bca7eaefd78a38df7d7de",
     "cloud-platform-fdc5e4b70a599d8ea84b4ffd31a832b3",
     "cloud-platform-6cf3132ef8fce52bb371b1d02f40c36d"
