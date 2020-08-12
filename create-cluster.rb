@@ -104,7 +104,7 @@ end
 
 # TODO: figure out this problem, and fix it.
 # For some reason, the first terraform apply sometimes fails with an error "could not find a ready tiller pod"
-# This seems to be quite misleading, since adding a delay after 'helm init' makes no difference.
+# This seems to be quite misleading, since adding a delay after 'helm repo update' makes no difference.
 # A second run of the terraform apply usually works correctly.
 def install_components_kops(cluster_name)
   dir = "terraform/cloud-platform-components"
@@ -113,7 +113,7 @@ def install_components_kops(cluster_name)
   disable_alerts
 
   # Ensure we have the latest helm charts for all the required components
-  execute "helm init --client-only; helm repo add jetstack https://charts.jetstack.io ; helm repo update"
+  execute "helm repo add jetstack https://charts.jetstack.io ; helm repo update"
   # Without this step, you may get errors like this:
   #
   #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
