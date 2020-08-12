@@ -170,7 +170,8 @@ spec:
         - level: Metadata
           omitStages:
             - "RequestReceived"
-
+  kubeDNS:
+    provider: CoreDNS
   api:
     loadBalancer:
       type: Public
