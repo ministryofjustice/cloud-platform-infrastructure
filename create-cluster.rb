@@ -110,7 +110,7 @@ def install_components_kops(cluster_name)
   dir = "terraform/cloud-platform-components"
   execute "cd #{dir}; rm -rf .terraform"
   switch_terraform_workspace(dir, cluster_name)
-  disable_alerts
+  disable_alerts(dir)
 
   # Ensure we have the latest helm charts for all the required components
   execute "helm repo add jetstack https://charts.jetstack.io ; helm repo update"
@@ -132,6 +132,7 @@ def install_components_eks(cluster_name)
   dir = "terraform/cloud-platform-eks/components"
   execute "cd #{dir}; rm -rf .terraform"
   switch_terraform_workspace(dir, cluster_name)
+  disable_alerts(dir)
 
   cmd_update_kubeconfig = "aws eks update-kubeconfig --name #{cluster_name}"
   if cmd_successful?(cmd_update_kubeconfig)
@@ -150,12 +151,12 @@ def install_components_eks(cluster_name)
   end
 end
 
-def disable_alerts
+def disable_alerts(dir)
   # This will disable high-priority pagerduty alarms for your cluster by replacing the pagerduty_config token with a dummy value
-  `sed -i 's/pagerduty_config\\s\\{1,\\}=\\s\\{1,\\}".*"/pagerduty_config = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
+  `sed -i 's/pagerduty_config\\s\\{1,\\}=\\s\\{1,\\}".*"/pagerduty_config = "dummydummy"/g' #{dir}/terraform.tfvars`
   # This will disable lower priority alerts for your cluster by replacing the alertmanager slack webhook url with a dummy value
-  `sed -i 's/cloud_platform_slack_webhook\\s\\{1,\\}=\\s\\{1,\\}".*"/cloud_platform_slack_webhook = "dummydummy"/g' terraform/cloud-platform-components/terraform.tfvars`
-  `sed -i 's/hooks.slack.com/dummy.slack.com/g' terraform/cloud-platform-components/terraform.tfvars`
+  `sed -i 's/cloud_platform_slack_webhook\\s\\{1,\\}=\\s\\{1,\\}".*"/cloud_platform_slack_webhook = "dummydummy"/g'  #{dir}/terraform.tfvars`
+  `sed -i 's/hooks.slack.com/dummy.slack.com/g'  #{dir}/terraform.tfvars`
 end
 
 def wait_for_kops_validate
