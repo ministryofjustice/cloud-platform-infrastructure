@@ -80,6 +80,12 @@ module "prometheus" {
   dependence_opa = module.opa.helm_opa_status
 }
 
+module "ingress_controller_monitoring" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.0.2"
+
+  namespace = "monitoring"
+}
+
 module "ingress_controllers" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.5"
 
