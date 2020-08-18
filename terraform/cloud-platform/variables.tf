@@ -37,8 +37,8 @@ variable "cluster_node_count" {
 variable "master_node_machine_type" {
   description = "The AWS EC2 instance types to use for master nodes"
   default = {
-    live-1  = "c4.4xlarge"
-    default = "c4.large"
+    live-1  = "c5.4xlarge"
+    default = "c5.large"
   }
 }
 
