@@ -39,7 +39,7 @@ output "oidc_kubernetes_client_id" {
 }
 
 output "oidc_kubernetes_client_secret" {
-  value = module.auth0.oidc_kubernetes_client_secret
+  value     = module.auth0.oidc_kubernetes_client_secret
   sensitive = true
 }
 
@@ -48,7 +48,7 @@ output "oidc_components_client_id" {
 }
 
 output "oidc_components_client_secret" {
-  value = module.auth0.oidc_components_client_secret
+  value     = module.auth0.oidc_components_client_secret
   sensitive = true
 }
 
