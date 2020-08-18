@@ -1,5 +1,3 @@
-
-
 module "cert_manager" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.7"
 
@@ -62,7 +60,7 @@ module "logging" {
 }
 
 module "prometheus" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.3.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.4.0"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
@@ -78,6 +76,13 @@ module "prometheus" {
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
 
   dependence_opa = module.opa.helm_opa_status
+}
+
+module "ingress_controller_monitoring" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.0.3"
+
+  namespace    = "monitoring"
+  default_cert = "monitoring/default-certificate"
 }
 
 module "ingress_controllers" {
