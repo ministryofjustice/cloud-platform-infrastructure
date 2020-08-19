@@ -78,8 +78,8 @@ describe "pod security policies" do
     it "runs in a unprivileged namespace" do
       create_psp_deployment(namespace, deployment_file)
       # On occasion the expect runs before the container runs.
-      # Sleep for ten seconds to avoid this.
-      sleep 10
+      # Sleep to avoid this.
+      sleep 20
       expect(all_containers_running?(pods)).to eq(true)
     end
   end
