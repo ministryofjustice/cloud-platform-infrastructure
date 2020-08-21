@@ -19,7 +19,7 @@ You can see the list of providers in [main.tf](main.tf#L10-L29), as well as the 
 - [Saml](#saml)
 
 ### Auth0
-We use Auth0 to proxy applications and have multiple tennats that perform this. The `auth0.tf` file in this directory will configure the rules to allow the MoJ `WebOps` group admin control over the cluster. 
+We use Auth0 to proxy applications and have multiple tenants that perform this. The `auth0.tf` file in this directory will configure the rules to allow the MoJ `WebOps` group admin control over the cluster. 
 
 ### DNS
 Sets up the parent and child zones for our Route53 configuration. 
