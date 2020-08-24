@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "cert-manager" do
+xdescribe "cert-manager" do
   let(:namespace) { "cert-manager-test-#{readable_timestamp}" }
 
   before do
