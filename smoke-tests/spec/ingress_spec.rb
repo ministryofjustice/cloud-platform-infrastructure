@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "nginx ingress" do
+xdescribe "nginx ingress" do
   namespace = "smoketest-ingress-#{readable_timestamp}"
   host = "#{namespace}.apps.#{current_cluster}"
   let(:url) { "https://#{host}" }
@@ -24,7 +24,7 @@ describe "nginx ingress" do
   # TODO: This test is failing a lot of the time due to performance problems with our shared ingress.
   # So, I'm disabling it for now. When we have fixed the underlying problem, this should be
   # reinstated.
-  xcontext "when ingress is deployed" do
+  context "when ingress is deployed" do
     before do
       apply_template_file(
         namespace: namespace,
