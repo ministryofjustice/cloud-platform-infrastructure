@@ -87,7 +87,7 @@ module "cluster_dns" {
 ###########
 
 module "bastion" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.0"
 
   vpc_name            = local.vpc
   route53_zone        = module.cluster_dns.cluster_dns_zone_name
