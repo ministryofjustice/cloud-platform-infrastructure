@@ -29,7 +29,7 @@ variable "availability_zones" {
 variable "cluster_node_count" {
   description = "The number of worker node in the cluster"
   default = {
-    live-1  = "21"
+    live-1  = "25"
     default = "3"
   }
 }
