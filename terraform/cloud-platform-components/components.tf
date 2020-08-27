@@ -79,10 +79,9 @@ module "prometheus" {
 }
 
 module "ingress_controller_monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.0.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.0.7"
 
   namespace    = "monitoring"
-  default_cert = "monitoring/default-certificate"
 }
 
 module "ingress_controllers" {
