@@ -200,6 +200,7 @@ resource "kubernetes_ingress" "docker-registry-cache-ingress" {
     name      = "docker-registry-cache-ingress"
     namespace = kubernetes_namespace.docker-registry-cache.id
     annotations = {
+      "kubernetes.io/ingress.class"                        = "nginx"
       "nginx.ingress.kubernetes.io/whitelist-source-range" = join(",", [for ip in data.terraform_remote_state.network.outputs.nat_gateway_ips : "${ip}/32"])
     }
   }
