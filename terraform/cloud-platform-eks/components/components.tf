@@ -26,7 +26,7 @@ module "concourse" {
   authorized_keys_github_token                = var.authorized_keys_github_token
   sonarqube_token                             = var.sonarqube_token
   sonarqube_host                              = var.sonarqube_host
-  sonarqube_github_token                      = var.sonarqube_github_token 
+  sonarqube_github_token                      = var.sonarqube_github_token
   dependence_prometheus                       = module.monitoring.helm_prometheus_operator_status
 }
 
