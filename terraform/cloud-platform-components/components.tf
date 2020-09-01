@@ -85,6 +85,14 @@ module "ingress_controller_monitoring" {
   is_production = true
 }
 
+
+module "ingress_controller_integration_test" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.0.8"
+
+  namespace     = "integration-test"
+}
+
+
 module "ingress_controllers" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.5"
 
