@@ -29,15 +29,6 @@ describe "servicemonitors", speed: "fast" do
     expect(names).to include(*expected)
   end
 
-  specify "expected nginx-ingress servicemonitors" do
-    names = get_servicemonitors("ingress-controllers").map { |set| set.dig("metadata", "name") }.sort
-
-    expected = [
-      "nginx-ingress-acme-controller"
-    ]
-    expect(names).to eq(expected)
-  end
-
   specify "expected ECR and CloudWatch servicemonitors", "live-1": true do
     names = get_servicemonitors("monitoring").map { |set| set.dig("metadata", "name") }.sort
 
