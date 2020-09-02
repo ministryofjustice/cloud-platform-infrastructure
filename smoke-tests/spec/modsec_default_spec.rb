@@ -1,5 +1,8 @@
 require "spec_helper"
 
+# The spec in this file is for testing ModSecurity with default "nginx"
+# ingress controller by using the ingress_class = "nginx" in their ingress annotation
+
 describe "Testing modsec" do
   namespace = "integrationtest-modsec-#{readable_timestamp}"
   host = "#{namespace}-nginx.apps.#{current_cluster}"
