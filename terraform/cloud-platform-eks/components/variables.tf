@@ -56,3 +56,11 @@ variable "dockerhub_username" {}
 variable "dockerhub_access_token" {}
 variable "how_out_of_date_are_we_github_token" {}
 variable "authorized_keys_github_token" {}
+variable "sonarqube_token" {
+  default     = ""
+  description = "Sonarqube token used to authenticate against sonaqube for scanning repos"
+}
+variable "sonarqube_host" {
+  default     = ""
+  description = "The host of the sonarqube"
+}
