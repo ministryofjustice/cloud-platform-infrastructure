@@ -257,16 +257,14 @@ def kubectl_delete(cmd)
   execute("kubectl delete #{cmd}")
 end
 
-# Set the enable-modsecurity flag to false on the ingress annotation
-def set_modsec_ing_annotation_false(namespace, ingress_name)
-  stdout, _, _ = execute("kubectl -n #{namespace} annotate --overwrite ingresses/#{ingress_name} nginx.ingress.kubernetes.io/enable-modsecurity='false'")
-  stdout.chomp
-end
-
 def scale_replicas(namespace, deployment, replicas = "")
   execute("kubectl -n #{namespace} scale deployment #{deployment} --replicas=#{replicas}")
 end
 
-def annotate_ingress(namespace, ingress, annotations)
-  execute("kubectl -n #{namespace} annotate ingress #{ingress} #{ing_annotations.join(" ")}")
+def annotate_ingress(namespace, ingress, annotations_hash)
+
+  annotations_hash.each do |key, value|
+    execute("kubectl -n #{namespace} annotate --overwrite ingress #{ingress} '#{key}=#{value}'") 
+  end
+
 end

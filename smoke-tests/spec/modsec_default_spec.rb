@@ -2,10 +2,10 @@ require "spec_helper"
 
 describe "Testing modsec" do
   namespace = "integrationtest-modsec-#{readable_timestamp}"
-  host = "#{namespace}.apps.#{current_cluster}"
+  host = "#{namespace}-nginx.apps.#{current_cluster}"
   let(:url) { "https://#{host}" }
   ingress_name = "integration-test-app-ing"
-  ingress_class = "integration-test"
+  ingress_class = "nginx"
 
   let(:good_url) { "https://#{host}" }
   let(:bad_url) { "https://#{host}?exec=/bin/bash" }
@@ -21,7 +21,7 @@ describe "Testing modsec" do
       binding: binding
     )
     wait_for(namespace, "ingress", ingress_name)
-    sleep 180 # We need to wait for a while *after* the ingress is created before we try to test it, or we get failures.
+    sleep 120 # We need to wait for a while *after* the ingress is created before we try to test it, or we get failures.
 
   end
   
@@ -54,7 +54,7 @@ describe "Testing modsec" do
   end
 
   context "when modsec disabled  with nginx ingress class" do
-   
+    
     before do
       annotations_hash = { 'nginx.ingress.kubernetes.io/enable-modsecurity': 'false' }
       annotate_ingress(namespace, ingress_name, annotations_hash)
@@ -77,6 +77,5 @@ describe "Testing modsec" do
       end
     end
   end
-
 
 end
