@@ -129,7 +129,7 @@ module "velero" {
 }
 
 module "sonarqube" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-sonarqube?ref=0.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-sonarqube?ref=0.0.2"
 
   vpc_id                        = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets              = data.terraform_remote_state.cluster.outputs.internal_subnets
