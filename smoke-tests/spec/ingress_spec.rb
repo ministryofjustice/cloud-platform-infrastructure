@@ -1,9 +1,11 @@
 require "spec_helper"
 
-xdescribe "nginx ingress" do
+describe "nginx ingress" do
   namespace = "smoketest-ingress-#{readable_timestamp}"
-  host = "#{namespace}.apps.#{current_cluster}"
+  host = "#{namespace}-nginx.apps.#{current_cluster}"
   let(:url) { "https://#{host}" }
+  ingress_name = "integration-test-app-ing"
+  ingress_class = "nginx"
 
   before(:all) do
     create_namespace(namespace)
@@ -24,16 +26,18 @@ xdescribe "nginx ingress" do
   # TODO: This test is failing a lot of the time due to performance problems with our shared ingress.
   # So, I'm disabling it for now. When we have fixed the underlying problem, this should be
   # reinstated.
-  context "when ingress is deployed" do
+  context "when ingress is deployed using 'nginx' ingress controller" do
+    
     before do
       apply_template_file(
         namespace: namespace,
         host: host,
+        ingress_class: ingress_class,
         file: "spec/fixtures/helloworld-deployment.yaml.erb",
         binding: binding
       )
 
-      wait_for(namespace, "ingress", "integration-test-app-ing")
+      wait_for(namespace, "ingress", ingress_name)
       sleep 60 # Without this, the test fails
     end
 
@@ -42,6 +46,31 @@ xdescribe "nginx ingress" do
       expect(result.status).to eq(["200", "OK"])
     end
   end
+
+  context "when ingress is deployed using 'integration-test' ingress controller" do
+
+    before do
+      host = "#{namespace}-integration-test.apps.#{current_cluster}"
+      ingress_class = "integration-test"
+
+      apply_template_file(
+        namespace: namespace,
+        host: host,
+        ingress_class: ingress_class, 
+        file: "spec/fixtures/helloworld-deployment.yaml.erb",
+        binding: binding
+      )
+
+      wait_for(namespace, "ingress", ingress_name)
+      sleep 120 # Without this, the test fails
+    end
+
+    it "returns 200 for http get" do
+      result = URI.open(url)
+      expect(result.status).to eq(["200", "OK"])
+    end
+  end
+  
 
   context "when ingress is deployed with invalid syntax" do
     it "is rejected by the admission webhook" do

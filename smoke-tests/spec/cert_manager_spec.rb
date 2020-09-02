@@ -1,7 +1,8 @@
 require "spec_helper"
 
-xdescribe "cert-manager" do
+describe "cert-manager" do
   let(:namespace) { "cert-manager-test-#{readable_timestamp}" }
+  ingress_class = "nginx"
 
   before do
     create_namespace(namespace)
@@ -19,6 +20,7 @@ xdescribe "cert-manager" do
       apply_template_file(
         namespace: namespace,
         host: host,
+        ingress_class: ingress_class,
         file: "spec/fixtures/helloworld-deployment.yaml.erb",
         binding: binding
       )
