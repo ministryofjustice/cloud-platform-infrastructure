@@ -28,7 +28,7 @@ describe "Testing modsec" do
     delete_namespace(namespace)
   end
 
-  context "when modsec deployed with nginx ingress class" do # this is the default behaviour
+  context "when modsec deployed with integration-test ingress class" do # this is the default behaviour
     before do
       annotations_hash = {'nginx.ingress.kubernetes.io/enable-modsecurity': "true"}
       annotate_ingress(namespace, ingress_name, annotations_hash)
@@ -52,7 +52,7 @@ describe "Testing modsec" do
     end
   end
 
-  context "when modsec disabled  with nginx ingress class" do
+  context "when modsec disabled  with integration-test ingress class" do
     before do
       annotations_hash = {'nginx.ingress.kubernetes.io/enable-modsecurity': "false"}
       annotate_ingress(namespace, ingress_name, annotations_hash)
