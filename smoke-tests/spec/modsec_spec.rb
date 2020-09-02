@@ -22,16 +22,15 @@ describe "Testing modsec" do
     )
     wait_for(namespace, "ingress", ingress_name)
     sleep 180 # We need to wait for a while *after* the ingress is created before we try to test it, or we get failures.
-
   end
-  
+
   after(:all) do
     delete_namespace(namespace)
   end
 
   context "when modsec deployed with nginx ingress class" do # this is the default behaviour
     before do
-      annotations_hash = { 'nginx.ingress.kubernetes.io/enable-modsecurity': 'true' }
+      annotations_hash = {'nginx.ingress.kubernetes.io/enable-modsecurity': "true"}
       annotate_ingress(namespace, ingress_name, annotations_hash)
       sleep 30
     end
@@ -54,9 +53,8 @@ describe "Testing modsec" do
   end
 
   context "when modsec disabled  with nginx ingress class" do
-   
     before do
-      annotations_hash = { 'nginx.ingress.kubernetes.io/enable-modsecurity': 'false' }
+      annotations_hash = {'nginx.ingress.kubernetes.io/enable-modsecurity': "false"}
       annotate_ingress(namespace, ingress_name, annotations_hash)
       sleep 30
     end
@@ -77,6 +75,4 @@ describe "Testing modsec" do
       end
     end
   end
-
-
 end

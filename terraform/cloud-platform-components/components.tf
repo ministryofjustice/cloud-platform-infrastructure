@@ -82,7 +82,7 @@ module "prometheus" {
 module "ingress_controller_integration_test" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.0.9"
 
-  namespace     = "integration-test"
+  namespace = "integration-test"
 }
 
 

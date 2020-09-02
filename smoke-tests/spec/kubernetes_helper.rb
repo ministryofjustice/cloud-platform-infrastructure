@@ -262,9 +262,7 @@ def scale_replicas(namespace, deployment, replicas = "")
 end
 
 def annotate_ingress(namespace, ingress, annotations_hash)
-
   annotations_hash.each do |key, value|
-    execute("kubectl -n #{namespace} annotate --overwrite ingress #{ingress} '#{key}=#{value}'") 
+    execute("kubectl -n #{namespace} annotate --overwrite ingress #{ingress} '#{key}=#{value}'")
   end
-
 end
