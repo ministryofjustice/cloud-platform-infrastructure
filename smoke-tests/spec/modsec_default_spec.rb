@@ -1,9 +1,9 @@
 require "spec_helper"
 
 # The spec in this file is for testing ModSecurity with default "nginx"
-# ingress controller by using the ingress_class = "nginx" in their ingress annotation
+# ingress controller by using the ingress_class = "nginx" in its ingress annotation
 
-describe "Testing modsec" do
+describe "Testing modsec on ingress class: 'nginx'" do
   namespace = "integrationtest-modsec-#{readable_timestamp}"
   host = "#{namespace}-nginx.apps.#{current_cluster}"
   let(:url) { "https://#{host}" }
@@ -31,7 +31,7 @@ describe "Testing modsec" do
     delete_namespace(namespace)
   end
 
-  context "when modsec deployed with nginx ingress class" do # this is the default behaviour
+  context "when modsec is deployed" do # this is the default behaviour
     before do
       annotations_hash = {'nginx.ingress.kubernetes.io/enable-modsecurity': "true"}
       annotate_ingress(namespace, ingress_name, annotations_hash)
@@ -55,7 +55,7 @@ describe "Testing modsec" do
     end
   end
 
-  context "when modsec disabled  with nginx ingress class" do
+  context "when modsec is disabled" do
     before do
       annotations_hash = {'nginx.ingress.kubernetes.io/enable-modsecurity': "false"}
       annotate_ingress(namespace, ingress_name, annotations_hash)

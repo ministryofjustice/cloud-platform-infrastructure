@@ -4,7 +4,7 @@ require "spec_helper"
 # Integration tests has the dedicated ingress controller with ingress class - integration-test
 # The below spec uses the ingress_class = "integration-test" in its ingress annotation
 
-describe "Testing modsec" do
+describe "Testing modsec on ingress class: 'integration-test'" do
   namespace = "integrationtest-modsec-#{readable_timestamp}"
   host = "#{namespace}.apps.#{current_cluster}"
   let(:url) { "https://#{host}" }
@@ -32,7 +32,7 @@ describe "Testing modsec" do
     delete_namespace(namespace)
   end
 
-  context "when modsec deployed with integration-test ingress class" do # this is the default behaviour
+  context "when modsec is deployed" do # this is the default behaviour
     before do
       annotations_hash = {'nginx.ingress.kubernetes.io/enable-modsecurity': "true"}
       annotate_ingress(namespace, ingress_name, annotations_hash)
@@ -56,7 +56,7 @@ describe "Testing modsec" do
     end
   end
 
-  context "when modsec disabled  with integration-test ingress class" do
+  context "when modsec is disabled" do
     before do
       annotations_hash = {'nginx.ingress.kubernetes.io/enable-modsecurity': "false"}
       annotate_ingress(namespace, ingress_name, annotations_hash)
