@@ -4,7 +4,7 @@ require "spec_helper"
 # Integration tests has the dedicated ingress controller with ingress class - integration-test
 # The below spec uses the ingress_class = "integration-test" in its ingress annotation
 
-describe "Testing modsec on ingress class: 'integration-test'" do
+describe "Testing modsec on ingress class: 'integration-test'", kops: true do
   namespace = "integrationtest-modsec-#{readable_timestamp}"
   host = "#{namespace}.apps.#{current_cluster}"
   let(:url) { "https://#{host}" }
@@ -14,7 +14,7 @@ describe "Testing modsec on ingress class: 'integration-test'" do
   let(:good_url) { "https://#{host}" }
   let(:bad_url) { "https://#{host}?exec=/bin/bash" }
 
-  before(:all) do
+  before(:all, kops: true) do
     create_namespace(namespace)
 
     apply_template_file(
@@ -28,7 +28,7 @@ describe "Testing modsec on ingress class: 'integration-test'" do
     sleep 180 # We need to wait for a while *after* the ingress is created before we try to test it, or we get failures.
   end
 
-  after(:all) do
+  after(:all, kops: true) do
     delete_namespace(namespace)
   end
 

@@ -46,7 +46,7 @@ describe "nginx ingress" do
     end
   end
 
-  context "when ingress is deployed using 'integration-test' ingress controller" do
+  context "when ingress is deployed using 'integration-test' ingress controller", kops: true do
     before do
       host = "#{namespace}-integration-test.apps.#{current_cluster}"
       ingress_class = "integration-test"
