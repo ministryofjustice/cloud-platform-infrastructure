@@ -80,7 +80,7 @@ module "prometheus" {
 
 
 module "ingress_controller_integration_test" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.1.2"
 
   namespace = "integration-test"
 }
@@ -88,7 +88,7 @@ module "ingress_controller_integration_test" {
 
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.7"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
