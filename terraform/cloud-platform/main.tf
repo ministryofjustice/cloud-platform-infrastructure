@@ -99,7 +99,7 @@ module "bastion" {
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.3"
 
   cluster_name         = local.cluster_name
   services_base_domain = local.services_base_domain
