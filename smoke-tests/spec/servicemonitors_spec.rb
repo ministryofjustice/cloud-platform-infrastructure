@@ -22,7 +22,7 @@ describe "servicemonitors", speed: "fast" do
 
     expected = [
       "prometheus-operator-kube-controller-manager",
-      "prometheus-operator-kube-dns",
+      "prometheus-operator-coredns",
       "prometheus-operator-kube-etcd",
       "prometheus-operator-kube-scheduler"
     ]
