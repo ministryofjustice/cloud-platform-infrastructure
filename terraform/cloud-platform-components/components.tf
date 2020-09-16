@@ -84,6 +84,9 @@ module "ingress_controller_integration_test" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.1.2"
 
   namespace = "integration-test"
+  # This module requires prometheus and cert-manager already deployed
+  dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
+  dependence_certmanager = module.cert_manager.helm_cert_manager_status
 }
 
 
