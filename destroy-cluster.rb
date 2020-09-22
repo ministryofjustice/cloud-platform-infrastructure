@@ -214,7 +214,7 @@ def parse_options
   options = {
     dry_run: true,
     cluster_name: nil,
-    destroy_vpc: true
+    destroy_vpc: true,
   }
 
   OptionParser.new { |opts|
