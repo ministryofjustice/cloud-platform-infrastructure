@@ -59,11 +59,26 @@ class ClusterDeleter
   end
 
   def check_prerequisites
+    running_in_docker
     check_options
     check_env_vars
     check_software_installed
     check_aws_profiles
     check_name_length
+  end
+
+  def running_in_docker
+    unless running_in_docker?
+      raise "This script may only be run inside a docker container"
+    end
+  end
+
+  # https://stackoverflow.com/questions/20010199/how-to-determine-if-a-process-runs-inside-lxc-docker
+  def running_in_docker?
+    FileTest.exists?("/.dockerenv") || (
+      FileTest.exists?("/proc/self/cgroup") &&
+      File.read("/proc/self/cgroup").split("\n").any?
+    )
   end
 
   def check_options
