@@ -26,11 +26,27 @@ variable "availability_zones" {
   default     = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 }
 
-variable "cluster_node_count" {
-  description = "The number of worker node in the cluster"
+variable "cluster_node_count_a" {
+  description = "The number of worker node in the cluster in Availability Zone eu-west-2a"
   default = {
     live-1  = "25"
-    default = "3"
+    default = "1"
+  }
+}
+
+variable "cluster_node_count_b" {
+  description = "The number of worker node in the cluster in Availability Zone eu-west-2b"
+  default = {
+    live-1  = "25"
+    default = "1"
+  }
+}
+
+variable "cluster_node_count_c" {
+  description = "The number of worker node in the cluster in Availability Zone eu-west-2c"
+  default = {
+    live-1  = "25"
+    default = "1"
   }
 }
 
