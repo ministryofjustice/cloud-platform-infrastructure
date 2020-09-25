@@ -6,10 +6,10 @@
 #   ./recycle-node.rb
 #
 #  Note:
-#   The `get_worker_instance_group_size` method looks for the instance group size in the kops manifest in our github repository, so it will always return the size of the live-1 cluster.
-#   To run this on a test cluster, update method `get_worker_instance_group_size` as shown below, to return number of worker nodes configured as minSize in kops/test-cluster.yaml.
+#   The `target_worker_node_count` method looks for the instance group size in the kops manifest in our github repository, so it will always return the size of the live-1 cluster.
+#   To run this on a test cluster, update method `target_worker_node_count` as shown below, to return number of worker nodes configured as minSize in kops/test-cluster.yaml.
 #
-#  def get_worker_instance_group_size
+#  def target_worker_node_count
 #     return 3
 
 require "json"
@@ -22,14 +22,13 @@ AWS_REGION = "eu-west-2"
 KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-infrastructure/main/kops/live-1.yaml"
 NODE_DRAIN_TIMEOUT = 360 # Draining a node usually takes around 2 minutes. If it takes >6 minutes, it's not going to complete.
 SIGTERM = 15 # The unix signal to send to kill a process
-WORKER_NODE_INSTANCEGROUP = ["nodes-1.16.13-eu-west-2a", "nodes-1.16.13-eu-west-2b", "nodes-1.16.13-eu-west-2c"] # The names of the worker node instancegroups in the kops config.
 STUCK_STATES = ["ImagePullBackOff", "CrashLoopBackOff"]
 
 def main
   config_cluster
 
   unless correct_number_of_workers_running?
-    raise "There should be #{get_worker_instance_group_size} workers, but #{count_worker_nodes} found. Aborting."
+    raise "There should be #{target_worker_node_count} workers, but #{count_worker_nodes} found. Aborting."
   end
 
   node = get_oldest_worker_node
@@ -56,7 +55,7 @@ def config_cluster
 end
 
 def correct_number_of_workers_running?
-  count_worker_nodes == get_worker_instance_group_size
+  count_worker_nodes == target_worker_node_count
 end
 
 def count_worker_nodes
@@ -78,22 +77,23 @@ def node_ready?(node)
   node_conditions.map { |c| c.dig("reason") }.include?("KubeletReady")
 end
 
-def worker_node?(node)
-  node.dig("metadata", "labels")["kubernetes.io/role"] == "node" \
-    && node.dig("metadata", "labels", "kops.k8s.io/instancegroup").include?(WORKER_NODE_INSTANCEGROUP)
+def recylable_instance_groups
+  YAML.load_stream(get_kops_config)
+    .find_all { |doc| doc.dig("metadata", "labels", "cloud-platform-recycle-nodes") == true }
+    .map { |doc| doc.dig("metadata", "name") }
 end
 
-def get_worker_instance_group_size
-  docs = []
-  YAML.load_stream(get_kops_config) { |doc| docs << doc }
-  worker_instance_group = docs.last(3)
+def worker_node?(node)
+  instance_group = node.dig("metadata", "labels", "kops.k8s.io/instancegroup")
+  
+  node.dig("metadata", "labels")["kubernetes.io/role"] == "node" \
+    && recylable_instance_groups.include?(instance_group)
+end
 
-  unless worker_instance_group.map { |s| s.dig("metadata", "name") } == WORKER_NODE_INSTANCEGROUP
-    raise "Failed to parse kops config. Last document in YAML file is supposed to be worker instancegroup definition."
-  end
-
-  worker_instance_group.map { |s| s.dig("spec", "minSize") }.inject(:+)
-
+def target_worker_node_count
+  YAML.load_stream(get_kops_config)
+    .find_all { |doc| doc.dig("metadata", "labels", "cloud-platform-recycle-nodes") == true }
+    .map { |s| s.dig("spec", "minSize") }.sum
 end
 
 def get_kops_config
