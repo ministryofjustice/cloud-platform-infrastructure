@@ -22,7 +22,7 @@ AWS_REGION = "eu-west-2"
 KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-platform-infrastructure/main/kops/live-1.yaml"
 NODE_DRAIN_TIMEOUT = 360 # Draining a node usually takes around 2 minutes. If it takes >6 minutes, it's not going to complete.
 SIGTERM = 15 # The unix signal to send to kill a process
-WORKER_NODE_INSTANCEGROUP = "nodes-1.16.13" # The name of the worker nodes instancegroup in the kops config.
+WORKER_NODE_INSTANCEGROUP = ["nodes-1.16.13-eu-west-2a", "nodes-1.16.13-eu-west-2b", "nodes-1.16.13-eu-west-2c"] # The names of the worker node instancegroups in the kops config.
 STUCK_STATES = ["ImagePullBackOff", "CrashLoopBackOff"]
 
 def main
@@ -80,19 +80,20 @@ end
 
 def worker_node?(node)
   node.dig("metadata", "labels")["kubernetes.io/role"] == "node" \
-    && node.dig("metadata", "labels", "kops.k8s.io/instancegroup") == WORKER_NODE_INSTANCEGROUP
+    && node.dig("metadata", "labels", "kops.k8s.io/instancegroup").include?(WORKER_NODE_INSTANCEGROUP)
 end
 
 def get_worker_instance_group_size
   docs = []
   YAML.load_stream(get_kops_config) { |doc| docs << doc }
-  worker_instance_group = docs.last
+  worker_instance_group = docs.last(3)
 
-  unless worker_instance_group.dig("metadata", "name") == WORKER_NODE_INSTANCEGROUP
+  unless worker_instance_group.map { |s| s.dig("metadata", "name") } == WORKER_NODE_INSTANCEGROUP
     raise "Failed to parse kops config. Last document in YAML file is supposed to be worker instancegroup definition."
   end
 
-  worker_instance_group.dig("spec", "minSize").to_i
+  worker_instance_group.map { |s| s.dig("spec", "minSize") }.inject(:+)
+
 end
 
 def get_kops_config
