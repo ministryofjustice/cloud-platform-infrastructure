@@ -85,7 +85,7 @@ end
 
 def worker_node?(node)
   instance_group = node.dig("metadata", "labels", "kops.k8s.io/instancegroup")
-  
+
   node.dig("metadata", "labels")["kubernetes.io/role"] == "node" \
     && recylable_instance_groups.include?(instance_group)
 end
