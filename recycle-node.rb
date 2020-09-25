@@ -79,7 +79,7 @@ end
 
 def recylable_instance_groups
   YAML.load_stream(get_kops_config)
-    .find_all { |doc| doc.dig("metadata", "labels", "cloud-platform-recycle-nodes") == true }
+    .find_all { |doc| doc.dig("metadata", "labels", "cloud-platform-recycle-nodes") == "true" }
     .map { |doc| doc.dig("metadata", "name") }
 end
 
@@ -92,7 +92,7 @@ end
 
 def target_worker_node_count
   YAML.load_stream(get_kops_config)
-    .find_all { |doc| doc.dig("metadata", "labels", "cloud-platform-recycle-nodes") == true }
+    .find_all { |doc| doc.dig("metadata", "labels", "cloud-platform-recycle-nodes") == "true" }
     .map { |s| s.dig("spec", "minSize") }.sum
 end
 
