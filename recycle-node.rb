@@ -23,6 +23,7 @@ KOPS_CONFIG_URL = "https://raw.githubusercontent.com/ministryofjustice/cloud-pla
 NODE_DRAIN_TIMEOUT = 360 # Draining a node usually takes around 2 minutes. If it takes >6 minutes, it's not going to complete.
 SIGTERM = 15 # The unix signal to send to kill a process
 STUCK_STATES = ["ImagePullBackOff", "CrashLoopBackOff"]
+INSTANCE_GROUP_LABEL = "cloud-platform-recycle-nodes" # Set this label to "true" to indicate recyclable worker node instancegroups
 
 def main
   config_cluster
@@ -77,22 +78,25 @@ def node_ready?(node)
   node_conditions.map { |c| c.dig("reason") }.include?("KubeletReady")
 end
 
+def recylable_instance_group_names
+  recylable_instance_groups
+    .map { |doc| doc.dig("metadata", "name") }
+end
+
 def recylable_instance_groups
   YAML.load_stream(get_kops_config)
-    .find_all { |doc| doc.dig("metadata", "labels", "cloud-platform-recycle-nodes") == "true" }
-    .map { |doc| doc.dig("metadata", "name") }
+    .find_all { |doc| doc.dig("metadata", "labels", INSTANCE_GROUP_LABEL) == "true" }
 end
 
 def worker_node?(node)
   instance_group = node.dig("metadata", "labels", "kops.k8s.io/instancegroup")
 
   node.dig("metadata", "labels")["kubernetes.io/role"] == "node" \
-    && recylable_instance_groups.include?(instance_group)
+    && recylable_instance_group_names.include?(instance_group)
 end
 
 def target_worker_node_count
-  YAML.load_stream(get_kops_config)
-    .find_all { |doc| doc.dig("metadata", "labels", "cloud-platform-recycle-nodes") == "true" }
+  recylable_instance_groups
     .map { |s| s.dig("spec", "minSize") }.sum
 end
 
