@@ -13,7 +13,6 @@ describe "daemonsets", speed: "fast" do
     expected = [
       "calico-node",
       "fluent-bit",
-      "fluentd-es",
       "kiam-agent",
       "kiam-server",
       "kops-controller",
@@ -36,18 +35,6 @@ describe "daemonsets", speed: "fast" do
     ]
 
     expect(names).to eq(expected)
-  end
-
-  context "fluentd" do
-    let(:pods) { get_running_app_pods("logging", "fluentd-es") }
-
-    it "runs fluentd" do
-      expect(all_node_ips).to eq(app_node_ips)
-    end
-
-    specify "all fluentd containers are running" do
-      expect(all_containers_running?(pods)).to eq(true)
-    end
   end
 
   context "fluent-bit", kops: true do
