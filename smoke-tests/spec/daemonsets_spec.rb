@@ -13,7 +13,7 @@ describe "daemonsets", speed: "fast" do
     expected = [
       "calico-node",
       "fluent-bit",
-      "fluent-es",
+      "fluentd-es",
       "kiam-agent",
       "kiam-server",
       "kops-controller",
