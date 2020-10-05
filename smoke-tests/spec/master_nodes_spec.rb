@@ -21,7 +21,7 @@ describe "master nodes", speed: "fast", kops: true do
         p.dig("metadata", "namespace"),
         shorten_pod_name(p.dig("metadata", "name"), node_name)
       ]
-    } .sort
+    }.sort
   end
 
   let(:masters) {
