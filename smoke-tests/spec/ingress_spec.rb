@@ -37,7 +37,7 @@ describe "nginx ingress" do
       )
 
       wait_for(namespace, "ingress", ingress_name)
-      sleep 60 # Without this, the test fails
+      sleep 90 # Without this, the test fails
     end
 
     it "returns 200 for http get" do
