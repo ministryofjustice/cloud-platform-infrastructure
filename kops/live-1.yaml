@@ -250,7 +250,7 @@ spec:
     metricsBindAddress: 0.0.0.0
   kubernetesApiAccess:
   - 0.0.0.0/0
-  kubernetesVersion: 1.16.13
+  kubernetesVersion: 1.17.12
   masterPublicName: api.live-1.cloud-platform.service.justice.gov.uk
   networkCIDR: 172.20.0.0/16
   networkID: vpc-0726ec279947067f8
@@ -325,7 +325,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2a
 spec:
-  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
   machineType: c5.4xlarge
   maxSize: 1
   minSize: 1
@@ -352,7 +352,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2b
 spec:
-  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
   machineType: c5.4xlarge
   maxSize: 1
   minSize: 1
@@ -379,7 +379,7 @@ metadata:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
   name: master-eu-west-2c
 spec:
-  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
   machineType: c5.4xlarge
   maxSize: 1
   minSize: 1
@@ -406,15 +406,15 @@ metadata:
   creationTimestamp: null
   labels:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
-  name: 2xlarge-nodes-1.16.13
+  name: 2xlarge-nodes-1.17.12
 spec:
-  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
   machineType: r5.2xlarge
   maxSize: 2
   minSize: 2
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: 2xlarge-nodes-1.16.13
+    kops.k8s.io/instancegroup: 2xlarge-nodes-1.17.12
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -448,15 +448,15 @@ metadata:
   labels:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
     cloud-platform-recycle-nodes: "true"
-  name: nodes-1.16.13-eu-west-2a
+  name: nodes-1.17.12-eu-west-2a
 spec:
-  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
   machineType: r5.xlarge
   maxSize: 9
   minSize: 9
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: nodes-1.16.13-eu-west-2a
+    kops.k8s.io/instancegroup: nodes-1.17.12-eu-west-2a
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -478,15 +478,15 @@ metadata:
   labels:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
     cloud-platform-recycle-nodes: "true"
-  name: nodes-1.16.13-eu-west-2b
+  name: nodes-1.17.12-eu-west-2b
 spec:
-  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
   machineType: r5.xlarge
   maxSize: 9
   minSize: 9
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: nodes-1.16.13-eu-west-2b
+    kops.k8s.io/instancegroup: nodes-1.17.12-eu-west-2b
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
@@ -508,15 +508,15 @@ metadata:
   labels:
     kops.k8s.io/cluster: live-1.cloud-platform.service.justice.gov.uk
     cloud-platform-recycle-nodes: "true"
-  name: nodes-1.16.13-eu-west-2c
+  name: nodes-1.17.12-eu-west-2c
 spec:
-  image: kope.io/k8s-1.16-debian-stretch-amd64-hvm-ebs-2020-01-17
+  image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
   machineType: r5.xlarge
   maxSize: 9
   minSize: 9
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: nodes-1.16.13-eu-west-2c
+    kops.k8s.io/instancegroup: nodes-1.17.12-eu-west-2c
   cloudLabels:
     application: moj-cloud-platform
     business-unit: platforms
