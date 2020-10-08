@@ -1,13 +1,15 @@
 require "spec_helper"
 
-describe "nginx ingress" do
+describe "nginx ingress", speed: "slow" do
   namespace = "smoketest-ingress-#{readable_timestamp}"
   host = "#{namespace}-nginx.apps.#{current_cluster}"
   let(:url) { "https://#{host}" }
   ingress_name = "integration-test-app-ing"
   ingress_class = "nginx"
 
-  let(:sleep_delay) { 120 } # How long to wait after creating/modifying an ingress
+  # Delay of 300 or lower consistently results in at least one test failure
+  # Delay of 360 fails 50/50
+  let(:sleep_delay) { 400 } # How long to wait after creating/modifying an ingress
 
   before(:all) do
     create_namespace(namespace)
