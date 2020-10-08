@@ -7,6 +7,8 @@ describe "nginx ingress" do
   ingress_name = "integration-test-app-ing"
   ingress_class = "nginx"
 
+  let(:sleep_delay) { 120 } # How long to wait after creating/modifying an ingress
+
   before(:all) do
     create_namespace(namespace)
   end
@@ -37,7 +39,7 @@ describe "nginx ingress" do
       )
 
       wait_for(namespace, "ingress", ingress_name)
-      sleep 90 # Without this, the test fails
+      sleep sleep_delay # Without this, the test fails
     end
 
     it "returns 200 for http get" do
@@ -60,7 +62,7 @@ describe "nginx ingress" do
       )
 
       wait_for(namespace, "ingress", ingress_name)
-      sleep 120 # Without this, the test fails
+      sleep sleep_delay # Without this, the test fails
     end
 
     it "returns 200 for http get" do
