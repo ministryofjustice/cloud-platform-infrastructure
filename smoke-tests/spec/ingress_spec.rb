@@ -6,7 +6,7 @@ describe "nginx ingress" do
   let(:url) { "https://#{host}" }
   ingress_name = "integration-test-app-ing"
   ingress_class = "nginx"
-  
+
   let(:sleep_delay) { 120 } # How long to wait after creating/modifying an ingress
 
   before(:all) do
