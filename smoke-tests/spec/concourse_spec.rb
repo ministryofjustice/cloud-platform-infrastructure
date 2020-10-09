@@ -10,7 +10,7 @@ describe "concourse-test", "eks-manager": true do
   end
 
   it "runs postgresql pods" do
-    pods = get_running_app_pods("concourse", "postgresql")
+    pods = get_running_app_pods("concourse", "postgresql", "app.kubernetes.io/name")
     expect(all_containers_running?(pods)).to eq(true)
   end
 
