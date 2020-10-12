@@ -442,7 +442,7 @@ metadata:
   name: ingress-nodes-1.17.12-eu-west-2a
 spec:
   image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
-  machineType: r5.xlarge
+  machineType: c4.xlarge
   maxSize: 1
   minSize: 1
   rootVolumeSize: 256
@@ -473,7 +473,7 @@ metadata:
   name: ingress-nodes-1.17.12-eu-west-2b
 spec:
   image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
-  machineType: r5.xlarge
+  machineType: c4.xlarge
   maxSize: 1
   minSize: 1
   rootVolumeSize: 256
@@ -504,7 +504,7 @@ metadata:
   name: ingress-nodes-1.17.12-eu-west-2c
 spec:
   image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
-  machineType: r5.xlarge
+  machineType: c4.xlarge
   maxSize: 1
   minSize: 1
   rootVolumeSize: 256
@@ -531,6 +531,8 @@ spec:
 # https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/091ff8cc054fb2f87734edef8de28dd31d71b0b2/recycle-node.rb#L93 #
 #                                                                                                                                      #
 ########################################################################################################################################
+
+---
 
 apiVersion: kops.k8s.io/v1alpha2
 kind: InstanceGroup
