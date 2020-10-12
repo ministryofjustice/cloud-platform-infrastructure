@@ -442,7 +442,7 @@ metadata:
   name: ingress-nodes-1.17.12-eu-west-2a
 spec:
   image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
-  machineType: c4.xlarge
+  machineType: c5.xlarge
   maxSize: 1
   minSize: 1
   rootVolumeSize: 256
@@ -473,7 +473,7 @@ metadata:
   name: ingress-nodes-1.17.12-eu-west-2b
 spec:
   image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
-  machineType: c4.xlarge
+  machineType: c5.xlarge
   maxSize: 1
   minSize: 1
   rootVolumeSize: 256
@@ -504,7 +504,7 @@ metadata:
   name: ingress-nodes-1.17.12-eu-west-2c
 spec:
   image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
-  machineType: c4.xlarge
+  machineType: c5.xlarge
   maxSize: 1
   minSize: 1
   rootVolumeSize: 256
