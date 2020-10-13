@@ -7,6 +7,14 @@ describe "daemonsets", speed: "fast" do
 
   let(:app_node_ips) { pod_ips pods }
 
+  # TODO: This is only necessary while the dedicated ingress controller nodes exist. We're not planning to keep these,
+  # so tests that mention this should be reverted to "all_node_ips" as soon as they're gone
+  def exclude_ingress_nodes(nodes)
+    nodes.reject { |node| node.dig("metadata", "labels", "kops.k8s.io/instancegroup")[0, 13] == "ingress-nodes" }
+  end
+  let(:non_ingress_node_ips) { node_ips(exclude_ingress_nodes(get_nodes)) }
+  let(:non_ingress_worker_ips) { node_ips(exclude_ingress_nodes(worker_nodes)) }
+
   specify "expected daemonsets in kops", kops: true do
     names = get_daemonsets.map { |set| set.dig("metadata", "name") }.sort
 
@@ -42,7 +50,7 @@ describe "daemonsets", speed: "fast" do
     let(:pods) { get_running_app_pods("logging", "fluent-bit") }
 
     it "runs fluent-bit" do
-      expect(all_node_ips).to eq(app_node_ips)
+      expect(non_ingress_node_ips).to eq(app_node_ips)
     end
 
     specify "all fluent-bit containers are running" do
@@ -65,7 +73,7 @@ describe "daemonsets", speed: "fast" do
       let(:component) { "agent" }
 
       it "runs on workers" do
-        expect(worker_ips).to eq(app_node_ips)
+        expect(non_ingress_worker_ips).to eq(app_node_ips)
       end
 
       it "doesn't run on masters" do
@@ -77,7 +85,7 @@ describe "daemonsets", speed: "fast" do
       let(:component) { "server" }
 
       it "runs on workers" do
-        expect(worker_ips).to eq(app_node_ips)
+        expect(non_ingress_worker_ips).to eq(app_node_ips)
       end
 
       it "doesn't run on masters" do
