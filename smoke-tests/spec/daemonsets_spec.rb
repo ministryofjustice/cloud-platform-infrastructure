@@ -10,7 +10,7 @@ describe "daemonsets", speed: "fast" do
   # TODO: This is only necessary while the dedicated ingress controller nodes exist. We're not planning to keep these,
   # so tests that mention this should be reverted to "all_node_ips" as soon as they're gone
   def exclude_ingress_nodes(nodes)
-    nodes.reject { |node| node.dig("metadata", "labels", "kops.k8s.io/instancegroup")[0,13] == "ingress-nodes" }
+    nodes.reject { |node| node.dig("metadata", "labels", "kops.k8s.io/instancegroup")[0, 13] == "ingress-nodes" }
   end
   let(:non_ingress_node_ips) { node_ips(exclude_ingress_nodes(get_nodes)) }
   let(:non_ingress_worker_ips) { node_ips(exclude_ingress_nodes(worker_nodes)) }
