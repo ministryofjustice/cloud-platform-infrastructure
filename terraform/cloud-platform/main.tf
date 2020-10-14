@@ -57,7 +57,7 @@ locals {
 ########
 
 module "kops" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.0.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.0.8"
 
   vpc_name            = local.vpc
   cluster_domain_name = trimsuffix(local.cluster_base_domain_name, ".")
@@ -66,12 +66,13 @@ module "kops" {
   auth0_client_id         = module.auth0.oidc_kubernetes_client_id
   authorized_keys_manager = module.bastion.authorized_keys_manager
 
-  cluster_node_count_a     = lookup(var.cluster_node_count_a, terraform.workspace, var.cluster_node_count_a["default"])
-  cluster_node_count_b     = lookup(var.cluster_node_count_b, terraform.workspace, var.cluster_node_count_b["default"])
-  cluster_node_count_c     = lookup(var.cluster_node_count_c, terraform.workspace, var.cluster_node_count_c["default"])
-  master_node_machine_type = lookup(var.master_node_machine_type, terraform.workspace, var.master_node_machine_type["default"])
-  worker_node_machine_type = lookup(var.worker_node_machine_type, terraform.workspace, var.worker_node_machine_type["default"])
-  enable_large_nodesgroup  = lookup(var.enable_large_nodesgroup, terraform.workspace, var.enable_large_nodesgroup["default"])
+  cluster_node_count_a      = lookup(var.cluster_node_count_a, terraform.workspace, var.cluster_node_count_a["default"])
+  cluster_node_count_b      = lookup(var.cluster_node_count_b, terraform.workspace, var.cluster_node_count_b["default"])
+  cluster_node_count_c      = lookup(var.cluster_node_count_c, terraform.workspace, var.cluster_node_count_c["default"])
+  master_node_machine_type  = lookup(var.master_node_machine_type, terraform.workspace, var.master_node_machine_type["default"])
+  worker_node_machine_type  = lookup(var.worker_node_machine_type, terraform.workspace, var.worker_node_machine_type["default"])
+  enable_large_nodesgroup   = lookup(var.enable_large_nodesgroup, terraform.workspace, var.enable_large_nodesgroup["default"])
+  enable_ingress_nodesgroup = lookup(var.enable_ingress_nodesgroup, terraform.workspace, var.enable_ingress_nodesgroup["default"])
 
   template_path   = "../../kops"
   oidc_issuer_url = "https://${local.auth0_tenant_domain}/"

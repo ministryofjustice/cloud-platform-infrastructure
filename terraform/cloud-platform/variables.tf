@@ -75,6 +75,15 @@ variable "enable_large_nodesgroup" {
   }
 }
 
+variable "enable_ingress_nodesgroup" {
+  description = "Production clusters now have their own dedicated nodes for ingress controllers. By setting this option to true, three new nodes will be created."
+  type        = map(bool)
+  default = {
+    live-1  = true
+    default = false
+  }
+}
+
 variable "auth0_tenant_domain" {
   description = "The auth0 domain/tenant used, same for live/test clusters"
   default     = "justice-cloud-platform.eu.auth0.com"
