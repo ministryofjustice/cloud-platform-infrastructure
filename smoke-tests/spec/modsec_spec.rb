@@ -21,7 +21,7 @@ xdescribe "Testing modsec on ingress class: 'integration-test'", kops: true do
       namespace: namespace,
       host: host,
       ingress_class: ingress_class,
-      file: "spec/fixtures/helloworld-deployment.yaml.erb",
+      file: "spec/fixtures/helloworld-deployment-modsec.yaml.erb",
       binding: binding
     )
     wait_for(namespace, "ingress", ingress_name)
