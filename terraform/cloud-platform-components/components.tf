@@ -113,7 +113,7 @@ module "ingress_controllers" {
 }
 
 module "opa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.7"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   # boolean expression for applying opa valid hostname for test clusters only.
