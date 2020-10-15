@@ -165,8 +165,5 @@ subjects:
   name: system:serviceaccounts:monitoring
   apiGroup: rbac.authorization.k8s.io
 - kind: Group
-  name: system:serviceaccounts:kiam
-  apiGroup: rbac.authorization.k8s.io
-- kind: Group
   name: system:serviceaccounts:opa
   apiGroup: rbac.authorization.k8s.io
