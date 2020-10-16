@@ -26,7 +26,7 @@ module "external_dns" {
 }
 
 module "kiam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=0.0.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=0.0.3"
 
   # This module requires prometheus and OPA already deployed
   dependence_prometheus = module.prometheus.helm_prometheus_operator_status
