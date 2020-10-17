@@ -66,13 +66,14 @@ module "kops" {
   auth0_client_id         = module.auth0.oidc_kubernetes_client_id
   authorized_keys_manager = module.bastion.authorized_keys_manager
 
-  cluster_node_count_a      = lookup(var.cluster_node_count_a, terraform.workspace, var.cluster_node_count_a["default"])
-  cluster_node_count_b      = lookup(var.cluster_node_count_b, terraform.workspace, var.cluster_node_count_b["default"])
-  cluster_node_count_c      = lookup(var.cluster_node_count_c, terraform.workspace, var.cluster_node_count_c["default"])
-  master_node_machine_type  = lookup(var.master_node_machine_type, terraform.workspace, var.master_node_machine_type["default"])
-  worker_node_machine_type  = lookup(var.worker_node_machine_type, terraform.workspace, var.worker_node_machine_type["default"])
-  enable_large_nodesgroup   = lookup(var.enable_large_nodesgroup, terraform.workspace, var.enable_large_nodesgroup["default"])
-  enable_ingress_nodesgroup = lookup(var.enable_ingress_nodesgroup, terraform.workspace, var.enable_ingress_nodesgroup["default"])
+  cluster_node_count_a            = lookup(var.cluster_node_count_a, terraform.workspace, var.cluster_node_count_a["default"])
+  cluster_node_count_b            = lookup(var.cluster_node_count_b, terraform.workspace, var.cluster_node_count_b["default"])
+  cluster_node_count_c            = lookup(var.cluster_node_count_c, terraform.workspace, var.cluster_node_count_c["default"])
+  master_node_machine_type        = lookup(var.master_node_machine_type, terraform.workspace, var.master_node_machine_type["default"])
+  worker_node_machine_type        = lookup(var.worker_node_machine_type, terraform.workspace, var.worker_node_machine_type["default"])
+  enable_large_nodesgroup         = lookup(var.enable_large_nodesgroup, terraform.workspace, var.enable_large_nodesgroup["default"])
+  enable_ingress_nodesgroup       = lookup(var.enable_ingress_nodesgroup, terraform.workspace, var.enable_ingress_nodesgroup["default"])
+  worker_node_mixed_instance      = lookup(var.worker_node_mixed_instance, terraform.workspace, var.worker_node_mixed_instance["default"])
 
   template_path   = "../../kops"
   oidc_issuer_url = "https://${local.auth0_tenant_domain}/"
