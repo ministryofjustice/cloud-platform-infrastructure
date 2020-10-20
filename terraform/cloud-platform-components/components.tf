@@ -52,7 +52,7 @@ module "logging" {
   # -> value = "${replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com" : "search-cloud-platform-test-zradqd7twglkaydvgwhpuypzy4.eu-west-2.es.amazonaws.com"
   # Your cluster will need to be added to the allow list.
   elasticsearch_host       = replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com" : "placeholder-elasticsearch"
-  elasticsearch_audit_host = replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-audit-dq5bdnjokj4yt7qozshmifug6e.eu-west-2.es.amazonaws.com" : ""
+  elasticsearch_audit_host = replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-audit-dq5bdnjokj4yt7qozshmifug6e.eu-west-2.es.amazonaws.com" : "placeholder-elasticsearch-audit"
 
   dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
   enable_curator_cronjob = terraform.workspace == local.live_workspace ? true : false
@@ -105,10 +105,10 @@ module "ingress_controllers_k8snginx_fallback" {
 
 
 module "modsec_ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.0.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.0.3"
 
   controller_name = "modsec01"
-  replica_count   = "3"
+  replica_count   = "4"
 
   dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
