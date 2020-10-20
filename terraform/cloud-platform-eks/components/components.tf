@@ -87,7 +87,7 @@ module "logging" {
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
 
-  dependence_prometheus       = module.monitoring.helm_prometheus_operator_status
+  dependence_prometheus = module.monitoring.helm_prometheus_operator_status
 }
 
 module "monitoring" {
