@@ -46,7 +46,7 @@ module "kuberos" {
 
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.1"
 
   # if you need to connect to the test elasticsearch cluster, replace "placeholder-elasticsearch" with "search-cloud-platform-test-zradqd7twglkaydvgwhpuypzy4.eu-west-2.es.amazonaws.com"
   # -> value = "${replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com" : "search-cloud-platform-test-zradqd7twglkaydvgwhpuypzy4.eu-west-2.es.amazonaws.com"
@@ -56,7 +56,6 @@ module "logging" {
 
   dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
   enable_curator_cronjob = terraform.workspace == local.live_workspace ? true : false
-  enable_fluent_bit      = true
 }
 
 module "prometheus" {
