@@ -37,7 +37,7 @@ describe "daemonsets", speed: "fast" do
     expected = [
       "aws-node",
       "calico-node",
-      "fluentd-es",
+      "fluent-bit",
       "kube-proxy",
       "prometheus-operator-prometheus-node-exporter"
     ]
