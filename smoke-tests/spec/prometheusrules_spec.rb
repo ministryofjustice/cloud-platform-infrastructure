@@ -20,7 +20,6 @@ describe "Prometheus Rules", speed: "fast" do
       "prometheus-operator-kubernetes-system-apiserver",
       "prometheus-operator-kubernetes-system-kubelet",
       "prometheus-operator-node-exporter",
-      "fluentd-es",
       "certificate-expiry"
     ]
     expect(names).to include(*expected)
