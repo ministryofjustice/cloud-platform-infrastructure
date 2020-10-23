@@ -1,5 +1,5 @@
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.9"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -26,7 +26,7 @@ module "external_dns" {
 }
 
 module "kiam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=0.0.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=0.0.4"
 
   # This module requires prometheus and OPA already deployed
   dependence_prometheus = module.prometheus.helm_prometheus_operator_status
@@ -34,7 +34,7 @@ module "kiam" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.1.1"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
@@ -46,7 +46,7 @@ module "kuberos" {
 
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.2"
 
   # if you need to connect to the test elasticsearch cluster, replace "placeholder-elasticsearch" with "search-cloud-platform-test-zradqd7twglkaydvgwhpuypzy4.eu-west-2.es.amazonaws.com"
   # -> value = "${replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com" : "search-cloud-platform-test-zradqd7twglkaydvgwhpuypzy4.eu-west-2.es.amazonaws.com"
@@ -114,7 +114,7 @@ module "modsec_ingress_controllers" {
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.8"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
@@ -126,7 +126,7 @@ module "ingress_controllers" {
 }
 
 module "opa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.8"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   # boolean expression for applying opa valid hostname for test clusters only.
@@ -142,7 +142,7 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.5"
 
   iam_role_nodes        = data.aws_iam_role.nodes.arn
   dependence_prometheus = module.prometheus.helm_prometheus_operator_status
