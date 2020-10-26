@@ -16,7 +16,7 @@ provider "aws" {
 
 # IAM configuration for cloud-platform. Users, groups, etc
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.3"
 
   aws_account_name = "cloud-platform-aws"
 }
