@@ -67,9 +67,12 @@ xdescribe "nginx ingress", speed: "slow" do
       sleep sleep_delay # Without this, the test fails
     end
 
-    it "returns 200 for http get" do
+    it "responds to http get" do
       result = URI.open(url)
       expect(result.status).to eq(["200", "OK"])
+
+      # The `Server` response header should be suppressed by the ingress-controller configuration
+      expect(result.meta).to_not have_key("server")
     end
   end
 
