@@ -31,7 +31,7 @@ module "concourse" {
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.9"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -70,7 +70,7 @@ module "external_dns" {
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.10"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = false
@@ -82,7 +82,7 @@ module "ingress_controllers" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.2"
 
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
@@ -91,7 +91,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.4.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.5.7"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   iam_role_nodes               = data.aws_iam_role.nodes.arn
@@ -110,14 +110,14 @@ module "monitoring" {
 }
 
 module "opa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.8"
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = terraform.workspace == local.live_workspace ? false : true
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.5"
 
   iam_role_nodes        = data.aws_iam_role.nodes.arn
   dependence_prometheus = module.monitoring.helm_prometheus_operator_status
