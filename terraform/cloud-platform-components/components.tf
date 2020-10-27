@@ -104,7 +104,7 @@ module "ingress_controllers_k8snginx_fallback" {
 
 
 module "modsec_ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.0.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.0.4"
 
   controller_name = "modsec01"
   replica_count   = "4"
@@ -114,7 +114,7 @@ module "modsec_ingress_controllers" {
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.10"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
