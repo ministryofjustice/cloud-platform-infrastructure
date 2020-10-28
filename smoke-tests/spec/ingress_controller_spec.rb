@@ -34,4 +34,19 @@ describe "ingress controllers", speed: "fast" do
       expect(headers).to_not have_key("server")
     end
   end
+
+  context "eks" do
+    let(:url) { "https://concourse.cloud-platform.service.justice.gov.uk/" }
+
+    it "returns 302 for http get" do
+      result = Net::HTTP.get_response(URI(url))
+      expect(result.code).to eq("200")
+    end
+
+    it "does not return a server header" do
+      result = Net::HTTP.get_response(URI(url))
+      headers = result.each_header.to_h
+      expect(headers).to_not have_key("server")
+    end
+  end
 end
