@@ -99,6 +99,7 @@ end
 
 require "aws-sdk-route53"
 require "aws-sdk-iam"
+require "net/http"
 require "open-uri"
 require "pry-byebug"
 require "erb"
