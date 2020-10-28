@@ -1,6 +1,8 @@
 variable "vpc_name" {
   description = "The VPC name where the cluster(s) are going to be provisioned. VPCs are created in cloud-platform-network"
-  default     = ""
+  default = {
+    manager = "live-1"
+  }
 }
 
 variable "cluster_node_count" {
