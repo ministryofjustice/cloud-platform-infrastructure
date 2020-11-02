@@ -52,6 +52,7 @@ locals {
   services_eks_domain  = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
 }
 
+
 ########
 # KOPS #
 ########
