@@ -1,6 +1,6 @@
 
 module "concourse" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.4.0"
 
   vpc_id                                      = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                            = data.terraform_remote_state.cluster.outputs.internal_subnets
@@ -48,7 +48,7 @@ module "cert_manager" {
 }
 
 module "cluster_autoscaler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=0.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=0.0.4"
 
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_id              = data.terraform_remote_state.cluster.outputs.cluster_id
