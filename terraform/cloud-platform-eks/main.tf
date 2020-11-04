@@ -112,7 +112,7 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
 # ###########
 
 module "bastion" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.3.0"
 
   vpc_name            = local.vpc
   route53_zone        = aws_route53_zone.cluster.name
