@@ -81,6 +81,7 @@ module "ingress_controllers" {
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
 }
 
+
 module "logging" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.2"
 
