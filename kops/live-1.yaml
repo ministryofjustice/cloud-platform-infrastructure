@@ -175,6 +175,7 @@ spec:
   api:
     loadBalancer:
       type: Public
+      crossZoneLoadBalancing: true
   authorization:
     rbac: {}
   channel: stable
