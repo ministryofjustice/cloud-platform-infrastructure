@@ -9,7 +9,7 @@ module "cert_manager" {
   hostzone            = lookup(var.cluster_r53_resource_maps, terraform.workspace, ["arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.outputs.hosted_zone_id}"])
   is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
 
-  
+
   # This module requires helm and OPA already deployed
   dependence_prometheus = module.prometheus.helm_prometheus_operator_status
   dependence_opa        = module.opa.helm_opa_status
