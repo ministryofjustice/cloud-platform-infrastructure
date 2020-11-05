@@ -31,7 +31,7 @@ module "concourse" {
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.9"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -80,7 +80,6 @@ module "ingress_controllers" {
   dependence_opa         = module.opa.helm_opa_status
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
 }
-
 
 module "logging" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.2"
