@@ -104,7 +104,7 @@ module "ingress_controllers_k8snginx_fallback" {
 
 
 module "modsec_ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.0.6"
 
   controller_name = "modsec01"
   replica_count   = "4"
