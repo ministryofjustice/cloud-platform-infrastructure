@@ -89,7 +89,7 @@ module "ingress_controller_integration_test" {
 }
 
 module "ingress_controllers_k8snginx_fallback" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-k8s-ingress-controller?ref=0.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-k8s-ingress-controller?ref=0.0.2"
 
   # boolean expression for applying standby ingress-controller for live-1 cluster only.
   enable_fallback_ingress_controller = terraform.workspace == local.live_workspace ? true : false
