@@ -80,7 +80,7 @@ module "prometheus" {
 
 
 module "ingress_controller_integration_test" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.1.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.1.4"
 
   namespace = "integration-test"
   # This module requires prometheus and cert-manager already deployed
