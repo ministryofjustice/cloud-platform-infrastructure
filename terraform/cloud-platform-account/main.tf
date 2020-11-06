@@ -6,6 +6,7 @@ terraform {
     key                  = "terraform.tfstate"
     workspace_key_prefix = "cloud-platform-account"
     profile              = "moj-cp"
+    dynamodb_table       = "cloud-platform-terraform-state"
   }
 }
 
