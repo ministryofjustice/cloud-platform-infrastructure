@@ -34,6 +34,10 @@ def main
 
   node = get_oldest_worker_node
 
+  unless ingress_controller_pods_running(node).empty?
+    raise "This node has ingress controller pods and cannot be recycled. Aborting."
+  end
+
   cordon_node(node)
   # Delete any stuck pods, so that they don't prevent the node from being drained.
   stuck_pods(node).each { |pod| delete_pod(pod) }
@@ -102,6 +106,11 @@ end
 
 def get_kops_config
   Net::HTTP.get(URI(KOPS_CONFIG_URL))
+end
+
+def ingress_controller_pods_running(node)
+  name = node_name(node)
+  `kubectl describe node #{name} | grep 'nginx-ingress-acme-controller*'`
 end
 
 def get_oldest_worker_node
