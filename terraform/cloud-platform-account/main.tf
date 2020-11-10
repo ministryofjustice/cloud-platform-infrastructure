@@ -40,3 +40,11 @@ module "baselines" {
   ]
 }
 
+# ECR repository for cloud-platform-cli
+module "ecr_cloud_platform_cli" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=4.1"
+
+  repo_name = "cloud-platform-cli"
+  team_name = "cloud-platform"
+}
+
