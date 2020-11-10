@@ -89,13 +89,13 @@ module "ingress_controller_integration_test" {
 }
 
 module "ingress_controllers_k8snginx_fallback" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-k8s-ingress-controller?ref=0.0.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-k8s-ingress-controller?ref=0.0.3"
 
   # boolean expression for applying standby ingress-controller for live-1 cluster only.
   enable_fallback_ingress_controller = terraform.workspace == local.live_workspace ? true : false
   # Will be used as the ingress controller name and the class annotation
   controller_name = "k8snginx"
-  replica_count   = "3"
+  replica_count   = "6"
 
   # This module requires prometheus and certmanager
   dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
