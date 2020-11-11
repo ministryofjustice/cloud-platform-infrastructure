@@ -14,10 +14,9 @@ SYSTEM_NAMESPACES = %w[
   kuberos
   logging
   monitoring
-  starter-pack
   opa
   velero
-]
+] + (0..9).map { |i| "starter-pack-#{i}" }
 
 MAX_CLUSTER_NAME_LENGTH = 12
 REQUIRED_ENV_VARS = %w[AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE]
