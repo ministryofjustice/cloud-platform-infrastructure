@@ -48,3 +48,11 @@ module "ecr_cloud_platform_cli" {
   team_name = "cloud-platform"
 }
 
+# ECR repository for cloud-platform-tools-image
+module "ecr_cloud_platform_tools_image" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=4.1"
+
+  repo_name = "cloud-platform-tools-image"
+  team_name = "cloud-platform"
+}
+
