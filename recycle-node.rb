@@ -42,6 +42,7 @@ def main
   sleep 30
 
   node = get_latest_node_details(node) # node status should have changed, after being drained
+  delete_node(node)
   terminate_node(node)
 
   sleep 60
@@ -158,6 +159,16 @@ end
 def get_latest_node_details(node)
   name = node_name(node)
   JSON.parse(execute("kubectl get node #{name} -o json"))
+end
+
+def delete_node(node)
+  name = node_name(node)
+
+  if cordoned?(node)
+    execute "kubectl delete node #{name}"
+  else
+    raise "worker node #{name} was not cordoned."
+  end
 end
 
 def terminate_node(node)
