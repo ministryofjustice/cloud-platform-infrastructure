@@ -19,5 +19,5 @@ jobs:
           working_directory: "terraform" # Change working directory
           reporter: github-pr-review # Change reporter
           fail_on_error: "false" # Fail action if errors are found
-          filter_mode: "files" # Check all files, not just the diff
+          filter_mode: "file" # Check the file being changed
           flags: "" # Optional
