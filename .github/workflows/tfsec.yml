@@ -1,0 +1,23 @@
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+name: tfsec
+jobs:
+  tfsec:
+    name: runner / tfsec
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@master
+
+      - name: tfsec
+        uses: reviewdog/action-tfsec@master
+        with:
+          github_token: ${{ secrets.github_token }}
+          working_directory: "terraform" # Change working directory
+          reporter: github-pr-review # Change reporter
+          fail_on_error: "false" # Fail action if errors are found
+          filter_mode: "files" # Check all files, not just the diff
+          flags: "" # Optional
