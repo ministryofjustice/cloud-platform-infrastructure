@@ -1,0 +1,6 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: integration-test-helloworld
+status:
+  readyReplicas: 1

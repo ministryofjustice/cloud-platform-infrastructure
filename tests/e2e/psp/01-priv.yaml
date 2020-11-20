@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: privileged-integration-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: privileged-integration-test
+  template:
+    metadata:
+      labels:
+        app: privileged-integration-test
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:10.4
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432

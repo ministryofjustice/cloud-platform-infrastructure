@@ -1,0 +1,8 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestSuite
+testDirs:
+- ./tests/e2e/
+startKIND: false
+startControlPlane: false
+parallel: 8
+timeout: 120
