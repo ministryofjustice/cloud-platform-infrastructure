@@ -11,6 +11,7 @@ tools-shell:
 		-v $$(pwd):/app \
 		-v $${HOME}/.aws:/root/.aws \
 		-v $${HOME}/.gnupg:/root/.gnupg \
+		-v $${HOME}/.docker:/root/.docker \
 		-w /app \
 		$(TOOLS_IMAGE) bash
 

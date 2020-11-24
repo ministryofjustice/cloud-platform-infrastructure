@@ -24,6 +24,7 @@ def main(options)
   vpc_name = options[:vpc_name]
   gitcrypt_unlock = options[:gitcrypt_unlock]
   integration_tests = options[:integration_tests]
+  dockerconfig = options[:dockerconfig]
   extra_wait = options[:extra_wait]
 
   vpc_name = cluster_name if vpc_name.nil?
@@ -40,7 +41,7 @@ def main(options)
     install_components_eks(cluster_name)
   else
     create_cluster_kops(cluster_name, vpc_name)
-    run_kops(cluster_name)
+    run_kops(cluster_name, dockerconfig)
     sleep(extra_wait)
     install_components_kops(cluster_name)
   end
@@ -90,17 +91,26 @@ def create_cluster_eks(cluster_name, vpc_name)
   run_and_output "cd #{dir}; #{tf_apply}"
 end
 
-def run_kops(cluster_name)
+def run_kops(cluster_name, dockerconfig)
   run_and_output "kops create -f kops/#{cluster_name}.yaml"
 
   # This is a throwaway SSH key which we never need again.
   execute("rm -f /tmp/#{cluster_name} /tmp/#{cluster_name}.pub")
   execute("ssh-keygen -b 4096 -P '' -f /tmp/#{cluster_name}")
 
+  add_dockerconfig(cluster_name, dockerconfig) if dockerconfig != "none"
   run_and_output "kops create secret --name #{cluster_name}.#{CLUSTER_SUFFIX} sshpublickey admin -i /tmp/#{cluster_name}.pub"
   run_and_output "kops update cluster #{cluster_name}.#{CLUSTER_SUFFIX} --yes --alsologtostderr"
 
   wait_for_kops_validate
+end
+
+def add_dockerconfig(cluster_name, path)
+  if(!File.exists?(path))
+    puts "Docker config file specified #{path} does not exist."
+  else
+    run_and_output "kops create secret dockerconfig -f #{path} --name #{cluster_name}.#{CLUSTER_SUFFIX}"
+  end
 end
 
 # TODO: figure out this problem, and fix it.
@@ -269,7 +279,7 @@ def run_integration_tests(cluster_name)
 end
 
 def parse_options
-  options = {gitcrypt_unlock: true, integration_tests: true, extra_wait: 0, kind: "kops"}
+  options = {gitcrypt_unlock: true, integration_tests: true, extra_wait: 0, kind: "kops", dockerconfig: "none"}
 
   OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
@@ -294,6 +304,10 @@ def parse_options
 
     opts.on("-t", "--extra-wait N", Float, "The time between kops validate and deploy of components. We need to wait for DNS propagation") do |n|
       options[:extra_wait] = n
+    end
+
+    opts.on("-d", "--dockerconfig DOCKER-CONFIG", "Authenticate to Docker hub using a docker config file") do |name|
+      options[:dockerconfig] = name
     end
 
     opts.on_tail("-h", "--help", "Show help message") do
