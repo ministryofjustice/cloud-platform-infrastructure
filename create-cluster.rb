@@ -18,6 +18,8 @@ REQUIRED_ENV_VARS = %w[AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SEC
 REQUIRED_EXECUTABLES = %w[git-crypt terraform helm aws kops ssh-keygen]
 REQUIRED_AWS_PROFILES = %w[moj-cp]
 
+NONE = "none"
+
 def main(options)
   cluster_name = options[:cluster_name]
   kind = options[:kind]
@@ -94,20 +96,24 @@ end
 def run_kops(cluster_name, dockerconfig)
   run_and_output "kops create -f kops/#{cluster_name}.yaml"
 
+  # If -d argument is passed this function will be called.
+  add_dockerconfig(cluster_name, dockerconfig) if dockerconfig != NONE
+
   # This is a throwaway SSH key which we never need again.
   execute("rm -f /tmp/#{cluster_name} /tmp/#{cluster_name}.pub")
   execute("ssh-keygen -b 4096 -P '' -f /tmp/#{cluster_name}")
 
-  add_dockerconfig(cluster_name, dockerconfig) if dockerconfig != "none"
   run_and_output "kops create secret --name #{cluster_name}.#{CLUSTER_SUFFIX} sshpublickey admin -i /tmp/#{cluster_name}.pub"
   run_and_output "kops update cluster #{cluster_name}.#{CLUSTER_SUFFIX} --yes --alsologtostderr"
 
   wait_for_kops_validate
 end
 
+# Adds a Docker config file to all nodes to avoid rate limiting on Docker Hub.
 def add_dockerconfig(cluster_name, path)
+  # Avoid exiting the script if the path isn't found.
   if !File.exist?(path)
-    puts "Docker config file specified #{path} does not exist."
+    puts "ERROR: Docker config file specified #{path} does not exist."
   else
     run_and_output "kops create secret dockerconfig -f #{path} --name #{cluster_name}.#{CLUSTER_SUFFIX}"
   end
@@ -279,7 +285,7 @@ def run_integration_tests(cluster_name)
 end
 
 def parse_options
-  options = {gitcrypt_unlock: true, integration_tests: true, extra_wait: 0, kind: "kops", dockerconfig: "none"}
+  options = {gitcrypt_unlock: true, integration_tests: true, extra_wait: 0, kind: "kops", dockerconfig: NONE}
 
   OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
