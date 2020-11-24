@@ -106,7 +106,7 @@ def run_kops(cluster_name, dockerconfig)
 end
 
 def add_dockerconfig(cluster_name, path)
-  if(!File.exists?(path))
+  if !File.exist?(path)
     puts "Docker config file specified #{path} does not exist."
   else
     run_and_output "kops create secret dockerconfig -f #{path} --name #{cluster_name}.#{CLUSTER_SUFFIX}"
