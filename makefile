@@ -1,4 +1,4 @@
-TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:1.22
+TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:1.25
 
 tools-shell:
 	docker pull $(TOOLS_IMAGE)
@@ -11,6 +11,7 @@ tools-shell:
 		-v $$(pwd):/app \
 		-v $${HOME}/.aws:/root/.aws \
 		-v $${HOME}/.gnupg:/root/.gnupg \
+		-v $${HOME}/.docker:/root/.docker \
 		-w /app \
 		$(TOOLS_IMAGE) bash
 

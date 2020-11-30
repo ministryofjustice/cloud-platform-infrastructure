@@ -1,37 +1,39 @@
 
 module "concourse" {
-  source                                      = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.3.3"
-  vpc_id                                      = data.terraform_remote_state.cluster.outputs.vpc_id
-  internal_subnets                            = data.terraform_remote_state.cluster.outputs.internal_subnets
-  internal_subnets_ids                        = data.terraform_remote_state.cluster.outputs.internal_subnets_ids
-  concourse_hostname                          = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  kops_or_eks                                 = var.kops_or_eks
-  github_auth_client_id                       = var.github_auth_client_id
-  github_auth_client_secret                   = var.github_auth_client_secret
-  github_org                                  = var.github_org
-  github_teams                                = var.github_teams
-  tf_provider_auth0_client_id                 = var.tf_provider_auth0_client_id
-  tf_provider_auth0_client_secret             = var.tf_provider_auth0_client_secret
-  cloud_platform_infrastructure_git_crypt_key = var.cloud_platform_infrastructure_git_crypt_key
-  slack_hook_id                               = var.slack_hook_id
-  concourse-git-crypt                         = var.concourse-git-crypt
-  environments-git-crypt                      = var.environments-git-crypt
-  github_token                                = var.github_token
-  pingdom_user                                = var.pingdom_user
-  pingdom_password                            = var.pingdom_password
-  pingdom_api_key                             = var.pingdom_api_key
-  dockerhub_username                          = var.dockerhub_username
-  dockerhub_access_token                      = var.dockerhub_access_token
-  how_out_of_date_are_we_github_token         = var.how_out_of_date_are_we_github_token
-  authorized_keys_github_token                = var.authorized_keys_github_token
-  sonarqube_token                             = var.sonarqube_token
-  sonarqube_host                              = var.sonarqube_host
-  dependence_prometheus                       = module.monitoring.helm_prometheus_operator_status
-  hoodaw_api_key                              = var.hoodaw_api_key
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.4.5"
+
+  vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
+  internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
+  internal_subnets_ids                              = data.terraform_remote_state.cluster.outputs.internal_subnets_ids
+  concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  kops_or_eks                                       = var.kops_or_eks
+  github_auth_client_id                             = var.github_auth_client_id
+  github_auth_client_secret                         = var.github_auth_client_secret
+  github_org                                        = var.github_org
+  github_teams                                      = var.github_teams
+  tf_provider_auth0_client_id                       = var.tf_provider_auth0_client_id
+  tf_provider_auth0_client_secret                   = var.tf_provider_auth0_client_secret
+  cloud_platform_infrastructure_git_crypt_key       = var.cloud_platform_infrastructure_git_crypt_key
+  cloud_platform_infrastructure_pr_git_access_token = var.cloud_platform_infrastructure_pr_git_access_token
+  slack_hook_id                                     = var.slack_hook_id
+  concourse-git-crypt                               = var.concourse-git-crypt
+  environments-git-crypt                            = var.environments-git-crypt
+  github_token                                      = var.github_token
+  pingdom_user                                      = var.pingdom_user
+  pingdom_password                                  = var.pingdom_password
+  pingdom_api_key                                   = var.pingdom_api_key
+  dockerhub_username                                = var.dockerhub_username
+  dockerhub_password                                = var.dockerhub_password
+  how_out_of_date_are_we_github_token               = var.how_out_of_date_are_we_github_token
+  authorized_keys_github_token                      = var.authorized_keys_github_token
+  sonarqube_token                                   = var.sonarqube_token
+  sonarqube_host                                    = var.sonarqube_host
+  dependence_prometheus                             = module.monitoring.helm_prometheus_operator_status
+  hoodaw_api_key                                    = var.hoodaw_api_key
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.9"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -70,7 +72,7 @@ module "external_dns" {
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.0.12"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = false
@@ -82,17 +84,16 @@ module "ingress_controllers" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.2"
 
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
 
-  dependence_prometheus       = module.monitoring.helm_prometheus_operator_status
-  dependence_priority_classes = kubernetes_priority_class.cluster_critical
+  dependence_prometheus = module.monitoring.helm_prometheus_operator_status
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.4.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=0.5.8"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   iam_role_nodes               = data.aws_iam_role.nodes.arn
@@ -111,14 +112,14 @@ module "monitoring" {
 }
 
 module "opa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.8"
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = terraform.workspace == local.live_workspace ? false : true
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.5"
 
   iam_role_nodes        = data.aws_iam_role.nodes.arn
   dependence_prometheus = module.monitoring.helm_prometheus_operator_status

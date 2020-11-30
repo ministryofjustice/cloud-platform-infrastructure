@@ -21,7 +21,6 @@ describe "daemonsets", speed: "fast" do
     expected = [
       "calico-node",
       "fluent-bit",
-      "fluentd-es",
       "kiam-agent",
       "kiam-server",
       "kops-controller",
@@ -38,7 +37,7 @@ describe "daemonsets", speed: "fast" do
     expected = [
       "aws-node",
       "calico-node",
-      "fluentd-es",
+      "fluent-bit",
       "kube-proxy",
       "prometheus-operator-prometheus-node-exporter"
     ]

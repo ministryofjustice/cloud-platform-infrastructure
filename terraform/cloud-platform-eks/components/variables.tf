@@ -53,8 +53,9 @@ variable "pingdom_user" {}
 variable "pingdom_password" {}
 variable "pingdom_api_key" {}
 variable "dockerhub_username" {}
-variable "dockerhub_access_token" {}
+variable "dockerhub_password" {}
 variable "how_out_of_date_are_we_github_token" {}
+variable "cloud_platform_infrastructure_pr_git_access_token" {}
 variable "authorized_keys_github_token" {}
 variable "sonarqube_token" {
   default     = ""

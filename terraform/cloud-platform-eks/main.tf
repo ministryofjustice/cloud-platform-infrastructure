@@ -11,6 +11,7 @@ terraform {
     key                  = "terraform.tfstate"
     workspace_key_prefix = "cloud-platform-eks"
     profile              = "moj-cp"
+    dynamodb_table       = "cloud-platform-terraform-state"
   }
 }
 
@@ -34,7 +35,7 @@ locals {
   base_route53_hostzone    = "${local.vpc}.cloud-platform.service.justice.gov.uk"
   key_name                 = "${local.vpc}.cloud-platform.service.justice.gov.uk"
 
-  vpc = var.vpc_name == "" ? terraform.workspace : var.vpc_name
+  vpc = lookup(var.vpc_name, terraform.workspace, terraform.workspace)
 
   auth0_tenant_domain  = "justice-cloud-platform.eu.auth0.com"
   is_live_cluster      = terraform.workspace == "live-1"

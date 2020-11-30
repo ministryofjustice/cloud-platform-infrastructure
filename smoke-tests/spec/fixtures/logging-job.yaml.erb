@@ -8,6 +8,6 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-      - name: nginx
+      - name: smoketest-logging
         image: bitnami/nginx
         command: ["curl", "-s", "-XGET", "<%= search_url %>", "-H", 'Content-Type: application/json', "-d", '{ "query": { "bool": { "must": [ { "match": { "kubernetes.namespace_name.keyword": "<%= namespace %>" } } ] } } }']

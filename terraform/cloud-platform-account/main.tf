@@ -6,6 +6,7 @@ terraform {
     key                  = "terraform.tfstate"
     workspace_key_prefix = "cloud-platform-account"
     profile              = "moj-cp"
+    dynamodb_table       = "cloud-platform-terraform-state"
   }
 }
 
@@ -16,7 +17,7 @@ provider "aws" {
 
 # IAM configuration for cloud-platform. Users, groups, etc
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.4"
 
   aws_account_name = "cloud-platform-aws"
 }
@@ -38,4 +39,3 @@ module "baselines" {
     "cloud-platform-6cf3132ef8fce52bb371b1d02f40c36d"
   ]
 }
-

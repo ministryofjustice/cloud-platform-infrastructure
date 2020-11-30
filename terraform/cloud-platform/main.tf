@@ -7,6 +7,7 @@ terraform {
     key                  = "terraform.tfstate"
     workspace_key_prefix = "cloud-platform"
     profile              = "moj-cp"
+    dynamodb_table       = "cloud-platform-terraform-state"
   }
 }
 
@@ -28,10 +29,11 @@ data "terraform_remote_state" "global" {
   backend = "s3"
 
   config = {
-    bucket  = "cloud-platform-terraform-state"
-    region  = "eu-west-1"
-    key     = "global-resources/terraform.tfstate"
-    profile = "moj-cp"
+    bucket         = "cloud-platform-terraform-state"
+    region         = "eu-west-1"
+    key            = "global-resources/terraform.tfstate"
+    profile        = "moj-cp"
+    dynamodb_table = "cloud-platform-terraform-state"
   }
 }
 
@@ -57,7 +59,7 @@ locals {
 ########
 
 module "kops" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.0.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.0.9"
 
   vpc_name            = local.vpc
   cluster_domain_name = trimsuffix(local.cluster_base_domain_name, ".")
