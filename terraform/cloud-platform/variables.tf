@@ -50,6 +50,14 @@ variable "cluster_node_count_c" {
   }
 }
 
+variable "worker_node_mixed_instance" {
+  description = "The AWS mixed EC2 instance types to use for worker nodes, https://github.com/kubernetes/kops/blob/master/docs/instance_groups.md#mixedinstancespolicy-aws-only"
+  default = {
+    live-1  = ["r5.xlarge", "c5.xlarge", "r4.xlarge"]
+    default = ["r5.large", "c5.large", "r4.large"]
+  }
+}
+
 variable "master_node_machine_type" {
   description = "The AWS EC2 instance types to use for master nodes"
   default = {
