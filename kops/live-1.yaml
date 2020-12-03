@@ -550,6 +550,11 @@ metadata:
 spec:
   image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
   machineType: r5.xlarge
+  mixedInstancesPolicy:
+    instances:
+    - r5.xlarge
+    - c5.xlarge
+    - r4.xlarge
   maxSize: 9
   minSize: 9
   rootVolumeSize: 256
@@ -580,6 +585,11 @@ metadata:
 spec:
   image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
   machineType: r5.xlarge
+  mixedInstancesPolicy:
+    instances:
+    - r5.xlarge
+    - c5.xlarge
+    - r4.xlarge
   maxSize: 9
   minSize: 9
   rootVolumeSize: 256
@@ -610,6 +620,11 @@ metadata:
 spec:
   image: kope.io/k8s-1.17-debian-stretch-amd64-hvm-ebs-2020-07-20
   machineType: r5.xlarge
+  mixedInstancesPolicy:
+    instances:
+    - r5.xlarge
+    - c5.xlarge
+    - r4.xlarge
   maxSize: 9
   minSize: 9
   rootVolumeSize: 256
