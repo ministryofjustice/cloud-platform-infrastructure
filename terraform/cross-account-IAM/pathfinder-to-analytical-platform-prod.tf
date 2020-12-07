@@ -30,7 +30,7 @@ resource "aws_iam_role" "pathfinder-prod-api" {
 
 resource "kubernetes_secret" "analytical_platform_landing_bucket" {
   metadata {
-    name      = "analytical_platform_landing_bucket"
+    name      = "analytical-platform-landing-bucket"
     namespace = "pathfinder-prod"
   }
 
