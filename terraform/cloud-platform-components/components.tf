@@ -117,8 +117,8 @@ module "ingress_controllers_k8snginx_fallback" {
   # boolean expression for applying standby ingress-controller for live-1 cluster only.
   enable_fallback_ingress_controller = true
   # Will be used as the ingress controller name and the class annotation
-  controller_name = "k8snginx"
-  replica_count   = "6"
+  controller_name                                    = "k8snginx"
+  replica_count                                      = "6"
   enable_ingress_controller_affinity_and_tolerations = true
 
   # This module requires prometheus and certmanager
