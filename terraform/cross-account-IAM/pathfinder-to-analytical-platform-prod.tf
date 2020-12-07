@@ -16,7 +16,7 @@ variable "pathfinder-prod-tags" {
     application            = "pathfinder"
     is-production          = "true"
     environment-name       = "prod"
-    owner                  = "pathfinder"
+    owner                  = "Digital Prison Services: dps-hmpps@digital.justice.gov.uk"
     infrastructure-support = "platforms@digital.justice.gov.uk"
   }
 }
