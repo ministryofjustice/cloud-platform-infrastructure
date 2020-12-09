@@ -28,7 +28,7 @@ resource "aws_iam_role" "pathfinder-prod-ap" {
   assume_role_policy = data.aws_iam_policy_document.pathfinder-prod-kiam-trust-chain.json
 }
 
-resource "kubernetes_secret" "analytical_platform_landing_bucket" {
+resource "kubernetes_secret" "analytical_platform_landing_bucket_prod" {
   metadata {
     name      = "analytical-platform-landing-bucket"
     namespace = "pathfinder-prod"
