@@ -58,7 +58,6 @@ data "aws_iam_policy_document" "pathfinder-prod-ap" {
     ]
     resources = [
       "arn:aws:s3:::mojap-land/prod/pathfinder/*",
-      "arn:aws:s3:::mojap-land/preprod/pathfinder/*",
     ]
   }
 }
