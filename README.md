@@ -1,11 +1,13 @@
 # Cloud Platform Infrastructure
 
 ## Introduction
+
 This repository will contain all that's required to create a Cloud Platform Kubernetes cluster. The majority of this repo is made up of Terraform scripts that will be actioned by a pipeline.
 
 Here you'll also find instruction on how to operate a Cloud Platform cluster.
 
 ## Table of contents
+
   - [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
   - [Cloud Platform environments](#cloud-platform-environments)
   - [Terraform modules](#terraform-modules)
@@ -28,7 +30,7 @@ Terraform resources are split into four directories with matching state objects 
 
 As all four resources are defined with separate state backends, `terraform plan` and `apply` must be run separately:
 
-```bash
+```shell
 $ cd terraform/global-resources
 $ terraform plan
 Refreshing Terraform state in-memory prior to plan...
@@ -51,7 +53,7 @@ All resources share a single S3 state bucket called `cloud-platform-terraform-st
 
 The s3 state store structure appears as follows:
 
-```bash
+```shell
 ├── cloud-platform-terraform-state
     ├── cloud-platform-account/
     │   ├── cloud-platform/
@@ -74,7 +76,7 @@ The s3 state store structure appears as follows:
 
 `cloud-platform`, and `cloud-platform-components` resources can refer to output values of other Terrform states by using the [Terraform remote state data resource](https://www.terraform.io/docs/providers/terraform/d/remote_state.html):
 
-```bash
+```hcl
 data "terraform_remote_state" "global" {
   backend = "s3"
   config {
@@ -98,7 +100,7 @@ This structure allows us to reduce the blast radius of errors when compared to  
 
 [Terraform workspaces](https://www.terraform.io/docs/state/workspaces.html) are used to manage multiple instances of the `cloud-platform`, `cloud-platform-account` and `cloud-platform-components` resources. To see the workspaces/environments that currently exist:
 
-```bash
+```shell
 $ terraform workspace list
 * default
   cloud-platform-live-0
@@ -109,13 +111,13 @@ $ terraform workspace list
 
 To select a workspace/environment:
 
-```bash
+```shell
 $ terraform workspace select cloud-platform-test-1
 ```
 
 The selected Terraform workspace is [interpolated](https://www.terraform.io/docs/state/workspaces.html#current-workspace-interpolation) in Terraform resource declarations to create per-environment AWS resources, e.g.:
 
-```
+```hcl
 locals {
     cluster_name = "${terraform.workspace}"
 }
@@ -131,7 +133,7 @@ Generally speaking, follow the Ministry of Justice's [Using git](https://ministr
 
 ### 1. Clone the repo
 
-```
+```shell
 git clone git@github.com:ministryofjustice/cloud-platform-infrastructure.git
 ```
 
@@ -139,7 +141,7 @@ git clone git@github.com:ministryofjustice/cloud-platform-infrastructure.git
 
 For example:
 
-```
+```shell
 git checkout -b spike/monitoring-investigation
 ```
 
@@ -161,7 +163,7 @@ Write a commit message that might be useful for people who come to the code to f
 
 Here's an example:
 
-```
+```text
 Add contributing instructions
 
 I added some instructions to the repo in a README file so that
@@ -178,7 +180,7 @@ The first (subject) line should be written so that it completes the sentence "If
 
 Raise a pull request by pushing your branch to the GitHub:
 
-```
+```shell
 git push origin spike/monitoring-investigation
 ```
 
@@ -190,7 +192,7 @@ When you do this you have the option of adding a reviewer. It's good to share yo
 
 The `kops/` directory contains the cluster specification, including an additional IAM policy to allow Route53 management, and config for OIDC authentication and RBAC. To make changes, edit `kops/<clusterName e.g. cloud-platform-test-3>.yaml` and:
 
-```
+```shell
 $ cd kops
 $ kops replace -f clusterName.yaml
 $ kops cluster update
@@ -199,7 +201,7 @@ $ kops cluster update --yes
 
 If your changes require changes to instances or launch configs, you will also need to perform a rolling update to replace instances:
 
-```
+```shell
 $ kops cluster rolling-update
 $ kops cluster rolling-update --yes
 ```
