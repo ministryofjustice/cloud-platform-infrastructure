@@ -21,8 +21,8 @@ variable "pathfinder-prod-tags" {
   }
 }
 
-resource "aws_iam_role" "pathfinder-prod-api" {
-  name               = "pathfinder-prod-api"
+resource "aws_iam_role" "pathfinder-prod-ap" {
+  name               = "pathfinder-prod-ap"
   description        = "IAM role for pathfinder to access AP s3 bucket - mojap-land"
   tags               = var.pathfinder-prod-tags
   assume_role_policy = data.aws_iam_policy_document.pathfinder-prod-kiam-trust-chain.json
@@ -35,18 +35,18 @@ resource "kubernetes_secret" "analytical_platform_landing_bucket" {
   }
 
   data = {
-    arn       = aws_iam_role.pathfinder-prod-api.arn
-    name      = aws_iam_role.pathfinder-prod-api.name
-    unique_id = aws_iam_role.pathfinder-prod-api.unique_id
+    arn       = aws_iam_role.pathfinder-prod-ap.arn
+    name      = aws_iam_role.pathfinder-prod-ap.name
+    unique_id = aws_iam_role.pathfinder-prod-ap.unique_id
   }
 }
 
-data "aws_iam_policy_document" "pathfinder-prod-api" {
+data "aws_iam_policy_document" "pathfinder-prod-ap" {
 
   # allow pods to assume this role
   statement {
     actions   = ["sts:AssumeRole"]
-    resources = [aws_iam_role.pathfinder-prod-api.arn]
+    resources = [aws_iam_role.pathfinder-prod-ap.arn]
   }
 
   # Provide list of permissions and target AWS account resources to allow access from
@@ -54,21 +54,21 @@ data "aws_iam_policy_document" "pathfinder-prod-api" {
     actions = [
       "s3:PutObject",
       "s3:upload",
-      "s3:putBucketLifecycleConfiguration",
       "s3:listObjectsV2",
     ]
     resources = [
-      "arn:aws:s3:::mojap-land/hmpps/pathfinder/*",
+      "arn:aws:s3:::mojap-land/prod/pathfinder/*",
+      "arn:aws:s3:::mojap-land/preprod/pathfinder/*",
     ]
   }
 }
 
-resource "aws_iam_policy" "pathfinder-prod-api-policy" {
-  name   = "pathfinder-prod-api-policy"
-  policy = data.aws_iam_policy_document.pathfinder-prod-api.json
+resource "aws_iam_policy" "pathfinder-prod-ap-policy" {
+  name   = "pathfinder-prod-ap-policy"
+  policy = data.aws_iam_policy_document.pathfinder-prod-ap.json
 }
 
-resource "aws_iam_role_policy_attachment" "pathfinder-prod-api-policy" {
-  role       = aws_iam_role.pathfinder-prod-api.name
-  policy_arn = aws_iam_policy.pathfinder-prod-api-policy.arn
+resource "aws_iam_role_policy_attachment" "pathfinder-prod-ap-policy" {
+  role       = aws_iam_role.pathfinder-prod-ap.name
+  policy_arn = aws_iam_policy.pathfinder-prod-ap-policy.arn
 }
