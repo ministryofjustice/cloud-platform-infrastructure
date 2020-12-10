@@ -20,7 +20,7 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  version = "~> 1.11"
+  version = "~> 1.11.1"
 }
 
 # Unfortunatly we are facing https://github.com/terraform-providers/terraform-provider-helm/issues/458 and
