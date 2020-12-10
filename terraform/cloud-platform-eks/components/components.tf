@@ -29,6 +29,7 @@ module "concourse" {
   sonarqube_token                                   = var.sonarqube_token
   sonarqube_host                                    = var.sonarqube_host
   dependence_prometheus                             = module.monitoring.helm_prometheus_operator_status
+  hoodaw_host                                       = var.hoodaw_host
   hoodaw_api_key                                    = var.hoodaw_api_key
 }
 
