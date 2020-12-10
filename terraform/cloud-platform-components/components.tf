@@ -111,6 +111,22 @@ module "ingress_controllers" {
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
 }
 
+module "ingress_controllers_k8snginx_fallback" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-k8s-ingress-controller?ref=0.0.4"
+
+  # boolean expression for applying standby ingress-controller for live-1 cluster only.
+  enable_fallback_ingress_controller = true
+  # Will be used as the ingress controller name and the class annotation
+  controller_name                                    = "k8snginx"
+  replica_count                                      = "6"
+  enable_ingress_controller_affinity_and_tolerations = true
+
+  # This module requires prometheus and certmanager
+  dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
+  dependence_certmanager = module.cert_manager.helm_cert_manager_status
+}
+
+
 module "opa" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.8"
 

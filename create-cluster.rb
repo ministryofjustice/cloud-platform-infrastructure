@@ -86,7 +86,6 @@ def create_cluster_eks(cluster_name, vpc_name)
 
   tf_apply = [
     "terraform apply",
-    *("-var vpc_name=\"#{vpc_name}\"" if vpc_name),
     "-auto-approve"
   ].join(" ")
 
