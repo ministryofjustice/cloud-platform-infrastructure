@@ -1,6 +1,6 @@
 
 module "concourse" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.5.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.5.2"
 
   vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
@@ -29,6 +29,7 @@ module "concourse" {
   sonarqube_token                                   = var.sonarqube_token
   sonarqube_host                                    = var.sonarqube_host
   dependence_prometheus                             = module.monitoring.helm_prometheus_operator_status
+  hoodaw_host                                       = var.hoodaw_host
   hoodaw_api_key                                    = var.hoodaw_api_key
 }
 
