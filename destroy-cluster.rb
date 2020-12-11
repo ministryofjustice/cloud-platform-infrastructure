@@ -43,7 +43,7 @@ class ClusterDeleter
     terraform_components
     kops_cluster
     terraform_base
-    terraform_vpc if destroy_vpc? # Un comment to destroy the VPC
+    terraform_vpc if destroy_vpc?
     terraform_workspaces
   end
 
