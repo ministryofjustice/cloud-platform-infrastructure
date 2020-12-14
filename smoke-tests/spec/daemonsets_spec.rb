@@ -49,7 +49,7 @@ describe "daemonsets", speed: "fast" do
     let(:pods) { get_running_app_pods("logging", "fluent-bit") }
 
     it "runs fluent-bit" do
-      expect(non_ingress_node_ips).to eq(app_node_ips)
+      expect(all_node_ips).to eq(app_node_ips)
     end
 
     specify "all fluent-bit containers are running" do
