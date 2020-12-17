@@ -167,7 +167,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
   elasticsearch_version = "6.5"
 
   cluster_config {
-    instance_type          = "m4.xlarge.elasticsearch"
+    instance_type          = "m4.2xlarge.elasticsearch"
     instance_count         = "8"
     zone_awareness_enabled = true
   }
@@ -175,7 +175,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp2"
-    volume_size = "2048"
+    volume_size = "1536"
   }
 
   advanced_options = {
