@@ -114,7 +114,7 @@ module "monitoring" {
 }
 
 module "opa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.9"
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = terraform.workspace == local.live_workspace ? false : true
