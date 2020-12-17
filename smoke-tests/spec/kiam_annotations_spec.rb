@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "namespace", kops: true do
+describe "namespace", kops: true, fast: true do
  
     namespaces = ['kube-system','cert-manager', 'velero', 'monitoring', 'logging']
     kiam_annotation = "iam.amazonaws.com/permitted"
