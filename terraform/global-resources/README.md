@@ -8,6 +8,8 @@ These are resources that are global in nature and therefore there are no workspa
 Since resources in multiple accounts are managed here, multiple AWS providers are defined.
 You can see the list of providers in [main.tf](main.tf#L10-L29), as well as the names of the AWS profiles that must be configured for this to run properly.
 
+**You require DSD credentials in order to run a full plan**, you can still apply changes targeting resources. The reason is that in `dns.tf` we are touching DSD resources. 
+
 ---
 
 ## Contents
