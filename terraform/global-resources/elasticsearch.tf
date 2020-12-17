@@ -97,7 +97,7 @@ resource "aws_elasticsearch_domain" "live_1" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp2"
-    volume_size = "1024"
+    volume_size = "2048"
   }
 
   advanced_options = {
@@ -175,7 +175,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp2"
-    volume_size = "1024"
+    volume_size = "2048"
   }
 
   advanced_options = {
