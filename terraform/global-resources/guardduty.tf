@@ -33,7 +33,7 @@ resource "aws_s3_bucket" "security" {
   provider      = aws.cloud-platform-ireland
   bucket_prefix = var.bucket_prefix
   acl           = "private"
-  region        = var.aws_region
+  # region        = var.aws_region
 
   lifecycle {
     prevent_destroy = true
