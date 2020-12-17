@@ -268,5 +268,5 @@ def annotate_ingress(namespace, ingress, annotations_hash)
 end
 
 def get_namespace_annotations(namespace)
-  kubectl_get("get namespace #{namespace}").dig("metadata","annotations")
+  kubectl_get("get namespace #{namespace}").dig("metadata", "annotations")
 end
