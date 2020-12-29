@@ -39,3 +39,10 @@ module "baselines" {
     "cloud-platform-6cf3132ef8fce52bb371b1d02f40c36d"
   ]
 }
+
+module "ecr_fluentbit" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=4.1"
+
+  repo_name = "fluent-bit"
+  team_name = "cloud-platform"
+}
