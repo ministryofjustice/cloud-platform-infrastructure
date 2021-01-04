@@ -233,7 +233,7 @@ def parse_options
 
   OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
-      options[:cluster_name] = name
+      options[:cluster_name] = name.sub(".cloud-platform.service.justice.gov.uk", "")
     end
 
     opts.on("-v", "--vpc-name VPC-NAME", "VPC to destroy, defaults to CLUSTER-NAME") do |name|
