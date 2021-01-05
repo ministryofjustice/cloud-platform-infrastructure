@@ -1,12 +1,11 @@
 
 module "concourse" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.5.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.5.5"
 
   vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
   internal_subnets_ids                              = data.terraform_remote_state.cluster.outputs.internal_subnets_ids
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  kops_or_eks                                       = var.kops_or_eks
   github_auth_client_id                             = var.github_auth_client_id
   github_auth_client_secret                         = var.github_auth_client_secret
   github_org                                        = var.github_org
