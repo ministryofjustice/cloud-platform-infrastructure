@@ -57,7 +57,7 @@ data "aws_iam_policy_document" "pathfinder-preprod-ap" {
       "s3:listObjectsV2",
     ]
     resources = [
-      "arn:aws:s3:::mojap-land/preprod/pathfinder/*",
+      "arn:aws:s3:::mojap-land/hmpps/pathfinder/preprod/*",
     ]
   }
 }
