@@ -118,3 +118,7 @@ variable "tags" {
   }
 }
 
+# Elasticsearch
+
+variable "slack_webhook_url" {
+}
