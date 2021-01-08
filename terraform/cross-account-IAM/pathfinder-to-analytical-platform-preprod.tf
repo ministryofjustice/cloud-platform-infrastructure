@@ -53,8 +53,7 @@ data "aws_iam_policy_document" "pathfinder-preprod-ap" {
   statement {
     actions = [
       "s3:PutObject",
-      "s3:upload",
-      "s3:listObjectsV2",
+      "s3:listObjectsV2"
     ]
     resources = [
       "arn:aws:s3:::mojap-land/hmpps/pathfinder/preprod/*",
