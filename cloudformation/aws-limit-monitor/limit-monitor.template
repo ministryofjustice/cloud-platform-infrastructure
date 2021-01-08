@@ -83,7 +83,7 @@ Mappings:
 
   RefreshRate:
     CronSchedule:
-      Default: rate(1 day) # change as needed
+      Default: cron(0 11 * * ? *) # change as needed
 
   SourceCode:
     General:
@@ -92,7 +92,7 @@ Mappings:
 
   EventsMap:
     Checks:
-      Services: '"AutoScaling","CloudFormation","EBS","EC2","ELB","IAM","Kinesis","RDS","SES","VPC"' # change as needed
+      Services: '"AutoScaling","CloudFormation","DynamoDB","EBS","EC2","ELB","IAM","Kinesis","RDS","Route53","SES","VPC"' # change as needed
 
 Conditions:
   SingleAccnt: !Equals [!Ref AccountList , '']
@@ -289,7 +289,7 @@ Resources:
       Code:
         S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
         S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "limtr-report-service.zip"]]
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Timeout: 300
 
   LimitSummarizerRole:
@@ -373,7 +373,7 @@ Resources:
       Code:
         S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
         S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "limtr-slack-service.zip"]]
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Timeout: 300
 
   SlackNotifierRole:
@@ -472,7 +472,7 @@ Resources:
       Code:
         S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
         S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "limtr-refresh-service.zip"]]
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Timeout: 300
 
   TARefresherRole:
@@ -533,7 +533,7 @@ Resources:
       Code:
         S3Bucket: !Join ["-", [!FindInMap ["SourceCode", "General", "S3Bucket"], Ref: "AWS::Region"]]
         S3Key: !Join ["/", [!FindInMap ["SourceCode", "General", "KeyPrefix"],  "limtr-helper-service.zip"]]
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Timeout: 300
       Description: This function generates UUID, establishes cross account trust on CloudWatch Event Bus and sends anonymous metric
       Role: !Sub ${LimtrHelperRole.Arn}
