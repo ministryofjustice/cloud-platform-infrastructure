@@ -13,9 +13,6 @@ Here you'll also find instruction on how to operate a Cloud Platform cluster.
   - [Terraform modules](#terraform-modules)
   - [How to add your examples](#how-to-add-your-examples)
   - [Create/Delete a cluster](#createdelete-a-cluster)
-  - [Disaster recovery](docs/disaster-recovery/README.md)
-  - [Prometheus config and install](https://github.com/ministryofjustice/cloud-platform-prometheus#cloud-platform-prometheus)
-  - [Logging](docs/logging/README.md)
 
 ## Terraform and Cloud Platform environment management
 
