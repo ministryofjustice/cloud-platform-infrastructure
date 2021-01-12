@@ -22,7 +22,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  version = "0.10.4"
+  version = "1.3.2"
   kubernetes {
   }
 }
