@@ -49,6 +49,16 @@ data "aws_iam_policy_document" "pathfinder-preprod-ap" {
     resources = [aws_iam_role.pathfinder-preprod-ap.arn]
   }
 
+  # Provide list of permissions and target AWS account resources to allow access from
+  statement {
+    actions = [
+      "s3:PutObject",
+      "s3:listObjectsV2"
+    ]
+    resources = [
+      "arn:aws:s3:::mojap-land/hmpps/pathfinder/preprod/*",
+    ]
+  }
 }
 
 resource "aws_iam_policy" "pathfinder-preprod-ap-policy" {
