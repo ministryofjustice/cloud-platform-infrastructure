@@ -23,10 +23,8 @@ provider "kubernetes" {
   version = "~> 1.11.1"
 }
 
-# Unfortunatly we are facing https://github.com/terraform-providers/terraform-provider-helm/issues/458 and
-# https://github.com/terraform-providers/terraform-provider-helm/issues/498 so we can't go to to higher version
 provider "helm" {
-  version = "1.0.0"
+  version = "1.3.2"
   kubernetes {}
 }
 
