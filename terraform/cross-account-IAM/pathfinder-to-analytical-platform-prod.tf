@@ -52,9 +52,7 @@ data "aws_iam_policy_document" "pathfinder-prod-ap" {
   # Provide list of permissions and target AWS account resources to allow access from
   statement {
     actions = [
-      "s3:PutObject",
-      "s3:upload",
-      "s3:listObjectsV2",
+      "s3:*"
     ]
     resources = [
       "arn:aws:s3:::mojap-land/hmpps/pathfinder/prod/*",
