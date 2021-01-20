@@ -28,7 +28,7 @@ resource "aws_iam_role" "data-eng-rds-dev-ap" {
   assume_role_policy = data.aws_iam_policy_document.data-eng-rds-dev-kiam-trust-chain.json
 }
 
-resource "kubernetes_secret" "analytical_platform_landing_bucket_prod" {
+resource "kubernetes_secret" "ap_landing_bucket_prod" {
   metadata {
     name      = "analytical-platform-landing-bucket"
     namespace = "data-eng-rds-dev"
