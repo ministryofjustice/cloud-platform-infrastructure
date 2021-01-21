@@ -14,7 +14,7 @@ describe "Prometheus Rules", speed: "fast" do
       "prometheus-operator-kube-p-kubernetes-storage",
       "prometheus-operator-kube-p-kubernetes-system",
       "prometheus-operator-kube-p-node.rules",
-      "prometheus-operator-kube-p--prometheus-operator",
+      "prometheus-operator-kube-p-prometheus-operator",
       "prometheus-operator-kube-p-prometheus",
       "prometheus-operator-kube-p-node-exporter.rules",
       "prometheus-operator-kube-p-kubernetes-system-apiserver",
