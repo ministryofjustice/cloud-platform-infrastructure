@@ -5,14 +5,14 @@ describe "servicemonitors", speed: "fast" do
     names = get_servicemonitors("monitoring").map { |set| set.dig("metadata", "name") }.sort
 
     expected = [
-      "prometheus-operator-alertmanager",
-      "prometheus-operator-apiserver",
-      "prometheus-operator-grafana",
-      "prometheus-operator-kube-state-metrics",
-      "prometheus-operator-kubelet",
-      "prometheus-operator-node-exporter",
-      "prometheus-operator-operator",
-      "prometheus-operator-prometheus"
+      "prometheus-operator-kube-p-alertmanager",
+      "prometheus-operator-kube-p-apiserver",
+      "prometheus-operator-kube-p-grafana",
+      "prometheus-operator-kube-p-kube-state-metrics",
+      "prometheus-operator-kube-p-kubelet",
+      "prometheus-operator-kube-p-node-exporter",
+      "prometheus-operator-kube-p-operator",
+      "prometheus-operator-kube-p-prometheus"
     ]
     expect(names).to include(*expected)
   end
@@ -21,10 +21,10 @@ describe "servicemonitors", speed: "fast" do
     names = get_servicemonitors("monitoring").map { |set| set.dig("metadata", "name") }.sort
 
     expected = [
-      "prometheus-operator-kube-controller-manager",
-      "prometheus-operator-coredns",
-      "prometheus-operator-kube-etcd",
-      "prometheus-operator-kube-scheduler"
+      "prometheus-operator-kube-p-kube-controller-manager",
+      "prometheus-operator-kube-p-coredns",
+      "prometheus-operator-kube-p-kube-etcd",
+      "prometheus-operator-kube-p-kube-scheduler"
     ]
     expect(names).to include(*expected)
   end
