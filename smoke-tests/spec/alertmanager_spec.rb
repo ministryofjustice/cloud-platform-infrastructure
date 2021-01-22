@@ -5,7 +5,7 @@ describe "Alertmanager resources", speed: "fast" do
     names = get_alertmanagers.map { |set| set.dig("metadata", "name") }.sort
 
     expected = [
-      "prometheus-operator-alertmanager",
+      "prometheus-operator-kube-p-alertmanager"
     ]
     expect(names).to include(*expected)
   end
