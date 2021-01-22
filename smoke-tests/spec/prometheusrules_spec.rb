@@ -9,7 +9,7 @@ describe "Prometheus Rules", speed: "fast" do
       "prometheus-operator-custom-kubernetes-apps.rules",
       "prometheus-operator-kube-p-k8s.rules",
       "prometheus-operator-kube-p-kube-apiserver.rules",
-      "prometheus-operator-kube-p-apiserver-slos",
+      "prometheus-operator-kube-p-kube-apiserver-slos",
       "prometheus-operator-kube-p-kubernetes-resources",
       "prometheus-operator-kube-p-kubernetes-storage",
       "prometheus-operator-kube-p-kubernetes-system",
