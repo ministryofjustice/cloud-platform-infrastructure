@@ -4,6 +4,7 @@
 ####################
 
 resource "kubernetes_priority_class" "cluster_critical" {
+  
   metadata {
     name = "cluster-critical"
   }
@@ -14,6 +15,7 @@ resource "kubernetes_priority_class" "cluster_critical" {
 }
 
 resource "kubernetes_priority_class" "node_critical" {
+  
   metadata {
     name = "node-critical"
   }
