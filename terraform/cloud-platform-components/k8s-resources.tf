@@ -28,7 +28,6 @@ resource "kubernetes_priority_class" "node_critical" {
 ###################
 
 resource "kubernetes_storage_class" "storageclass" {
-
   metadata {
     name = "gp2-expand"
   }
@@ -44,7 +43,6 @@ resource "kubernetes_storage_class" "storageclass" {
 }
 
 resource "kubernetes_storage_class" "io1" {
-
   metadata {
     name = "io1-expand"
   }
