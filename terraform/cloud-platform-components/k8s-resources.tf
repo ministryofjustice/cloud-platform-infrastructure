@@ -43,6 +43,23 @@ resource "kubernetes_storage_class" "storageclass" {
   }
 }
 
+resource "kubernetes_storage_class" "io1" {
+
+  metadata {
+    name = "io1-expand"
+  }
+
+  storage_provisioner    = "kubernetes.io/aws-ebs"
+  reclaim_policy         = "Delete"
+  allow_volume_expansion = "true"
+
+  parameters = {
+    type      = "io1"
+    iopsPerGB = "10000"
+    fsType    = "ext4"
+  }
+}
+
 #######
 # PSP #
 #######
