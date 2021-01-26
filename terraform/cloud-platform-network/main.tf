@@ -71,3 +71,10 @@ module "vpc" {
     Domain    = local.vpc_base_domain_name
   }
 }
+
+### 
+module "flowlogs" {
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-flow-logs?ref=1.3"
+  is_enabled = terraform.workspace == "live-1" ? true : false
+  vpc_id     = module.vpc.vpc_id
+}
