@@ -9,6 +9,8 @@ terraform {
   }
 }
 
+provider "github" {}
+
 data "aws_caller_identity" "current" {}
 
 ###########################
@@ -33,7 +35,7 @@ module "baselines" {
 module "iam" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.4"
 
-  aws_account_name = "cloud-platform-aws"
+  aws_account_name = "cloud-platform-ephemeral-test"
 }
 
 ##############
@@ -55,3 +57,10 @@ resource "aws_route53_zone" "aws_account_hostzone_id" {
   name = "et.cloud-platform.service.justice.gov.uk."
 }
 
+###################
+# Automated tests #
+###################
+
+module "terratest" {
+  source = "./modules/automated-tests"
+}
