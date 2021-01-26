@@ -483,28 +483,6 @@ resource "aws_iam_policy_attachment" "attach_policy" {
   policy_arn = aws_iam_policy.policy.arn
 }
 
-# module "iam_user_terratest" {
-#   source  = "terraform-aws-modules/iam/aws//modules/iam-user"
-#   version = "~> 2.0"
-
-#   name                          = "terratest"
-#   force_destroy                 = true
-#   create_iam_user_login_profile = false
-#   create_iam_access_key         = true
-# }
-
-# data "aws_iam_group" "admin" {
-#   group_name = "admins"
-# }
-
-# resource "aws_iam_user_group_membership" "admin" {
-#   user = module.iam_user_terratest.this_iam_user_name
-
-#   groups = [
-#     data.aws_iam_group.admin.group_name,
-#   ]
-# }
-
 ##########
 # Github #
 ##########
