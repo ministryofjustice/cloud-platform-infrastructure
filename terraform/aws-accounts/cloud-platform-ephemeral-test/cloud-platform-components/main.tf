@@ -13,7 +13,7 @@ terraform {
 }
 
 provider "aws" {
-  region  = "eu-west-2"
+  region = "eu-west-2"
 }
 
 provider "kubernetes" {
@@ -40,9 +40,9 @@ data "terraform_remote_state" "network" {
   backend = "s3"
 
   config = {
-    bucket  = "cloud-platform-ephemeral-test-tfstate"
-    region  = "eu-west-2"
-    key     = "cloud-platform-network/${terraform.workspace}/terraform.tfstate"
+    bucket = "cloud-platform-ephemeral-test-tfstate"
+    region = "eu-west-2"
+    key    = "cloud-platform-network/${terraform.workspace}/terraform.tfstate"
   }
 }
 
