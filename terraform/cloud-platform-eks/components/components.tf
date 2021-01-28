@@ -30,6 +30,7 @@ module "concourse" {
   dependence_prometheus                             = module.monitoring.helm_prometheus_operator_status
   hoodaw_host                                       = var.hoodaw_host
   hoodaw_api_key                                    = var.hoodaw_api_key
+  github_actions_secrets_token                      = var.github_actions_secrets_token
 }
 
 module "cert_manager" {
