@@ -73,3 +73,7 @@ variable "hoodaw_api_key" {
   default     = ""
   description = "API key to authenticate data posts to https://how-out-of-date-are-we.apps.live-1.cloud-platform.service.justice.gov.uk"
 }
+variable "github_actions_secrets_token" {
+  default     = ""
+  description = "Github personal access token able to update any MoJ repository. Used to create github actions secrets"
+}
