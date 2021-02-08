@@ -165,7 +165,7 @@ resource "aws_s3_bucket" "thanos" {
   provider = aws.cloud-platform
 
   versioning {
-    enabled = true
+    enabled = false
   }
 
   server_side_encryption_configuration {
