@@ -66,7 +66,7 @@ module "prometheus" {
   pagerduty_config                           = var.pagerduty_config
   enable_ecr_exporter                        = terraform.workspace == local.live_workspace ? true : false
   enable_cloudwatch_exporter                 = terraform.workspace == local.live_workspace ? true : false
-  enable_thanos_helm_chart                   = terraform.workspace == local.live_workspace ? true : false 
+  enable_thanos_helm_chart                   = terraform.workspace == local.live_workspace ? true : false
   enable_thanos_sidecar                      = terraform.workspace == local.live_workspace ? true : false
   enable_prometheus_affinity_and_tolerations = terraform.workspace == local.live_workspace ? true : false
 
