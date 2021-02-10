@@ -106,6 +106,9 @@ module "monitoring" {
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   enable_thanos_sidecar         = terraform.workspace == local.live_workspace ? true : false
 
+  enable_thanos_compact = terraform.workspace == local.live_workspace ? true : false
+   
+
   dependence_opa = module.opa.helm_opa_status
 
   # This section is for EKS
