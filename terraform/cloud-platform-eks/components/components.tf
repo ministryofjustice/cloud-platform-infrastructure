@@ -106,6 +106,7 @@ module "monitoring" {
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   enable_thanos_sidecar         = terraform.workspace == local.live_workspace ? true : false
 
+  enable_thanos_helm_chart                   = terraform.workspace == local.live_workspace ? true : false 
   enable_thanos_compact = terraform.workspace == local.live_workspace ? true : false
 
 
