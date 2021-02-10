@@ -94,7 +94,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.2.0"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   iam_role_nodes               = data.aws_iam_role.nodes.arn
@@ -105,6 +105,10 @@ module "monitoring" {
   oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   enable_thanos_sidecar         = terraform.workspace == local.live_workspace ? true : false
+
+  enable_thanos_helm_chart = terraform.workspace == local.live_workspace ? true : false
+  enable_thanos_compact    = terraform.workspace == local.live_workspace ? true : false
+
 
   dependence_opa = module.opa.helm_opa_status
 

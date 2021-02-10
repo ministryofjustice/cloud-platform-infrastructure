@@ -59,17 +59,16 @@ module "logging" {
 }
 
 module "prometheus" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.2.0"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
   pagerduty_config                           = var.pagerduty_config
   enable_ecr_exporter                        = terraform.workspace == local.live_workspace ? true : false
   enable_cloudwatch_exporter                 = terraform.workspace == local.live_workspace ? true : false
-  enable_thanos_helm_chart                   = false
+  enable_thanos_helm_chart                   = terraform.workspace == local.live_workspace ? true : false
   enable_thanos_sidecar                      = terraform.workspace == local.live_workspace ? true : false
   enable_prometheus_affinity_and_tolerations = terraform.workspace == local.live_workspace ? true : false
-  split_prometheus                           = false
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_components_client_id     = data.terraform_remote_state.cluster.outputs.oidc_components_client_id
