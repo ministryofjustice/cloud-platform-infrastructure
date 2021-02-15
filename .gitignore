@@ -1,5 +1,4 @@
 .terraform
-*.tfstate*
 ssh/*id_rsa
 generated/*
 .bundle
