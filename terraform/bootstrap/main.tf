@@ -1,4 +1,10 @@
 
+terraform {
+  backend "local" {
+    path = "terraform.bootstrap_state"
+  }
+}
+
 provider "aws" {
   region = "eu-west-1"
 }
