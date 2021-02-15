@@ -1,5 +1,6 @@
 .terraform
 ssh/*id_rsa
+*.tfstate*
 generated/*
 .bundle
 .key
