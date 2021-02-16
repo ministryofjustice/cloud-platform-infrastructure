@@ -487,18 +487,16 @@ resource "aws_iam_policy_attachment" "attach_policy" {
 # Github #
 ##########
 
-data "github_actions_public_key" "cp_terraform_ecr_credentials" {
-  repository = "cloud-platform-terraform-ecr-credentials"
-}
-
-resource "github_actions_secret" "cp_terraform_ecr_aws_access_key" {
-  repository      = "cloud-platform-terraform-ecr-credentials"
+resource "github_actions_secret" "access_key" {
+  for_each        = toset(var.github_repositories)
+  repository      = each.key
   secret_name     = "AWS_ACCESS_KEY_ID"
   plaintext_value = aws_iam_access_key.terratest.id
 }
 
-resource "github_actions_secret" "cp_terraform_ecr_aws_secret_key" {
-  repository      = "cloud-platform-terraform-ecr-credentials"
+resource "github_actions_secret" "secret_key" {
+  for_each        = toset(var.github_repositories)
+  repository      = each.key
   secret_name     = "AWS_SECRET_ACCESS_KEY"
   plaintext_value = aws_iam_access_key.terratest.secret
 }
