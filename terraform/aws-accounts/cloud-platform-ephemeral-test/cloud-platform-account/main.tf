@@ -61,6 +61,13 @@ resource "aws_route53_zone" "aws_account_hostzone_id" {
 # Automated tests #
 ###################
 
+# This module creates an AWS user and injest AWS_* keys within the specified 
+# GH repos in order to be used by the GH actions to execute unit-tests
 module "terratest" {
   source = "./modules/automated-tests"
+
+  github_repositories = [
+    "cloud-platform-terraform-ecr-credentials",
+    "cloud-platform-terraform-sqs",
+  ]
 }
