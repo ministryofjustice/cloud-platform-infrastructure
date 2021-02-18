@@ -251,19 +251,6 @@ data "aws_iam_policy_document" "test" {
 #   }
 # }
 
-module "notify_slack" {
-  source = "terraform-aws-modules/notify-slack/aws"
-  # whilst using terraform 0.12 you must use version 3.5.0
-  version = "3.5.0"
-
-  sns_topic_name   = "elasticsearch-monitoring"
-  create_sns_topic = true
-
-  slack_webhook_url = var.slack_webhook_url
-  slack_channel     = "lower-priority-alarms"
-  slack_username    = "Cloudwatch-reporter"
-}
-
 module "live_elasticsearch_monitoring" {
   source  = "dubiety/elasticsearch-cloudwatch-sns-alarms/aws"
   version = "1.0.4"
@@ -271,7 +258,7 @@ module "live_elasticsearch_monitoring" {
   alarm_name_prefix = "cloud-platform-live-"
   domain_name       = local.live_domain
   create_sns_topic  = false
-  sns_topic         = module.notify_slack.this_slack_topic_arn
+  sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
 }
 
 module "audit_elasticsearch_monitoring" {
@@ -281,5 +268,5 @@ module "audit_elasticsearch_monitoring" {
   alarm_name_prefix = "cloud-platform-audit-"
   domain_name       = local.audit_domain
   create_sns_topic  = false
-  sns_topic         = module.notify_slack.this_slack_topic_arn
+  sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
 }

@@ -24,7 +24,7 @@ module "iam" {
 
 # Baselines: cloudtrail, cloudwatch, lambda. Everything that our accounts should have
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.5"
 
   enable_logging           = true
   enable_slack_integration = true
