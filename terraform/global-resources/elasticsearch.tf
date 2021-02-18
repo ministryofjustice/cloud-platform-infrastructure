@@ -258,7 +258,7 @@ module "live_elasticsearch_monitoring" {
   alarm_name_prefix = "cloud-platform-live-"
   domain_name       = local.live_domain
   create_sns_topic  = false
-  sns_topic         = data.terraform_remote_state.aws_baseline.outputs.slack_sns_topic
+  sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
 }
 
 module "audit_elasticsearch_monitoring" {
@@ -268,5 +268,5 @@ module "audit_elasticsearch_monitoring" {
   alarm_name_prefix = "cloud-platform-audit-"
   domain_name       = local.audit_domain
   create_sns_topic  = false
-  sns_topic         = module.notify_slack.this_slack_topic_arn
+  sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
 }

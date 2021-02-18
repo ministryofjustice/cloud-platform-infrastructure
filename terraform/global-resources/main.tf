@@ -50,13 +50,13 @@ provider "aws" {
 provider "external" {
 }
 
-data "terraform_remote_state" "aws_baseline" {
+data "terraform_remote_state" "account" {
   backend = "s3"
 
   config = {
     bucket  = "cloud-platform-terraform-state"
     region  = "eu-west-1"
-    key     = "cloud-platform-account/terraform.json"
+    key     = "terraform.tfstate"
     profile = "moj-cp"
   }
 }
