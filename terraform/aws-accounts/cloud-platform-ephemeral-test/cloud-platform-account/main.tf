@@ -33,7 +33,7 @@ module "baselines" {
 #######
 
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.5"
 
   aws_account_name = "cloud-platform-ephemeral-test"
 }
