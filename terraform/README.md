@@ -1,5 +1,6 @@
 # Cloud Platform Infrastructure - Terraform
 
+
 This `README` will serve as a brief outline of the `cloud-platform-infrastructure/terraform` directory and its structure. Each directory will contain a README outlining its own function and design.
 
 ```
