@@ -52,7 +52,7 @@ module "ecr_fluentbit" {
 ##############
 
 module "s3_bucket_thanos" {
-  source = "terraform-aws-modules/s3-bucket/aws"
+  source  = "terraform-aws-modules/s3-bucket/aws"
   version = "1.18.0"
 
   bucket = "cloud-platform-prometheus-thanos"
@@ -78,7 +78,7 @@ module "s3_bucket_thanos" {
 }
 
 module "s3_bucket_velero" {
-  source = "terraform-aws-modules/s3-bucket/aws"
+  source  = "terraform-aws-modules/s3-bucket/aws"
   version = "1.18.0"
 
   bucket = "cloud-platform-velero-backups"
