@@ -46,3 +46,59 @@ module "ecr_fluentbit" {
   repo_name = "fluent-bit"
   team_name = "cloud-platform"
 }
+
+##############
+# S3 buckets #
+##############
+
+module "s3_bucket_thanos" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "1.18.0"
+
+  bucket = "cloud-platform-prometheus-thanos"
+  acl    = "private"
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  versioning = {
+    enabled = false
+  }
+
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+}
+
+module "s3_bucket_velero" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "1.18.0"
+
+  bucket = "cloud-platform-velero-backups"
+  acl    = "private"
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  versioning = {
+    enabled = true
+  }
+
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+
+}
