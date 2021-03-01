@@ -11,6 +11,10 @@ terraform {
 
 provider "github" {}
 
+provider "aws" {
+  region  = "eu-west-2"
+}
+
 data "aws_caller_identity" "current" {}
 
 ###########################
@@ -43,7 +47,7 @@ module "iam" {
 ##############
 
 module "kops_state_backend" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kops-state-backend?ref=0.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kops-state-backend?ref=1.0.0"
 
   bucket_name = "${var.aws_account_name}-kops-state"
 }
