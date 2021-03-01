@@ -148,8 +148,8 @@ resource "aws_s3_bucket" "cloud_platform_kops_state" {
 }
 
 resource "aws_s3_bucket" "cloud_platform_kops_state_replica" {
-  bucket   = "cloud-platform-kops-state-replica"
-  acl      = "private"
+  bucket = "cloud-platform-kops-state-replica"
+  acl    = "private"
 
   versioning {
     enabled = true
@@ -165,7 +165,7 @@ resource "aws_s3_bucket" "cloud_platform_kops_state_replica" {
 }
 
 resource "aws_s3_bucket_public_access_block" "kops_state_replica" {
-  bucket   = "cloud-platform-kops-state-replica"
+  bucket = "cloud-platform-kops-state-replica"
 
   block_public_acls       = true
   block_public_policy     = true
@@ -234,7 +234,7 @@ POLICY
 
 resource "aws_iam_policy_attachment" "s3_replication_kops_state" {
   name       = "s3_cloud_platform_kops_state_attachment"
-  roles      = [ aws_iam_role.s3_replication_kops_state.name ]
+  roles      = [aws_iam_role.s3_replication_kops_state.name]
   policy_arn = aws_iam_policy.s3_replication_kops_state.arn
 }
 
