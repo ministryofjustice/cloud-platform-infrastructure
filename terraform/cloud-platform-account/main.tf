@@ -50,7 +50,7 @@ module "baselines" {
 
 # Route53 hostzone
 resource "aws_route53_zone" "cloud_platform_justice_gov_uk" {
-  name     = "cloud-platform.service.justice.gov.uk."
+  name = "cloud-platform.service.justice.gov.uk."
 }
 
 module "ecr_fluentbit" {
