@@ -7,6 +7,8 @@
 │   ├── cloud-platform-account          # AWS Account specific configuration.
 │   ├── cloud-platform-components       # K8S components. Workspaces for individual clusters
 │   └── cloud-platform-network          # VPC creation. Workspaces for individual clusters
+├── cloud-platform-dsd
+│   └── main.tf                         # DSD account is dying, we only manage a single DNS entry there (cloud-platform.service.justice.gov.uk)
 ├── cloud-platform
 │   ├── bootstrap
 │   ├── cloud-platform
