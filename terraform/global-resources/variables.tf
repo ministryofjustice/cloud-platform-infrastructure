@@ -12,12 +12,6 @@ variable "integration_key" {
 variable "endpoint" {
 }
 
-#variable "topic_arn" {
-#}
-
-#variable "sns_arn" {
-#}
-
 variable "aws_master_account_id" {
 }
 
@@ -38,8 +32,6 @@ variable "bucket_prefix" {
   default = "security"
 }
 
-
 # Elasticsearch
-
 variable "slack_webhook_url" {
 }
