@@ -18,6 +18,7 @@ provider "auth0" {
   domain  = local.auth0_tenant_domain
 }
 
+
 # default provider
 provider "aws" {
   region  = "eu-west-2"
