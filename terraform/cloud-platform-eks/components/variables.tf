@@ -52,6 +52,7 @@ variable "github_token" {}
 variable "pingdom_user" {}
 variable "pingdom_password" {}
 variable "pingdom_api_key" {}
+variable "pingdom_api_token" {}
 variable "dockerhub_username" {}
 variable "dockerhub_password" {}
 variable "how_out_of_date_are_we_github_token" {}
