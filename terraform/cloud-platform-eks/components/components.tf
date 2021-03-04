@@ -1,6 +1,6 @@
 
 module "concourse" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.5.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.5.8"
 
   vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
@@ -21,6 +21,7 @@ module "concourse" {
   pingdom_user                                      = var.pingdom_user
   pingdom_password                                  = var.pingdom_password
   pingdom_api_key                                   = var.pingdom_api_key
+  pingdom_api_token                                 = var.pingdom_api_token
   dockerhub_username                                = var.dockerhub_username
   dockerhub_password                                = var.dockerhub_password
   how_out_of_date_are_we_github_token               = var.how_out_of_date_are_we_github_token
