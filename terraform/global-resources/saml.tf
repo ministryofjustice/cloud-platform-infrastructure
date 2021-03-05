@@ -67,18 +67,14 @@ EOF
 
 }
 
-data "external" "metadata" {
-  program = [
-    "bash",
-    "-c",
-    "jq -sR '{ content : . }' <<<$(curl -s https://${local.auth0_tenant_domain}/samlp/metadata/${auth0_client.saml.client_id})",
-  ]
+data "http" "metadata" {
+  url = "https://${local.auth0_tenant_domain}/samlp/metadata/${auth0_client.saml.client_id}"
 }
 
 resource "aws_iam_saml_provider" "auth0" {
   provider               = aws.cloud-platform
   name                   = "auth0"
-  saml_metadata_document = data.external.metadata.result["content"]
+  saml_metadata_document = data.http.metadata.body
 }
 
 data "aws_iam_policy_document" "federated_role_trust_policy" {
