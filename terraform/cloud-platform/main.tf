@@ -25,15 +25,14 @@ provider "auth0" {
   domain  = local.auth0_tenant_domain
 }
 
-data "terraform_remote_state" "global" {
+data "terraform_remote_state" "cloud_platform_account" {
   backend = "s3"
 
   config = {
-    bucket         = "cloud-platform-terraform-state"
-    region         = "eu-west-1"
-    key            = "global-resources/terraform.tfstate"
-    profile        = "moj-cp"
-    dynamodb_table = "cloud-platform-terraform-state"
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "cloud-platform-account/terraform.tfstate"
+    profile = "moj-cp"
   }
 }
 
@@ -63,7 +62,7 @@ module "kops" {
 
   vpc_name            = local.vpc
   cluster_domain_name = trimsuffix(local.cluster_base_domain_name, ".")
-  kops_state_store    = data.terraform_remote_state.global.outputs.cloud_platform_kops_state
+  kops_state_store    = data.terraform_remote_state.cloud_platform_account.outputs.cloud_platform_kops_state
 
   auth0_client_id         = module.auth0.oidc_kubernetes_client_id
   authorized_keys_manager = module.bastion.authorized_keys_manager
@@ -85,7 +84,7 @@ module "kops" {
 module "cluster_dns" {
   source                   = "../modules/cluster_dns"
   cluster_base_domain_name = local.cluster_base_domain_name
-  parent_zone_id           = data.terraform_remote_state.global.outputs.cp_zone_id
+  parent_zone_id           = data.terraform_remote_state.cloud_platform_account.outputs.cp_zone_id
 }
 
 ###########

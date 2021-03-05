@@ -44,13 +44,13 @@ locals {
   services_eks_domain  = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
 }
 
-data "terraform_remote_state" "global" {
+data "terraform_remote_state" "cloud_platform_account" {
   backend = "s3"
 
   config = {
     bucket  = "cloud-platform-terraform-state"
     region  = "eu-west-1"
-    key     = "global-resources/terraform.tfstate"
+    key     = "cloud-platform-account/terraform.tfstate"
     profile = "moj-cp"
   }
 }
@@ -95,7 +95,7 @@ resource "aws_route53_zone" "cluster" {
 }
 
 resource "aws_route53_record" "parent_zone_cluster_ns" {
-  zone_id = data.terraform_remote_state.global.outputs.cp_zone_id
+  zone_id = data.terraform_remote_state.cloud_platform_account.outputs.cp_zone_id
   name    = aws_route53_zone.cluster.name
   type    = "NS"
   ttl     = "30"
