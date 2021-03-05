@@ -13,6 +13,7 @@ locals {
   auth0_tenant_domain = "justice-cloud-platform.eu.auth0.com"
 }
 
+
 provider "auth0" {
   version = ">= 0.2.1"
   domain  = local.auth0_tenant_domain
