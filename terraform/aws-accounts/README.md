@@ -2,7 +2,7 @@
 
 ```text
 aws-accounts
-├── cloud-platform
+├── cloud-platform-aws
 │   ├── cloud-platform-account  # AWS Account specific configuration.
 │   └── cloud-platform-network  # VPC creation. Workspaces for individual clusters
 │       ├── cloud-platform-eks  # Holding EKS, workspaces for individual clusters.
