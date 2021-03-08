@@ -18,3 +18,28 @@
 └── README.md                           # This README
 
 ```
+
+## Proposal 2
+
+```text
+aws-accounts
+├── cloud-platform
+│   ├── bootstrap
+│   ├── cloud-platform-account
+│   ├── cloud-platform-eks
+│   │   └── components
+│   ├── cloud-platform-kops
+│   │   └── components
+│   └── cloud-platform-network
+├── cloud-platform-dsd
+├── cloud-platform-ephemeral-test
+│   ├── bootstrap
+│   ├── cloud-platform-account
+│   ├── cloud-platform-eks
+│   │   └── components
+│   ├── cloud-platform-kops
+│   │   └── components
+│   └── cloud-platform-network
+└── README.md
+
+```
