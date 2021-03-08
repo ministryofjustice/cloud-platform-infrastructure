@@ -1,20 +1,22 @@
 # AWS Accounts folder
 
 ```text
-├── cloud-platform-ephemeral-test       # Account Name
-│   ├── bootstrap                       # Creation of terraform state backend.
-│   ├── cloud-platform                  # Holding kops/bastion/route53, workspaces for individual clusters.
-│   ├── cloud-platform-account          # AWS Account specific configuration.
-│   ├── cloud-platform-components       # K8S components. Workspaces for individual clusters
-│   └── cloud-platform-network          # VPC creation. Workspaces for individual clusters
+aws-accounts
+├── cloud-platform-aws
+│   ├── account                  # AWS Account specific configuration.
+│   └── network                  # VPC creation. Workspaces for individual clusters
+│       ├── eks                  # Holding EKS, workspaces for individual clusters.
+│       │   └── components       # EKS components. Workspaces for individual clusters
+│       └── kops                 # Holding KOPS, workspaces for individual clusters.
+│           └── components       # KOPS components. Workspaces for individual clusters
 ├── cloud-platform-dsd
-│   └── main.tf                         # DSD account is dying, we only manage a single DNS entry there (cloud-platform.service.justice.gov.uk)
-├── cloud-platform
-│   ├── bootstrap
-│   ├── cloud-platform
-│   ├── cloud-platform-account
-│   ├── cloud-platform-components
-│   └── cloud-platform-network
-└── README.md                           # This README
-
+│   └── main.tf
+├── cloud-platform-ephemeral-test
+│   ├── account
+│   └── network
+│       ├── eks
+│       │   └── components
+│       └── kops
+│           └── components
+└── README.md
 ```
