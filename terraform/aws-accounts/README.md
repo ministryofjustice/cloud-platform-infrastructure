@@ -23,15 +23,7 @@
 
 ```text
 aws-accounts
-├── cloud-platform-prod
-│   ├── bootstrap
-│   ├── cloud-platform-account
-│   ├── cloud-platform-eks
-│   │   └── components
-│   ├── cloud-platform-kops
-│   │   └── components
-│   └── cloud-platform-network
-├── cloud-platform-nonprod
+├── cloud-platform
 │   ├── bootstrap
 │   ├── cloud-platform-account
 │   ├── cloud-platform-eks
