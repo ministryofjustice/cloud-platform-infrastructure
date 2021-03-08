@@ -34,7 +34,6 @@ aws-accounts
 │   └── cloud-platform-network
 ├── cloud-platform-dsd
 ├── cloud-platform-ephemeral-test
-│   ├── bootstrap
 │   ├── cloud-platform-account
 │   ├── cloud-platform-eks
 │   │   └── components
@@ -42,5 +41,4 @@ aws-accounts
 │   │   └── components
 │   └── cloud-platform-network
 └── README.md
-
 ```
