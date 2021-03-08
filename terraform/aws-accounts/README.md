@@ -21,10 +21,11 @@
 
 ## Proposal 2
 
+cloud-platform-network ---> cloud-platform-eks/cloud-platform-kops
+
 ```text
 aws-accounts
 ├── cloud-platform
-│   ├── bootstrap
 │   ├── cloud-platform-account
 │   ├── cloud-platform-eks
 │   │   └── components
