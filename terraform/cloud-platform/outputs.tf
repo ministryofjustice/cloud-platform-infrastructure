@@ -7,7 +7,7 @@ output "cluster_domain_name" {
 }
 
 output "kops_state_store" {
-  value = data.terraform_remote_state.cloud_platform_account.outputs.cloud_platform_kops_state
+  value = data.aws_s3_bucket.kops_state.bucket
 }
 
 output "availability_zones" {

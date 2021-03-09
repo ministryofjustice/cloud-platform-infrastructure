@@ -16,24 +16,28 @@ provider "aws" {
   profile = "moj-cp"
 }
 
+# Because we are querying kops's bucket which is in Ireland 
+provider "aws" {
+  alias   = "ireland"
+  region  = "eu-west-1"
+  profile = "moj-cp"
+}
+
 # The empty configuration assumes that you have the appropriate environment
 # variables exported as explained in the upstream repo and is similar to the way
 # the AWS providr credentials are handled.
-#
 provider "auth0" {
   version = "= 0.12.2"
   domain  = local.auth0_tenant_domain
 }
 
-data "terraform_remote_state" "cloud_platform_account" {
-  backend = "s3"
+data "aws_s3_bucket" "kops_state" {
+  bucket   = "cloud-platform-kops-state"
+  provider = aws.ireland
+}
 
-  config = {
-    bucket  = "cloud-platform-terraform-state"
-    region  = "eu-west-1"
-    key     = "cloud-platform-account/terraform.tfstate"
-    profile = "moj-cp"
-  }
+data "aws_route53_zone" "cloud_platform" {
+  name = "cloud-platform.service.justice.gov.uk"
 }
 
 ###########################
@@ -62,7 +66,7 @@ module "kops" {
 
   vpc_name            = local.vpc
   cluster_domain_name = trimsuffix(local.cluster_base_domain_name, ".")
-  kops_state_store    = data.terraform_remote_state.cloud_platform_account.outputs.cloud_platform_kops_state
+  kops_state_store    = data.aws_s3_bucket.kops_state.bucket
 
   auth0_client_id         = module.auth0.oidc_kubernetes_client_id
   authorized_keys_manager = module.bastion.authorized_keys_manager
@@ -84,7 +88,7 @@ module "kops" {
 module "cluster_dns" {
   source                   = "../modules/cluster_dns"
   cluster_base_domain_name = local.cluster_base_domain_name
-  parent_zone_id           = data.terraform_remote_state.cloud_platform_account.outputs.cp_zone_id
+  parent_zone_id           = data.aws_route53_zone.cloud_platform.zone_id
 }
 
 ###########
