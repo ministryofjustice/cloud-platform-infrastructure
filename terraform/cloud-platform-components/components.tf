@@ -12,7 +12,7 @@ module "cert_manager" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.1.1"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -26,7 +26,7 @@ module "external_dns" {
 }
 
 module "kiam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=0.0.5"
 
   # This module requires prometheus and OPA already deployed
   dependence_prometheus = module.prometheus.helm_prometheus_operator_status
@@ -34,7 +34,7 @@ module "kiam" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.1.2"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
@@ -46,7 +46,7 @@ module "kuberos" {
 
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.8"
 
   # if you need to connect to the test elasticsearch cluster, replace "placeholder-elasticsearch" with "search-cloud-platform-test-zradqd7twglkaydvgwhpuypzy4.eu-west-2.es.amazonaws.com"
   # -> value = "${replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com" : "search-cloud-platform-test-zradqd7twglkaydvgwhpuypzy4.eu-west-2.es.amazonaws.com"
@@ -82,7 +82,7 @@ module "prometheus" {
 
 
 module "ingress_controller_integration_test" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.1.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.1.5"
 
   namespace = "integration-test"
   # This module requires prometheus and cert-manager already deployed
@@ -92,7 +92,7 @@ module "ingress_controller_integration_test" {
 
 
 module "modsec_ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.0.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.0.7"
 
   controller_name = "modsec01"
   replica_count   = "4"
@@ -114,7 +114,7 @@ module "ingress_controllers" {
 }
 
 module "ingress_controllers_k8snginx_fallback" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-k8s-ingress-controller?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-k8s-ingress-controller?ref=0.0.5"
 
   # boolean expression for applying standby ingress-controller for live-1 cluster only.
   enable_fallback_ingress_controller = terraform.workspace == local.live_workspace ? true : false
@@ -130,7 +130,7 @@ module "ingress_controllers_k8snginx_fallback" {
 
 
 module "opa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.10"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.11"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   # boolean expression for applying opa valid hostname for test clusters only.
@@ -138,14 +138,14 @@ module "opa" {
 }
 
 module "starter_pack" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.1.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.1.3"
 
   enable_starter_pack = terraform.workspace == local.live_workspace ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.6"
 
   iam_role_nodes        = data.aws_iam_role.nodes.arn
   dependence_prometheus = module.prometheus.helm_prometheus_operator_status
