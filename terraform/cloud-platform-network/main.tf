@@ -3,8 +3,6 @@
 ################################
 
 terraform {
-  required_version = ">= 0.12"
-
   backend "s3" {
     bucket               = "cloud-platform-terraform-state"
     region               = "eu-west-1"
@@ -74,7 +72,7 @@ module "vpc" {
 
 ### 
 module "flowlogs" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-flow-logs?ref=1.3"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-flow-logs?ref=1.3.1"
   is_enabled = terraform.workspace == "live-1" ? true : false
   vpc_id     = module.vpc.vpc_id
 }
