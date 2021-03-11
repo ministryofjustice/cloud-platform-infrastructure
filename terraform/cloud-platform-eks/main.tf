@@ -3,8 +3,6 @@
 #########
 
 terraform {
-  required_version = ">= 0.12"
-
   backend "s3" {
     bucket               = "cloud-platform-terraform-state"
     region               = "eu-west-1"
@@ -113,7 +111,7 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
 # ###########
 
 module "bastion" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.1"
 
   vpc_name            = local.vpc
   route53_zone        = aws_route53_zone.cluster.name
@@ -125,7 +123,7 @@ module "bastion" {
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.4"
 
   cluster_name         = local.cluster_name
   services_base_domain = local.services_base_domain
