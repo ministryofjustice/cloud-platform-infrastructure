@@ -1,7 +1,5 @@
 
 terraform {
-  required_version = ">= 0.12"
-
   backend "s3" {
     bucket               = "cloud-platform-ephemeral-test-tfstate"
     region               = "eu-west-2"
@@ -48,7 +46,7 @@ locals {
 ########
 
 module "kops" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.1.2"
 
   vpc_name            = local.vpc
   cluster_domain_name = trimsuffix(local.cluster_base_domain_name, ".")
@@ -75,7 +73,7 @@ module "kops" {
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.4"
 
   cluster_name         = local.cluster_name
   services_base_domain = local.cluster_base_domain_name
@@ -86,7 +84,7 @@ module "auth0" {
 ###########
 
 module "bastion" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.1"
 
   vpc_name            = local.vpc_name
   route53_zone        = aws_route53_zone.cluster.name
