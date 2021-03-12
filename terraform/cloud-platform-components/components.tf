@@ -1,5 +1,5 @@
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.9"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.10"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -59,7 +59,7 @@ module "logging" {
 }
 
 module "prometheus" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.4.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.4.1"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
@@ -102,7 +102,7 @@ module "modsec_ingress_controllers" {
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.1.1"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
