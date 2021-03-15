@@ -1,5 +1,4 @@
 terraform {
-  required_version = ">= 0.12"
   backend "s3" {
     bucket         = "cloud-platform-terraform-state"
     region         = "eu-west-1"
@@ -14,8 +13,7 @@ locals {
 }
 
 provider "auth0" {
-  version = ">= 0.2.1"
-  domain  = local.auth0_tenant_domain
+  domain = local.auth0_tenant_domain
 }
 
 # default provider

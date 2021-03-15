@@ -23,14 +23,14 @@ provider "aws" {
 
 # IAM configuration for cloud-platform. Users, groups, etc
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.6"
 
   aws_account_name = "cloud-platform-aws"
 }
 
 # Baselines: cloudtrail, cloudwatch, lambda. Everything that our accounts should have
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.7"
 
   enable_logging           = true
   enable_slack_integration = true
@@ -53,11 +53,12 @@ resource "aws_route53_zone" "cloud_platform_justice_gov_uk" {
 }
 
 module "ecr_fluentbit" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=4.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=4.5"
 
   repo_name = "fluent-bit"
   team_name = "cloud-platform"
 }
+
 
 ##############
 # S3 buckets #
