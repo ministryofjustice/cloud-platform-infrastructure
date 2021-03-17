@@ -1,6 +1,6 @@
 
 module "concourse" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.5.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.6.0"
 
   vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
@@ -35,7 +35,7 @@ module "concourse" {
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=0.0.9"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.0.0"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -51,7 +51,7 @@ module "cert_manager" {
 }
 
 module "cluster_autoscaler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=0.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=0.1.0"
 
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_id              = data.terraform_remote_state.cluster.outputs.cluster_id
@@ -59,7 +59,7 @@ module "cluster_autoscaler" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.2.0"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -74,7 +74,7 @@ module "external_dns" {
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.2.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = false
@@ -86,7 +86,7 @@ module "ingress_controllers" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.0.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.1.0"
 
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
@@ -95,7 +95,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=monitoring"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   iam_role_nodes               = data.aws_iam_role.nodes.arn
@@ -119,14 +119,14 @@ module "monitoring" {
 }
 
 module "opa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.9"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.11"
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = terraform.workspace == local.live_workspace ? false : true
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.8"
 
   iam_role_nodes        = data.aws_iam_role.nodes.arn
   dependence_prometheus = module.monitoring.helm_prometheus_operator_status
@@ -138,7 +138,7 @@ module "velero" {
 }
 
 module "sonarqube" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-sonarqube?ref=0.0.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-sonarqube?ref=0.0.4"
 
   vpc_id                        = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets              = data.terraform_remote_state.cluster.outputs.internal_subnets

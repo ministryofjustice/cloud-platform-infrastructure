@@ -3,7 +3,6 @@
 ############################
 
 terraform {
-  required_version = ">= 0.12"
   backend "s3" {
     bucket               = "cloud-platform-terraform-state"
     region               = "eu-west-1"
@@ -19,12 +18,9 @@ provider "aws" {
   profile = "moj-cp"
 }
 
-provider "kubernetes" {
-  version = "~> 1.11.1"
-}
+provider "kubernetes" {}
 
 provider "helm" {
-  version = "1.3.2"
   kubernetes {}
 }
 

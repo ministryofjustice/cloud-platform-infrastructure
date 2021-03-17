@@ -4,7 +4,7 @@ variable "pagerduty_config" {
 
 variable "alertmanager_slack_receivers" {
   description = "A list of configuration values for Slack receivers"
-  type        = list
+  type        = list(any)
 }
 
 variable "cloud_platform_slack_webhook" {

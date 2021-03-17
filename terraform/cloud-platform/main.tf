@@ -27,8 +27,7 @@ provider "aws" {
 # variables exported as explained in the upstream repo and is similar to the way
 # the AWS providr credentials are handled.
 provider "auth0" {
-  version = "= 0.12.2"
-  domain  = local.auth0_tenant_domain
+  domain = local.auth0_tenant_domain
 }
 
 data "aws_s3_bucket" "kops_state" {
@@ -62,7 +61,7 @@ locals {
 ########
 
 module "kops" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.1.2"
 
   vpc_name            = local.vpc
   cluster_domain_name = trimsuffix(local.cluster_base_domain_name, ".")
@@ -96,7 +95,7 @@ module "cluster_dns" {
 ###########
 
 module "bastion" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.1"
 
   vpc_name            = local.vpc
   route53_zone        = module.cluster_dns.cluster_dns_zone_name
@@ -108,7 +107,7 @@ module "bastion" {
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.4"
 
   cluster_name         = local.cluster_name
   services_base_domain = local.services_base_domain
