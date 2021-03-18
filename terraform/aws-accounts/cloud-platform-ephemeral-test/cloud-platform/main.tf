@@ -18,7 +18,7 @@ provider "aws" {
 
 # Check module source: https://github.com/ministryofjustice/cloud-platform-terraform-auth0
 provider "auth0" {
-  domain              = var.auth0_tenant_domain
+  domain = var.auth0_tenant_domain
 }
 
 data "terraform_remote_state" "global" {
@@ -32,7 +32,7 @@ data "terraform_remote_state" "global" {
 }
 
 data "aws_s3_bucket" "kops_state" {
-  bucket   = "cloud-platform-ephemeral-test-kops-state"
+  bucket = "cloud-platform-ephemeral-test-kops-state"
 }
 
 ###########################
@@ -43,12 +43,12 @@ locals {
   account_root_hostzone_name = data.terraform_remote_state.global.outputs.aws_account_hostzone_name
   cluster_name               = terraform.workspace
   cluster_base_domain_name   = "${local.cluster_name}.${local.account_root_hostzone_name}"
-  vpc                      = var.vpc_name == "" ? terraform.workspace : var.vpc_name
-  auth0_tenant_domain  = "justice-cloud-platform.eu.auth0.com"
-  is_live_cluster      = terraform.workspace == "live-1"
-  services_base_domain = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
-  is_manager_cluster   = terraform.workspace == "manager"
-  services_eks_domain  = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
+  vpc                        = var.vpc_name == "" ? terraform.workspace : var.vpc_name
+  auth0_tenant_domain        = "justice-cloud-platform.eu.auth0.com"
+  is_live_cluster            = terraform.workspace == "live-1"
+  services_base_domain       = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
+  is_manager_cluster         = terraform.workspace == "manager"
+  services_eks_domain        = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
 }
 
 ########
