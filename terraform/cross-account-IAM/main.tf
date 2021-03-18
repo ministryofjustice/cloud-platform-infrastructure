@@ -17,15 +17,9 @@ provider "aws" {
   region  = "eu-west-2"
 }
 
-provider "kubernetes" {
-  version = "~> 1.11"
-}
+provider "kubernetes" {}
 
-provider "helm" {
-  version = "1.3.2"
-  kubernetes {
-  }
-}
+provider "helm" {}
 
 data "terraform_remote_state" "cluster" {
   backend = "s3"
