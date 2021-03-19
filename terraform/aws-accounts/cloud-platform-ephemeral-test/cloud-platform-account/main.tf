@@ -22,7 +22,7 @@ data "aws_caller_identity" "current" {}
 ###########################
 
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.7"
 
   enable_logging           = true
   enable_slack_integration = true
@@ -37,7 +37,7 @@ module "baselines" {
 #######
 
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.6"
 
   aws_account_name = "cloud-platform-ephemeral-test"
 }
@@ -47,7 +47,7 @@ module "iam" {
 ##############
 
 module "kops_state_backend" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kops-state-backend?ref=1.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kops-state-backend?ref=1.0.1"
 
   bucket_name = "${var.aws_account_name}-kops-state"
 }

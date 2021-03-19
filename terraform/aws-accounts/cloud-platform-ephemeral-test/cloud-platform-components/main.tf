@@ -63,18 +63,6 @@ data "aws_iam_role" "nodes" {
 
 data "aws_caller_identity" "current" {}
 
-# Cloud Platform Helm Chart repository
-data "helm_repository" "cloud_platform" {
-  name = "cloud-platform"
-  url  = "https://ministryofjustice.github.io/cloud-platform-helm-charts"
-}
-
-# Stable Helm Chart repository
-data "helm_repository" "stable" {
-  name = "stable"
-  url  = "https://kubernetes-charts.storage.googleapis.com"
-}
-
 locals {
   live_workspace = "live-1"
   live_domain    = "cloud-platform.service.justice.gov.uk"

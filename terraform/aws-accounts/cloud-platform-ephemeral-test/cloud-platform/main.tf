@@ -1,6 +1,6 @@
 
 terraform {
-  required_version = ">= 0.12"
+  required_version = ">= 0.13"
 
   backend "s3" {
     bucket               = "cloud-platform-ephemeral-test-tfstate"
@@ -18,8 +18,7 @@ provider "aws" {
 
 # Check module source: https://github.com/ministryofjustice/cloud-platform-terraform-auth0
 provider "auth0" {
-  version = ">= 0.2.1"
-  domain  = var.auth0_tenant_domain
+  domain = var.auth0_tenant_domain
 }
 
 data "terraform_remote_state" "global" {
@@ -32,6 +31,10 @@ data "terraform_remote_state" "global" {
   }
 }
 
+data "aws_s3_bucket" "kops_state" {
+  bucket = "cloud-platform-ephemeral-test-kops-state"
+}
+
 ###########################
 # Locals & Data Resources #
 ###########################
@@ -40,7 +43,12 @@ locals {
   account_root_hostzone_name = data.terraform_remote_state.global.outputs.aws_account_hostzone_name
   cluster_name               = terraform.workspace
   cluster_base_domain_name   = "${local.cluster_name}.${local.account_root_hostzone_name}"
-  vpc_name                   = var.vpc_name != "" ? var.vpc_name : terraform.workspace
+  vpc                        = var.vpc_name == "" ? terraform.workspace : var.vpc_name
+  auth0_tenant_domain        = "justice-cloud-platform.eu.auth0.com"
+  is_live_cluster            = terraform.workspace == "live-1"
+  services_base_domain       = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
+  is_manager_cluster         = terraform.workspace == "manager"
+  services_eks_domain        = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
 }
 
 ########
@@ -48,11 +56,11 @@ locals {
 ########
 
 module "kops" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.1.2"
 
   vpc_name            = local.vpc
   cluster_domain_name = trimsuffix(local.cluster_base_domain_name, ".")
-  kops_state_store    = data.terraform_remote_state.global.outputs.cloud_platform_kops_state
+  kops_state_store    = data.aws_s3_bucket.kops_state.bucket
 
   auth0_client_id         = module.auth0.oidc_kubernetes_client_id
   authorized_keys_manager = module.bastion.authorized_keys_manager
@@ -75,10 +83,12 @@ module "kops" {
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.4"
 
   cluster_name         = local.cluster_name
   services_base_domain = local.cluster_base_domain_name
+  services_eks_domain  = local.services_eks_domain
+  eks                  = true
 }
 
 ###########
@@ -86,9 +96,9 @@ module "auth0" {
 ###########
 
 module "bastion" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.1"
 
-  vpc_name            = local.vpc_name
+  vpc_name            = local.vpc
   route53_zone        = aws_route53_zone.cluster.name
   cluster_domain_name = local.cluster_base_domain_name
 }
