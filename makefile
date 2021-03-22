@@ -1,4 +1,4 @@
-TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:1.28
+TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:1.31
 
 tools-shell:
 	docker pull $(TOOLS_IMAGE)
@@ -8,6 +8,7 @@ tools-shell:
     -e AUTH0_CLIENT_ID=$${AUTH0_CLIENT_ID} \
     -e AUTH0_CLIENT_SECRET=$${AUTH0_CLIENT_SECRET} \
     -e KOPS_STATE_STORE=$${KOPS_STATE_STORE} \
+	-e KUBE_CONFIG_PATH=~/.kube/config \
 		-v $$(pwd):/app \
 		-v $${HOME}/.aws:/root/.aws \
 		-v $${HOME}/.gnupg:/root/.gnupg \
