@@ -101,7 +101,7 @@ module "bastion" {
   route53_zone        = module.cluster_dns.cluster_dns_zone_name
   cluster_domain_name = local.cluster_base_domain_name
   depends_on = [
-   module.cluster_dns 
+    module.cluster_dns
   ]
 }
 
