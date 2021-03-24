@@ -56,13 +56,13 @@ module "logging" {
 }
 
 module "prometheus" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=upg-cw-exporter"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.6.0"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
   pagerduty_config                           = var.pagerduty_config
   enable_ecr_exporter                        = terraform.workspace == local.live_workspace ? true : false
-  enable_cloudwatch_exporter                 = true
+  enable_cloudwatch_exporter                 = terraform.workspace == local.live_workspace ? true : false
   enable_thanos_helm_chart                   = false
   enable_prometheus_affinity_and_tolerations = terraform.workspace == local.live_workspace ? true : false
 
