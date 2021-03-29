@@ -117,6 +117,9 @@ module "bastion" {
   vpc_name            = local.vpc
   route53_zone        = aws_route53_zone.cluster.name
   cluster_domain_name = local.cluster_base_domain_name
+  depends_on = [
+    module.cluster_dns
+  ]
 }
 
 #########
