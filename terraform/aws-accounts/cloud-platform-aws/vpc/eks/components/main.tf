@@ -7,7 +7,7 @@ terraform {
     bucket               = "cloud-platform-terraform-state"
     region               = "eu-west-1"
     key                  = "terraform.tfstate"
-    workspace_key_prefix = "cloud-platform-eks-components"
+    workspace_key_prefix = "aws-accounts/cloud-platform-aws/vpc/eks/components"
     profile              = "moj-cp"
     dynamodb_table       = "cloud-platform-terraform-state"
   }
@@ -34,7 +34,7 @@ data "terraform_remote_state" "cluster" {
   config = {
     bucket  = "cloud-platform-terraform-state"
     region  = "eu-west-1"
-    key     = "cloud-platform-eks/${terraform.workspace}/terraform.tfstate"
+    key     = "aws-accounts/cloud-platform-aws/vpc/eks/${terraform.workspace}/terraform.tfstate"
     profile = "moj-cp"
   }
 }

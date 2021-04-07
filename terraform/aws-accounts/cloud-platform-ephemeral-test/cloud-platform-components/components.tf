@@ -18,7 +18,7 @@ module "kuberos" {
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.1.0"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -56,7 +56,7 @@ module "logging" {
 }
 
 module "prometheus" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.5.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.6.3"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
