@@ -80,8 +80,8 @@ def create_cluster_kops(cluster_name, vpc_name)
 end
 
 def create_cluster_eks(cluster_name, vpc_name)
-  FileUtils.rm_rf("terraform/cloud-platform-aws/vpc/eks/.terraform")
-  dir = "terraform/cloud-platform-aws/vpc/eks"
+  FileUtils.rm_rf("terraform/aws-accounts/cloud-platform-aws/vpc/eks/.terraform")
+  dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks"
   switch_terraform_workspace(dir, cluster_name)
 
   tf_apply = [
