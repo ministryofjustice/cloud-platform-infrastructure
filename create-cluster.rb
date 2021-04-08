@@ -80,8 +80,8 @@ def create_cluster_kops(cluster_name, vpc_name)
 end
 
 def create_cluster_eks(cluster_name, vpc_name)
-  FileUtils.rm_rf("terraform/cloud-platform-eks/.terraform")
-  dir = "terraform/cloud-platform-eks"
+  FileUtils.rm_rf("terraform/cloud-platform-aws/vpc/eks/.terraform")
+  dir = "terraform/cloud-platform-aws/vpc/eks"
   switch_terraform_workspace(dir, cluster_name)
 
   tf_apply = [
@@ -145,7 +145,7 @@ def install_components_kops(cluster_name)
 end
 
 def install_components_eks(cluster_name)
-  dir = "terraform/cloud-platform-eks/components"
+  dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks/components"
   execute "cd #{dir}; rm -rf .terraform"
   switch_terraform_workspace(dir, cluster_name)
   disable_alerts(dir)
