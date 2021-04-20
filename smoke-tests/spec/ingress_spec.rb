@@ -1,6 +1,6 @@
 require "spec_helper"
 
-xdescribe "nginx ingress", speed: "slow" do
+describe "nginx ingress", speed: "slow" do
   namespace = "smoketest-ingress-#{readable_timestamp}"
   host = "#{namespace}-nginx.apps.#{current_cluster}"
   let(:url) { "https://#{host}" }
