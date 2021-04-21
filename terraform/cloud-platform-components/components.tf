@@ -108,7 +108,7 @@ module "ingress_controllers" {
   # This module requires prometheus and cert-manager
   dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
-  dependence_opa        = "ignore"
+  dependence_opa         = "ignore"
 }
 
 module "opa" {
