@@ -108,6 +108,8 @@ module "monitoring" {
   enable_thanos_helm_chart = terraform.workspace == local.live_workspace ? true : false
   enable_thanos_compact    = terraform.workspace == local.live_workspace ? true : false
 
+  dependence_opa = "ignore"
+
   # This section is for EKS
   eks                         = true
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
