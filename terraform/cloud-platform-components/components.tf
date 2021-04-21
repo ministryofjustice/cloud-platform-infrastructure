@@ -7,6 +7,7 @@ module "cert_manager" {
 
   # This module requires prometheus
   dependence_prometheus = module.prometheus.helm_prometheus_operator_status
+  dependence_opa        = "ignore"
 }
 
 module "external_dns" {
