@@ -76,6 +76,7 @@ module "prometheus" {
   oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
 
+  dependence_opa = "ignore"
 }
 
 
