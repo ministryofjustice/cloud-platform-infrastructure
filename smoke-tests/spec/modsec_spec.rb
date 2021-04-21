@@ -4,7 +4,7 @@ require "spec_helper"
 # Integration tests has the dedicated ingress controller with ingress class - integration-test
 # The below spec uses the ingress_class = "integration-test" in its ingress annotation
 
-xdescribe "Testing modsec on ingress class: 'integration-test'", kops: true do
+describe "Testing modsec on ingress class: 'integration-test'", kops: true do
   namespace = "integrationtest-modsec-#{readable_timestamp}"
   host = "#{namespace}.apps.#{current_cluster}"
   let(:url) { "https://#{host}" }
