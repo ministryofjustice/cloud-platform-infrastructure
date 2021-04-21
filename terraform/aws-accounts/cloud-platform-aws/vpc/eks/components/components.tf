@@ -43,6 +43,7 @@ module "cert_manager" {
 
   # This module requires Prometheus
   dependence_prometheus = module.monitoring.helm_prometheus_operator_status
+  dependence_opa        = "ignore"
 
   # This section is for EKS
   eks                         = true
