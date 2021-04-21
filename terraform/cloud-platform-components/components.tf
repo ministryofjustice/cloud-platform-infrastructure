@@ -5,9 +5,9 @@ module "cert_manager" {
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(var.cluster_r53_resource_maps, terraform.workspace, ["arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.outputs.hosted_zone_id}"])
 
-  # This module requires helm and OPA already deployed
+  # This module requires prometheus
   dependence_prometheus = module.prometheus.helm_prometheus_operator_status
-  dependence_opa        = module.opa.helm_opa_status
+  dependence_opa        = "ignore"
 }
 
 module "external_dns" {
@@ -27,9 +27,9 @@ module "external_dns" {
 module "kiam" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=1.0.0"
 
-  # This module requires prometheus and OPA already deployed
+  # This module requires prometheus
   dependence_prometheus = module.prometheus.helm_prometheus_operator_status
-  dependence_opa        = module.opa.helm_opa_status
+  dependence_opa        = "ignore"
 }
 
 module "kuberos" {
@@ -76,7 +76,7 @@ module "prometheus" {
   oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
 
-  dependence_opa = module.opa.helm_opa_status
+  dependence_opa = "ignore"
 }
 
 
@@ -106,10 +106,10 @@ module "ingress_controllers" {
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
 
-  # This module requires helm and OPA already deployed
+  # This module requires prometheus and cert-manager
   dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
-  dependence_opa         = module.opa.helm_opa_status
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
+  dependence_opa         = "ignore"
 }
 
 module "opa" {
