@@ -26,7 +26,7 @@ module "eks" {
   subnets          = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
   vpc_id           = data.aws_vpc.selected.id
   write_kubeconfig = false
-  cluster_version  = "1.17"
+  cluster_version  = "1.18"
   enable_irsa      = true
 
   node_groups = {
