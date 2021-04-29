@@ -76,7 +76,6 @@ module "kops" {
   master_node_machine_type   = lookup(var.master_node_machine_type, terraform.workspace, var.master_node_machine_type["default"])
   worker_node_machine_type   = lookup(var.worker_node_machine_type, terraform.workspace, var.worker_node_machine_type["default"])
   enable_large_nodesgroup    = lookup(var.enable_large_nodesgroup, terraform.workspace, var.enable_large_nodesgroup["default"])
-  enable_ingress_nodesgroup  = false
   worker_node_mixed_instance = lookup(var.worker_node_mixed_instance, terraform.workspace, var.worker_node_mixed_instance["default"])
 
   template_path   = "../../kops"
