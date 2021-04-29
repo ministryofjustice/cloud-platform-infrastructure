@@ -432,8 +432,6 @@ spec:
 
 
 
-
-
 ########################################################################################################################################
 #                                                                                                                                      #
 # NOTE: Label 'cloud-platform-recycle-nodes: "true"' in this multiple Availability Zone InstanceGroups, used for node-recycler.        #
