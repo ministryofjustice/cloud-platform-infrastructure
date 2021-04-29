@@ -68,7 +68,7 @@ module "kops" {
   kops_state_store    = data.aws_s3_bucket.kops_state.bucket
 
   auth0_client_id         = module.auth0.oidc_kubernetes_client_id
-  authorized_keys_manager = module.bastion.authorized_keys_manager
+  authorized_keys_manager = module.bastion.authorized_keys_for_kops
 
   cluster_node_count_a       = lookup(var.cluster_node_count_a, terraform.workspace, var.cluster_node_count_a["default"])
   cluster_node_count_b       = lookup(var.cluster_node_count_b, terraform.workspace, var.cluster_node_count_b["default"])
@@ -95,7 +95,7 @@ module "cluster_dns" {
 ###########
 
 module "bastion" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.5.0"
 
   vpc_name            = local.vpc
   route53_zone        = module.cluster_dns.cluster_dns_zone_name
