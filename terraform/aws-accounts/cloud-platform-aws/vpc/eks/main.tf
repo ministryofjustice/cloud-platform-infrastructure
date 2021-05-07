@@ -3,7 +3,7 @@
 #########
 
 terraform {
-  required_version = ">= 0.12"
+  required_version = ">= 0.14"
 
   backend "s3" {
     bucket               = "cloud-platform-terraform-state"
@@ -37,7 +37,7 @@ locals {
   vpc = lookup(var.vpc_name, terraform.workspace, terraform.workspace)
 
   auth0_tenant_domain  = "justice-cloud-platform.eu.auth0.com"
-  is_live_cluster      = terraform.workspace == "live-1"
+  is_live_cluster      = terraform.workspace == "live-1" || terraform.workspace == "live"
   services_base_domain = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
   is_manager_cluster   = terraform.workspace == "manager"
   services_eks_domain  = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
