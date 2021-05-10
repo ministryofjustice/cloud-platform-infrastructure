@@ -13,7 +13,7 @@ variable "cloud_platform_slack_webhook" {
 
 variable "cluster_r53_resource_maps" {
   default = {
-    manager = ["arn:aws:route53:::hostedzone/Z1OWR28V4Q2RTU", "arn:aws:route53:::hostedzone/Z5C82RHBFD2NI"]
+    manager = ["arn:aws:route53:::hostedzone/Z1OWR28V4Q2RTU", "arn:aws:route53:::hostedzone/Z05430523NZWPZBEWZ2QR"]
   }
 }
 
