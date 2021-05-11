@@ -85,7 +85,7 @@ resource "aws_route53_zone" "cluster" {
 }
 
 resource "aws_route53_record" "parent_zone_cluster_ns" {
-  zone_id = data.aws_route53_zone.justice_gov_uk.zone_id
+  zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
   name    = aws_route53_zone.cluster.name
   type    = "NS"
   ttl     = "30"
