@@ -2,7 +2,6 @@
 # EKS Cluster #
 ###############
 
-
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
@@ -90,9 +89,12 @@ module "eks" {
       userarn  = "arn:aws:iam::754256621582:user/SteveMarshall"
       username = "SteveMarshall"
       groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
+      username = "VijayVeeranki"
+      groups   = ["system:masters"]
     }
-
-
   ]
 
   tags = {
