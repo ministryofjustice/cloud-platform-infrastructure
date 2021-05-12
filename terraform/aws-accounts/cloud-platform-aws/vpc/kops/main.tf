@@ -5,7 +5,7 @@ terraform {
     bucket               = "cloud-platform-terraform-state"
     region               = "eu-west-1"
     key                  = "terraform.tfstate"
-    workspace_key_prefix = "cloud-platform"
+    workspace_key_prefix = "aws-accounts/cloud-platform-aws/vpc/kops"
     profile              = "moj-cp"
     dynamodb_table       = "cloud-platform-terraform-state"
   }
@@ -78,13 +78,13 @@ module "kops" {
   enable_large_nodesgroup    = lookup(var.enable_large_nodesgroup, terraform.workspace, var.enable_large_nodesgroup["default"])
   worker_node_mixed_instance = lookup(var.worker_node_mixed_instance, terraform.workspace, var.worker_node_mixed_instance["default"])
 
-  template_path   = "../../kops"
+  template_path   = "../../../../../kops"
   oidc_issuer_url = "https://${local.auth0_tenant_domain}/"
 }
 
 # Modules
 module "cluster_dns" {
-  source                   = "../modules/cluster_dns"
+  source                   = "../../../../modules/cluster_dns"
   cluster_base_domain_name = local.cluster_base_domain_name
   parent_zone_id           = data.aws_route53_zone.cloud_platform.zone_id
 }
