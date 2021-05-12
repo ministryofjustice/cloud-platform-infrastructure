@@ -103,7 +103,7 @@ resource "kubernetes_cluster_role_binding" "concourse_build_environments" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = "concourse_build_environments"
+    name      = "concourse-build-environments"
     namespace = "kube-system"
   }
 }
