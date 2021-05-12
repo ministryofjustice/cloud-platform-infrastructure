@@ -15,6 +15,8 @@ spec:
   allowedCapabilities:
     - NET_BIND_SERVICE
     - NET_ADMIN
+  requiredDropCapabilities:
+    - NET_RAW
   volumes:
   - '*'
   hostNetwork: true
@@ -79,6 +81,40 @@ spec:
         max: 65535
   readOnlyRootFilesystem: false
 ---
+# aws-node requires the NET_RAW capability. To ensure this is restricted to one deployment this PSP
+# was created.
+# Relevant until https://github.com/aws/amazon-vpc-cni-k8s/issues/796 is merged.
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: aws-node
+  annotations:
+    seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
+  labels:
+    kubernetes.io/cluster-service: "true"
+spec:
+  privileged: true
+  allowPrivilegeEscalation: true
+  allowedCapabilities:
+    - NET_BIND_SERVICE
+    - NET_ADMIN
+  volumes:
+  - '*'
+  hostNetwork: true
+  hostPorts:
+  - min: 0
+    max: 65535
+  hostIPC: true
+  hostPID: true
+  runAsUser:
+    rule: 'RunAsAny'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -100,6 +136,17 @@ rules:
   verbs:     ['use']
   resourceNames:
   - restricted
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: psp:aws-node
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs:     ['use']
+  resourceNames:
+  - aws-node
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -131,9 +178,6 @@ subjects:
   namespace: kube-system
 - kind: ServiceAccount
   name: kube-proxy
-  namespace: kube-system
-- kind: ServiceAccount
-  name: aws-node
   namespace: kube-system
 - kind: ServiceAccount
   name: sonarqube-sonarqube
@@ -168,3 +212,16 @@ subjects:
 - kind: Group
   name: system:serviceaccounts:opa
   apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: default:aws-node
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: psp:aws-node
+subjects:
+- kind: ServiceAccount
+  name: aws-node
+  namespace: kube-system
