@@ -84,6 +84,7 @@ resource "kubernetes_cluster_role_binding" "webops" {
 }
 
 resource "kubernetes_service_account" "concourse_build_environments" {
+  count = terraform.workspace == "manager" ? 0 : 1
   metadata {
     name      = "concourse-build-environments"
     namespace = "kube-system"
@@ -91,6 +92,7 @@ resource "kubernetes_service_account" "concourse_build_environments" {
 }
 
 resource "kubernetes_cluster_role_binding" "concourse_build_environments" {
+  count = terraform.workspace == "manager" ? 0 : 1
   metadata {
     name = "concourse-build-environments"
   }
@@ -101,7 +103,7 @@ resource "kubernetes_cluster_role_binding" "concourse_build_environments" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account.concourse_build_environments.metadata.0.name
+    name      = "concourse_build_environments"
     namespace = "kube-system"
   }
 }
