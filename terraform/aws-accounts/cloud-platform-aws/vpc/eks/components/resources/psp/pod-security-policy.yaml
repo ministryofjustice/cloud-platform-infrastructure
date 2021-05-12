@@ -15,8 +15,6 @@ spec:
   allowedCapabilities:
     - NET_BIND_SERVICE
     - NET_ADMIN
-  requiredDropCapabilities:
-    - NET_RAW
   volumes:
   - '*'
   hostNetwork: true
@@ -125,9 +123,6 @@ roleRef:
   kind: ClusterRole
   name: psp:privileged
 subjects:
-- kind: ServiceAccount
-  name: aws-node
-  namespace: kube-system
 - kind: ServiceAccount
   name: metrics-server
   namespace: kube-system
