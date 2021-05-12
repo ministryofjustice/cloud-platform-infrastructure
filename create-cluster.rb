@@ -40,6 +40,7 @@ def main(options)
   if kind == "eks"
     create_cluster_eks(cluster_name, vpc_name)
     sleep(extra_wait)
+    fix_psp()
     install_components_eks(cluster_name)
   else
     create_cluster_kops(cluster_name, vpc_name)
@@ -142,6 +143,20 @@ def install_components_kops(cluster_name)
     log "Cluster components failed to install. Aborting."
     exit 1
   end
+end
+
+# This is a tactical fix to install our own pod security policies in an EKS cluster. When PSP's are deprecated and we create policies via another means,
+# this method can be removed.
+# This methos
+def fix_psp()
+  dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks/components/resources/psp"
+
+  # Remove current psp.privileged psp.
+  run_and_output "kubectl delete psp eks.privileged"
+  # Apply our own psp's.
+  run_and_output "kubectl apply -f #{dir}/pod-security-policy.yaml"
+  # Recycle all pods in the cluster so they pick up the new policies.
+  run_and_output "kubectl delete --all pods -A"
 end
 
 def install_components_eks(cluster_name)
