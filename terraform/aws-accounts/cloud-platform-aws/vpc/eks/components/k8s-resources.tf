@@ -83,4 +83,25 @@ resource "kubernetes_cluster_role_binding" "webops" {
   }
 }
 
+resource "kubernetes_service_account" "concourse_build_environments" {
+  metadata {
+    name      = "concourse-build-environments"
+    namespace = "kube-system"
+  }
+}
 
+resource "kubernetes_cluster_role_binding" "concourse_build_environments" {
+  metadata {
+    name = "concourse-build-environments"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.concourse_build_environments.metadata.0.name
+    namespace = "kube-system"
+  }
+}
