@@ -40,7 +40,6 @@ def main(options)
   if kind == "eks" || kind == "EKS"
     create_cluster_eks(cluster_name, vpc_name)
     sleep(extra_wait)
-    fix_psp()
     install_components_eks(cluster_name)
   else
     create_cluster_kops(cluster_name, vpc_name)
@@ -148,15 +147,30 @@ end
 # This is a tactical fix to install our own pod security policies in an EKS cluster. When PSP's are deprecated and we create policies via another means,
 # this method can be removed.
 # This methos
-def fix_psp()
-  dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks/components/resources/psp"
-
+def fix_psp(dir)
   # Remove current psp.privileged psp.
-  run_and_output "kubectl delete psp eks.privileged"
-  # Apply our own psp's.
-  run_and_output "kubectl apply -f #{dir}/pod-security-policy.yaml"
-  # Recycle all pods in the cluster so they pick up the new policies.
-  run_and_output "kubectl delete --all pods -A"
+  cmd_delete = "kubectl delete psp eks.privileged"
+  if cmd_successful?(cmd_delete)
+    log "Deleted eks.privileged psp."
+  else
+    log "Could not delete eks.privileged psp. Aborting."
+    exit 1
+  end
+
+  cmd_apply = "kubectl apply -f #{dir}/resources/psp/pod-security-policy.yaml"
+  if cmd_successful?(cmd_apply)
+    log "Applied new psp's."
+  else
+    log "Could not apply psp's. Aborting."
+    exit 1
+  end
+
+  cmd_destroy = "kubectl delete --all pods -A"
+  if cmd_successful?(cmd_destroy)
+    log "Recycled all pods."
+  else
+    log "Failed to recycle pods. Continuing."
+  end
 end
 
 def install_components_eks(cluster_name)
@@ -172,6 +186,8 @@ def install_components_eks(cluster_name)
     log "Could not set kubeconfig to the new cluster. Aborting."
     exit 1
   end
+
+  fix_psp(dir)
 
   cmd = "cd #{dir}; terraform apply -auto-approve"
   if cmd_successful?(cmd)
