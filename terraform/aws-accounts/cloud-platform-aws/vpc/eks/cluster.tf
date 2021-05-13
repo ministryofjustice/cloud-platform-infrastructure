@@ -30,12 +30,12 @@ module "eks" {
 
   node_groups = {
     default_ng = {
-      desired_capacity = var.cluster_node_count
+      desired_capacity = local_is_live_eks_cluster ? 19 : 4
       max_capacity     = 30
-      min_capacity     = local.is_live_eks_cluster ? 19 : 4
+      min_capacity     = local.is_live_eks_cluster ? 19 : 1
       subnets          = data.aws_subnet_ids.private.ids
 
-      instance_type = var.worker_node_machine_type
+      instance_type = local_is_manager ? "m4.xlarge" : "r5.xlarge"
       k8s_labels = {
         Terraform = "true"
         Cluster   = local.cluster_name
