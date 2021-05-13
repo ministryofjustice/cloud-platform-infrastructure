@@ -37,7 +37,7 @@ def main(options)
   execute "git-crypt unlock" if gitcrypt_unlock
 
   create_vpc(vpc_name)
-  if kind == "eks"
+  if kind == "eks" || kind == "EKS"
     create_cluster_eks(cluster_name, vpc_name)
     sleep(extra_wait)
     fix_psp()
