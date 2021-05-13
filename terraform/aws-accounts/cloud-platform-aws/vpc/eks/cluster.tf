@@ -2,7 +2,6 @@
 # EKS Cluster #
 ###############
 
-
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
@@ -20,7 +19,7 @@ provider "kubernetes" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "v12.2.0"
+  version = "v15.2.0"
 
   cluster_name     = local.cluster_name
   subnets          = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
@@ -89,6 +88,11 @@ module "eks" {
     {
       userarn  = "arn:aws:iam::754256621582:user/cloud-platform/manager-concourse"
       username = "manager-concourse"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
+      username = "VijayVeeranki"
       groups   = ["system:masters"]
     }
   ]

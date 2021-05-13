@@ -3,8 +3,6 @@
 #########
 
 terraform {
-  required_version = ">= 0.14"
-
   backend "s3" {
     bucket               = "cloud-platform-terraform-state"
     region               = "eu-west-1"
@@ -45,15 +43,8 @@ locals {
   services_eks_domain  = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : local.cluster_base_domain_name # When live-2 is up and running we will need to amend this operator here to || local.is_live_eks_cluster, or something to that effect.
 }
 
-data "terraform_remote_state" "cloud_platform_account" {
-  backend = "s3"
-
-  config = {
-    bucket  = "cloud-platform-terraform-state"
-    region  = "eu-west-1"
-    key     = "cloud-platform-account/terraform.tfstate"
-    profile = "moj-cp"
-  }
+data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
+  name = "cloud-platform.service.justice.gov.uk."
 }
 
 data "aws_vpc" "selected" {
@@ -96,7 +87,7 @@ resource "aws_route53_zone" "cluster" {
 }
 
 resource "aws_route53_record" "parent_zone_cluster_ns" {
-  zone_id = data.terraform_remote_state.cloud_platform_account.outputs.cp_zone_id
+  zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
   name    = aws_route53_zone.cluster.name
   type    = "NS"
   ttl     = "30"

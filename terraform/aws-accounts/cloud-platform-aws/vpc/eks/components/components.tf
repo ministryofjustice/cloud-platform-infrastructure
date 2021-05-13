@@ -1,6 +1,6 @@
 
 module "concourse" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.6.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.6.1"
 
   vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
@@ -77,7 +77,7 @@ module "ingress_controllers" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.2.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = false
+  is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
 
   # This module requires prometheus and cert-manager
   dependence_prometheus  = module.monitoring.helm_prometheus_operator_status
