@@ -144,11 +144,8 @@ def install_components_kops(cluster_name)
   end
 end
 
-# This is a tactical fix to install our own pod security policies in an EKS cluster. When PSP's are deprecated and we create policies via another means,
-# this method can be removed.
-# This methos
+# This is a tactical fix to install our own pod security policies in an EKS cluster. When PSP's are deprecated and we create policies via another means, this method can be removed.
 def fix_psp(dir)
-  # Remove current psp.privileged psp.
   cmd_delete = "kubectl delete psp eks.privileged"
   if cmd_successful?(cmd_delete)
     log "Deleted eks.privileged psp."
