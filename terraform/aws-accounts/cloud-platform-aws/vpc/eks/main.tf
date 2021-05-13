@@ -38,9 +38,9 @@ locals {
   is_live_cluster      = terraform.workspace == "live-1"
   services_base_domain = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
 
-  is_manager_cluster   = terraform.workspace == "manager"
-  is_live_eks_cluster  = terraform.workspace == "live" # Live cluster created in EKS also referred to as live-2
-  services_eks_domain  = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : local.cluster_base_domain_name # When live-2 is up and running we will need to amend this operator here to || local.is_live_eks_cluster, or something to that effect.
+  is_manager_cluster  = terraform.workspace == "manager"
+  is_live_eks_cluster = terraform.workspace == "live"                                                                       # Live cluster created in EKS also referred to as live-2
+  services_eks_domain = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : local.cluster_base_domain_name # When live-2 is up and running we will need to amend this operator here to || local.is_live_eks_cluster, or something to that effect.
 }
 
 data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
