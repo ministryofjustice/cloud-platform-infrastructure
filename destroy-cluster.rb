@@ -136,7 +136,7 @@ class ClusterDeleter
   end
 
   def terraform_components
-    dir = "terraform/cloud-platform-components"
+    dir = "terraform/aws-accounts/cloud-platform-aws/vpc/kops/components"
     tf_init dir
     tf_workspace_select(dir, cluster_name)
     # prometheus_operator often fails to delete cleanly if anything has
@@ -158,20 +158,20 @@ class ClusterDeleter
   end
 
   def terraform_base
-    dir = "terraform/cloud-platform"
+    dir = "terraform/aws-accounts/cloud-platform-aws/vpc/kops"
     tf_init dir
     tf_workspace_select(dir, cluster_name)
     execute %(cd #{dir}; terraform destroy -var vpc_name="#{vpc_name}" -auto-approve)
   end
 
   def terraform_workspaces
-    ["terraform/cloud-platform", "terraform/cloud-platform-components", "terraform/cloud-platform-network"].each do |dir|
+    ["terraform/aws-accounts/cloud-platform-aws/vpc/kops", "terraform/aws-accounts/cloud-platform-aws/vpc/kops/components", "terraform/aws-accounts/cloud-platform-aws/vpc"].each do |dir|
       execute "cd #{dir}; terraform workspace select default; terraform workspace delete #{cluster_name}"
     end
   end
 
   def terraform_vpc
-    dir = "terraform/cloud-platform-network"
+    dir = "terraform/aws-accounts/cloud-platform-aws/vpc"
     tf_init dir
     tf_workspace_select(dir, vpc_name)
     tf_destroy(dir)

@@ -53,8 +53,8 @@ def main(options)
 end
 
 def create_vpc(vpc_name)
-  FileUtils.rm_rf("terraform/cloud-platform-network/.terraform")
-  dir = "terraform/cloud-platform-network"
+  FileUtils.rm_rf("terraform/aws-accounts/cloud-platform-aws/vpc/.terraform")
+  dir = "terraform/aws-accounts/cloud-platform-aws/vpc"
   switch_terraform_workspace(dir, vpc_name)
 
   tf_apply = [
@@ -66,8 +66,8 @@ def create_vpc(vpc_name)
 end
 
 def create_cluster_kops(cluster_name, vpc_name)
-  FileUtils.rm_rf("terraform/cloud-platform/.terraform")
-  dir = "terraform/cloud-platform"
+  FileUtils.rm_rf("terraform/aws-accounts/cloud-platform-aws/vpc/kops/.terraform")
+  dir = "terraform/aws-accounts/cloud-platform-aws/vpc/kops"
   switch_terraform_workspace(dir, cluster_name)
 
   tf_apply = [
@@ -123,7 +123,7 @@ end
 # This seems to be quite misleading, since adding a delay after 'helm repo update' makes no difference.
 # A second run of the terraform apply usually works correctly.
 def install_components_kops(cluster_name)
-  dir = "terraform/cloud-platform-components"
+  dir = "terraform/aws-accounts/cloud-platform-aws/vpc/kops/components"
   execute "cd #{dir}; rm -rf .terraform"
   switch_terraform_workspace(dir, cluster_name)
   disable_alerts(dir)
