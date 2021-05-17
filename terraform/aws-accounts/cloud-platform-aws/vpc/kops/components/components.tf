@@ -5,9 +5,9 @@ module "cert_manager" {
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(var.cluster_r53_resource_maps, terraform.workspace, ["arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.outputs.hosted_zone_id}"])
 
-  # This module requires prometheus
-  dependence_prometheus = module.prometheus.helm_prometheus_operator_status
-  dependence_opa        = "ignore"
+  depends_on = [
+    module.prometheus,
+  ]
 }
 
 module "external_dns" {
@@ -17,8 +17,9 @@ module "external_dns" {
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(var.cluster_r53_resource_maps, terraform.workspace, ["arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.outputs.hosted_zone_id}"])
 
-  dependence_kiam = module.kiam.helm_kiam_status
-  # dependence_kiam = helm_release.kiam
+  depends_on = [
+    module.kiam,
+  ]
 
   # This section is for EKS
   eks = false
@@ -27,9 +28,9 @@ module "external_dns" {
 module "kiam" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=1.0.0"
 
-  # This module requires prometheus
-  dependence_prometheus = module.prometheus.helm_prometheus_operator_status
-  dependence_opa        = "ignore"
+  depends_on = [
+    module.prometheus,
+  ]
 }
 
 module "kuberos" {
@@ -75,8 +76,6 @@ module "prometheus" {
   oidc_components_client_id     = data.terraform_remote_state.cluster.outputs.oidc_components_client_id
   oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
-
-  dependence_opa = "ignore"
 }
 
 
@@ -84,9 +83,11 @@ module "ingress_controller_integration_test" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.1.5"
 
   namespace = "integration-test"
-  # This module requires prometheus and cert-manager already deployed
-  dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
-  dependence_certmanager = module.cert_manager.helm_cert_manager_status
+
+  depends_on = [
+    module.prometheus,
+    module.cert_manager,
+  ]
 }
 
 
@@ -96,8 +97,10 @@ module "modsec_ingress_controllers" {
   controller_name = "modsec01"
   replica_count   = "4"
 
-  dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
-  dependence_certmanager = module.cert_manager.helm_cert_manager_status
+  depends_on = [
+    module.prometheus,
+    module.cert_manager,
+  ]
 }
 
 module "ingress_controllers" {
@@ -106,10 +109,10 @@ module "ingress_controllers" {
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
 
-  # This module requires prometheus and cert-manager
-  dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
-  dependence_certmanager = module.cert_manager.helm_cert_manager_status
-  dependence_opa         = "ignore"
+  depends_on = [
+    module.prometheus,
+    module.cert_manager,
+  ]
 }
 
 module "opa" {
