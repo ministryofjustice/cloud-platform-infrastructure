@@ -30,19 +30,22 @@ module "eks" {
 
   node_groups = {
     default_ng = {
-      desired_capacity = local_is_live_eks_cluster ? 19 : 4
+      desired_capacity = local.is_live_eks_cluster ? 19 : 4
       max_capacity     = 30
       min_capacity     = local.is_live_eks_cluster ? 19 : 1
       subnets          = data.aws_subnet_ids.private.ids
 
-      instance_type = local_is_manager ? "m4.xlarge" : "r5.xlarge"
+      instance_type = local.is_manager_cluster ? "m4.xlarge" : "r5.xlarge"
       k8s_labels = {
         Terraform = "true"
         Cluster   = local.cluster_name
         Domain    = local.cluster_base_domain_name
       }
       additional_tags = {
-        default_ng = "true"
+        application   = "moj-cloud-platform"
+        business-unit = "platforms"
+        is_production = local.is_manager_cluster || local.is_live_eks_cluster ? "true" : "false"
+        default_ng    = "true"
       }
     }
   }
