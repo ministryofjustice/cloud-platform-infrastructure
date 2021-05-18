@@ -24,7 +24,7 @@ resource "kubernetes_storage_class" "storageclass" {
 
 resource "null_resource" "pod_security_policy" {
   provisioner "local-exec" {
-    command = "kubectl create -f ${path.module}/resources/psp/pod-security-policy.yaml"
+    command = "kubectl apply -f ${path.module}/resources/psp/pod-security-policy.yaml"
   }
 
   provisioner "local-exec" {
