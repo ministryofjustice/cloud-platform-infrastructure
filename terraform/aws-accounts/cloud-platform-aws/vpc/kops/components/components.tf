@@ -26,7 +26,7 @@ module "external_dns" {
 }
 
 module "kiam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=1.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=tf-docs-cleanup"
 
   depends_on = [
     module.prometheus,
