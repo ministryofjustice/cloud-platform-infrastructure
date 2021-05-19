@@ -35,15 +35,16 @@ module "concourse" {
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=tf-docs-cleanup"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(var.cluster_r53_resource_maps, terraform.workspace, ["arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}"])
 
   # This module requires Prometheus
-  dependence_prometheus = module.monitoring.helm_prometheus_operator_status
-  dependence_opa        = "ignore"
+  depends_on = [
+    module.prometheus,
+  ]
 
   # This section is for EKS
   eks                         = true
@@ -59,39 +60,44 @@ module "cluster_autoscaler" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=tf-docs-cleanup"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(var.cluster_r53_resource_maps, terraform.workspace, ["arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}"])
 
   # EKS doesn't use KIAM but it is a requirement for the module.
-  dependence_kiam = ""
-
+  depends_on = [
+    module.kiam,
+  ]
+  
   # This section is for EKS
   eks                         = true
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=tf-docs-cleanup"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
 
-  # This module requires prometheus and cert-manager
-  dependence_prometheus  = module.monitoring.helm_prometheus_operator_status
-  dependence_certmanager = module.cert_manager.helm_cert_manager_status
-  dependence_opa         = "ignore"
+  depends_on = [
+    module.prometheus,
+    module.cert_manager,
+  ]
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=tf-docs-cleanup"
 
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
-  dependence_prometheus    = module.monitoring.helm_prometheus_operator_status
   eks                      = true
+
+  depends_on = [
+    module.prometheus,
+  ]
 }
 
 module "monitoring" {
@@ -127,12 +133,15 @@ module "velero" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.8"
 
   iam_role_nodes        = data.aws_iam_role.nodes.arn
-  dependence_prometheus = module.monitoring.helm_prometheus_operator_status
   cluster_domain_name   = data.terraform_remote_state.cluster.outputs.cluster_domain_name
 
   # This section is for EKS
   eks                         = true
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+  
+  depends_on = [
+    module.prometheus,
+  ]
 }
 
 module "sonarqube" {
