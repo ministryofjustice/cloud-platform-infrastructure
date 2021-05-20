@@ -19,7 +19,7 @@ provider "kubernetes" {
 
 locals {
   dockerhub_credentials = "${var.dockerhub_user}:${var.dockerhub_token}"
-  dockerhub_file = <<-EOD
+  dockerhub_file        = <<-EOD
   {
     "auths": {
       "https://index.docker.io/v1/": {
@@ -28,7 +28,7 @@ locals {
     }
   }
 EOD
-  pre_userdata = <<-EOD
+  pre_userdata          = <<-EOD
   mkdir -p "/root/.docker"
   echo '${local.dockerhub_file}' > "/root/.docker/config.json"
   ln -s "/root/.docker" "/var/lib/kubelet/.docker"
@@ -54,7 +54,7 @@ module "eks" {
       subnets          = data.aws_subnet_ids.private.ids
 
       create_launch_template = true
-      pre_userdata = local.pre_userdata
+      pre_userdata           = local.pre_userdata
 
       instance_type = local.is_manager_cluster ? "m4.xlarge" : "r5.xlarge"
       k8s_labels = {
