@@ -40,7 +40,7 @@ variable "concourse_build_environments_mapping" {
   description = ""
   default = {
     "manager" = 1,
-    "live" = 1, 
+    "live"    = 1,
     "default" = 0
   }
 }
