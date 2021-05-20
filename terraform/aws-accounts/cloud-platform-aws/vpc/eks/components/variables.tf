@@ -36,6 +36,15 @@ variable "cluster_r53_domainfilters" {
   }
 }
 
+variable "concourse_build_environments_mapping" {
+  description = ""
+  default = {
+    "manager" = 1,
+    "live" = 1, 
+    "default" = 0
+  }
+}
+
 #Concourse vars
 variable "kops_or_eks" {}
 variable "github_auth_client_id" {}
