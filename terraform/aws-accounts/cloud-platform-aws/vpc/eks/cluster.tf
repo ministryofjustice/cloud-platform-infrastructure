@@ -17,6 +17,24 @@ provider "kubernetes" {
   load_config_file       = false
 }
 
+locals {
+  dockerhub_credentials = "${var.dockerhub_user}:${var.dockerhub_token}"
+  dockerhub_file = <<-EOD
+  {
+    "auths": {
+      "https://index.docker.io/v1/": {
+        "auth": "${base64encode(local.dockerhub_credentials)}"
+      }
+    }
+  }
+EOD
+  pre_userdata = <<-EOD
+  mkdir -p "/root/.docker"
+  echo '${local.dockerhub_file}' > "/root/.docker/config.json"
+  ln -s "/root/.docker" "/var/lib/kubelet/.docker"
+EOD
+}
+
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "v15.2.0"
@@ -29,11 +47,14 @@ module "eks" {
   enable_irsa      = true
 
   node_groups = {
-    default_ng = {
+    the_ng = {
       desired_capacity = local.is_live_eks_cluster ? 19 : 4
       max_capacity     = 30
       min_capacity     = local.is_live_eks_cluster ? 19 : 1
       subnets          = data.aws_subnet_ids.private.ids
+
+      create_launch_template = true
+      pre_userdata = local.pre_userdata
 
       instance_type = local.is_manager_cluster ? "m4.xlarge" : "r5.xlarge"
       k8s_labels = {
