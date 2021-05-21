@@ -32,7 +32,7 @@ variable "worker_node_machine_type" {
 }
 
 variable "cluster_names" {
-  description = "The AWS EC2 instance types to use for master nodes"
+  description = "List of Clusters within Live-1 VPC"
   default = {
     live-1  = ["live-1.cloud-platform.service.justice.gov.uk","manager","live"]
   }
