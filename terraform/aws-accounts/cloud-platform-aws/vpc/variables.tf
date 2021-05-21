@@ -32,7 +32,8 @@ variable "worker_node_machine_type" {
 }
 
 variable "cluster_names" {
-  description = "A list of every Kubernetes cluster present in the VPC"
-  type        = list(string)
-  default     = []
+  description = "The AWS EC2 instance types to use for master nodes"
+  default = {
+    live-1  = ["live-1.cloud-platform.service.justice.gov.uk","manager","live"]
+  }
 }
