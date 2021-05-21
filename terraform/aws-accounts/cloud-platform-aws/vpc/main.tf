@@ -26,7 +26,7 @@ locals {
   vpc_name             = terraform.workspace
   vpc_base_domain_name = "${local.vpc_name}.cloud-platform.service.justice.gov.uk"
   cluster_tags = {
-    for name in var.cluster_names :
+    for name in lookup(var.cluster_names, terraform.workspace, terraform.workspace) :
     "kubernetes.io/cluster/${name}" => "shared"
   }
   vpc_tags = merge({
