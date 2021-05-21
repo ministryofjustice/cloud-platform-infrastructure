@@ -31,7 +31,8 @@ EOD
   pre_userdata          = <<-EOD
   mkdir -p "/root/.docker"
   echo '${local.dockerhub_file}' > "/root/.docker/config.json"
-  ln -s "/root/.docker" "/var/lib/kubelet/.docker"
+  mkdir -p "/var/lib/kubelet/.docker"
+  echo '${local.dockerhub_file}' > "/var/lib/kubelet/.docker/config.json"
 EOD
 }
 
@@ -47,7 +48,7 @@ module "eks" {
   enable_irsa      = true
 
   node_groups = {
-    the_ng = {
+    default_ng = {
       desired_capacity = local.is_live_eks_cluster ? 19 : 4
       max_capacity     = 30
       min_capacity     = local.is_live_eks_cluster ? 19 : 1
