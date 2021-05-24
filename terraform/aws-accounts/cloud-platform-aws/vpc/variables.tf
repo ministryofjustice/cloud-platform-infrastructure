@@ -34,6 +34,6 @@ variable "worker_node_machine_type" {
 variable "cluster_names" {
   description = "List of Clusters within Live-1 VPC"
   default = {
-    live-1  = ["live-1.cloud-platform.service.justice.gov.uk","manager","live"]
+    live-1 = ["live-1.cloud-platform.service.justice.gov.uk", "manager", "live"]
   }
 }
