@@ -1,5 +1,5 @@
 ---
-clusterName: 'smkops01.cloud-platform.service.justice.gov.uk'
+clusterName: 'cluster.name.local'
 namespaces:
   monitoring:
     daemonset:
