@@ -1,6 +1,6 @@
 ---
+clusterName: 'smkops01.cloud-platform.service.justice.gov.uk'
 namespaces:
-  concourse:
   monitoring:
     daemonset:
       - "prometheus-operator-prometheus-node-exporter"
@@ -11,11 +11,5 @@ namespaces:
       - "test"
   opa:
   kube-system:
-crds:
-  - "alertmanagers.monitoring.coreos.com"
-  - "certificaterequests.cert-manager.io"
-  - "certificates.cert-manager.io"
 nginxIngress:
-  - clusterName: cp-2104-1004
     namespacePrefix: "smoketest-ingress-"
-    

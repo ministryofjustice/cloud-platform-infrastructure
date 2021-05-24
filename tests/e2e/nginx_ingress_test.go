@@ -19,7 +19,7 @@ import (
 
 var _ = Describe("Nginx Ingress", func() {
 	var (
-		currentCluster = "cp-2104-1004.cloud-platform.service.justice.gov.uk"
+		currentCluster = c.ClusterName
 		namespaceName  = fmt.Sprintf("smoketest-ingress-%s", strings.ToLower(random.UniqueId()))
 		host           = fmt.Sprintf("%s-nginx.apps.%s", namespaceName, currentCluster)
 		options        = k8s.NewKubectlOptions("", "", namespaceName)
@@ -28,7 +28,7 @@ var _ = Describe("Nginx Ingress", func() {
 	)
 
 	BeforeEach(func() {
-		By("not having an ingress")
+		By("not having an ingress resource deployed")
 
 		Expect(helpers.HttpStatusCode(url)).To(Equal(404))
 
@@ -40,7 +40,7 @@ var _ = Describe("Nginx Ingress", func() {
 		defer k8s.DeleteNamespace(GinkgoT(), options, namespaceName)
 	})
 
-	Context("when ingress is deployed using 'nginx' ingress controller", func() {
+	Context("when ingress resource is deployed using 'nginx' ingress controller", func() {
 		It("should expose the service to the internet", func() {
 			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", template.FuncMap{
 				"ingress_class": "nginx",
