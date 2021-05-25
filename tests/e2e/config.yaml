@@ -1,0 +1,15 @@
+---
+clusterName: 'cluster.name.local'
+namespaces:
+  monitoring:
+    daemonset:
+      - "prometheus-operator-prometheus-node-exporter"
+    services:
+      - "prometrhes"
+      - "alertmanager"
+    secrets:
+      - "test"
+  opa:
+  kube-system:
+nginxIngress:
+    namespacePrefix: "smoketest-ingress-"
