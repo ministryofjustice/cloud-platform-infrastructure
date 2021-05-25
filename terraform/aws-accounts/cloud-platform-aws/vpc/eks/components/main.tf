@@ -75,16 +75,23 @@ locals {
 # Calico #
 ##########
 
-resource "null_resource" "calico_deploy" {
+data "kubectl_file_documents" "calico_crds" {
+  content = file("${path.module}/resources/calico-crds.yaml")
+}
 
-  provisioner "local-exec" {
-    command = "kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/release-1.6/config/v1.6/calico.yaml"
-  }
+resource "kubectl_manifest" "calico_crds" {
+  count     = length(data.kubectl_file_documents.calico_crds.documents)
+  yaml_body = element(data.kubectl_file_documents.calico_crds.documents, count.index)
+}
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = "kubectl delete -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/release-1.6/config/v1.6/calico.yaml"
-  }
+resource "helm_release" "calico" {
+  name       = "calico"
+  chart      = "aws-calico"
+  repository = "https://aws.github.io/eks-charts"
+  namespace  = "kube-system"
+  version    = "0.3.5"
+
+  depends_on = [kubectl_manifest.calico_crds]
 }
 
 #####################################
