@@ -189,6 +189,9 @@ subjects:
   name: cluster-autoscaler-aws-cluster-autoscaler
   namespace: kube-system
 - kind: ServiceAccount
+  name: calico-typha-cpha
+  namespace: kube-system
+- kind: ServiceAccount
   name: typha-cpha
   namespace: kube-system
 - kind: Group
