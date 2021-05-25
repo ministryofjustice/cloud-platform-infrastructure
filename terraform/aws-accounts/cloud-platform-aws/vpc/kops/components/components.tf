@@ -1,35 +1,36 @@
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=tf-docs-cleanup"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(var.cluster_r53_resource_maps, terraform.workspace, ["arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.outputs.hosted_zone_id}"])
 
-  # This module requires prometheus
-  dependence_prometheus = module.prometheus.helm_prometheus_operator_status
-  dependence_opa        = "ignore"
+  depends_on = [
+    module.prometheus,
+  ]
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=tf-docs-cleanup"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(var.cluster_r53_resource_maps, terraform.workspace, ["arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.outputs.hosted_zone_id}"])
 
-  dependence_kiam = module.kiam.helm_kiam_status
-  # dependence_kiam = helm_release.kiam
+  depends_on = [
+    module.kiam,
+  ]
 
   # This section is for EKS
   eks = false
 }
 
 module "kiam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=1.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kiam?ref=tf-docs-cleanup"
 
-  # This module requires prometheus
-  dependence_prometheus = module.prometheus.helm_prometheus_operator_status
-  dependence_opa        = "ignore"
+  depends_on = [
+    module.prometheus,
+  ]
 }
 
 module "kuberos" {
@@ -58,7 +59,7 @@ module "logging" {
 }
 
 module "prometheus" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.6.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.0"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
@@ -75,8 +76,6 @@ module "prometheus" {
   oidc_components_client_id     = data.terraform_remote_state.cluster.outputs.oidc_components_client_id
   oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
-
-  dependence_opa = "ignore"
 }
 
 
@@ -84,9 +83,11 @@ module "ingress_controller_integration_test" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-teams-ingress-controller?ref=0.1.5"
 
   namespace = "integration-test"
-  # This module requires prometheus and cert-manager already deployed
-  dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
-  dependence_certmanager = module.cert_manager.helm_cert_manager_status
+
+  depends_on = [
+    module.prometheus,
+    module.cert_manager,
+  ]
 }
 
 
@@ -96,20 +97,22 @@ module "modsec_ingress_controllers" {
   controller_name = "modsec01"
   replica_count   = "4"
 
-  dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
-  dependence_certmanager = module.cert_manager.helm_cert_manager_status
+  depends_on = [
+    module.prometheus,
+    module.cert_manager,
+  ]
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=tf-docs-cleanup"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
 
-  # This module requires prometheus and cert-manager
-  dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
-  dependence_certmanager = module.cert_manager.helm_cert_manager_status
-  dependence_opa         = "ignore"
+  depends_on = [
+    module.prometheus,
+    module.cert_manager,
+  ]
 }
 
 module "opa" {
@@ -128,9 +131,12 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=tf-docs-cleanup"
 
-  iam_role_nodes        = data.aws_iam_role.nodes.arn
-  dependence_prometheus = module.prometheus.helm_prometheus_operator_status
-  cluster_domain_name   = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  iam_role_nodes      = data.aws_iam_role.nodes.arn
+  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+
+  depends_on = [
+    module.prometheus,
+  ]
 }
