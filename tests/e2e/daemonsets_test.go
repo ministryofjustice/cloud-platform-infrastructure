@@ -15,11 +15,13 @@ var _ = Describe("Daemonsets checks", func() {
 	)
 
 	It("should exist exist the following daemonsets", func() {
-		if len(c.Namespaces) == 0 {
+		daemonSets := c.GetDaemonSets()
+
+		if len(daemonSets) == 0 {
 			Skip("None daemonsets defined, skipping test")
 		}
 
-		for ns, ds := range c.GetDaemonSets() {
+		for ns, ds := range daemonSets {
 			options := k8s.NewKubectlOptions("", "", ns)
 			for _, v := range ds {
 				_, err := k8s.GetDaemonSetE(GinkgoT(), options, v)
