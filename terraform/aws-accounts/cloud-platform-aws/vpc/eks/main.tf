@@ -54,7 +54,8 @@ locals {
   pre_userdata          = <<-EOD
   mkdir -p "/root/.docker"
   echo '${local.dockerhub_file}' > "/root/.docker/config.json"
-  ln -s "/root/.docker" "/var/lib/kubelet/.docker"
+  mkdir -p "/var/lib/kubelet/.docker"
+  echo '${local.dockerhub_file}' > "/var/lib/kubelet/config.json"
   EOD
 }
 
