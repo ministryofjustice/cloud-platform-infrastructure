@@ -59,7 +59,11 @@ data "aws_iam_role" "nodes" {
 }
 
 data "aws_route53_zone" "selected" {
-  name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  name = "${terraform.workspace}.cloud-platform.service.justice.gov.uk"
+}
+
+data "aws_route53_zone" "cloud_platform" {
+  name = "cloud-platform.service.justice.gov.uk"
 }
 
 ##########
@@ -67,8 +71,20 @@ data "aws_route53_zone" "selected" {
 ##########
 
 locals {
-  live_workspace = "manager"
-  live_domain    = "cloud-platform.service.justice.gov.uk"
+  live_workspace = {
+    manager = true
+    live    = true
+    default = false
+  }
+
+  hostzones = {
+    manager = [
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.cloud_platform.zone_id}"
+    ]
+    live    = ["*"]
+    default = ["arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}"]
+  }
 }
 
 ##########
