@@ -42,7 +42,7 @@ locals {
 
   # Add dockerhub crendentials to worker nodes
   dockerhub_credentials = "${var.dockerhub_user}:${var.dockerhub_token}"
-  dockerhub_file = <<-EOD
+  dockerhub_file        = <<-EOD
   {
     "auths": {
       "https://index.docker.io/v1/": {
@@ -51,7 +51,7 @@ locals {
     }
   }
   EOD
-  pre_userdata = <<-EOD
+  pre_userdata          = <<-EOD
   mkdir -p "/root/.docker"
   echo '${local.dockerhub_file}' > "/root/.docker/config.json"
   ln -s "/root/.docker" "/var/lib/kubelet/.docker"

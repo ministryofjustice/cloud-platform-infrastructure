@@ -36,7 +36,7 @@ module "eks" {
       subnets          = data.aws_subnet_ids.private.ids
 
       create_launch_template = true
-      pre_userdata = local.pre_userdata
+      pre_userdata           = local.pre_userdata
 
       instance_type = var.worker_node_machine_type
       k8s_labels = {
