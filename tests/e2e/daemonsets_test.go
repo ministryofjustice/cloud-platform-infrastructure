@@ -14,11 +14,11 @@ var _ = Describe("Daemonsets checks", func() {
 		notFoundDaemonSets []string
 	)
 
-	It("should exist exist the following daemonsets", func() {
+	It("should exist the following daemonsets", func() {
 		daemonSets := c.GetDaemonSets()
 
 		if len(daemonSets) == 0 {
-			Skip("None daemonsets defined, skipping test")
+			Skip("No daemonsets defined, skipping test")
 		}
 
 		for ns, ds := range daemonSets {
@@ -33,7 +33,7 @@ var _ = Describe("Daemonsets checks", func() {
 		}
 
 		if notFoundDaemonSets != nil {
-			ginkgo.Fail(fmt.Sprintf("The following daemonsets DOES NOT exist: %v", notFoundDaemonSets))
+			ginkgo.Fail(fmt.Sprintf("The following daemonsets DO NOT exist: %v", notFoundDaemonSets))
 		}
 	})
 })
