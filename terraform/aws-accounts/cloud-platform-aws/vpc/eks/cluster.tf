@@ -35,7 +35,7 @@ module "eks" {
       min_capacity     = 1
       subnets          = data.aws_subnet_ids.private.ids
 
-      instance_type = var.worker_node_machine_type
+      instance_type = local.is_manager_cluster ? "m4.xlarge" : "r5.xlarge"
       k8s_labels = {
         Terraform = "true"
         Cluster   = local.cluster_name
@@ -43,6 +43,8 @@ module "eks" {
       }
       additional_tags = {
         default_ng = "true"
+        application   = "moj-cloud-platform"
+        business-unit = "platforms"
       }
     }
   }
