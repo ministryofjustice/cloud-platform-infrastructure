@@ -29,11 +29,14 @@ module "eks" {
   enable_irsa      = true
 
   node_groups = {
-    default_ng = {
+    standard_ng = {
       desired_capacity = var.cluster_node_count
       max_capacity     = 30
       min_capacity     = 1
       subnets          = data.aws_subnet_ids.private.ids
+
+      create_launch_template = true
+      pre_userdata = local.pre_userdata
 
       instance_type = var.worker_node_machine_type
       k8s_labels = {

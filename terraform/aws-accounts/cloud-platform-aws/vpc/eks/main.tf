@@ -39,6 +39,23 @@ locals {
   services_base_domain = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
   is_manager_cluster   = terraform.workspace == "manager"
   services_eks_domain  = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
+
+  # Add dockerhub crendentials to worker nodes
+  dockerhub_credentials = "${var.dockerhub_user}:${var.dockerhub_token}"
+  dockerhub_file = <<-EOD
+  {
+    "auths": {
+      "https://index.docker.io/v1/": {
+        "auth": "${base64encode(local.dockerhub_credentials)}"
+      }
+    }
+  }
+  EOD
+  pre_userdata = <<-EOD
+  mkdir -p "/root/.docker"
+  echo '${local.dockerhub_file}' > "/root/.docker/config.json"
+  ln -s "/root/.docker" "/var/lib/kubelet/.docker"
+  EOD
 }
 
 data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
