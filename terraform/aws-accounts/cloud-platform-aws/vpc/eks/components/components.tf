@@ -120,7 +120,7 @@ module "opa" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.11"
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  enable_invalid_hostname_policy = lookup(local.live_workspace, terraform.workspace, false)
+  enable_invalid_hostname_policy = lookup(local.live_workspace, terraform.workspace, true)
 }
 
 module "velero" {
