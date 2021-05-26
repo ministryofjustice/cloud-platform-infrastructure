@@ -11,12 +11,6 @@ variable "cloud_platform_slack_webhook" {
   description = "Slack webhook to pass it to  script to send alerts"
 }
 
-variable "cluster_r53_resource_maps" {
-  default = {
-    manager = ["arn:aws:route53:::hostedzone/Z1OWR28V4Q2RTU", "arn:aws:route53:::hostedzone/Z05430523NZWPZBEWZ2QR"]
-  }
-}
-
 variable "elasticsearch_hosts_maps" {
   default = {
     manager = "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
@@ -33,15 +27,6 @@ variable "cluster_r53_domainfilters" {
   default = {
     live-1  = ["*"]
     manager = ["manager.cloud-platform.service.justice.gov.uk.", "cloud-platform.service.justice.gov.uk."]
-  }
-}
-
-variable "concourse_build_environments_mapping" {
-  description = ""
-  default = {
-    "manager" = 1,
-    "live"    = 1,
-    "default" = 0
   }
 }
 

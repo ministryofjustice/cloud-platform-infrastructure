@@ -39,7 +39,7 @@ module "cert_manager" {
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  hostzone            = lookup(locals.hostzones, terraform.workspace, locals.hostzones["default"])
+  hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
 
   # This module requires Prometheus
   dependence_prometheus = module.monitoring.helm_prometheus_operator_status
@@ -63,7 +63,7 @@ module "external_dns" {
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  hostzone            = lookup(locals.hostzones, terraform.workspace, locals.hostzones["default"])
+  hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
 
   # EKS doesn't use KIAM but it is a requirement for the module.
   dependence_kiam = ""
@@ -77,7 +77,7 @@ module "ingress_controllers" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.2.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = lookup(locals.live_workspace, terraform.workspace, false)
+  is_live_cluster     = lookup(local.live_workspace, terraform.workspace, false)
 
   # This module requires prometheus and cert-manager
   dependence_prometheus  = module.monitoring.helm_prometheus_operator_status
@@ -105,11 +105,11 @@ module "monitoring" {
   oidc_components_client_id     = data.terraform_remote_state.cluster.outputs.oidc_components_client_id
   oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
-  enable_thanos_sidecar         = lookup(locals.live_workspace, terraform.workspace, false)
+  enable_thanos_sidecar         = lookup(local.live_workspace, terraform.workspace, false)
   enable_large_nodesgroup       = false
 
-  enable_thanos_helm_chart = lookup(locals.live_workspace, terraform.workspace, false)
-  enable_thanos_compact    = lookup(locals.live_workspace, terraform.workspace, false)
+  enable_thanos_helm_chart = lookup(local.live_workspace, terraform.workspace, false)
+  enable_thanos_compact    = lookup(local.live_workspace, terraform.workspace, false)
 
   # This section is for EKS
   eks                         = true
@@ -120,7 +120,7 @@ module "opa" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.11"
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  enable_invalid_hostname_policy = lookup(locals.live_workspace, terraform.workspace, false)
+  enable_invalid_hostname_policy = lookup(local.live_workspace, terraform.workspace, false)
 }
 
 module "velero" {
@@ -147,5 +147,5 @@ module "sonarqube" {
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
 
   # This is to enable sonarqube, by default it is false for test clusters
-  enable_sonarqube = lookup(locals.live_workspace, terraform.workspace, false)
+  enable_sonarqube = lookup(local.live_workspace, terraform.workspace, false)
 }
