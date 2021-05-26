@@ -42,7 +42,7 @@ module "eks" {
         Domain    = local.cluster_base_domain_name
       }
       additional_tags = {
-        default_ng = "true"
+        default_ng    = "true"
         application   = "moj-cloud-platform"
         business-unit = "platforms"
       }
