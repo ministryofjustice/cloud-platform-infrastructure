@@ -60,7 +60,7 @@ data "aws_route53_zone" "cloud_platform" {
 ##########
 
 locals {
-  live_workspace = {
+  prod_workspace = {
     manager = true
     live    = true
     default = false
