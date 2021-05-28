@@ -2,6 +2,7 @@
 # EKS Cluster #
 ###############
 
+
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
@@ -21,7 +22,7 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "v15.2.0"
 
-  cluster_name     = local.cluster_name
+  cluster_name     = terraform.workspace
   subnets          = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
   vpc_id           = data.aws_vpc.selected.id
   write_kubeconfig = false
@@ -29,8 +30,8 @@ module "eks" {
   enable_irsa      = true
 
   node_groups = {
-    standard_ng = {
-      desired_capacity = var.cluster_node_count
+    default_ng = {
+      desired_capacity = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
       max_capacity     = 30
       min_capacity     = 1
       subnets          = data.aws_subnet_ids.private.ids
@@ -41,8 +42,8 @@ module "eks" {
       instance_type = var.worker_node_machine_type
       k8s_labels = {
         Terraform = "true"
-        Cluster   = local.cluster_name
-        Domain    = local.cluster_base_domain_name
+        Cluster   = terraform.workspace
+        Domain    = local.fqdn
       }
       additional_tags = {
         default_ng = "true"
@@ -108,7 +109,7 @@ module "eks" {
 
   tags = {
     Terraform = "true"
-    Cluster   = local.cluster_name
-    Domain    = local.cluster_base_domain_name
+    Cluster   = terraform.workspace
+    Domain    = local.fqdn
   }
 }
