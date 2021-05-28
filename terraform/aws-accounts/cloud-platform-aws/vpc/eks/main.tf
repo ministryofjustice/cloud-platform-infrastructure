@@ -43,6 +43,24 @@ locals {
   auth0_extra_callbacks = {
     manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
   }
+
+  # Add dockerhub crendentials to worker nodes
+  dockerhub_credentials = "${var.dockerhub_user}:${var.dockerhub_token}"
+  dockerhub_file        = <<-EOD
+{
+  "auths": {
+    "https://index.docker.io/v1/": {
+      "auth": "${base64encode(local.dockerhub_credentials)}"
+    }
+  }
+}
+EOD
+  pre_userdata          = <<-EOD
+mkdir -p "/root/.docker"
+echo '${local.dockerhub_file}' > "/root/.docker/config.json"
+mkdir -p "/var/lib/kubelet/.docker"
+echo '${local.dockerhub_file}' > "/var/lib/kubelet/config.json"
+EOD
 }
 
 data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
