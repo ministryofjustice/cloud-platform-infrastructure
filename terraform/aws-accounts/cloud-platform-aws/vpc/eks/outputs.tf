@@ -6,10 +6,6 @@ output "eks_worker_iam_role_name" {
   value = module.eks.worker_iam_role_name
 }
 
-output "cluster_name" {
-  value = terraform.workspace
-}
-
 output "vpc_id" {
   value = data.aws_vpc.selected.id
 }
