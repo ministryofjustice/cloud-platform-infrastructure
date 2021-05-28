@@ -47,7 +47,7 @@ data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
 data "aws_vpc" "selected" {
   filter {
     name   = "tag:Name"
-    values = [lookup(var.vpc_name, terraform.workspace, terraform.workspace)]
+    values = [lookup(local.vpc_name, terraform.workspace, terraform.workspace)]
   }
 }
 
