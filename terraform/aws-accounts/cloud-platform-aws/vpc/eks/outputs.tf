@@ -7,7 +7,7 @@ output "eks_worker_iam_role_name" {
 }
 
 output "cluster_name" {
-  value = local.cluster_name
+  value = terraform.workspace
 }
 
 output "vpc_id" {
@@ -22,16 +22,12 @@ output "internal_subnets_ids" {
   value = tolist(data.aws_subnet_ids.private.ids)
 }
 
-output "base_route53_hostzone" {
-  value = local.base_route53_hostzone
-}
-
 output "cluster_domain_name" {
-  value = local.cluster_base_domain_name
+  value = local.fqdn
 }
 
 output "oidc_issuer_url" {
-  value = "https://${local.auth0_tenant_domain}/"
+  value = "https://justice-cloud-platform.eu.auth0.com/"
 }
 
 output "oidc_kubernetes_client_id" {
