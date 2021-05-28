@@ -19,7 +19,7 @@ provider "aws" {
 }
 
 provider "auth0" {
-  domain = local.auth0_tenant_domain
+  domain = "justice-cloud-platform.eu.auth0.com"
 }
 
 ###########################
@@ -27,18 +27,17 @@ provider "auth0" {
 ###########################
 
 locals {
-  cluster_name             = terraform.workspace
-  cluster_base_domain_name = "${local.cluster_name}.cloud-platform.service.justice.gov.uk"
-  base_route53_hostzone    = "${local.vpc}.cloud-platform.service.justice.gov.uk"
-  key_name                 = "${local.vpc}.cloud-platform.service.justice.gov.uk"
+  fqdn = "${terraform.workspace}.cloud-platform.service.justice.gov.uk"
 
-  vpc = lookup(var.vpc_name, terraform.workspace, terraform.workspace)
+  vpc = {
+    manager = "live-1"
+    live    = "live-1"
+  }
 
-  auth0_tenant_domain  = "justice-cloud-platform.eu.auth0.com"
-  is_live_cluster      = terraform.workspace == "live-1"
-  services_base_domain = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
-  is_manager_cluster   = terraform.workspace == "manager"
-  services_eks_domain  = local.is_manager_cluster ? "cloud-platform.service.justice.gov.uk" : "apps.${local.cluster_base_domain_name}"
+  # Some clusters (like manage) need extra callbacks URLs in auth0
+  auth0_extra_callbacks = {
+    manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
+  }
 }
 
 data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
@@ -48,7 +47,7 @@ data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
 data "aws_vpc" "selected" {
   filter {
     name   = "tag:Name"
-    values = [local.vpc]
+    values = [lookup(var.vpc_name, terraform.workspace, terraform.workspace)]
   }
 }
 
@@ -80,7 +79,7 @@ data "aws_subnet" "private_cidrs" {
 # #################
 
 resource "aws_route53_zone" "cluster" {
-  name          = "${local.cluster_base_domain_name}."
+  name          = "${terraform.workspace}.cloud-platform.service.justice.gov.uk."
   force_destroy = true
 }
 
@@ -98,30 +97,14 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
   ]
 }
 
-# ###########
-# # BASTION #
-# ###########
-
-module "bastion" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-bastion?ref=1.4.1"
-
-  vpc_name            = local.vpc
-  route53_zone        = aws_route53_zone.cluster.name
-  cluster_domain_name = local.cluster_base_domain_name
-  depends_on = [
-    aws_route53_zone.cluster
-  ]
-}
-
 #########
 # Auth0 #
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.2.0"
 
-  cluster_name         = local.cluster_name
-  services_base_domain = local.services_base_domain
-  services_eks_domain  = local.services_eks_domain
-  eks                  = true
+  cluster_name         = terraform.workspace
+  services_base_domain = "apps.${local.fqdn}"
+  extra_callbacks      = lookup(local.auth0_extra_callbacks, terraform.workspace, null)
 }
