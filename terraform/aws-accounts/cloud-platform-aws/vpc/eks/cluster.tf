@@ -29,7 +29,7 @@ module "eks" {
   enable_irsa      = true
 
   node_groups = {
-    default_ng = {
+    first_ng = {
       desired_capacity = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
       max_capacity     = 30
       min_capacity     = 1
