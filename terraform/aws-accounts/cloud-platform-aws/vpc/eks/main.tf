@@ -34,6 +34,11 @@ locals {
     live    = "live-1"
   }
 
+  node_groups_count = {
+    live    = "19"
+    default = "4"
+  }
+
   # Some clusters (like manage) need extra callbacks URLs in auth0
   auth0_extra_callbacks = {
     manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
@@ -47,7 +52,7 @@ data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
 data "aws_vpc" "selected" {
   filter {
     name   = "tag:Name"
-    values = [lookup(var.vpc_name, terraform.workspace, terraform.workspace)]
+    values = [lookup(local.vpc, terraform.workspace, terraform.workspace)]
   }
 }
 
