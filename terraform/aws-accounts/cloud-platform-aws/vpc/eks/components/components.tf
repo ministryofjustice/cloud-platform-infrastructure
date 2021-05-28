@@ -110,7 +110,7 @@ module "monitoring" {
   enable_large_nodesgroup       = false
 
   enable_thanos_helm_chart = lookup(local.prod_workspace, terraform.workspace, false)
-  enable_thanos_compact    = lookup(local.prod_workspace, terraform.workspace, false)
+  enable_thanos_compact    = terraform.workspace == "manager" ? true : false
 
   # This section is for EKS
   eks                         = true
