@@ -38,14 +38,16 @@ module "eks" {
       create_launch_template = true
       pre_userdata           = local.pre_userdata
 
-      instance_type = var.worker_node_machine_type
+      instance_type = lookup(local.node_size, terraform.workspace, local.node_size["default"])
       k8s_labels = {
         Terraform = "true"
         Cluster   = terraform.workspace
         Domain    = local.fqdn
       }
       additional_tags = {
-        default_ng = "true"
+        default_ng    = "true"
+        application   = "moj-cloud-platform"
+        business-unit = "platforms"
       }
     }
   }
