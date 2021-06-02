@@ -39,6 +39,12 @@ locals {
     default = "4"
   }
 
+  node_size = {
+    live    = "r5.xlarge"
+    manager = "m4.xlarge"
+    default = "r5.xlarge"
+  }
+
   # Some clusters (like manage) need extra callbacks URLs in auth0
   auth0_extra_callbacks = {
     manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
