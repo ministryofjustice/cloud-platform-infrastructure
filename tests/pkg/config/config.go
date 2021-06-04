@@ -10,8 +10,10 @@ import (
 
 // Config holds the basic structure of test's YAML file
 type Config struct {
-	ClusterName string                `yaml:"clusterName"`
-	Namespaces  map[string]K8SObjects `yaml:"namespaces"`
+	ClusterName            string                 `yaml:"clusterName"`
+	Namespaces             map[string]K8SObjects  `yaml:"namespaces"`
+	ExternalDNS            ExternalDNS            `yaml:"externalDNS"`
+	NginxIngressController NginxIngressController `yaml:"nginxIngressController"`
 }
 
 // K8SObjects are kubernetes objects nested from namespaces, we need to check
@@ -20,6 +22,11 @@ type K8SObjects struct {
 	Daemonsets []string `yaml:"daemonsets"`
 	Services   []string `yaml:"services"`
 	Secrets    []string `yaml:"secrets"`
+}
+
+// NginxIngressController holds the config for nginx ingress controller component
+type NginxIngressController struct {
+	NamespacePrefix string `yaml:"namespacePrefix"`
 }
 
 // ParseConfigFile loads the test file supplied
