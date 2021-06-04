@@ -51,6 +51,10 @@ data "aws_route53_zone" "selected" {
   name = "${terraform.workspace}.cloud-platform.service.justice.gov.uk"
 }
 
+data "aws_route53_zone" "integrationtest" {
+  name = "integrationtest.service.justice.gov.uk"
+}
+
 data "aws_route53_zone" "cloud_platform" {
   name = "cloud-platform.service.justice.gov.uk"
 }
@@ -69,10 +73,14 @@ locals {
   hostzones = {
     manager = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
-      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.cloud_platform.zone_id}"
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.cloud_platform.zone_id}",
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"
     ]
     live    = ["arn:aws:route53:::hostedzone/*"]
-    default = ["arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}"]
+    default = [
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"
+    ]
   }
 }
 
