@@ -60,7 +60,7 @@ module "cluster_autoscaler" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=mogaal-patch-4"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
