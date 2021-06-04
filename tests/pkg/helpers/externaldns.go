@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/ministryofjustice/tiny-k8s-tester/pkg/config"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -28,9 +27,7 @@ func RecordSets(d string, c *config.ExternalDNS) (bool, error) {
 
 	for _, v := range sets.ResourceRecordSets {
 		record := strings.TrimRight(*v.Name, ".")
-		spew.Dump(record)
 		if record == d {
-			fmt.Println("FOUND! Returning now")
 			return true, nil
 		}
 	}
