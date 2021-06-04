@@ -76,7 +76,7 @@ locals {
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.cloud_platform.zone_id}",
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"
     ]
-    live    = ["arn:aws:route53:::hostedzone/*"]
+    live = ["arn:aws:route53:::hostedzone/*"]
     default = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"
