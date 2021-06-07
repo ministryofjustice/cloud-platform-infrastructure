@@ -86,6 +86,16 @@ module "ingress_controllers" {
   dependence_opa         = "ignore"
 }
 
+module "modsec_ingress_controllers" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.0.7"
+
+  controller_name = "modsec01"
+  replica_count   = "4"
+
+  dependence_prometheus  = module.monitoring.helm_prometheus_operator_status
+  dependence_certmanager = module.cert_manager.helm_cert_manager_status
+}
+
 module "logging" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.1.0"
 
