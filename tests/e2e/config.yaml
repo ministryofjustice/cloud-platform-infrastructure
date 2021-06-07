@@ -18,5 +18,9 @@ namespaces:
     daemonsets:
       - "kiam-server"
       - "kiam-agent"
-nginxIngress:
-    namespacePrefix: "smoketest-ingress-"
+nginxIngressController:
+  namespacePrefix: "smoketest-ingress-"
+externalDNS:
+  namespacePrefix: "e2e-tests-externaldns-"
+  hostedZoneId: Z02429076QQMAO8KXV68
+  domain: integrationtest.service.justice.gov.uk
