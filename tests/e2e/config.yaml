@@ -22,5 +22,5 @@ nginxIngressController:
   namespacePrefix: "smoketest-ingress-"
 externalDNS:
   namespacePrefix: "e2e-tests-externaldns-"
-  hostedZoneId: Z1OWR28V4Q2RTU
-  domain: cloud-platform.service.justice.gov.uk
+  hostedZoneId: Z02429076QQMAO8KXV68
+  domain: integrationtest.service.justice.gov.uk
