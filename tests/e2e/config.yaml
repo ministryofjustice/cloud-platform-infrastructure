@@ -1,22 +1,23 @@
 ---
-clusterName: 'cluster.name.local'
+clusterName: 'cp-1705-1822'
 namespaces:
   monitoring:
     daemonsets:
       - "prometheus-operator-prometheus-node-exporter"
     services:
-      - "prometrhes"
+      - "prometheus"
       - "alertmanager"
     secrets:
       - "test"
+    servicemonitors:
+      - "prometheus-operator-kube-p-kube-controller-manager"
+      - "prometheus-operator-kube-p-coredns"
+      - "prometheus-operator-kube-p-kube-etcd"
+      - "prometheus-operator-kube-p-kube-scheduler"
   opa:
   kube-system:
   logging:
     daemonsets:
       - "fluent-bit"
-  kiam:
-    daemonsets:
-      - "kiam-server"
-      - "kiam-agent"
 nginxIngress:
     namespacePrefix: "smoketest-ingress-"

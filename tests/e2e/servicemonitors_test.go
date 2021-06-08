@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
-	cpk8s "github.com/ministryofjustice/tiny-k8s-tester/pkg/tests"
+	cpk8s "github.com/ministryofjustice/tiny-k8s-tester/pkg/k8s"
 	"github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo"
 )
