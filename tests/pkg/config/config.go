@@ -10,8 +10,11 @@ import (
 
 // Config holds the basic structure of test's YAML file
 type Config struct {
-	ClusterName string                `yaml:"clusterName"`
-	Namespaces  map[string]K8SObjects `yaml:"namespaces"`
+	ClusterName            string                 `yaml:"clusterName"`
+	Namespaces             map[string]K8SObjects  `yaml:"namespaces"`
+	ExternalDNS            ExternalDNS            `yaml:"externalDNS"`
+	NginxIngressController NginxIngressController `yaml:"nginxIngressController"`
+	FilesExist             []string               `yaml:"filesExist"`
 }
 
 // K8SObjects are kubernetes objects nested from namespaces, we need to check

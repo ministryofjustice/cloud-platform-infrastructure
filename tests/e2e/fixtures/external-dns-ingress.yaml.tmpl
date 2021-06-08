@@ -1,0 +1,16 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: e2e-tests-externaldns
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: {{ .domain }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: ingress-external-svc
+          servicePort: 80

@@ -1,0 +1,28 @@
+---
+clusterName: 'live.cloud-platform.service.justice.gov.uk'
+namespaces:
+  monitoring:
+    daemonsets:
+      - "prometheus-operator-prometheus-node-exporter"
+    services:
+      - "prometrhes"
+      - "alertmanager"
+    secrets:
+      - "test"
+  opa:
+  kube-system:
+  logging:
+    daemonsets:
+      - "fluent-bit"
+  kiam:
+    daemonsets:
+      - "kiam-server"
+      - "kiam-agent"
+nginxIngressController:
+  namespacePrefix: "smoketest-ingress-"
+externalDNS:
+  namespacePrefix: "e2e-tests-externaldns-"
+  hostedZoneId: Z02429076QQMAO8KXV68
+  domain: integrationtest.service.justice.gov.uk
+filesExist:
+  - "https://github.com/ministryofjustice/cloud-platform-terraform-bastion/blob/main/files/authorized_keys.txt"

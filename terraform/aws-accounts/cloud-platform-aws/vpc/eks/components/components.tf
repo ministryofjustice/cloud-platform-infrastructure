@@ -60,7 +60,7 @@ module "cluster_autoscaler" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.4.0"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -84,6 +84,16 @@ module "ingress_controllers" {
   dependence_prometheus  = module.monitoring.helm_prometheus_operator_status
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
   dependence_opa         = "ignore"
+}
+
+module "modsec_ingress_controllers" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.0.7"
+
+  controller_name = "modsec01"
+  replica_count   = "4"
+
+  dependence_prometheus  = module.monitoring.helm_prometheus_operator_status
+  dependence_certmanager = module.cert_manager.helm_cert_manager_status
 }
 
 module "logging" {

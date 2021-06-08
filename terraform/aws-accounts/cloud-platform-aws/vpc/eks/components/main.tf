@@ -51,6 +51,10 @@ data "aws_route53_zone" "selected" {
   name = "${terraform.workspace}.cloud-platform.service.justice.gov.uk"
 }
 
+data "aws_route53_zone" "integrationtest" {
+  name = "integrationtest.service.justice.gov.uk"
+}
+
 data "aws_route53_zone" "cloud_platform" {
   name = "cloud-platform.service.justice.gov.uk"
 }
@@ -69,10 +73,14 @@ locals {
   hostzones = {
     manager = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
-      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.cloud_platform.zone_id}"
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.cloud_platform.zone_id}",
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"
     ]
-    live    = ["arn:aws:route53:::hostedzone/*"]
-    default = ["arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}"]
+    live = ["arn:aws:route53:::hostedzone/*"]
+    default = [
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"
+    ]
   }
 }
 
@@ -80,16 +88,23 @@ locals {
 # Calico #
 ##########
 
-resource "null_resource" "calico_deploy" {
+data "kubectl_file_documents" "calico_crds" {
+  content = file("${path.module}/resources/calico-crds.yaml")
+}
 
-  provisioner "local-exec" {
-    command = "kubectl apply -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/release-1.6/config/v1.6/calico.yaml"
-  }
+resource "kubectl_manifest" "calico_crds" {
+  count     = length(data.kubectl_file_documents.calico_crds.documents)
+  yaml_body = element(data.kubectl_file_documents.calico_crds.documents, count.index)
+}
 
-  provisioner "local-exec" {
-    when    = destroy
-    command = "kubectl delete -f https://raw.githubusercontent.com/aws/amazon-vpc-cni-k8s/release-1.6/config/v1.6/calico.yaml"
-  }
+resource "helm_release" "calico" {
+  name       = "calico"
+  chart      = "aws-calico"
+  repository = "https://aws.github.io/eks-charts"
+  namespace  = "kube-system"
+  version    = "0.3.5"
+
+  depends_on = [kubectl_manifest.calico_crds]
 }
 
 #####################################
