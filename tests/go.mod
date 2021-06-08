@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/aws/aws-sdk-go v1.27.1
+	github.com/davecgh/go-spew v1.1.1
 	github.com/go-resty/resty/v2 v2.6.0
 	github.com/gruntwork-io/terratest v0.34.4
 	github.com/onsi/ginkgo v1.15.0

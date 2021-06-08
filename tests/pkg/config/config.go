@@ -14,6 +14,7 @@ type Config struct {
 	Namespaces             map[string]K8SObjects  `yaml:"namespaces"`
 	ExternalDNS            ExternalDNS            `yaml:"externalDNS"`
 	NginxIngressController NginxIngressController `yaml:"nginxIngressController"`
+	FilesExist             []string               `yaml:"filesExist"`
 }
 
 // K8SObjects are kubernetes objects nested from namespaces, we need to check
