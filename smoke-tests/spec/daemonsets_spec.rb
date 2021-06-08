@@ -105,7 +105,7 @@ describe "daemonsets", speed: "fast" do
     end
   end
 
-  context "calico" do
+  context "kops-calico", kops: true do
     let(:pods) { get_running_app_pods("kube-system", "calico-node", "k8s-app") }
 
     it "runs on all nodes" do
@@ -121,6 +121,18 @@ describe "daemonsets", speed: "fast" do
     specify "there can be only one" do
       pods = get_running_app_pods("kube-system", "calico-kube-controllers", "k8s-app")
       expect(pods.size).to eq(1)
+    end
+  end
+
+  context "eks-calico", "eks-manager": true do
+    let(:pods) { get_running_app_pods("kube-system", "calico-node", "app.kubernetes.io/name") }
+
+    it "runs on all nodes" do
+      expect(app_node_ips).to eq(all_node_ips)
+    end
+
+    specify "all containers are running" do
+      expect(all_containers_running?(pods)).to eq(true)
     end
   end
 end
