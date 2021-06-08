@@ -24,11 +24,6 @@ type K8SObjects struct {
 	Secrets    []string `yaml:"secrets"`
 }
 
-// NginxIngressController holds the config for nginx ingress controller component
-type NginxIngressController struct {
-	NamespacePrefix string `yaml:"namespacePrefix"`
-}
-
 // ParseConfigFile loads the test file supplied
 func ParseConfigFile(f string) (*Config, error) {
 	testsFilePath, err := ioutil.ReadFile(f)

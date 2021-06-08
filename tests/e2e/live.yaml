@@ -1,5 +1,5 @@
 ---
-clusterName: 'cluster.name.local'
+clusterName: 'live.cloud-platform.service.justice.gov.uk'
 namespaces:
   monitoring:
     daemonsets:
