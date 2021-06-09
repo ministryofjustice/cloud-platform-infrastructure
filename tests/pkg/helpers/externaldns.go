@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/ministryofjustice/tiny-k8s-tester/pkg/config"

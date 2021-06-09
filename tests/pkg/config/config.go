@@ -20,9 +20,10 @@ type Config struct {
 // K8SObjects are kubernetes objects nested from namespaces, we need to check
 // these resources are checked for its existence
 type K8SObjects struct {
-	Daemonsets []string `yaml:"daemonsets"`
-	Services   []string `yaml:"services"`
-	Secrets    []string `yaml:"secrets"`
+	Servicemonitors []string `yaml:"servicemonitors"`
+	Daemonsets      []string `yaml:"daemonsets"`
+	Services        []string `yaml:"services"`
+	Secrets         []string `yaml:"secrets"`
 }
 
 // ParseConfigFile loads the test file supplied
@@ -74,6 +75,27 @@ func (c *Config) GetDaemonSets() map[string][]string {
 
 		if len(daemonSets) > 0 {
 			r[ns] = daemonSets
+		}
+
+	}
+
+	return r
+}
+
+// GetServiceMonitors process the mandatory fields in the config. If they are not set,
+// it tries to load them from environment variables
+func (c *Config) GetServiceMonitors() map[string][]string {
+	r := make(map[string][]string)
+
+	for ns, val := range c.Namespaces {
+		var serviceMonitors []string
+
+		for _, ds := range val.Servicemonitors {
+			serviceMonitors = append(serviceMonitors, ds)
+		}
+
+		if len(serviceMonitors) > 0 {
+			r[ns] = serviceMonitors
 		}
 
 	}

@@ -1,6 +1,23 @@
 ---
 clusterName: 'live.cloud-platform.service.justice.gov.uk'
 namespaces:
+  cert-manager:
+    servicemonitors:
+      - cert-manager
+  ingress-controllers:
+    servicemonitors:
+      - modsec01-nx-controller
+      - nginx-ingress-acme-ingress-nginx-controller
+  kube-system:
+  logging:
+    daemonsets:
+      - "fluent-bit"
+    servicemonitors:
+      - fluent-bit
+  kiam:
+    daemonsets:
+      - "kiam-server"
+      - "kiam-agent"
   monitoring:
     daemonsets:
       - "prometheus-operator-prometheus-node-exporter"
@@ -9,15 +26,20 @@ namespaces:
       - "alertmanager"
     secrets:
       - "test"
+    servicemonitors:
+      - prometheus-operator-kube-p-alertmanager
+      - prometheus-operator-kube-p-apiserver
+      - prometheus-operator-kube-p-coredns
+      - prometheus-operator-kube-p-grafana
+      - prometheus-operator-kube-p-kube-state-metrics
+      - prometheus-operator-kube-p-kubelet
+      - prometheus-operator-kube-p-node-exporter
+      - prometheus-operator-kube-p-operator
+      - prometheus-operator-kube-p-prometheus
   opa:
-  kube-system:
-  logging:
-    daemonsets:
-      - "fluent-bit"
-  kiam:
-    daemonsets:
-      - "kiam-server"
-      - "kiam-agent"
+  velero:
+    servicemonitors:
+      - velero
 nginxIngressController:
   namespacePrefix: "smoketest-ingress-"
 externalDNS:
