@@ -3,7 +3,6 @@ package integration_tests
 import (
 	"fmt"
 	"html/template"
-	"log"
 	"strings"
 	"time"
 
