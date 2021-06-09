@@ -7,6 +7,7 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/retry"
+	"github.com/ministryofjustice/tiny-k8s-tester/pkg/config"
 	"github.com/ministryofjustice/tiny-k8s-tester/pkg/helpers"
 
 	. "github.com/onsi/ginkgo"
@@ -22,6 +23,10 @@ var _ = Describe("external-DNS checks", func() {
 	)
 
 	BeforeEach(func() {
+		if (config.ExternalDNS{}) == c.ExternalDNS {
+			Skip("Nginx Ingress Controller component not defined, skipping test")
+		}
+
 		k8s.CreateNamespace(GinkgoT(), options, namespaceName)
 	})
 
