@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
-	"github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo"
 )
 
@@ -28,7 +27,7 @@ var _ = Describe("Namespace checks", func() {
 		}
 
 		if notFoundNamespaces != nil {
-			ginkgo.Fail(fmt.Sprintf("The following namespaces DOES NOT exist: %v", notFoundNamespaces))
+			Fail(fmt.Sprintf("The following namespaces DOES NOT exist: %v", notFoundNamespaces))
 		}
 	})
 })
