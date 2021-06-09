@@ -5,7 +5,6 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 
-	"github.com/onsi/ginkgo"
 	. "github.com/onsi/ginkgo"
 )
 
@@ -33,7 +32,7 @@ var _ = Describe("Daemonsets checks", func() {
 		}
 
 		if notFoundDaemonSets != nil {
-			ginkgo.Fail(fmt.Sprintf("The following daemonsets DO NOT exist: %v", notFoundDaemonSets))
+			Fail(fmt.Sprintf("The following daemonsets DO NOT exist: %v", notFoundDaemonSets))
 		}
 	})
 })
