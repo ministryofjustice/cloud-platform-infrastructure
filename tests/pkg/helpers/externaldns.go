@@ -3,7 +3,7 @@ package helpers
 import (
 	"strings"
 
-	"github.com/ministryofjustice/tiny-k8s-tester/pkg/config"
+	"github.com/ministryofjustice/cloud-platform-infrastructure/tests/pkg/config"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"

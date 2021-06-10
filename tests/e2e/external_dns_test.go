@@ -7,8 +7,8 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/retry"
-	"github.com/ministryofjustice/tiny-k8s-tester/pkg/config"
-	"github.com/ministryofjustice/tiny-k8s-tester/pkg/helpers"
+	"github.com/ministryofjustice/cloud-platform-infrastructure/tests/pkg/config"
+	"github.com/ministryofjustice/cloud-platform-infrastructure/tests/pkg/helpers"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

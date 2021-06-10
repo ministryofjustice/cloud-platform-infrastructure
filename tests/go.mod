@@ -1,4 +1,4 @@
-module github.com/ministryofjustice/tiny-k8s-tester
+module github.com/ministryofjustice/cloud-platform-infrastructure/tests
 
 go 1.15
 
