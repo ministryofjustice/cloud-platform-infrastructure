@@ -1,4 +1,4 @@
-package k8s
+package helpers
 
 import (
 	"github.com/gruntwork-io/terratest/modules/k8s"

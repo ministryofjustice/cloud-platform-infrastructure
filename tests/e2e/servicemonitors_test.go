@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
-	cpk8s "github.com/ministryofjustice/tiny-k8s-tester/pkg/k8s"
+	testHelpers "github.com/ministryofjustice/cloud-platform-infrastructure/tests/pkg/helpers"
 	. "github.com/onsi/ginkgo"
 )
 
@@ -24,7 +24,7 @@ var _ = Describe("ServiceMonitors checks", func() {
 			options := k8s.NewKubectlOptions("", "", ns)
 
 			for _, v := range sm {
-				_, err := cpk8s.GetServiceMonitorSetE(GinkgoT(), options, v)
+				_, err := testHelpers.GetServiceMonitorSetE(GinkgoT(), options, v)
 				if err != nil {
 					notFoundServiceMonitors = append(notFoundServiceMonitors, v)
 				}

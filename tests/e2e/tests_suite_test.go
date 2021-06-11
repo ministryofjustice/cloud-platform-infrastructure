@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/ministryofjustice/tiny-k8s-tester/pkg/config"
+	"github.com/ministryofjustice/cloud-platform-infrastructure/tests/pkg/config"
 )
 
 // c is global, so all tests has access to it

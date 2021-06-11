@@ -13,8 +13,8 @@ import (
 	"github.com/gruntwork-io/terratest/modules/retry"
 	. "github.com/onsi/gomega"
 
-	"github.com/ministryofjustice/tiny-k8s-tester/pkg/config"
-	"github.com/ministryofjustice/tiny-k8s-tester/pkg/helpers"
+	"github.com/ministryofjustice/cloud-platform-infrastructure/tests/pkg/config"
+	"github.com/ministryofjustice/cloud-platform-infrastructure/tests/pkg/helpers"
 )
 
 var _ = Describe("Nginx Ingress", func() {
