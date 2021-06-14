@@ -131,9 +131,9 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.2.1"
 
   cluster_name         = terraform.workspace
   services_base_domain = "apps.${local.fqdn}"
-  extra_callbacks      = lookup(local.auth0_extra_callbacks, terraform.workspace, null)
+  extra_callbacks      = lookup(local.auth0_extra_callbacks, terraform.workspace, [""])
 }
