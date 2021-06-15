@@ -28,6 +28,7 @@ def main(options)
   integration_tests = options[:integration_tests]
   dockerconfig = options[:dockerconfig]
   extra_wait = options[:extra_wait]
+  activate_oidc = options[:activate_oidc]
 
   vpc_name = cluster_name if vpc_name.nil?
   usage if cluster_name.nil?
@@ -40,6 +41,7 @@ def main(options)
   if kind == "eks" || kind == "EKS"
     create_cluster_eks(cluster_name, vpc_name)
     sleep(extra_wait)
+    check_identity_provider_assiciation(cluster_name) if activate_oidc
     install_components_eks(cluster_name)
   else
     create_cluster_kops(cluster_name, vpc_name)
@@ -90,6 +92,34 @@ def create_cluster_eks(cluster_name, vpc_name)
   ].join(" ")
 
   run_and_output "cd #{dir}; #{tf_apply}"
+end
+
+def check_identity_provider_assoiciation(cluster_name)
+  max_tries = 1
+  validated = false
+
+  (1..max_tries).each do |attempt|
+    log "Check for active Auth0 Identity Provider Association, attempt #{attempt} of #{max_tries}..."
+
+    cmd = "aws eks describe-identity-provider-config --cluster-name #{cluster_name} --identity-provider-config '{\"type\": \"oidc\", \"name\": \"Auth0\"}'"
+    if status_active?(cmd)
+      log "Auth0 Identity provider association to the cluster successful."
+      validated = true
+      break
+    else
+      log "Sleeping before retry..."
+      sleep 20
+    end
+  end
+
+  raise "ERROR Failed to associate Auth0 Identity provider to the  cluster after #{max_tries} attempts." unless validated
+end
+
+def status_active?(cmd)
+  response,_,_ = execute(cmd)
+  current_status =  JSON.parse(response).dig("identityProviderConfig","oidc","status")
+  log "Current Status: #{current_status}"
+  current_status == "ACTIVE"
 end
 
 def run_kops(cluster_name, dockerconfig)
@@ -220,7 +250,7 @@ def wait_for_kops_validate
     end
   end
 
-  raise "ERROR Failed to validate cluster after $max_tries attempts." unless validated
+  raise "ERROR Failed to validate cluster after #{max_tries} attempts." unless validated
 end
 
 def switch_terraform_workspace(dir, name)
@@ -341,6 +371,10 @@ def parse_options
 
     opts.on("-d", "--dockerconfig DOCKER-CONFIG", "Authenticate to Docker hub using a docker config file") do |name|
       options[:dockerconfig] = name
+    end
+
+    opts.on("-o", "--no-active-oidc", "Dont wait for the OIDC Association to be active after cluster creation") do |name|
+      options[:activate_oidc] = true
     end
 
     opts.on_tail("-h", "--help", "Show help message") do
