@@ -137,3 +137,10 @@ module "auth0" {
   services_base_domain = "apps.${local.fqdn}"
   extra_callbacks      = lookup(local.auth0_extra_callbacks, terraform.workspace, [""])
 }
+
+resource "null_resource" "associate_identity_provider" {
+  provisioner "local-exec" {
+    command = "aws eks associate-identity-provider-config --cluster-name '${terraform.workspace}' --oidc identityProviderConfigName='Auth0',issuerUrl='${var.auth0_issuerUrl}',clientId='${module.auth0.oidc_kubernetes_client_id}',usernameClaim=email,groupsClaim='${var.auth0_groupsClaim}',requiredClaims={}"
+  }
+
+}
