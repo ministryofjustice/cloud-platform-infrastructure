@@ -14,10 +14,6 @@ namespaces:
       - "fluent-bit"
     servicemonitors:
       - fluent-bit
-  kiam:
-    daemonsets:
-      - "kiam-server"
-      - "kiam-agent"
   monitoring:
     daemonsets:
       - "prometheus-operator-prometheus-node-exporter"
