@@ -41,7 +41,7 @@ def main(options)
   if kind == "eks" || kind == "EKS"
     create_cluster_eks(cluster_name, vpc_name)
     sleep(extra_wait)
-    check_identity_provider_assiciation(cluster_name) if activate_oidc
+    check_identity_provider_assoiciation(cluster_name) if activate_oidc
     install_components_eks(cluster_name)
   else
     create_cluster_kops(cluster_name, vpc_name)
@@ -116,7 +116,7 @@ def check_identity_provider_assoiciation(cluster_name)
 end
 
 def status_active?(cmd)
-  response,_,_ = execute(cmd)
+  response = execute(cmd)
   current_status =  JSON.parse(response).dig("identityProviderConfig","oidc","status")
   log "Current Status: #{current_status}"
   current_status == "ACTIVE"
