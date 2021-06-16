@@ -28,7 +28,7 @@ describe "cert-manager" do
 
       # Certificate creation and subsequent 2 minute wait for certificate status to equal "True"
       create_certificate(namespace, host)
-      sleep 150
+      sleep 240
 
       result = validate_certificate(host)
       expect(result).to match(/#{host}/)
