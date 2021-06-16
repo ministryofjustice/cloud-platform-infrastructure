@@ -70,6 +70,12 @@ locals {
     default = false
   }
 
+  enable_exporters = {
+    manager = false
+    live    = true
+    default = false
+  }
+
   hostzones = {
     manager = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",

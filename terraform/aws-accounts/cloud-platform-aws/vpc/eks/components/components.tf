@@ -122,8 +122,8 @@ module "monitoring" {
   enable_thanos_helm_chart = lookup(local.prod_workspace, terraform.workspace, false)
   enable_thanos_compact    = terraform.workspace == "manager" ? true : false
 
-  enable_ecr_exporter        = true
-  enable_cloudwatch_exporter = true
+  enable_ecr_exporter        = lookup(local.enable_exporters, terraform.workspace, local.enable_exporters["default"])
+  enable_cloudwatch_exporter = lookup(local.enable_exporters, terraform.workspace, local.enable_exporters["default"])
 
   # This section is for EKS
   eks                         = true
