@@ -17,6 +17,7 @@ variable "auth0_groupsClaim" {
 }
 
 variable "check_associate" {
-  description = "Check for active association during cluster creation. This is required for kuberos to authenticate to the cluster."
+  type        = string
   default = "true"
+  description = "Check for active association during cluster creation. This is required for kuberos to authenticate to the cluster."
 }
