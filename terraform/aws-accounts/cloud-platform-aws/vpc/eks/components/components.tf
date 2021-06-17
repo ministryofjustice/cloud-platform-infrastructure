@@ -113,7 +113,7 @@ module "kuberos" {
   oidc_kubernetes_client_secret = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   cluster_address               = data.terraform_remote_state.cluster.outputs.cluster_endpoint
-  create_aws_redirect           = terraform.workspace == local.prod_workspace ? true : false
+  create_aws_redirect           = false
 }
 
 module "monitoring" {
