@@ -140,7 +140,30 @@ module "auth0" {
 
 resource "null_resource" "associate_identity_provider" {
   provisioner "local-exec" {
-    command = "aws eks associate-identity-provider-config --cluster-name '${terraform.workspace}' --oidc identityProviderConfigName='Auth0',issuerUrl='${var.auth0_issuerUrl}',clientId='${module.auth0.oidc_kubernetes_client_id}',usernameClaim=email,groupsClaim='${var.auth0_groupsClaim}',requiredClaims={}"
+    command = "aws eks associate-identity-provider-config --cluster-name '${terraform.workspace}' --oidc identityProviderConfigName='Auth0',issuerUrl='${var.auth0_issuerUrl}',clientId='${module.auth0.oidc_kubernetes_client_id}',usernameClaim=email,groupsClaim='${var.auth0_groupsClaim}',requiredClaims={}; exit 0"
   }
 
+}
+
+resource "null_resource" "wait_for_active_associate" {
+  count = var.check_associate == "true" ? 1 : 0
+  provisioner "local-exec" {
+    command     = var.wait_for_active_associate_cmd
+    interpreter = var.wait_for_active_associate_interpreter
+    environment = {
+      CLUSTER = terraform.workspace
+    }
+  }
+}
+
+variable "wait_for_active_associate_cmd" {
+  description = "Custom local-exec command to execute for determining if the associate identity provider is active. Cluster name will be available as an environment variable called CLUSTER"
+  type        = string
+  default     = "for i in `seq 1 20`; do if [[ `aws eks describe-identity-provider-config --cluster-name pk-eks-01 --identity-provider-config type='oidc',name='Auth0' --output json --query 'identityProviderConfig.oidc.status'` == '\"ACTIVE\"' ]]; then exit 0;else echo 'Checking again for active Auth0 association'; sleep 2;fi; done; echo 'TIMEOUT due to maximum retries to check for active Auth0 association'; exit 1"
+}
+
+variable "wait_for_active_associate_interpreter" {
+  description = "Custom local-exec command line interpreter for the command to determining if the eks cluster is healthy."
+  type        = list(string)
+  default     = ["/bin/sh", "-c"]
 }

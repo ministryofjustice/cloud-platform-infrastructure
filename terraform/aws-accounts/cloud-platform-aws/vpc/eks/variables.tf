@@ -15,3 +15,8 @@ variable "auth0_groupsClaim" {
   description = "OIDC Group Claim domain for justice cloud-platform account"
   default = "https://k8s.integration.dsd.io/groups"
 }
+
+variable "check_associate" {
+  description = "Check for active association during cluster creation. This is required for kuberos to authenticate to the cluster."
+  default = "true"
+}
