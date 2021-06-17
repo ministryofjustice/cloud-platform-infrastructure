@@ -146,7 +146,8 @@ resource "null_resource" "associate_identity_provider" {
 }
 
 resource "null_resource" "wait_for_active_associate" {
-  count = var.check_associate == "true" ? 1 : 0
+  count      = var.check_associate == "true" ? 1 : 0
+  depends_on = [null_resource.associate_identity_provider]
   provisioner "local-exec" {
     command     = var.wait_for_active_associate_cmd
     interpreter = var.wait_for_active_associate_interpreter
@@ -159,7 +160,7 @@ resource "null_resource" "wait_for_active_associate" {
 variable "wait_for_active_associate_cmd" {
   description = "Custom local-exec command to execute for determining if the associate identity provider is active. Cluster name will be available as an environment variable called CLUSTER"
   type        = string
-  default     = "for i in `seq 1 40`; do if [[ `aws eks describe-identity-provider-config --cluster-name $CLUSTER --identity-provider-config type='oidc',name='Auth0' --output json --query 'identityProviderConfig.oidc.status'` == '\"ACTIVE\"' ]]; then exit 0;else echo 'Checking again for active Auth0 association'; sleep 30;fi; done; echo 'TIMEOUT due to maximum retries to check for active Auth0 association'; exit 1"
+  default     = "for i in `seq 1 50`; do if [[ `aws eks describe-identity-provider-config --cluster-name $CLUSTER --identity-provider-config type='oidc',name='Auth0' --output json --query 'identityProviderConfig.oidc.status'` == '\"ACTIVE\"' ]]; then exit 0;else echo 'Checking again for active Auth0 association'; sleep 30;fi; done; echo 'TIMEOUT due to maximum retries to check for active Auth0 association'; exit 1"
 }
 
 variable "wait_for_active_associate_interpreter" {
