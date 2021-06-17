@@ -146,7 +146,7 @@ resource "null_resource" "associate_identity_provider" {
 }
 
 resource "null_resource" "wait_for_active_associate" {
-  count = var.check_associate == "true" ? 1 : 0
+  count      = var.check_associate == "true" ? 1 : 0
   depends_on = [null_resource.associate_identity_provider]
   provisioner "local-exec" {
     command     = var.wait_for_active_associate_cmd
