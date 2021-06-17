@@ -163,7 +163,7 @@ variable "wait_for_active_associate_cmd" {
 }
 
 variable "wait_for_active_associate_interpreter" {
-  description = "Custom local-exec command line interpreter for the command to determining if the eks cluster is healthy."
+  description = "Custom local-exec command line interpreter for the command to determining if the Auth0 association to eks cluster is active."
   type        = list(string)
   default     = ["/bin/sh", "-c"]
 }
