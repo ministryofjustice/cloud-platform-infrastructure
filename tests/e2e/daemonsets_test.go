@@ -14,7 +14,7 @@ var _ = Describe("Daemonsets checks", func() {
 	)
 
 	It("should exist the following daemonsets", func() {
-		daemonSets := c.GetDaemonSets()
+		daemonSets := c.GetExpectedDaemonSets()
 
 		if len(daemonSets) == 0 {
 			Skip("No daemonsets defined, skipping test")
