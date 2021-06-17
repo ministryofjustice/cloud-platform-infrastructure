@@ -40,7 +40,6 @@ metadata:
     kubernetes.io/ingress.class: <%= ingress_class %> 
     nginx.ingress.kubernetes.io/enable-modsecurity: "false"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
-      Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
       SecRuleEngine On
 spec:
   tls:
