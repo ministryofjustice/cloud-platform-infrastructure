@@ -97,7 +97,7 @@ module "ingress_controllers" {
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
   dependence_opa         = "ignore"
   # already set by cert-manager
-  dependence_prometheus  = "ignore"
+  dependence_prometheus = "ignore"
 }
 
 module "opa" {
