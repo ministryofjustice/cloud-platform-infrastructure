@@ -9,7 +9,6 @@
 #
 require "fileutils"
 require "optparse"
-require "json"
 
 MAX_CLUSTER_NAME_LENGTH = 12
 CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
@@ -29,7 +28,6 @@ def main(options)
   integration_tests = options[:integration_tests]
   dockerconfig = options[:dockerconfig]
   extra_wait = options[:extra_wait]
-  activate_oidc = options[:activate_oidc]
 
   vpc_name = cluster_name if vpc_name.nil?
   usage if cluster_name.nil?
