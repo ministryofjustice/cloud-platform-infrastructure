@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "test ingress controllers", speed: "fast", "live-1": false do
+describe "test ingress controllers", speed: "fast", cluster: "test-cluster-only" do
   context "default" do
     host = "prometheus.apps.#{current_cluster}"
     let(:url) { "https://#{host}" }
