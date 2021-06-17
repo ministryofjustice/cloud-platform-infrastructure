@@ -7,9 +7,7 @@ describe "nginx ingress", speed: "slow" do
   ingress_name = "integration-test-app-ing"
   ingress_class = "nginx"
 
-  # Delay of 300 or lower consistently results in at least one test failure
-  # Delay of 360 fails 50/50
-  let(:sleep_delay) { 400 } # How long to wait after creating/modifying an ingress
+  let(:sleep_delay) { 60 } # How long to wait after creating/modifying an ingress
 
   before(:all) do
     create_namespace(namespace)
@@ -50,10 +48,10 @@ describe "nginx ingress", speed: "slow" do
     end
   end
 
-  context "when ingress is deployed using 'integration-test' ingress controller", kops: true do
+  context "when ingress is deployed using 'modsec01' ingress controller", kops: true do
     before do
       host = "#{namespace}-integration-test.apps.#{current_cluster}"
-      ingress_class = "integration-test"
+      ingress_class = "modsec01"
 
       apply_template_file(
         namespace: namespace,
