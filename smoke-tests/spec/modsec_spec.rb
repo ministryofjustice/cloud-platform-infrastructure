@@ -25,7 +25,7 @@ describe "Testing modsec on ingress class: 'modsec01'", kops: true do
       binding: binding
     )
     wait_for(namespace, "ingress", ingress_name)
-    sleep 60 # We need to wait for a while *after* the ingress is created before we try to test it, or we get failures.
+    sleep 180 # We need to wait for a while *after* the ingress is created before we try to test it, or we get failures.
   end
 
   after(:all, kops: true) do
@@ -36,7 +36,7 @@ describe "Testing modsec on ingress class: 'modsec01'", kops: true do
     before do
       annotations_hash = {'nginx.ingress.kubernetes.io/enable-modsecurity': "true"}
       annotate_ingress(namespace, ingress_name, annotations_hash)
-      sleep 10
+      sleep 30
     end
 
     context "when the url is benign" do
@@ -60,7 +60,7 @@ describe "Testing modsec on ingress class: 'modsec01'", kops: true do
     before do
       annotations_hash = {'nginx.ingress.kubernetes.io/enable-modsecurity': "false"}
       annotate_ingress(namespace, ingress_name, annotations_hash)
-      sleep 10
+      sleep 30
     end
 
     context "when the url is benign" do
