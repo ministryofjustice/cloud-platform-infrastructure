@@ -31,7 +31,7 @@ module "eks" {
   node_groups = {
     default_ng = {
       desired_capacity = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-      max_capacity     = 30
+      max_capacity     = 60
       min_capacity     = 1
       subnets          = data.aws_subnet_ids.private.ids
 
