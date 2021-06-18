@@ -52,3 +52,7 @@ output "cluster_oidc_issuer_url" {
 output "cluster_id" {
   value = module.eks.cluster_id
 }
+
+output "instance_types" {
+  value = module.eks.node_groups.default_ng.instance_types
+}

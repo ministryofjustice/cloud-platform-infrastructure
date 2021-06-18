@@ -35,17 +35,19 @@ locals {
   }
 
   node_groups_count = {
-    live    = "19"
+    live    = "54"
     default = "4"
   }
 
+  # Max pods per instance type: r5.4xlarge=234, r4.4xlarge=234, m5.xlarge=58, ,m4.xlarge=58, m5.large=20, m4.large=20
+  # https://github.com/awslabs/amazon-eks-ami/blob/master/files/eni-max-pods.txt
   node_size = {
-    live    = "r5.xlarge"
-    manager = "m4.xlarge"
-    default = "r5.xlarge"
+    live    = ["r5.xlarge", "r4.xlarge"]
+    manager = ["m5.xlarge", "m4.xlarge"]
+    default = ["m5.large", "m4.large"]
   }
 
-  # Some clusters (like manage) need extra callbacks URLs in auth0
+  # Some clusters (like manager) need extra callbacks URLs in auth0
   auth0_extra_callbacks = {
     manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
   }
