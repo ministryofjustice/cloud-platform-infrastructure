@@ -35,7 +35,7 @@ locals {
   }
 
   node_groups_count = {
-    live    = "19"
+    live    = "54"
     default = "4"
   }
 
