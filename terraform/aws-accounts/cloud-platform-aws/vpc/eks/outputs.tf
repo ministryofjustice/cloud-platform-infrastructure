@@ -55,3 +55,7 @@ output "cluster_id" {
 output "cluster_endpoint" {
   value = module.eks.cluster_endpoint
 }
+
+output "instance_types" {
+  value = module.eks.node_groups.default_ng.instance_types
+}
