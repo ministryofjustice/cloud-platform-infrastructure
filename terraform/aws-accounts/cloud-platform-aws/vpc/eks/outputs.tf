@@ -54,5 +54,4 @@ output "cluster_id" {
 }
 output "cluster_endpoint" {
   value      = module.eks.cluster_endpoint
-  depends_on = [null_resource.wait_for_active_associate]
 }
