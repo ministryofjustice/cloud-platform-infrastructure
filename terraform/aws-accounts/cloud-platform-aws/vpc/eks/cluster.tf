@@ -38,7 +38,7 @@ module "eks" {
       create_launch_template = true
       pre_userdata           = local.pre_userdata
 
-      instance_type = lookup(local.node_size, terraform.workspace, local.node_size["default"])
+      instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
       k8s_labels = {
         Terraform = "true"
         Cluster   = terraform.workspace
