@@ -18,6 +18,10 @@ output "internal_subnets_ids" {
   value = tolist(data.aws_subnet_ids.private.ids)
 }
 
+output "external_subnets_ids" {
+  value = tolist(data.aws_subnet_ids.public.ids)
+}
+
 output "cluster_domain_name" {
   value = local.fqdn
 }
