@@ -141,7 +141,7 @@ module "auth0" {
 resource "null_resource" "associate_identity_provider" {
   depends_on = [module.eks.cluster_id]
   provisioner "local-exec" {
-    command = "aws eks --region 'eu-west-2' associate-identity-provider-config --cluster-name '${terraform.workspace}' --oidc identityProviderConfigName='Auth0',issuerUrl='${var.auth0_issuerUrl}',clientId='${module.auth0.oidc_kubernetes_client_id}',usernameClaim=email,groupsClaim='${var.auth0_groupsClaim}',requiredClaims={}; exit 0"
+    command = "aws eks --region 'eu-west-2' associate-identity-provider-config --cluster-name '${terraform.workspace}' --oidc identityProviderConfigName='Auth0',issuerUrl='${var.auth0_issuerUrl}',clientId='${module.auth0.oidc_kubernetes_client_id}',usernameClaim=email,groupsClaim='${var.auth0_groupsClaim}',requiredClaims={} || aws eks --region 'eu-west-2' describe-identity-provider-config --cluster-name '${terraform.workspace}' --identity-provider-config type='oidc',name='Auth0' --output json --query 'identityProviderConfig.oidc.status'"
   }
 
 }
