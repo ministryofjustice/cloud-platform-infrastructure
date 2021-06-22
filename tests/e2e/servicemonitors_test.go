@@ -14,7 +14,7 @@ var _ = Describe("ServiceMonitors checks", func() {
 	)
 
 	It("should exist the following servicemonitors", func() {
-		serviceMonitors := c.GetServiceMonitors()
+		serviceMonitors := c.GetExpectedServiceMonitors()
 
 		if len(serviceMonitors) == 0 {
 			Skip("No servicemonitors defined, skipping test")
