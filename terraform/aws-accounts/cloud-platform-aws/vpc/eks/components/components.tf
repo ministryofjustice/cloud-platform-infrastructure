@@ -84,6 +84,8 @@ module "ingress_controllers" {
   dependence_prometheus  = "ignore"
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
   dependence_opa         = "ignore"
+  # It depends on complete cert-manager module
+  depends_on = [module.cert_manager]
 }
 
 module "modsec_ingress_controllers" {
