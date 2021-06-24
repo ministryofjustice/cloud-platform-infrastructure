@@ -1,5 +1,5 @@
 ---
-clusterName: 'live.cloud-platform.service.justice.gov.uk'
+clusterName: 'cp-1406-1221.cloud-platform.service.justice.gov.uk'
 namespaces:
   cert-manager:
     servicemonitors:

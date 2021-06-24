@@ -14,6 +14,7 @@ type Config struct {
 	Namespaces             map[string]K8SObjects  `yaml:"namespaces"`
 	ExternalDNS            ExternalDNS            `yaml:"externalDNS"`
 	NginxIngressController NginxIngressController `yaml:"nginxIngressController"`
+	NginxIngressControllerModsec NginxIngressControllerModsec `yaml:"nginxIngressControllerModsec"`
 	FilesExist             []string               `yaml:"filesExist"`
 }
 
