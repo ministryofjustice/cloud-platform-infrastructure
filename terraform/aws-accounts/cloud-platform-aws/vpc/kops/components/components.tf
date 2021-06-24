@@ -1,5 +1,5 @@
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.2.1"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -101,7 +101,8 @@ module "ingress_controllers" {
 }
 
 module "opa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.11"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.11"
+  depends_on = [module.prometheus, module.ingress_controllers, module.velero, module.kiam, module.cert_manager]
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   # boolean expression for applying opa valid hostname for test clusters only.
