@@ -93,12 +93,11 @@ module "ingress_controllers" {
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
 
+  # This module requires cert-manager
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
   dependence_opa         = "ignore"
   # already set by cert-manager
   dependence_prometheus = "ignore"
-  # This module requires cert-manager
-  depends_on = [module.cert_manager]
 }
 
 module "opa" {
