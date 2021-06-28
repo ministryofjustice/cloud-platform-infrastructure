@@ -79,7 +79,7 @@ module "prometheus" {
 }
 
 module "modsec_ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.3.0"
 
   controller_name = "modsec01"
   replica_count   = "4"
