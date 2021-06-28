@@ -4,3 +4,6 @@ package config
 type NginxIngressController struct {
 	NamespacePrefix string `yaml:"namespacePrefix"`
 }
+type ModsecIngressController struct {
+	NamespacePrefix string `yaml:"namespacePrefix"`
+}

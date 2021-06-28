@@ -38,7 +38,7 @@ metadata:
   name: integration-test-app-ing
   annotations:
     kubernetes.io/ingress.class: {{ .ingress_class }}
-    nginx.ingress.kubernetes.io/enable-modsecurity: {{ .enable_modsec }}
+    nginx.ingress.kubernetes.io/enable-modsecurity: {{ .modsec_enabled }}
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
 spec:
