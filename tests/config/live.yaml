@@ -1,5 +1,5 @@
 ---
-clusterName: 'cp-1406-1221.cloud-platform.service.justice.gov.uk'
+clusterName: 'live.cloud-platform.service.justice.gov.uk'
 namespaces:
   cert-manager:
     servicemonitors:
@@ -38,6 +38,8 @@ namespaces:
       - velero
 nginxIngressController:
   namespacePrefix: "smoketest-ingress-"
+modsecIngressController:
+  namespacePrefix: "smoketest-modsec-"
 externalDNS:
   namespacePrefix: "e2e-tests-externaldns-"
   hostedZoneId: Z02429076QQMAO8KXV68
