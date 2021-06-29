@@ -37,6 +37,7 @@ REQUIRED_ENV_VARS = %w[AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SEC
 REQUIRED_EXECUTABLES = %w[git-crypt terraform helm aws kops ssh-keygen]
 REQUIRED_AWS_PROFILES = %w[moj-cp]
 LIVE_CLUSTER_NAME_REXP = /live/
+AWS_REGION = "eu-west-2"
 
 require "open3"
 require "optparse"
@@ -53,8 +54,8 @@ class ClusterDeleter
 
     if kind == "eks" || kind == "EKS"
       check_prerequisites
-      # target_eks_cluster
-      # abort_if_user_namespaces_exist
+      target_eks_cluster
+      abort_if_user_namespaces_exist
       terraform_eks_components
       terraform_base_eks
       terraform_vpc if destroy_vpc?
@@ -146,7 +147,7 @@ class ClusterDeleter
   end
 
   def target_eks_cluster
-    execute("aws eks --region eu-west-2 update-kubeconfig --name #{cluster_name}")
+    execute("aws eks update-kubeconfig --name #{cluster_name} --region #{AWS_REGION}")
   end
   # If someone has deployed something into this cluster, there might be
   # associated AWS resources which would be left orphaned if the cluster were
@@ -193,17 +194,6 @@ class ClusterDeleter
     dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks/components"
     tf_init dir
     tf_workspace_select(dir, cluster_name)
-    # prometheus_operator often fails to delete cleanly if anything has
-    # happened to the open policy agent beforehand. Delete it first to
-    # avoid any issues
-    begin
-      retries ||= 0
-      puts "Retry ##{retries} to destroy prometheus due to CRDs missing and deleting prometheus resources"
-      tf_destroy(dir, "module.prometheus")
-      raise
-    rescue
-      retry if (retries += 1) < 2
-    end
     tf_destroy(dir)
   end
 
@@ -215,7 +205,11 @@ class ClusterDeleter
     dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks"
     tf_init dir
     tf_workspace_select(dir, cluster_name)
-    execute %(cd #{dir}; terraform destroy -auto-approve)
+    # EKS cluster often fails to delete due to config_auth Unauthorized
+    # run terraform refresh as suggested in the issue
+    # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1162
+    execute %(cd #{dir}; terraform refresh)
+    tf_destroy(dir)
   end
 
   def terraform_base_kops
@@ -312,7 +306,7 @@ def parse_options
       options[:destroy_vpc] = !dont_destroy_vpc
     end
 
-    opts.on("-k", "--kind EKS_OR_KOPS", "eks or kops? destroy cluster script now supoort EKS, default to kops") do |name|
+    opts.on("-k", "--kind EKS_OR_KOPS", "eks or kops? destroy cluster script to support EKS, default to kops") do |name|
       options[:kind] = name
     end
 
