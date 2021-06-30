@@ -52,8 +52,8 @@ class ClusterDeleter
   def run
     puts "DRY-RUN: No changes will be made to the cluster" if dry_run?
 
+    check_prerequisites
     if kind == "eks" || kind == "EKS"
-      check_prerequisites
       target_eks_cluster
       abort_if_user_namespaces_exist
       terraform_eks_components
@@ -61,7 +61,6 @@ class ClusterDeleter
       terraform_vpc if destroy_vpc?
       terraform_workspaces_eks
     else
-      check_prerequisites
       target_kops_cluster
       abort_if_user_namespaces_exist
       terraform_kops_components
@@ -70,7 +69,6 @@ class ClusterDeleter
       terraform_vpc if destroy_vpc?
       terraform_workspaces_kops
     end
-
   end
 
   private
@@ -149,6 +147,7 @@ class ClusterDeleter
   def target_eks_cluster
     execute("aws eks update-kubeconfig --name #{cluster_name} --region #{AWS_REGION}")
   end
+
   # If someone has deployed something into this cluster, there might be
   # associated AWS resources which would be left orphaned if the cluster were
   # destroyed. So, we check for any unexpected namespaces, and abort if we find
