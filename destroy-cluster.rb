@@ -2,7 +2,7 @@
 
 # If any namespaces exist in the cluster which are not
 # listed here, the destroy script will abort.
-SYSTEM_NAMESPACES = %w[
+KOPS_SYSTEM_NAMESPACES = %w[
   cert-manager
   default
   docker-registry-cache
@@ -18,11 +18,26 @@ SYSTEM_NAMESPACES = %w[
   velero
 ] + (0..9).map { |i| "starter-pack-#{i}" }
 
+EKS_SYSTEM_NAMESPACES = %w[
+  cert-manager
+  default
+  ingress-controllers
+  kube-node-lease
+  kube-public
+  kube-system
+  kuberos
+  logging
+  monitoring
+  opa
+  velero
+]
+
 MAX_CLUSTER_NAME_LENGTH = 12
 REQUIRED_ENV_VARS = %w[AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE]
 REQUIRED_EXECUTABLES = %w[git-crypt terraform helm aws kops ssh-keygen]
 REQUIRED_AWS_PROFILES = %w[moj-cp]
 LIVE_CLUSTER_NAME_REXP = /live/
+AWS_REGION = "eu-west-2"
 
 require "open3"
 require "optparse"
@@ -38,16 +53,29 @@ class ClusterDeleter
     puts "DRY-RUN: No changes will be made to the cluster" if dry_run?
 
     check_prerequisites
-    target_cluster
-    abort_if_user_namespaces_exist
-    terraform_components
-    kops_cluster
-    terraform_base
-    terraform_vpc if destroy_vpc?
-    terraform_workspaces
+    if kind == "eks" || kind == "EKS"
+      target_eks_cluster
+      abort_if_user_namespaces_exist
+      terraform_eks_components
+      terraform_base_eks
+      terraform_vpc if destroy_vpc?
+      terraform_workspaces_eks
+    else
+      target_kops_cluster
+      abort_if_user_namespaces_exist
+      terraform_kops_components
+      kops_cluster
+      terraform_base_kops
+      terraform_vpc if destroy_vpc?
+      terraform_workspaces_kops
+    end
   end
 
   private
+
+  def kind
+    options[:kind]
+  end
 
   def dry_run?
     !!options[:dry_run]
@@ -112,8 +140,12 @@ class ClusterDeleter
       unless l <= MAX_CLUSTER_NAME_LENGTH
   end
 
-  def target_cluster
+  def target_kops_cluster
     execute("kops export kubecfg #{cluster_long_name}", true)
+  end
+
+  def target_eks_cluster
+    execute("aws eks update-kubeconfig --name #{cluster_name} --region #{AWS_REGION}")
   end
 
   # If someone has deployed something into this cluster, there might be
@@ -132,10 +164,14 @@ class ClusterDeleter
   def user_namespaces
     stdout, _, _ = execute("kubectl get ns -o name | sed 's/namespace.//'", true)
     namespaces = stdout.split("\n")
-    namespaces - SYSTEM_NAMESPACES
+    if kind == "eks" || kind == "EKS"
+      namespaces - EKS_SYSTEM_NAMESPACES
+    else
+      namespaces - KOPS_SYSTEM_NAMESPACES
+    end
   end
 
-  def terraform_components
+  def terraform_kops_components
     dir = "terraform/aws-accounts/cloud-platform-aws/vpc/kops/components"
     tf_init dir
     tf_workspace_select(dir, cluster_name)
@@ -153,19 +189,43 @@ class ClusterDeleter
     tf_destroy(dir)
   end
 
+  def terraform_eks_components
+    dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks/components"
+    tf_init dir
+    tf_workspace_select(dir, cluster_name)
+    tf_destroy(dir)
+  end
+
   def kops_cluster
     execute "kops delete cluster --name #{cluster_long_name} --yes"
   end
 
-  def terraform_base
+  def terraform_base_eks
+    dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks"
+    tf_init dir
+    tf_workspace_select(dir, cluster_name)
+    # EKS cluster often fails to delete due to config_auth Unauthorized
+    # run terraform refresh as suggested in the issue
+    # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1162
+    execute %(cd #{dir}; terraform refresh)
+    tf_destroy(dir)
+  end
+
+  def terraform_base_kops
     dir = "terraform/aws-accounts/cloud-platform-aws/vpc/kops"
     tf_init dir
     tf_workspace_select(dir, cluster_name)
     execute %(cd #{dir}; terraform destroy -var vpc_name="#{vpc_name}" -auto-approve)
   end
 
-  def terraform_workspaces
+  def terraform_workspaces_kops
     ["terraform/aws-accounts/cloud-platform-aws/vpc/kops", "terraform/aws-accounts/cloud-platform-aws/vpc/kops/components", "terraform/aws-accounts/cloud-platform-aws/vpc"].each do |dir|
+      execute "cd #{dir}; terraform workspace select default; terraform workspace delete #{cluster_name}"
+    end
+  end
+
+  def terraform_workspaces_eks
+    ["terraform/aws-accounts/cloud-platform-aws/vpc/eks", "terraform/aws-accounts/cloud-platform-aws/vpc/eks/components", "terraform/aws-accounts/cloud-platform-aws/vpc"].each do |dir|
       execute "cd #{dir}; terraform workspace select default; terraform workspace delete #{cluster_name}"
     end
   end
@@ -226,6 +286,7 @@ end
 def parse_options
   # set defaults
   options = {
+    kind: "kops",
     dry_run: true,
     cluster_name: nil,
     destroy_vpc: true
@@ -242,6 +303,10 @@ def parse_options
 
     opts.on("-d", "--dont-destroy-vpc", "Supply this flag to leave the VPC intact") do |dont_destroy_vpc|
       options[:destroy_vpc] = !dont_destroy_vpc
+    end
+
+    opts.on("-k", "--kind EKS_OR_KOPS", "eks or kops? destroy cluster script to support EKS, default to kops") do |name|
+      options[:kind] = name
     end
 
     opts.on("-y", "--yes", "Actually destroy the cluster") do |yes|
