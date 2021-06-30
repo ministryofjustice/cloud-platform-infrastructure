@@ -63,12 +63,12 @@ resource "kubernetes_cluster_role" "privileged" {
   }
 
   rule {
-    api_groups = ["policy"]
-    resources  = ["podsecuritypolicies"]
-    verbs      = ["use"]
+    api_groups     = ["policy"]
+    resources      = ["podsecuritypolicies"]
+    verbs          = ["use"]
     resource_names = ["privileged"]
   }
-  
+
 }
 
 ## ClusterRoleBinding: privileged
@@ -91,38 +91,38 @@ resource "kubernetes_cluster_role_binding" "privileged" {
     name      = "coredns"
     namespace = "kube-system"
   }
-    subject {
+  subject {
     kind      = "ServiceAccount"
     name      = "kube-proxy"
     namespace = "kube-system"
   }
-    subject {
+  subject {
     kind      = "ServiceAccount"
     name      = "sonarqube-sonarqube"
     namespace = "sonarqube"
   }
-    subject {
+  subject {
     kind      = "ServiceAccount"
     name      = "calico-node"
     namespace = "kube-system"
   }
-    subject {
+  subject {
     kind      = "ServiceAccount"
     name      = "cluster-autoscaler-aws-cluster-autoscaler"
     namespace = "kube-system"
   }
-    subject {
+  subject {
     kind      = "ServiceAccount"
     name      = "calico-typha-cpha"
     namespace = "kube-system"
   }
-    subject {
+  subject {
     kind      = "ServiceAccount"
     name      = "typha-cpha"
     namespace = "kube-system"
   }
 
-    subject {
+  subject {
     kind      = "Group"
     name      = "system:serviceaccounts:cert-manager"
     api_group = "rbac.authorization.k8s.io"
@@ -148,12 +148,12 @@ resource "kubernetes_cluster_role_binding" "privileged" {
     name      = "system:serviceaccounts:logging"
     api_group = "rbac.authorization.k8s.io"
   }
-   subject {
+  subject {
     kind      = "Group"
     name      = "system:serviceaccounts:monitoring"
     api_group = "rbac.authorization.k8s.io"
   }
-    subject {
+  subject {
     kind      = "Group"
     name      = "system:serviceaccounts:opa"
     api_group = "rbac.authorization.k8s.io"
@@ -230,12 +230,12 @@ resource "kubernetes_cluster_role" "restricted" {
   }
 
   rule {
-    api_groups = ["policy"]
-    resources  = ["podsecuritypolicies"]
-    verbs      = ["use"]
+    api_groups     = ["policy"]
+    resources      = ["podsecuritypolicies"]
+    verbs          = ["use"]
     resource_names = ["restricted"]
   }
-  
+
 }
 
 ## ClusterRoleBinding: restricted
@@ -248,7 +248,7 @@ resource "kubernetes_cluster_role_binding" "restricted" {
     kind      = "ClusterRole"
     name      = "psp:restricted"
   }
-    subject {
+  subject {
     kind      = "Group"
     name      = "system:authenticated"
     api_group = "rbac.authorization.k8s.io"
@@ -317,12 +317,12 @@ resource "kubernetes_cluster_role" "aws_node" {
   }
 
   rule {
-    api_groups = ["policy"]
-    resources  = ["podsecuritypolicies"]
-    verbs      = ["use"]
+    api_groups     = ["policy"]
+    resources      = ["podsecuritypolicies"]
+    verbs          = ["use"]
     resource_names = ["aws-node"]
   }
-  
+
 }
 
 ## ClusterRoleBinding: aws-node
@@ -335,7 +335,7 @@ resource "kubernetes_cluster_role_binding" "aws_node" {
     kind      = "ClusterRole"
     name      = "psp:aws-node"
   }
-    subject {
+  subject {
     kind      = "ServiceAccount"
     name      = "aws-node"
     namespace = "kube-system"
