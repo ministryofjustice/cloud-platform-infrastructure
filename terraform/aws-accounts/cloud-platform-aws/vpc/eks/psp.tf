@@ -33,8 +33,8 @@ resource "kubernetes_pod_security_policy" "privileged" {
     }
 
     host_network = true
-    host_ipc = true
-    host_pid = true
+    host_ipc     = true
+    host_pid     = true
 
     run_as_user {
       rule = "RunAsAny"
@@ -59,7 +59,7 @@ resource "kubernetes_pod_security_policy" "restricted" {
     name = "restricted"
     annotations = {
       "seccomp.security.alpha.kubernetes.io/allowedProfileNames" = "docker/default,runtime/default"
-      "seccomp.security.alpha.kubernetes.io/defaultProfileName" = "runtime/default"
+      "seccomp.security.alpha.kubernetes.io/defaultProfileName"  = "runtime/default"
     }
   }
 
@@ -82,8 +82,8 @@ resource "kubernetes_pod_security_policy" "restricted" {
     ]
 
     host_network = false
-    host_ipc = false
-    host_pid = false
+    host_ipc     = false
+    host_pid     = false
 
     run_as_user {
       rule = "MustRunAsNonRoot"
@@ -143,8 +143,8 @@ resource "kubernetes_pod_security_policy" "aws_node" {
     }
 
     host_network = true
-    host_ipc = true
-    host_pid = true
+    host_ipc     = true
+    host_pid     = true
 
     run_as_user {
       rule = "RunAsAny"
