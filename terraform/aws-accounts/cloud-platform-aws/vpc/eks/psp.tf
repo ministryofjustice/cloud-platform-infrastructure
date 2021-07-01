@@ -12,8 +12,8 @@ resource "kubernetes_pod_security_policy" "privileged" {
   }
 
   spec {
-    privileged                 = true
-    allow_privilege_escalation = true
+    privileged                         = true
+    allow_privilege_escalation         = true
     default_allow_privilege_escalation = true
 
     allowed_capabilities = [
@@ -271,8 +271,8 @@ resource "kubernetes_pod_security_policy" "aws_node" {
   }
 
   spec {
-    privileged                 = true
-    allow_privilege_escalation = true
+    privileged                         = true
+    allow_privilege_escalation         = true
     default_allow_privilege_escalation = true
 
     allowed_capabilities = [
