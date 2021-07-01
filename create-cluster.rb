@@ -90,6 +90,8 @@ def create_cluster_eks(cluster_name, vpc_name)
   ].join(" ")
 
   run_and_output "cd #{dir}; #{tf_apply}"
+
+  fix_psp
 end
 
 def run_kops(cluster_name, dockerconfig)
@@ -145,20 +147,12 @@ def install_components_kops(cluster_name)
 end
 
 # This is a tactical fix to install our own pod security policies in an EKS cluster. When PSP's are deprecated and we create policies via another means, this method can be removed.
-def fix_psp(dir)
+def fix_psp
   cmd_delete = "kubectl delete psp eks.privileged"
   if cmd_successful?(cmd_delete)
     log "Deleted eks.privileged psp."
   else
     log "Could not delete eks.privileged psp. Aborting."
-    exit 1
-  end
-
-  cmd_apply = "kubectl apply -f #{dir}/resources/psp/pod-security-policy.yaml"
-  if cmd_successful?(cmd_apply)
-    log "Applied new psp's."
-  else
-    log "Could not apply psp's. Aborting."
     exit 1
   end
 
@@ -183,8 +177,6 @@ def install_components_eks(cluster_name)
     log "Could not set kubeconfig to the new cluster. Aborting."
     exit 1
   end
-
-  fix_psp(dir)
 
   cmd = "cd #{dir}; terraform apply -auto-approve"
   if cmd_successful?(cmd)
