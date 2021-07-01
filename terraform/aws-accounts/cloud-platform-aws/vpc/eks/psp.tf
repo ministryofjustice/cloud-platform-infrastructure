@@ -14,6 +14,7 @@ resource "kubernetes_pod_security_policy" "privileged" {
   spec {
     privileged                 = true
     allow_privilege_escalation = true
+    default_allow_privilege_escalation = true
 
     allowed_capabilities = [
       "NET_BIND_SERVICE",
@@ -257,7 +258,7 @@ resource "kubernetes_cluster_role_binding" "restricted" {
 
 }
 
-## Pod Security Policy: aws-node
+# Pod Security Policy: aws-node
 resource "kubernetes_pod_security_policy" "aws_node" {
   metadata {
     name = "aws-node"
@@ -272,6 +273,7 @@ resource "kubernetes_pod_security_policy" "aws_node" {
   spec {
     privileged                 = true
     allow_privilege_escalation = true
+    default_allow_privilege_escalation = true
 
     allowed_capabilities = [
       "NET_BIND_SERVICE",
