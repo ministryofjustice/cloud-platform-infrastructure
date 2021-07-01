@@ -1,7 +1,7 @@
 
 module "concourse" {
   count  = terraform.workspace == "manager" ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.6.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.6.4"
 
   vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
@@ -36,7 +36,7 @@ module "concourse" {
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.2.1"
 
   iam_role_nodes      = data.aws_iam_role.nodes.arn
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -75,25 +75,37 @@ module "external_dns" {
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.3.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
 
   # This module requires prometheus and cert-manager
-  dependence_prometheus  = module.monitoring.helm_prometheus_operator_status
+  dependence_prometheus  = "ignore"
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
   dependence_opa         = "ignore"
+  # It depends on complete cert-manager module
+  depends_on = [module.cert_manager]
 }
 
 module "modsec_ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.0.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.3.0"
 
   controller_name = "modsec01"
   replica_count   = "4"
 
-  dependence_prometheus  = module.monitoring.helm_prometheus_operator_status
-  dependence_certmanager = module.cert_manager.helm_cert_manager_status
+  depends_on = [module.ingress_controllers]
+}
+
+module "kuberos" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.3.1"
+
+  cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
+  oidc_kubernetes_client_secret = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_secret
+  oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
+  cluster_address               = data.terraform_remote_state.cluster.outputs.cluster_endpoint
+  create_aws_redirect           = false
 }
 
 module "logging" {
@@ -131,7 +143,8 @@ module "monitoring" {
 }
 
 module "opa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.11"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.11"
+  depends_on = [module.monitoring, module.ingress_controllers, module.velero, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = lookup(local.prod_workspace, terraform.workspace, false) ? false : true

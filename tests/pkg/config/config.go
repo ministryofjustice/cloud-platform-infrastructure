@@ -63,7 +63,7 @@ func (c Config) defaultsFromEnvs() error {
 
 // defaultsFromEnvs process the mandatory fields in the config. If they are not set,
 // it tries to load them from environment variables
-func (c *Config) GetDaemonSets() map[string][]string {
+func (c *Config) GetExpectedDaemonSets() map[string][]string {
 	r := make(map[string][]string)
 
 	for ns, val := range c.Namespaces {
@@ -84,7 +84,7 @@ func (c *Config) GetDaemonSets() map[string][]string {
 
 // GetServiceMonitors process the mandatory fields in the config. If they are not set,
 // it tries to load them from environment variables
-func (c *Config) GetServiceMonitors() map[string][]string {
+func (c *Config) GetExpectedServiceMonitors() map[string][]string {
 	r := make(map[string][]string)
 
 	for ns, val := range c.Namespaces {
