@@ -91,7 +91,6 @@ def create_cluster_eks(cluster_name, vpc_name)
 
   run_and_output "cd #{dir}; #{tf_apply}"
 
-  fix_psp
 end
 
 def run_kops(cluster_name, dockerconfig)
@@ -178,6 +177,8 @@ def install_components_eks(cluster_name)
     exit 1
   end
 
+  fix_psp
+  
   cmd = "cd #{dir}; terraform apply -auto-approve"
   if cmd_successful?(cmd)
     log "Cluster components installed."
