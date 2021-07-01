@@ -218,7 +218,7 @@ resource "kubernetes_pod_security_policy" "restricted" {
       }
     }
 
-    read_only_root_filesystem = true
+    read_only_root_filesystem = false
   }
 }
 
