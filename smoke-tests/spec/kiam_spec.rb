@@ -2,7 +2,7 @@ require "spec_helper"
 
 # Kiam will enable code running in the cluster to assume an AWS role if
 # both the pod and the namespace are annotated appropriately.
-describe "kiam", kops: true do
+xdescribe "kiam", kops: true do
   KIAM_ROLE_NAME = "integration-test-kiam-iam-role"
 
   # Do not use a dynamically-generated role_name here. This test
