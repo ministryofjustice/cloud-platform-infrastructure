@@ -178,9 +178,8 @@ class KiamRole
   end
 
   def fetch_or_create_policy(args)
- 
     policy_name = args.fetch(:policy_name)
-    
+
     if policy = list_policies(client).find { |p| p.policy_name == args.fetch(:policy_name) }
       arn = policy.arn
     else
