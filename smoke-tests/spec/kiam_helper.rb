@@ -99,6 +99,21 @@ class KiamRole
     rtn
   end
 
+  def list_policies(client)
+    rtn = []
+    is_truncated = true
+    marker = nil
+
+    while is_truncated
+      policies = client.list_policies(marker: marker)
+      rtn += policies.policies
+      is_truncated = policies.is_truncated
+      marker = policies.marker
+    end
+
+    rtn
+  end
+
   # If the role was created during a test run for a different cluster, the current
   # cluster's nodes will not be included as principals in the role's trust
   # relationships.
@@ -165,7 +180,7 @@ class KiamRole
   def fetch_or_create_policy(args)
     policy_name = args.fetch(:policy_name)
 
-    if policy = client.list_policies.policies.find { |p| p.policy_name == args.fetch(:policy_name) }
+    if policy = list_policies(client).find { |p| p.policy_name == args.fetch(:policy_name) }
       arn = policy.arn
     else
       resp = client.create_policy(
