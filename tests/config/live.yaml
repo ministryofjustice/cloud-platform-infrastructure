@@ -38,6 +38,8 @@ namespaces:
       - velero
 nginxIngressController:
   namespacePrefix: "smoketest-ingress-"
+modsecIngressController:
+  namespacePrefix: "smoketest-modsec-"
 externalDNS:
   namespacePrefix: "e2e-tests-externaldns-"
   hostedZoneId: Z02429076QQMAO8KXV68
