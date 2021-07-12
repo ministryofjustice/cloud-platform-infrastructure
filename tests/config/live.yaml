@@ -18,8 +18,8 @@ namespaces:
     daemonsets:
       - "prometheus-operator-prometheus-node-exporter"
     services:
-      - "prometrhes"
-      - "alertmanager"
+      - "prometheus-operated"
+      - "alertmanager-operated"
     secrets:
       - "test"
     servicemonitors:
