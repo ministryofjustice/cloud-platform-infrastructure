@@ -82,6 +82,9 @@ locals {
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"
     ]
   }
+  live1_cert_dns_name = {
+    live = format("- '*.apps.%s'", var.live1_domain)
+  }
 }
 
 ##########

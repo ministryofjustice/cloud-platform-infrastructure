@@ -75,10 +75,11 @@ module "external_dns" {
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.3.1"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
   # This module requires prometheus and cert-manager
   dependence_prometheus  = "ignore"
