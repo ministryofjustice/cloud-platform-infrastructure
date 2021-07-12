@@ -47,7 +47,7 @@ var _ = Describe("Modsec Ingress", func() {
 	})
 
 	Context("when ingress resource is deployed using 'modsec' ingress controller and modsec enabled", func() {
-		FIt("should block the request if the url is malicious", func() {
+		It("should block the request if the url is malicious", func() {
 			var err error
 			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment-modsec.yaml.tmpl", "helloworld-deployment-modsec.yaml.tmpl",template.FuncMap{
 				"ingress_class": "modsec01",
