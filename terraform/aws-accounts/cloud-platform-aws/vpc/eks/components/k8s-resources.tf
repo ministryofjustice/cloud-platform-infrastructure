@@ -93,17 +93,3 @@ resource "kubernetes_cluster_role_binding" "concourse_build_environments" {
     namespace = "kube-system"
   }
 }
-
-
-### This is to test the cert incident which applied to live-1 instated of manager
-
-resource "null_resource" "test-kubectl-context" {
-  provisioner "local-exec" {
-    command = "kubectl apply -n default -f ${path.module}/resources/helloworld-deployment.yaml"
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = "kubectl delete -n default --ignore-not-found -f ${path.module}/resources/helloworld-deployment.yaml"
-  }
-}
