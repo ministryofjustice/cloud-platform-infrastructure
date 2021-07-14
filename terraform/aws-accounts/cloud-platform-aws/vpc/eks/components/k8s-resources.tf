@@ -22,6 +22,9 @@ resource "kubernetes_storage_class" "storageclass_gp3" {
 
   metadata {
     name = "gp3"
+    annotations = {
+      "storageclass.kubernetes.io/is-default-class" = "true"
+    }
   }
 
   storage_provisioner    = "kubernetes.io/aws-ebs"
@@ -32,6 +35,23 @@ resource "kubernetes_storage_class" "storageclass_gp3" {
     type      = "gp3"
     encrypted = "true"
   }
+}
+
+resource "kubectl_manifest" "change_sc_default" {
+  depends_on = [kubernetes_storage_class.storageclass_gp3]
+  yaml_body = <<YAML
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+  name: gp2
+parameters:
+  fsType: ext4
+  type: gp2
+provisioner: kubernetes.io/aws-ebs
+volumeBindingMode: WaitForFirstConsumer
+YAML
 }
 
 ####################
