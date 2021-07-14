@@ -110,6 +110,17 @@ resource "helm_release" "calico" {
   depends_on = [kubectl_manifest.calico_crds]
 }
 
+data "kubectl_file_documents" "calico_global_policies" {
+  content = file("${path.module}/resources/calico-global-policies.yaml")
+}
+
+resource "kubectl_manifest" "calico_global_policies" {
+  count     = length(data.kubectl_file_documents.calico_global_policies.documents)
+  yaml_body = element(data.kubectl_file_documents.calico_global_policies.documents, count.index)
+
+  depends_on = [helm_release.calico]
+}
+
 #####################################
 # Kube-system annotation and labels #
 #####################################
