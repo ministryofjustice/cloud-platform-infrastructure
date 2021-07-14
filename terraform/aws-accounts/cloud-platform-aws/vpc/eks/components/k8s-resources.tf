@@ -18,6 +18,21 @@ resource "kubernetes_storage_class" "storageclass" {
   }
 }
 
+resource "kubernetes_storage_class" "storageclass_gp3" {
+
+  metadata {
+    name = "gp3"
+  }
+
+  storage_provisioner    = "kubernetes.io/aws-ebs"
+  reclaim_policy         = "Delete"
+  allow_volume_expansion = "true"
+
+  parameters = {
+    type      = "gp3"
+    encrypted = "true"
+  }
+}
 
 ####################
 # Priority Classes #
