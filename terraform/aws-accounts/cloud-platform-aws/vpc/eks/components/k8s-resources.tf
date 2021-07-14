@@ -39,7 +39,7 @@ resource "kubernetes_storage_class" "storageclass_gp3" {
 
 resource "kubectl_manifest" "change_sc_default" {
   depends_on = [kubernetes_storage_class.storageclass_gp3]
-  yaml_body = <<YAML
+  yaml_body  = <<YAML
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
