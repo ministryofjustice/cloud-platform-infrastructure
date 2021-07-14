@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo"
@@ -55,6 +56,12 @@ var _ = Describe("Namespace checks", func() {
 		// slice.contains in go).
 		m := make(map[string]string)
 		for _, ns := range allPods {
+			// exclude ephemeral namespaces created by the framework itself
+			r := regexp.MustCompile("^smoketest-*")
+			if r.MatchString(ns.Namespace) == true {
+				continue
+			}
+
 			_, ok := m[ns.Namespace]
 			if !ok {
 				m[ns.Namespace] = ""
