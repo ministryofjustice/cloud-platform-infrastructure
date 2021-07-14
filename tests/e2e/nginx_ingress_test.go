@@ -2,7 +2,6 @@ package integration_tests
 
 import (
 	"fmt"
-	"html/template"
 	"strings"
 	"time"
 
@@ -46,10 +45,16 @@ var _ = Describe("Nginx Ingress", func() {
 
 	Context("when ingress resource is deployed using 'nginx' ingress controller", func() {
 		It("should expose the service to the internet", func() {
-			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", template.FuncMap{
-				"ingress_class": "nginx",
-				"host":          host,
-			})
+			var err error
+
+			TemplateVars := map[string]interface{}{
+				"ingress_annotations": map[string]string{
+					"kubernetes.io/ingress.class": "nginx",
+				},
+				"host": host,
+			}
+
+			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", TemplateVars)
 			if err != nil {
 				log.Fatalf("execution: %s", err)
 			}
