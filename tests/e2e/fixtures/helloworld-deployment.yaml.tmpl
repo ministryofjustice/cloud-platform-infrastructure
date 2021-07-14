@@ -37,7 +37,9 @@ kind: Ingress
 metadata:
   name: integration-test-app-ing
   annotations:
-    kubernetes.io/ingress.class: {{ .ingress_class }}
+{{- range $key, $value := .ingress_annotations }}
+   {{ $key }}: {{ $value }}
+{{- end }}
 spec:
   tls:
   - hosts:
