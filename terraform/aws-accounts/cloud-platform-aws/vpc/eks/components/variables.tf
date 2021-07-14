@@ -19,6 +19,7 @@ variable "cloud_platform_slack_webhook" {
 variable "elasticsearch_hosts_maps" {
   default = {
     manager = "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
+    live    = "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
   }
 }
 
