@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe "concourse-test", "eks-manager": true do
+describe "concourse-test", "eks-manager": true, "concourse-test": true do
   specify do
     expect(namespace_exists?("concourse")).to eq(true)
   end
