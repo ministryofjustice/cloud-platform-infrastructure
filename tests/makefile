@@ -1,4 +1,4 @@
-VERSION=0.4
+VERSION=0.5
 PREFIX=ministryofjustice/cloud-platform-tests
 TAG=$(VERSION)
 

@@ -2,7 +2,6 @@ package integration_tests
 
 import (
 	"fmt"
-	"html/template"
 	"strings"
 	"time"
 
@@ -49,18 +48,23 @@ var _ = Describe("Modsec Ingress", func() {
 	Context("when ingress resource is deployed using 'modsec' ingress controller and modsec enabled", func() {
 		It("should block the request if the url is malicious", func() {
 			var err error
-			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment-modsec.yaml.tmpl", "helloworld-deployment-modsec.yaml.tmpl",template.FuncMap{
-				"ingress_class": "modsec01",
-				"modsec_enabled": "\"true\"",
-				"host":          host,
-			})
+
+			TemplateVars := map[string]interface{}{
+				"ingress_annotations": map[string]string{
+					"kubernetes.io/ingress.class":                     "modsec01",
+					"nginx.ingress.kubernetes.io/enable-modsecurity":  "\"true\"",
+					"nginx.ingress.kubernetes.io/modsecurity-snippet": "|\n     SecRuleEngine On",
+				},
+				"host": host,
+			}
+
+			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", TemplateVars)
 			if err != nil {
 				log.Fatalf("execution: %s", err)
 			}
 
 			k8s.KubectlApplyFromString(GinkgoT(), options, tpl)
 			k8s.WaitUntilIngressAvailableV1Beta1(GinkgoT(), options, "integration-test-app-ing", 60, 5*time.Second)
-
 
 			retry.DoWithRetry(GinkgoT(), fmt.Sprintf("Waiting for sucessfull DNS lookup from %s", host), 20, 10*time.Second, func() (string, error) {
 				return helpers.DNSLookUp(host)
@@ -75,7 +79,7 @@ var _ = Describe("Modsec Ingress", func() {
 				if s != 200 {
 					return "", fmt.Errorf("Expected http return code 200. Got '%v'", s)
 				}
-				return "",nil
+				return "", nil
 			})
 
 			Expect(helpers.HttpStatusCode(bad_url)).To(Equal(403))
