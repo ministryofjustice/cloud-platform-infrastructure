@@ -37,6 +37,7 @@ resource "kubernetes_storage_class" "storageclass_gp3" {
   }
 }
 
+# mini-hack to remove the default from GP2 because otherwise terraform tries (and fails) to create the storageclass again
 resource "kubectl_manifest" "change_sc_default" {
   depends_on = [kubernetes_storage_class.storageclass_gp3]
   yaml_body  = <<YAML
