@@ -31,7 +31,7 @@ func DNSLookUp(h string) (string, error) {
 }
 
 // TemplateFile returns a string with the content of a template rendered
-func TemplateFile(f string, n string, m map[string]interface{}) (string, error) {
+func TemplateFile(f string, n string, m interface{}) (string, error) {
 	var b bytes.Buffer
 
 	t, err := template.ParseFiles(f)
