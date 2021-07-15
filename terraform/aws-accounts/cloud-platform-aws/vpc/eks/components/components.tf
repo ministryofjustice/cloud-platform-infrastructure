@@ -1,7 +1,7 @@
 
 module "concourse" {
   count  = terraform.workspace == "manager" ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.6.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.6.5"
 
   vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
@@ -119,7 +119,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.2"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   iam_role_nodes               = data.aws_iam_role.nodes.arn
