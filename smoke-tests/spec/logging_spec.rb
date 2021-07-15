@@ -27,7 +27,7 @@ describe "Log collection", "live-1": true do
     #       intermittent pipeline failures
 
     date = Date.today.strftime("%Y.%m.%d")
-    search_url = "#{ELASTIC_SEARCH}/kubernetes_cluster-#{date}/_search"
+    search_url = "#{ELASTIC_SEARCH}/kubernetes_cluster_live-1-#{date}/_search"
 
     # this job queries elasticsearch, looking for all log data for our namespace, today
     create_job(namespace, "spec/fixtures/logging-job.yaml.erb", {
