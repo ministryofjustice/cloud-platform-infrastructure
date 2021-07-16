@@ -2,7 +2,7 @@ require "spec_helper"
 
 # Use the cluster: 'live-1' tag to identify tests which can only run against the live-1 cluster
 # (in this case, because that's the only place where elasticsearch is set up with these values)
-describe "Log collection", "live-1": true do
+describe "Log collection", "live-1": true, "eks-manager": true do
   let(:namespace) { "smoketest-logging-#{readable_timestamp}" }
 
   ELASTIC_SEARCH = "https://search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
@@ -27,7 +27,8 @@ describe "Log collection", "live-1": true do
     #       intermittent pipeline failures
 
     date = Date.today.strftime("%Y.%m.%d")
-    search_url = "#{ELASTIC_SEARCH}/kubernetes_cluster_live-1-#{date}/_search"
+    short_cluster_name = current_cluster.partition(".").first
+    search_url = "#{ELASTIC_SEARCH}/kubernetes_cluster_#{short_cluster_name}-#{date}/_search"
 
     # this job queries elasticsearch, looking for all log data for our namespace, today
     create_job(namespace, "spec/fixtures/logging-job.yaml.erb", {
