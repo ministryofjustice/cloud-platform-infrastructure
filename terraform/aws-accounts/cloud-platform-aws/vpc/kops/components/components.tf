@@ -53,6 +53,7 @@ module "logging" {
   elasticsearch_audit_host = replace(terraform.workspace, "live", "") != terraform.workspace ? "search-cloud-platform-audit-dq5bdnjokj4yt7qozshmifug6e.eu-west-2.es.amazonaws.com" : "placeholder-elasticsearch-audit"
 
   dependence_prometheus  = module.prometheus.helm_prometheus_operator_status
+  enable_curator_cronjob = terraform.workspace == local.live_workspace ? true : false
 }
 
 module "prometheus" {
