@@ -1,7 +1,7 @@
 
 module "concourse" {
   count  = terraform.workspace == "manager" ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.6.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.6.5"
 
   vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
@@ -42,8 +42,8 @@ module "cert_manager" {
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
 
-  # This module requires Prometheus
-  dependence_prometheus = module.monitoring.helm_prometheus_operator_status
+  # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade, so we have to ignore for now
+  dependence_prometheus = "ignore" # was module.monitoring.helm_prometheus_operator_status
   dependence_opa        = "ignore"
 
   # This section is for EKS
@@ -119,7 +119,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.2"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   iam_role_nodes               = data.aws_iam_role.nodes.arn
