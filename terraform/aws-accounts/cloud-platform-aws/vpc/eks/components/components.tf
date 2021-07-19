@@ -42,8 +42,9 @@ module "cert_manager" {
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
 
-  # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade, so we have to ignore for now
-  dependence_prometheus = "ignore" # was module.monitoring.helm_prometheus_operator_status
+  # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade, 
+  # but cluster creation fails without, so will have to be temporarily disabled when upgrading
+  dependence_prometheus = module.monitoring.helm_prometheus_operator_status
   dependence_opa        = "ignore"
 
   # This section is for EKS
