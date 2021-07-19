@@ -78,6 +78,7 @@ var _ = Describe("Modsec Ingress", func() {
 				return "", nil
 			})
 
+			// This is not ideal, we need to find the way how improve this.
 			time.Sleep(120 * time.Second)
 
 			Expect(helpers.HttpStatusCode(bad_url)).To(Equal(403))
