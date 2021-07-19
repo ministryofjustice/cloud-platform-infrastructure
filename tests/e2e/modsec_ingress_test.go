@@ -78,6 +78,8 @@ var _ = Describe("Modsec Ingress", func() {
 				return "", nil
 			})
 
+			time.Sleep(120 * time.Second)
+
 			Expect(helpers.HttpStatusCode(bad_url)).To(Equal(403))
 
 			By("having an benign url, request succeeds")
