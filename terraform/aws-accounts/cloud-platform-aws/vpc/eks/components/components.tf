@@ -43,7 +43,7 @@ module "cert_manager" {
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
 
   # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade, 
-  # but cluster creation fails without, so will net to be temporarily disabled when upgrading
+  # but cluster creation fails without, so will have to be temporarily disabled when upgrading
   dependence_prometheus = module.monitoring.helm_prometheus_operator_status
   dependence_opa        = "ignore"
 
