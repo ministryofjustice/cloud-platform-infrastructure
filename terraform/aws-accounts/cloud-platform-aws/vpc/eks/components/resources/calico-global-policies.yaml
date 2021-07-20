@@ -1,0 +1,32 @@
+---
+apiVersion: crd.projectcalico.org/v1
+kind: GlobalNetworkPolicy
+metadata:
+  name: deny-aws-imds
+spec:
+  selector: projectcalico.org/namespace not in { "cert-manager", "ingress-controllers", "kube-system", "logging", "monitoring", "velero" }
+  types:
+    - Egress
+  egress:
+    - action: Log
+      metadata: {}
+      protocol: TCP
+      destination:
+        ports:
+          - 80
+          - 443
+        nets:
+          - 169.254.169.254/32
+    - action: Deny
+      metadata: {}
+      protocol: TCP
+      destination:
+        ports:
+          - 80
+          - 443
+        nets:
+          - 169.254.169.254/32
+    - action: Allow
+      destination:
+        nets:
+        - 0.0.0.0/0
