@@ -17,6 +17,7 @@ module "external_dns" {
   hostzone            = lookup(var.cluster_r53_resource_maps, terraform.workspace, ["arn:aws:route53:::hostedzone/${data.terraform_remote_state.cluster.outputs.hosted_zone_id}"])
 
   dependence_kiam = module.kiam.helm_kiam_status
+  depends_on      = [module.prometheus]
   # dependence_kiam = helm_release.kiam
 
   # This section is for EKS
