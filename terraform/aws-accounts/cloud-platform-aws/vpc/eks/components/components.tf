@@ -69,6 +69,7 @@ module "external_dns" {
 
   # EKS doesn't use KIAM but it is a requirement for the module.
   dependence_kiam = ""
+  depends_on = [ module.monitoring ]
 
   # This section is for EKS
   eks                         = true
