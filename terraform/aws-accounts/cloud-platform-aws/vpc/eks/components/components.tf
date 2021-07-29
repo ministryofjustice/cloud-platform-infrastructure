@@ -146,7 +146,7 @@ module "monitoring" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.11"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.0.12"
   depends_on = [module.monitoring, module.ingress_controllers, module.velero, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
