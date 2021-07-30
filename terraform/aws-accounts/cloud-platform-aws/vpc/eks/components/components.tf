@@ -120,7 +120,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.3"
 
   alertmanager_slack_receivers = var.alertmanager_slack_receivers
   iam_role_nodes               = data.aws_iam_role.nodes.arn
