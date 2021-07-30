@@ -160,6 +160,16 @@ resource "kubernetes_cluster_role_binding" "privileged" {
     api_group = "rbac.authorization.k8s.io"
   }
 
+  subject {
+    kind      = "ServiceAccount"
+    name      = "ebs-csi-node-sa"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "ebs-csi-controller-sa"
+    namespace = "kube-system"
+  }
 
 }
 
