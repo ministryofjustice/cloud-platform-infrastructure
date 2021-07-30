@@ -29,7 +29,7 @@ resource "kubernetes_storage_class" "storageclass_gp3" {
   metadata {
     name = "gp3"
     annotations = {
-      "storageclass.kubernetes.io/is-default-class" = "true"
+      "storageclass.kubernetes.io/is-default-class" = "false"
     }
   }
 
@@ -45,7 +45,7 @@ resource "kubernetes_storage_class" "storageclass_gp3" {
   depends_on = [module.eks_csi]
 }
 
-# make gp2 deafult back
+# make gp2 default back
 resource "kubectl_manifest" "change_sc_default" {
   depends_on = [kubernetes_storage_class.storageclass_gp3]
   yaml_body  = <<YAML
