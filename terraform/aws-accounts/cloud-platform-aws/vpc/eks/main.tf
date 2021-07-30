@@ -134,7 +134,7 @@ module "auth0" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.2.2"
 
   cluster_name         = terraform.workspace
-  services_base_domain = "apps.${local.fqdn}"
+  services_base_domain = local.fqdn
   extra_callbacks      = lookup(local.auth0_extra_callbacks, terraform.workspace, [""])
 }
 

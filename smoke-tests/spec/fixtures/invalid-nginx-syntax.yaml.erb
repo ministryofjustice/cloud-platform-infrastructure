@@ -5,6 +5,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
     kubernetes.io/ingress.class: "nginx"
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+    external-dns.alpha.kubernetes.io/set-identifier: dns-test
 spec:
   tls:
   - hosts:

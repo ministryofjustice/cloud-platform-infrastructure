@@ -51,8 +51,10 @@ var _ = Describe("Modsec Ingress", func() {
 
 			TemplateVars := map[string]interface{}{
 				"ingress_annotations": map[string]string{
-					"kubernetes.io/ingress.class":                     "modsec01",
-					"nginx.ingress.kubernetes.io/enable-modsecurity":  "\"true\"",
+					"kubernetes.io/ingress.class": "modsec01",
+					"external-dns.alpha.kubernetes.io/aws-weight": "100",
+					"external-dns.alpha.kubernetes.io/set-identifier": "dns-test",
+					"nginx.ingress.kubernetes.io/enable-modsecurity": "\"true\"",
 					"nginx.ingress.kubernetes.io/modsecurity-snippet": "|\n     SecRuleEngine On",
 				},
 				"host": host,

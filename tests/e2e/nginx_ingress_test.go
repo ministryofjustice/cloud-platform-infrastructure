@@ -50,6 +50,8 @@ var _ = Describe("Nginx Ingress", func() {
 			TemplateVars := map[string]interface{}{
 				"ingress_annotations": map[string]string{
 					"kubernetes.io/ingress.class": "nginx",
+					"external-dns.alpha.kubernetes.io/aws-weight": "100",
+					"external-dns.alpha.kubernetes.io/set-identifier": "dns-test",
 				},
 				"host": host,
 			}
