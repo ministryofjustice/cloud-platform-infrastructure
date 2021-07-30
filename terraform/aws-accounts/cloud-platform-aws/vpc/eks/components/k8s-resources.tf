@@ -18,16 +18,22 @@ resource "kubernetes_storage_class" "storageclass" {
   }
 }
 
+module "eks_csi" {
+  count       = 0
+  source      = "github.com/ministryofjustice/cloud-platform-terraform-eks-csi?ref=gp3"
+  eks_cluster = terraform.workspace
+}
+
 resource "kubernetes_storage_class" "storageclass_gp3" {
 
   metadata {
     name = "gp3"
     annotations = {
-      "storageclass.kubernetes.io/is-default-class" = "true"
+      "storageclass.kubernetes.io/is-default-class" = "false"
     }
   }
 
-  storage_provisioner    = "kubernetes.io/aws-ebs"
+  storage_provisioner    = "ebs.csi.aws.com"
   reclaim_policy         = "Delete"
   allow_volume_expansion = "true"
 
@@ -35,9 +41,11 @@ resource "kubernetes_storage_class" "storageclass_gp3" {
     type      = "gp3"
     encrypted = "true"
   }
+
+  depends_on = [module.eks_csi]
 }
 
-# mini-hack to remove the default from GP2 because otherwise terraform tries (and fails) to create the storageclass again
+# make gp2 default back
 resource "kubectl_manifest" "change_sc_default" {
   depends_on = [kubernetes_storage_class.storageclass_gp3]
   yaml_body  = <<YAML
@@ -45,7 +53,7 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   annotations:
-    storageclass.kubernetes.io/is-default-class: "false"
+    storageclass.kubernetes.io/is-default-class: "true"
   name: gp2
 parameters:
   fsType: ext4
