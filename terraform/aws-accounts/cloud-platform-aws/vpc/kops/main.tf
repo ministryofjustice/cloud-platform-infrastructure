@@ -112,10 +112,9 @@ module "bastion" {
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.1.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.2.2"
 
   cluster_name         = local.cluster_name
   services_base_domain = local.services_base_domain
-  services_eks_domain  = local.services_eks_domain
   extra_callbacks      = lookup(local.auth0_extra_callbacks, terraform.workspace, [""])
 }
