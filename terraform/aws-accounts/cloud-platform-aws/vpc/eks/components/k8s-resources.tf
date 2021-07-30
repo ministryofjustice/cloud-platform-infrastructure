@@ -45,7 +45,7 @@ resource "kubernetes_storage_class" "storageclass_gp3" {
   depends_on = [module.eks_csi]
 }
 
-# mini-hack to remove the default from GP2 because otherwise terraform tries (and fails) to create the storageclass again
+# make gp2 deafult back
 resource "kubectl_manifest" "change_sc_default" {
   depends_on = [kubernetes_storage_class.storageclass_gp3]
   yaml_body  = <<YAML
@@ -53,7 +53,7 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   annotations:
-    storageclass.kubernetes.io/is-default-class: "false"
+    storageclass.kubernetes.io/is-default-class: "true"
   name: gp2
 parameters:
   fsType: ext4
