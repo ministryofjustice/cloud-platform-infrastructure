@@ -1,4 +1,4 @@
-TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:1.42
+TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:1.43
 
 tools-shell:
 	docker pull $(TOOLS_IMAGE)
