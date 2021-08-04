@@ -19,13 +19,13 @@ provider "kubernetes" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "v15.2.0"
+  version = "v17.1.0"
 
   cluster_name     = terraform.workspace
   subnets          = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
   vpc_id           = data.aws_vpc.selected.id
   write_kubeconfig = false
-  cluster_version  = "1.18"
+  cluster_version  = "1.19"
   enable_irsa      = true
 
   node_groups = {
