@@ -89,7 +89,7 @@ module "modsec_ingress_controllers" {
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.3.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.3.2"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = terraform.workspace == local.live_workspace ? true : false
