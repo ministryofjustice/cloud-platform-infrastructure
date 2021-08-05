@@ -38,6 +38,8 @@ metadata:
   name: integration-test-app-ing
   annotations:
     kubernetes.io/ingress.class: <%= ingress_class %> 
+    external-dns.alpha.kubernetes.io/aws-weight: "100"
+    external-dns.alpha.kubernetes.io/set-identifier: dns-test
     nginx.ingress.kubernetes.io/enable-modsecurity: "false"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
