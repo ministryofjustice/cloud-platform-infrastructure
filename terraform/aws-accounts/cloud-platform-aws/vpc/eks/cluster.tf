@@ -37,6 +37,9 @@ module "eks" {
 
       create_launch_template = true
       pre_userdata           = local.pre_userdata
+      # Issue in v17.1.0, where each plan will have a change for the templates, this cause our divergence pipeline fail"
+      # Pinned the version until this fix get merged https://github.com/terraform-aws-modules/terraform-aws-eks/pull/1447
+      launch_template_version = "1"
 
       instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
       k8s_labels = {
@@ -49,9 +52,10 @@ module "eks" {
         application   = "moj-cloud-platform"
         business-unit = "platforms"
       }
+      
     }
   }
-
+  
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
   map_users = [
