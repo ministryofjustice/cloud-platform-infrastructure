@@ -55,7 +55,8 @@ locals {
 
   # This is to maintain multiple URLs for monitoring stack, in light of the EKS migration
   auth0_extra_callbacks = {
-    live-1 = [for i in ["prometheus", "grafana", "alertmanager"] : "${i}.${local.cluster_base_domain_name}/oauth2/callback"]
+    live-1 = concat([for i in ["prometheus", "alertmanager"] : "https://${i}.${local.cluster_base_domain_name}/oauth2/callback"],
+    ["https://grafana.${local.cluster_base_domain_name}/login/generic_oauth"])
   }
 }
 
