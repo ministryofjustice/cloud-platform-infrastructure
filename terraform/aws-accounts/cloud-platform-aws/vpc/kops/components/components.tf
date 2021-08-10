@@ -58,7 +58,7 @@ module "logging" {
 }
 
 module "prometheus" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.4"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
@@ -75,6 +75,7 @@ module "prometheus" {
   oidc_components_client_id     = data.terraform_remote_state.cluster.outputs.oidc_components_client_id
   oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
+  enable_large_nodesgroup       = terraform.workspace == local.live_workspace ? true : false
 }
 
 module "modsec_ingress_controllers" {
