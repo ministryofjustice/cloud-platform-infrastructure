@@ -1,7 +1,7 @@
 
 module "concourse" {
   count  = terraform.workspace == "manager" ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.7.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.7.1"
 
   vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
@@ -168,7 +168,7 @@ module "velero" {
 
 module "sonarqube" {
   count  = terraform.workspace == "manager" ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-sonarqube?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-sonarqube?ref=0.0.5"
 
   vpc_id                        = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets              = data.terraform_remote_state.cluster.outputs.internal_subnets
