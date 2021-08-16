@@ -67,33 +67,3 @@ resource "null_resource" "kube_system_default_labels" {
     command = "kubectl label --overwrite namespace kube-system 'component=kube-system' 'cloud-platform.justice.gov.uk/slack-channel=cloud-platform' 'cloud-platform.justice.gov.uk/is-production=true' 'cloud-platform.justice.gov.uk/environment-name=production'"
   }
 }
-
-# ServiceAccount creation for concourse in order to access live-1
-resource "kubernetes_service_account" "concourse_build_environments" {
-  count = terraform.workspace == local.live_workspace ? 1 : 0
-
-  metadata {
-    name      = "concourse-build-environments"
-    namespace = "kube-system"
-  }
-}
-
-resource "kubernetes_cluster_role_binding" "concourse_build_environments" {
-  count = terraform.workspace == local.live_workspace ? 1 : 0
-
-  metadata {
-    name = "concourse-build-environments"
-  }
-
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "cluster-admin"
-  }
-
-  subject {
-    kind      = "ServiceAccount"
-    name      = kubernetes_service_account.concourse_build_environments[0].metadata.0.name
-    namespace = "kube-system"
-  }
-}
