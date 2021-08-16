@@ -1,4 +1,3 @@
-
 ####################
 # Priority Classes #
 ####################
@@ -98,5 +97,35 @@ resource "kubernetes_cluster_role_binding" "webops" {
     kind      = "Group"
     name      = "github:webops"
     api_group = "rbac.authorization.k8s.io"
+  }
+}
+
+# ServiceAccount creation for concourse in order to access live-1
+resource "kubernetes_service_account" "concourse_build_environments" {
+  count = terraform.workspace == local.live_workspace ? 1 : 0
+
+  metadata {
+    name      = "concourse-build-environments"
+    namespace = "kube-system"
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "concourse_build_environments" {
+  count = terraform.workspace == local.live_workspace ? 1 : 0
+
+  metadata {
+    name = "concourse-build-environments"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.concourse_build_environments[0].metadata.0.name
+    namespace = "kube-system"
   }
 }
