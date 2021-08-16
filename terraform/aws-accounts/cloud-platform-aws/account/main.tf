@@ -296,7 +296,7 @@ resource "aws_s3_bucket_object" "kubeconfig" {
   key    = "kubeconfig"
   bucket = module.s3_bucket_kubeconfigs.s3_bucket_id
 
-  content = templatefile("${path.module}/templates/kubeconfig.tpl", { clusters = var.kubeconfig_clusters })
+  content                = templatefile("${path.module}/templates/kubeconfig.tpl", { clusters = var.kubeconfig_clusters })
   server_side_encryption = "AES256"
 }
 
