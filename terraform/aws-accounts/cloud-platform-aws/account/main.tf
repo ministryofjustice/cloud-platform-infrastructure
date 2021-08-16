@@ -115,6 +115,30 @@ module "s3_bucket_velero" {
 
 }
 
+module "s3_bucket_kubeconfigs" {
+  source = "terraform-aws-modules/s3-bucket/aws"
+
+  bucket = "cloud-platform-concourse-kubeconfig"
+  acl    = "private"
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  versioning = {
+    enabled = true
+  }
+
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+
 ##############
 # KOps state #
 ##############
@@ -249,7 +273,6 @@ resource "aws_iam_policy_attachment" "s3_replication_kops_state" {
 //
 // This table name is referenced from the environments repo, so that
 // terraform can use it to lock the state of each namespace.
-
 resource "aws_dynamodb_table" "cloud_platform_environments_terraform_lock" {
   name           = "cloud-platform-environments-terraform-lock"
   hash_key       = "LockID"
@@ -267,3 +290,13 @@ resource "aws_dynamodb_table" "cloud_platform_environments_terraform_lock" {
     Name = "Terraform Lock Table for namespaces in the cloud-platform-environments repository"
   }
 }
+
+# Writing kubeconfig within kubeconfig bucket
+resource "aws_s3_bucket_object" "kubeconfig" {
+  key    = "kubeconfig"
+  bucket = module.s3_bucket_kubeconfigs.s3_bucket_id
+
+  content                = templatefile("${path.module}/templates/kubeconfig.tpl", { clusters = var.kubeconfig_clusters })
+  server_side_encryption = "AES256"
+}
+
