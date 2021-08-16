@@ -250,7 +250,7 @@ resource "aws_iam_policy_attachment" "s3_replication_kops_state" {
 // This table name is referenced from the environments repo, so that
 // terraform can use it to lock the state of each namespace.
 
-resource "aws_dynamodb_table" "cloud-platform-environments-terraform-lock" {
+resource "aws_dynamodb_table" "cloud_platform_environments_terraform_lock" {
   name           = "cloud-platform-environments-terraform-lock"
   hash_key       = "LockID"
   read_capacity  = 20
