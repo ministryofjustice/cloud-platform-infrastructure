@@ -22,7 +22,7 @@ provider "aws" {
 
 # IAM configuration for cloud-platform. Users, groups, etc
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.7"
 
   aws_account_name = "cloud-platform-aws"
 }
@@ -242,3 +242,28 @@ resource "aws_iam_policy_attachment" "s3_replication_kops_state" {
   policy_arn = aws_iam_policy.s3_replication_kops_state.arn
 }
 
+
+// Create a DynamoDB table so we can lock the terraform state of each
+// namespace in the cloud-platform-environments repository, as we
+// `terraform apply` it.
+//
+// This table name is referenced from the environments repo, so that
+// terraform can use it to lock the state of each namespace.
+
+resource "aws_dynamodb_table" "cloud-platform-environments-terraform-lock" {
+  name           = "cloud-platform-environments-terraform-lock"
+  hash_key       = "LockID"
+  read_capacity  = 20
+  write_capacity = 20
+
+  provider = aws.ireland
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+
+  tags = {
+    Name = "Terraform Lock Table for namespaces in the cloud-platform-environments repository"
+  }
+}
