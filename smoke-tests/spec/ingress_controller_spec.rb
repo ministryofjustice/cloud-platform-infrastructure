@@ -2,7 +2,7 @@ require "spec_helper"
 
 describe "test ingress controllers", speed: "fast", cluster: "test-cluster-only" do
   context "default" do
-    host = "prometheus.apps.#{current_cluster}"
+    host = "prometheus.#{current_cluster}"
     let(:url) { "https://#{host}" }
 
     it "returns 302 for http get" do
