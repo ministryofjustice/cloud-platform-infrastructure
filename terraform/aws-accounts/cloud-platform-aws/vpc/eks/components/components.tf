@@ -77,7 +77,7 @@ module "external_dns" {
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.3.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.3.3"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
@@ -92,7 +92,7 @@ module "ingress_controllers" {
 }
 
 module "modsec_ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.3.1"
 
   controller_name = "modsec01"
   replica_count   = "4"
