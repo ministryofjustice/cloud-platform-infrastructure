@@ -126,8 +126,6 @@ resource "kubernetes_cluster_role_binding" "webops" {
 }
 
 resource "kubernetes_service_account" "concourse_build_environments" {
-  count = lookup(local.prod_workspace, terraform.workspace, false) ? 1 : 0
-
   metadata {
     name      = "concourse-build-environments"
     namespace = "kube-system"
@@ -135,8 +133,6 @@ resource "kubernetes_service_account" "concourse_build_environments" {
 }
 
 resource "kubernetes_cluster_role_binding" "concourse_build_environments" {
-  count = lookup(local.prod_workspace, terraform.workspace, false) ? 1 : 0
-
   metadata {
     name = "concourse-build-environments"
   }

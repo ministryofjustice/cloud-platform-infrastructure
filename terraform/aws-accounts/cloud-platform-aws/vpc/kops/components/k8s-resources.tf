@@ -102,8 +102,6 @@ resource "kubernetes_cluster_role_binding" "webops" {
 
 # ServiceAccount creation for concourse in order to access live-1
 resource "kubernetes_service_account" "concourse_build_environments" {
-  count = terraform.workspace == local.live_workspace ? 1 : 0
-
   metadata {
     name      = "concourse-build-environments"
     namespace = "kube-system"
@@ -111,8 +109,6 @@ resource "kubernetes_service_account" "concourse_build_environments" {
 }
 
 resource "kubernetes_cluster_role_binding" "concourse_build_environments" {
-  count = terraform.workspace == local.live_workspace ? 1 : 0
-
   metadata {
     name = "concourse-build-environments"
   }
@@ -125,7 +121,7 @@ resource "kubernetes_cluster_role_binding" "concourse_build_environments" {
 
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account.concourse_build_environments[0].metadata.0.name
+    name      = kubernetes_service_account.concourse_build_environments.metadata.0.name
     namespace = "kube-system"
   }
 }
