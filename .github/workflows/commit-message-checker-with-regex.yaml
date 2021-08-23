@@ -31,11 +31,3 @@ jobs:
           commits: ${{ steps.get-pr-commits.outputs.commits }}
           pattern: '^[A-Z]'
           error: 'You should capitalize the first word of the subject line'
-
-      - name: Check Body Line Length
-        if: ${{ success() || failure() }}
-        uses: tim-actions/commit-message-checker-with-regex@v0.3.1
-        with:
-          commits: ${{ steps.get-pr-commits.outputs.commits }}
-          pattern: '^.+(\n.{0,72})*$'
-          error: 'Body line too long (max 72)'
