@@ -1,7 +1,7 @@
 
 module "concourse" {
   count  = terraform.workspace == "manager" ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.7.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.7.2"
 
   vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
   internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
