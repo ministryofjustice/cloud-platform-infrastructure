@@ -39,6 +39,12 @@ locals {
     default = "4"
   }
 
+  monitoring_node_groups_count = {
+    live    = "2"
+    manager = "2"
+    default = "0"
+  }
+
   node_size = {
     live    = ["r5.xlarge", "r4.xlarge"]
     manager = ["m5.xlarge", "m4.xlarge"]

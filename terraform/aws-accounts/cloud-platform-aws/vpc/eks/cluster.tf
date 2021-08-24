@@ -56,6 +56,38 @@ module "eks" {
       }
 
     }
+    monitoring_ng = {
+      desired_capacity = lookup(local.monitoring_node_groups_count, terraform.workspace, local.monitoring_node_groups_count["default"])
+      max_capacity     = 1
+      min_capacity     = lookup(local.monitoring_node_groups_count, terraform.workspace, local.monitoring_node_groups_count["default"])
+      subnets          = [sort(data.aws_subnet_ids.private.ids)[2]]
+
+      create_launch_template = true
+      pre_userdata           = local.pre_userdata
+      # Issue in v17.1.0, where each plan will have a change for the templates, this cause our divergence pipeline fail"
+      # Pinned the version until this fix get merged https://github.com/terraform-aws-modules/terraform-aws-eks/pull/1447
+      launch_template_version = "1"
+
+      instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
+      k8s_labels = {
+        Terraform = "true"
+        Cluster   = terraform.workspace
+        Domain    = local.fqdn
+      }
+      additional_tags = {
+        monitoring_ng = "true"
+        application   = "moj-cloud-platform"
+        business-unit = "platforms"
+      }
+
+      taints = [
+        {
+          key    = "monitoring-node"
+          value  = true
+          effect = "NO_SCHEDULE"
+        }
+      ]
+    }
   }
 
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
