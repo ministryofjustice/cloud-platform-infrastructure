@@ -21,3 +21,15 @@ variable "check_associate" {
   default     = "true"
   description = "Check for active association during cluster creation. This is required for kuberos to authenticate to the cluster."
 }
+
+variable "cluster_enabled_log_types" {
+  default     = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+  description = "A list of the desired control plane logging to enable."
+  type        = list(string)
+}
+
+variable "cluster_log_retention_in_days" {
+  default     = 90
+  description = "Number of days to retain log events. Default retention - 90 days."
+  type        = number
+}
