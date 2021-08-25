@@ -21,12 +21,14 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "v17.1.0"
 
-  cluster_name     = terraform.workspace
-  subnets          = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
-  vpc_id           = data.aws_vpc.selected.id
-  write_kubeconfig = false
-  cluster_version  = "1.19"
-  enable_irsa      = true
+  cluster_name                  = terraform.workspace
+  subnets                       = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
+  vpc_id                        = data.aws_vpc.selected.id
+  write_kubeconfig              = false
+  cluster_version               = "1.19"
+  enable_irsa                   = true
+  cluster_enabled_log_types     = var.cluster_enabled_log_types
+  cluster_log_retention_in_days = var.cluster_log_retention_in_days
 
   node_groups = {
     default_ng = {
