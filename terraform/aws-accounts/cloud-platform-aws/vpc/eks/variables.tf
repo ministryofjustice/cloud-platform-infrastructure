@@ -29,7 +29,7 @@ variable "cluster_enabled_log_types" {
 }
 
 variable "cluster_log_retention_in_days" {
-  default     = 90
+  default     = 400 # Slightly over three months as per security advice https://security-guidance.service.justice.gov.uk/logging-and-monitoring/#log-retention
   description = "Number of days to retain log events. Default retention - 90 days."
   type        = number
 }
