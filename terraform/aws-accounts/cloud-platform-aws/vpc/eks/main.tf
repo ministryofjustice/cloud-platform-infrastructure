@@ -33,25 +33,7 @@ locals {
     manager = "live-1"
     live    = "live-1"
   }
-
-  node_groups_count = {
-    live    = "54"
-    manager = "4"
-    default = "3"
-  }
-
-  node_size = {
-    live    = ["r5.xlarge", "r4.xlarge"]
-    manager = ["m5.xlarge", "m4.xlarge"]
-    default = ["m5.large", "m4.large"]
-  }
-
-  monitoring_node_size = {
-    live    = ["r5.2xlarge", "r4.2xlarge"]
-    manager = ["t3.medium", "t2.medium"]
-    default = ["t3.medium", "t2.medium"]
-  }
-
+  
   # Some clusters (like manager) need extra callbacks URLs in auth0
   auth0_extra_callbacks = {
     manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
