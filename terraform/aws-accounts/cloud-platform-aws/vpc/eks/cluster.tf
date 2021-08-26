@@ -18,6 +18,24 @@ provider "kubernetes" {
 }
 
 locals {
+  node_groups_count = {
+    live    = "54"
+    manager = "4"
+    default = "3"
+  }
+
+  node_size = {
+    live    = ["r5.xlarge", "r4.xlarge"]
+    manager = ["m5.xlarge", "m4.xlarge"]
+    default = ["m5.large", "m4.large"]
+  }
+
+  monitoring_node_size = {
+    live    = ["r5.2xlarge", "r4.2xlarge"]
+    manager = ["t3.medium", "t2.medium"]
+    default = ["t3.medium", "t2.medium"]
+  }
+
   default_ng = {
     desired_capacity = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_capacity     = 60
@@ -41,7 +59,6 @@ locals {
       application   = "moj-cloud-platform"
       business-unit = "platforms"
     }
-
   }
 
   monitoring_ng = {
