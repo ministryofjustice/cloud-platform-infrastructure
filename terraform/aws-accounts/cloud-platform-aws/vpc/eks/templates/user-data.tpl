@@ -8,7 +8,6 @@ cat << EOF > /root/.docker/config.json
   }
 }
 EOF
-
 mkdir -p "/var/lib/kubelet/.docker"
 cat << EOF > /var/lib/kubelet/config.json
 {
