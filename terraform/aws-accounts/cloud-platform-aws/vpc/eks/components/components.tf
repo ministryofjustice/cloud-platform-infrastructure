@@ -133,7 +133,7 @@ module "monitoring" {
   enable_thanos_sidecar                      = lookup(local.prod_workspace, terraform.workspace, false)
   enable_large_nodesgroup                    = terraform.workspace == "live" ? true : false
   enable_prometheus_affinity_and_tolerations = true
- 
+
   enable_thanos_helm_chart = lookup(local.prod_workspace, terraform.workspace, false)
   enable_thanos_compact    = terraform.workspace == "manager" ? true : false
 
