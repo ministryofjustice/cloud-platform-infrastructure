@@ -93,7 +93,7 @@ locals {
     }
     taints = [
       {
-        key    = "cloud-platform.justice.gov.uk/monitoring-ng"
+        key    = "monitoring-node"
         value  = true
         effect = "NO_SCHEDULE"
       }
