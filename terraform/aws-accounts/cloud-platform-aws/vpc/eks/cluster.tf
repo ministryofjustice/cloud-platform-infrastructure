@@ -43,7 +43,10 @@ locals {
     subnets          = data.aws_subnet_ids.private.ids
 
     create_launch_template = true
-    pre_userdata           = local.pre_userdata
+    # pre_userdata           = local.pre_userdata
+    pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
+      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
+    })
     # Issue in v17.1.0, where each plan will have a change for the templates, this cause our divergence pipeline fail"
     # Pinned the version until this fix get merged https://github.com/terraform-aws-modules/terraform-aws-eks/pull/1447
     launch_template_version = "1"
@@ -68,7 +71,10 @@ locals {
     subnets          = [sort(data.aws_subnet_ids.private.ids)[2]]
 
     create_launch_template = true
-    pre_userdata           = local.pre_userdata
+    # pre_userdata           = local.pre_userdata
+    pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
+      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
+    })
     # Issue in v17.1.0, where each plan will have a change for the templates, this cause our divergence pipeline fail"
     # Pinned the version until this fix get merged https://github.com/terraform-aws-modules/terraform-aws-eks/pull/1447
     launch_template_version = "1"
