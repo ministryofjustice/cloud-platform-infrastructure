@@ -34,39 +34,10 @@ locals {
     live    = "live-1"
   }
 
-  node_groups_count = {
-    live    = "54"
-    default = "4"
-  }
-
-  node_size = {
-    live    = ["r5.xlarge", "r4.xlarge"]
-    manager = ["m5.xlarge", "m4.xlarge"]
-    default = ["m5.large", "m4.large"]
-  }
-
   # Some clusters (like manager) need extra callbacks URLs in auth0
   auth0_extra_callbacks = {
     manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
   }
-
-  # Add dockerhub crendentials to worker nodes
-  dockerhub_credentials = "${var.dockerhub_user}:${var.dockerhub_token}"
-  dockerhub_file        = <<-EOD
-{
-  "auths": {
-    "https://index.docker.io/v1/": {
-      "auth": "${base64encode(local.dockerhub_credentials)}"
-    }
-  }
-}
-EOD
-  pre_userdata          = <<-EOD
-mkdir -p "/root/.docker"
-echo '${local.dockerhub_file}' > "/root/.docker/config.json"
-mkdir -p "/var/lib/kubelet/.docker"
-echo '${local.dockerhub_file}' > "/var/lib/kubelet/config.json"
-EOD
 }
 
 data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
