@@ -33,7 +33,7 @@ locals {
     manager = "live-1"
     live    = "live-1"
   }
-  
+
   # Some clusters (like manager) need extra callbacks URLs in auth0
   auth0_extra_callbacks = {
     manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
