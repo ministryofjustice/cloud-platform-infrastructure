@@ -46,7 +46,7 @@ locals {
 
   monitoring_ng = {
     desired_capacity = 2
-    max_capacity     = 2
+    max_capacity     = 3
     min_capacity     = 1
     subnets          = [sort(data.aws_subnet_ids.private.ids)[2]]
 
