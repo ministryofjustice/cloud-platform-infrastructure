@@ -58,10 +58,10 @@ locals {
 
     instance_types = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
     k8s_labels = {
-      Terraform = "true"
+      Terraform                                     = "true"
       "cloud-platform.justice.gov.uk/monitoring-ng" = "true"
-      Cluster   = terraform.workspace
-      Domain    = local.fqdn
+      Cluster                                       = terraform.workspace
+      Domain                                        = local.fqdn
     }
     additional_tags = {
       monitoring_ng = "true"
@@ -76,7 +76,7 @@ locals {
       }
     ]
   }
-  
+
 }
 
 module "eks" {
