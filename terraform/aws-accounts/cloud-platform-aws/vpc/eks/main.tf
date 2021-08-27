@@ -59,6 +59,18 @@ data "aws_subnet_ids" "private" {
   }
 }
 
+data "aws_subnet_ids" "private_zone_2b" {
+  vpc_id = data.aws_vpc.selected.id
+
+  tags = {
+    SubnetType = "Private"
+  }
+  filter {
+    name   = "availability-zone"
+    values = ["eu-west-2b"]
+  }
+}
+
 data "aws_subnet_ids" "public" {
   vpc_id = data.aws_vpc.selected.id
 

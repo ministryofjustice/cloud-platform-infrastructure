@@ -68,7 +68,7 @@ locals {
     desired_capacity = 2
     max_capacity     = 3
     min_capacity     = 1
-    subnets          = [sort(data.aws_subnet_ids.private.ids)[2]]
+    subnets          = data.aws_subnet_ids.private_zone_2b.ids
 
     create_launch_template = true
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
