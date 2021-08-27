@@ -121,18 +121,18 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.6"
 
-  alertmanager_slack_receivers = var.alertmanager_slack_receivers
-  iam_role_nodes               = data.aws_iam_role.nodes.arn
-  pagerduty_config             = var.pagerduty_config
-
-  cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  oidc_components_client_id     = data.terraform_remote_state.cluster.outputs.oidc_components_client_id
-  oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
-  oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
-  enable_thanos_sidecar         = lookup(local.prod_workspace, terraform.workspace, false)
-  enable_large_nodesgroup       = false
+  alertmanager_slack_receivers               = var.alertmanager_slack_receivers
+  iam_role_nodes                             = data.aws_iam_role.nodes.arn
+  pagerduty_config                           = var.pagerduty_config
+  cluster_domain_name                        = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  oidc_components_client_id                  = data.terraform_remote_state.cluster.outputs.oidc_components_client_id
+  oidc_components_client_secret              = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
+  oidc_issuer_url                            = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
+  enable_thanos_sidecar                      = lookup(local.prod_workspace, terraform.workspace, false)
+  enable_large_nodesgroup                    = terraform.workspace == "live" ? true : false
+  enable_prometheus_affinity_and_tolerations = true
 
   enable_thanos_helm_chart = lookup(local.prod_workspace, terraform.workspace, false)
   enable_thanos_compact    = terraform.workspace == "manager" ? true : false
