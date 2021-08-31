@@ -52,14 +52,6 @@ module "cert_manager" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 
-module "cluster_autoscaler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=0.1.0"
-
-  cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  eks_cluster_id              = data.terraform_remote_state.cluster.outputs.cluster_id
-  eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
-}
-
 module "external_dns" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.6.0"
 
