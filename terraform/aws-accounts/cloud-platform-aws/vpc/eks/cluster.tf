@@ -18,7 +18,7 @@ provider "kubernetes" {
 }
 
 locals {
-  # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler)
+  # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler installed)
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/835
   node_groups_count = {
     live    = "54"
