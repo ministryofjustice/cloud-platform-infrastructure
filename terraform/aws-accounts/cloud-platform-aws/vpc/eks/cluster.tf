@@ -122,6 +122,9 @@ module "eks" {
     monitoring_ng = local.monitoring_ng
   }
 
+  # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
+  workers_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"] 
+
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
   map_users = [
