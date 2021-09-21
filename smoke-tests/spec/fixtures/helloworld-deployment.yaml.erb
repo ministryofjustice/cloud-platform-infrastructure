@@ -39,7 +39,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: <%= ingress_class %>
     external-dns.alpha.kubernetes.io/aws-weight: "100"
-    external-dns.alpha.kubernetes.io/set-identifier: dns-test
+    external-dns.alpha.kubernetes.io/set-identifier: <%= set_identifier %>
 spec:
   tls:
   - hosts:

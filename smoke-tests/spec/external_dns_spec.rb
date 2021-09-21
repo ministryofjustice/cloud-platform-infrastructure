@@ -10,6 +10,8 @@ describe "external DNS", "live-1": true do
   let(:ingress_name) { domain }
   let(:fixture_name) { "spec/fixtures/external-dns-ingress.yaml.erb" }
 
+  let(:set_identifier) { "#{ingress_name}-#{namespace}-#{external_dns_annotation_color}" }
+
   # NOTE: The spec in this file can fail with the following error:
   #
   # 1) external DNS when zone matches ingress domain and an ingress is created it creates an A record
