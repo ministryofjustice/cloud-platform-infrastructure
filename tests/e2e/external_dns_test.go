@@ -40,7 +40,8 @@ var _ = Describe("external-DNS checks", func() {
 			By("Deploying ingress resource")
 
 			tpl, err := helpers.TemplateFile("./fixtures/external-dns-ingress.yaml.tmpl", "external-dns-ingress.yaml.tmpl", template.FuncMap{
-				"domain": domain,
+				"domain":    domain,
+				"namespace": namespaceName,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
