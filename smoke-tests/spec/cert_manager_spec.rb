@@ -4,7 +4,7 @@ describe "cert-manager" do
   let(:namespace) { "cert-manager-test-#{readable_timestamp}" }
   ingress_class = "nginx"
   ingress_name = "integration-test-app-ing"
-  set_identifier = "#{ingress_name}-#{namespace}-#{external_dns_annotation_color}"
+  let(:set_identifier) { "#{ingress_name}-#{namespace}-#{external_dns_annotation_color}" }
 
   before do
     create_namespace(namespace)
