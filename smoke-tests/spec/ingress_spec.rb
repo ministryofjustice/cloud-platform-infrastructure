@@ -6,6 +6,9 @@ describe "nginx ingress", speed: "slow" do
   let(:url) { "https://#{host}" }
   ingress_name = "integration-test-app-ing"
   ingress_class = "nginx"
+  color = external_dns_annotation_color
+  set_identifier = "#{ingress_name}-#{namespace}-#{color}"
+
 
   # Delay of 300 or lower consistently results in at least one test failure
   # Delay of 360 fails 50/50
@@ -36,6 +39,7 @@ describe "nginx ingress", speed: "slow" do
         namespace: namespace,
         host: host,
         ingress_class: ingress_class,
+        set_identifier: set_identifier,
         file: "spec/fixtures/helloworld-deployment.yaml.erb",
         binding: binding
       )
@@ -59,6 +63,7 @@ describe "nginx ingress", speed: "slow" do
         namespace: namespace,
         host: host,
         ingress_class: ingress_class,
+        set_identifier: set_identifier,
         file: "spec/fixtures/helloworld-deployment.yaml.erb",
         binding: binding
       )
@@ -81,6 +86,7 @@ describe "nginx ingress", speed: "slow" do
       stdout_str, stderr_str, status = apply_template_file(
         namespace: namespace,
         host: host,
+        set_identifier: set_identifier,
         file: "spec/fixtures/invalid-nginx-syntax.yaml.erb",
         binding: binding
       )

@@ -3,6 +3,14 @@ def current_cluster
   stdout.chomp
 end
 
+def external_dns_annotation_color
+  short_cluster_name = current_cluster.partition(".").first
+  if short_cluster_name == "live"
+    return "green"
+  end
+  return "blue"
+end
+
 def all_namespaces
   kubectl_items "get namespaces"
 end
