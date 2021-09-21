@@ -49,11 +49,13 @@ var _ = Describe("Modsec Ingress", func() {
 		It("should block the request if the url is malicious", func() {
 			var err error
 
+			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
+
 			TemplateVars := map[string]interface{}{
 				"ingress_annotations": map[string]string{
 					"kubernetes.io/ingress.class":                     "modsec01",
 					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
-					"external-dns.alpha.kubernetes.io/set-identifier": "\"dns-test\"",
+					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
 					"nginx.ingress.kubernetes.io/enable-modsecurity":  "\"true\"",
 					"nginx.ingress.kubernetes.io/modsecurity-snippet": "|\n     SecRuleEngine On",
 				},

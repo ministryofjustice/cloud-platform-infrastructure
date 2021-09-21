@@ -47,11 +47,13 @@ var _ = Describe("Nginx Ingress", func() {
 		It("should expose the service to the internet", func() {
 			var err error
 
+			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
+
 			TemplateVars := map[string]interface{}{
 				"ingress_annotations": map[string]string{
 					"kubernetes.io/ingress.class":                     "nginx",
 					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
-					"external-dns.alpha.kubernetes.io/set-identifier": "\"dns-test\"",
+					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
 				},
 				"host": host,
 			}
