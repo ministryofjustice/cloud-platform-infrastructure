@@ -6,9 +6,8 @@ describe "nginx ingress", speed: "slow" do
   let(:url) { "https://#{host}" }
   ingress_name = "integration-test-app-ing"
   ingress_class = "nginx"
-  color = external_dns_annotation_color
-  set_identifier = "#{ingress_name}-#{namespace}-#{color}"
 
+  set_identifier = "#{ingress_name}-#{namespace}-#{external_dns_annotation_color}"
 
   # Delay of 300 or lower consistently results in at least one test failure
   # Delay of 360 fails 50/50

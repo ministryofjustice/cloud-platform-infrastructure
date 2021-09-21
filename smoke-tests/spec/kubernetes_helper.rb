@@ -7,8 +7,9 @@ def external_dns_annotation_color
   short_cluster_name = current_cluster.partition(".").first
   if short_cluster_name == "live"
     return "green"
+  else
+    return "blue"
   end
-  return "blue"
 end
 
 def all_namespaces
