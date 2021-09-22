@@ -23,6 +23,7 @@ describe "Testing modsec on ingress class: 'modsec01'", kops: true do
       host: host,
       ingress_class: ingress_class,
       set_identifier: set_identifier,
+      ingress_name: ingress_name,
       file: "spec/fixtures/helloworld-deployment-modsec.yaml.erb",
       binding: binding
     )
