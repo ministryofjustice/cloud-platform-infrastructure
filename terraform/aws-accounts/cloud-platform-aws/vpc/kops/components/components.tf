@@ -33,7 +33,7 @@ module "kiam" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.3.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.3.3"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
@@ -58,7 +58,7 @@ module "logging" {
 }
 
 module "prometheus" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.8"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
