@@ -13,7 +13,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func FromS3Bucket(bucket, configFile, clusterCtx, region string) (clientset *kubernetes.Clientset, err error) {
+func KubeConfigFromS3Bucket(bucket, s3FileName, clusterCtx, region string) (clientset *kubernetes.Clientset, err error) {
 	buff := &aws.WriteAtBuffer{}
 	downloader := s3manager.NewDownloader(session.New(&aws.Config{
 		Region: aws.String(region),
@@ -21,7 +21,7 @@ func FromS3Bucket(bucket, configFile, clusterCtx, region string) (clientset *kub
 
 	numBytes, err := downloader.Download(buff, &s3.GetObjectInput{
 		Bucket: aws.String(bucket),
-		Key:    aws.String(configFile),
+		Key:    aws.String(s3FileName),
 	})
 
 	if err != nil {
@@ -32,15 +32,15 @@ func FromS3Bucket(bucket, configFile, clusterCtx, region string) (clientset *kub
 	}
 
 	data := buff.Bytes()
-	err = ioutil.WriteFile(configFile, data, 0644)
+	err = ioutil.WriteFile(s3FileName, data, 0644)
 	if err != nil {
 		return nil, err
 	}
 
-	defer os.Remove(configFile)
+	defer os.Remove(s3FileName)
 
 	client, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
-		&clientcmd.ClientConfigLoadingRules{ExplicitPath: configFile},
+		&clientcmd.ClientConfigLoadingRules{ExplicitPath: s3FileName},
 		&clientcmd.ConfigOverrides{
 			CurrentContext: clusterCtx,
 		}).ClientConfig()
