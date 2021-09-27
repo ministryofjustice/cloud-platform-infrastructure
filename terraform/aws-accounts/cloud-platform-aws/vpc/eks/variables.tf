@@ -16,12 +16,6 @@ variable "auth0_groupsClaim" {
   default     = "https://k8s.integration.dsd.io/groups"
 }
 
-variable "check_associate" {
-  type        = string
-  default     = "true"
-  description = "Check for active association during cluster creation. This is required for kuberos to authenticate to the cluster."
-}
-
 variable "cluster_enabled_log_types" {
   default     = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
   description = "A list of the desired control plane logging to enable."
