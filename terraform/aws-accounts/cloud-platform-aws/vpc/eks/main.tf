@@ -124,7 +124,7 @@ module "auth0" {
 
 resource "aws_eks_identity_provider_config" "oidc_associate" {
   cluster_name = terraform.workspace
-
+   depends_on = [module.eks.cluster_id]
   oidc {
     client_id                     = module.auth0.oidc_kubernetes_client_id
     identity_provider_config_name = "Auth0"
