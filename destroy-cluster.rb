@@ -193,6 +193,9 @@ class ClusterDeleter
     dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks/components"
     tf_init dir
     tf_workspace_select(dir, cluster_name)
+    # terraform refresh until this issue get fixed for terraform-provider-kubernetes
+    # https://github.com/hashicorp/terraform-provider-kubernetes/issues/1131
+    tf_refresh(dir)
     tf_destroy(dir)
   end
 
@@ -239,6 +242,10 @@ class ClusterDeleter
 
   def tf_init(dir)
     execute "cd #{dir}; terraform init"
+  end
+
+  def tf_refresh(dir)
+    execute "cd #{dir}; terraform refresh"
   end
 
   def tf_workspace_select(dir, workspace)
