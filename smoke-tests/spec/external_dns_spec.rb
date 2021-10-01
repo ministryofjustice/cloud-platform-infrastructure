@@ -9,6 +9,7 @@ describe "external DNS", "live-1": true do
   let(:ingress_domain) { domain }
   let(:ingress_name) { domain }
   let(:fixture_name) { "spec/fixtures/external-dns-ingress.yaml.erb" }
+  let(:host) { "#{namespace}.#{domain}" }
 
   let(:set_identifier) { "#{ingress_name}-#{namespace}-#{external_dns_annotation_color}" }
 
@@ -25,7 +26,6 @@ describe "external DNS", "live-1": true do
 
   context "when zone matches ingress domain" do
     before do
-      cleanup_zone(domain, namespace, ingress_name)
       create_namespace(namespace)
     end
 
