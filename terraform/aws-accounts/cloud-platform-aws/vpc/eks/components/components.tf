@@ -87,7 +87,7 @@ module "modsec_ingress_controllers" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.3.1"
 
   controller_name = "modsec01"
-  replica_count   = "4"
+  replica_count   = "6"
 
   depends_on = [module.ingress_controllers]
 }
