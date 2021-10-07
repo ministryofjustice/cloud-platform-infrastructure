@@ -28,6 +28,6 @@ The following table lists the configurable parameters and their default values.
 
 Once cloudformation has completed creating the stack, you will need to enter the real slack webhook and channel names in the AWS Parameter Store and replace the dummy entries. 
 
-Click [here](https://docs.aws.amazon.com/solutions/latest/limit-monitor/welcome.html) for official AWS documentation 
+Click [here](https://docs.aws.amazon.com/solutions/latest/limit-monitor/welcome.html) for official AWS documentation
 
-Click [here](https://github.com/awslabs/aws-limit-monitor) for Github repository 
+Click [here](https://github.com/awslabs/aws-limit-monitor) for Github repository
