@@ -8,14 +8,13 @@ import (
 )
 
 // Services defined in plain text in the cluster manifest.
-var _ = Describe("Expected services in the cluster", func() {
+var _ = Describe("The services in the cluster", func() {
 	var (
 		servicesNotRunning []string
 	)
 
-	It("exist", func() {
+	It("should exist as defined", func() {
 		services := c.GetExpectedServices()
-
 		if len(services) == 0 {
 			Skip("No services defined, skipping test")
 		}
@@ -34,4 +33,16 @@ var _ = Describe("Expected services in the cluster", func() {
 			Fail(fmt.Sprintf("The following services DO NOT exist: %v", servicesNotRunning))
 		}
 	})
+
+	It("shouldn't be there because they're fake", func() {
+		fakeService := "ObviouslyFake"
+
+		options := k8s.NewKubectlOptions("", "", "default")
+		_, err := k8s.GetServiceE(GinkgoT(), options, fakeService)
+		if err.Error() == "services \"ObviouslyFake\" not found" {
+			return
+		}
+		Fail(fmt.Sprintf("A service named %s shouldn't exist.", fakeService))
+	})
+
 })
