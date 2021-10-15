@@ -55,7 +55,7 @@ func (c Config) defaultsFromEnvs() error {
 	if c.ClusterName == "" {
 		c.ClusterName = os.Getenv("CP_CLUSTER_NAME")
 		if c.ClusterName == "" {
-			return errors.New("Cluster Name is mandatory - not found it neither in config file nor environment variable")
+			return errors.New("cluster Name is mandatory - not found it neither in config file nor environment variable")
 		}
 	}
 
@@ -70,14 +70,11 @@ func (c *Config) GetExpectedDaemonSets() map[string][]string {
 	for ns, val := range c.Namespaces {
 		var daemonSets []string
 
-		for _, ds := range val.Daemonsets {
-			daemonSets = append(daemonSets, ds)
-		}
+		daemonSets = append(daemonSets, val.Daemonsets...)
 
 		if len(daemonSets) > 0 {
 			r[ns] = daemonSets
 		}
-
 	}
 
 	return r
@@ -91,14 +88,11 @@ func (c *Config) GetExpectedServiceMonitors() map[string][]string {
 	for ns, val := range c.Namespaces {
 		var serviceMonitors []string
 
-		for _, ds := range val.Servicemonitors {
-			serviceMonitors = append(serviceMonitors, ds)
-		}
+		serviceMonitors = append(serviceMonitors, val.Servicemonitors...)
 
 		if len(serviceMonitors) > 0 {
 			r[ns] = serviceMonitors
 		}
-
 	}
 
 	return r
