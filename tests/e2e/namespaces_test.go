@@ -24,7 +24,7 @@ var _ = Describe("Namespace checks", func() {
 
 		// Loop over namespaces defined in the config file and add them
 		// to a collection if not found.
-		for ns, _ := range c.Namespaces {
+		for ns := range c.Namespaces {
 			options := k8s.NewKubectlOptions("", "", ns)
 			_, err := k8s.GetNamespaceE(GinkgoT(), options, ns)
 
@@ -71,7 +71,7 @@ var _ = Describe("Namespace checks", func() {
 		// Loop over each key in the map and add namespace names
 		// to a collection.
 		var unannotatedNs []string
-		for k, _ := range m {
+		for k := range m {
 			ns, _ := k8s.GetNamespaceE(GinkgoT(), options, k)
 			if len(ns.Annotations) < 1 {
 				unannotatedNs = append(unannotatedNs, ns.Name)
