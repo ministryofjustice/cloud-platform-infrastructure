@@ -146,7 +146,7 @@ end
 
 # This is a tactical fix to install our own pod security policies in an EKS cluster. When PSP's are deprecated and we create policies via another means, this method can be removed.
 def fix_psp
-  cmd_delete = "kubectl delete psp eks.privileged"
+  cmd_delete = "kubectl delete psp eks.privileged --ignore-not-found=true"
   if cmd_successful?(cmd_delete)
     log "Deleted eks.privileged psp."
   else
