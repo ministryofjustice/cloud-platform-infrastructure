@@ -6,7 +6,7 @@ all: build push
 
 build:
 	@echo "Building image:"
-	docker build  --network host -t $(PREFIX):$(TAG) .
+	docker buildx build --platform=linux/amd64 --network host -t $(PREFIX):$(TAG) .
 
 push:
 	@echo "Pushing image:"
@@ -14,7 +14,7 @@ push:
 
 test:
 	@echo "Running container:"
-	docker run -it --rm \
+	docker run --platform=linux/amd64 -it --rm \
 		-v $(KUBE_CONFIG):/tests/config \
 		-v $(HOME)/.aws:/tests/.aws \
 		-e AWS_CONFIG_FILE=/tests/.aws/config \

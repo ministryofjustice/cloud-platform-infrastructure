@@ -36,7 +36,7 @@ check_ssh_keys() {
 run_docker_container() {
   local readonly key=${HOME}/.ssh/${CLUSTER_NAME}
 
-  docker run \
+  docker run --platform=linux/amd64 \
    -v $(pwd)/terraform:/opt/terraform \
    -v ${HOME}/.aws/credentials:/root/.aws/credentials \
    -v ${key}:/root/.ssh/id_rsa \

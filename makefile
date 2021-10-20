@@ -1,8 +1,8 @@
 TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:1.43
 
 tools-shell:
-	docker pull $(TOOLS_IMAGE)
-	docker run --rm -it \
+	docker pull --platform=linux/amd64 $(TOOLS_IMAGE)
+	docker run --platform=linux/amd64 --rm -it \
     -e AWS_PROFILE=$${AWS_PROFILE} \
     -e AUTH0_DOMAIN=$${AUTH0_DOMAIN} \
     -e AUTH0_CLIENT_ID=$${AUTH0_CLIENT_ID} \

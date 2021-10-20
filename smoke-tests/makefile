@@ -7,7 +7,7 @@ AWS_PROFILE := moj-cp # Cloud Platform AWS account
 build: .built-docker-image
 
 .built-docker-image: Dockerfile Gemfile Gemfile.lock makefile
-	docker build -t $(IMAGE) .
+	docker buildx build --platform=linux/amd64 -t $(IMAGE) .
 	touch .built-docker-image
 
 tag: .built-docker-image
@@ -20,7 +20,7 @@ push:
 	docker push $(IMAGE):latest
 
 shell:
-	docker run --rm -it \
+	docker run --platform=linux/amd64 --rm -it \
 		-v $(KUBE_CONFIG):/app/config \
 		-v $${PWD}/spec:/app/spec \
 		-v $${HOME}/.aws:/app/.aws \
@@ -32,7 +32,7 @@ shell:
 
 # Runs all tests, against whichever kops cluster your .kube/config points to
 test:
-	docker run --rm \
+	docker run --platform=linux/amd64 --rm \
 		-v $(KUBE_CONFIG):/app/config \
 		-v $${PWD}/spec:/app/spec \
 		-v $${HOME}/.aws:/app/.aws \
@@ -44,7 +44,7 @@ test:
 
 # Only run tests tagged with "live-1": true and NOT tagged with "eks-manager": true
 test-live-1:
-	docker run --rm \
+	docker run --platform=linux/amd64 --rm \
 		-v $(KUBE_CONFIG):/app/config \
 		-v $${PWD}/spec:/app/spec \
 		-v $${HOME}/.aws:/app/.aws \
@@ -56,7 +56,7 @@ test-live-1:
 
 # Only run tests NOT tagged with "live-1": true and "eks-manager": true
 test-non-live-1:
-	docker run --rm \
+	docker run --platform=linux/amd64 --rm \
 		-v $(KUBE_CONFIG):/app/config \
 		-v $${PWD}/spec:/app/spec \
 		-v $${HOME}/.aws:/app/.aws \
@@ -68,7 +68,7 @@ test-non-live-1:
 
 # Only run tests NOT tagged with "live-1": true and kops: true
 test-eks:
-	docker run --rm \
+	docker run --platform=linux/amd64 --rm \
 		-v $(KUBE_CONFIG):/app/config \
 		-v $${PWD}/spec:/app/spec \
 		-v $${HOME}/.aws:/app/.aws \
@@ -80,7 +80,7 @@ test-eks:
 
 # Only run tests tagged with speed: fast
 test-fast:
-	docker run --rm \
+	docker run --platform=linux/amd64 --rm \
 		-v $(KUBE_CONFIG):/app/config \
 		-v $${PWD}/spec:/app/spec \
 		-v $${HOME}/.aws:/app/.aws \
@@ -92,7 +92,7 @@ test-fast:
 
 # Only run tests tagged with speed: fast and NOT tagged with "live-1": true and "eks-manager": true
 test-fast-non-live-1:
-	docker run --rm \
+	docker run --platform=linux/amd64 --rm \
 		-v $(KUBE_CONFIG):/app/config \
 		-v $${PWD}/spec:/app/spec \
 		-v $${HOME}/.aws:/app/.aws \
