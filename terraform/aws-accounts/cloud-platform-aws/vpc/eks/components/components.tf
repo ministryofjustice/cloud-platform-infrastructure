@@ -174,4 +174,4 @@ module "sonarqube" {
   # This is to enable sonarqube, by default it is false for test clusters
   enable_sonarqube = lookup(local.prod_workspace, terraform.workspace, false)
 }
-  
+
