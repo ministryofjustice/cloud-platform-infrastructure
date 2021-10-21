@@ -259,6 +259,8 @@ module "live_elasticsearch_monitoring" {
   domain_name       = local.live_domain
   create_sns_topic  = false
   sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
+
+  alarm_cluster_status_is_yellow_periods = 10
 }
 
 module "audit_elasticsearch_monitoring" {
