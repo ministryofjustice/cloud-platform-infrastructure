@@ -253,7 +253,7 @@ data "aws_iam_policy_document" "test" {
 
 module "live_elasticsearch_monitoring" {
   source  = "dubiety/elasticsearch-cloudwatch-sns-alarms/aws"
-  version = "1.0.4"
+  version = "2.1.0"
 
   alarm_name_prefix = "cloud-platform-live-"
   domain_name       = local.live_domain
@@ -265,7 +265,7 @@ module "live_elasticsearch_monitoring" {
 
 module "audit_elasticsearch_monitoring" {
   source  = "dubiety/elasticsearch-cloudwatch-sns-alarms/aws"
-  version = "1.0.4"
+  version = "2.1.0"
 
   alarm_name_prefix = "cloud-platform-audit-"
   domain_name       = local.audit_domain
