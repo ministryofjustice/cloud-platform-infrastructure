@@ -3,9 +3,6 @@ module "concourse" {
   count  = terraform.workspace == "manager" ? 1 : 0
   source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.7.6"
 
-  vpc_id                                            = data.terraform_remote_state.cluster.outputs.vpc_id
-  internal_subnets                                  = data.terraform_remote_state.cluster.outputs.internal_subnets
-  internal_subnets_ids                              = data.terraform_remote_state.cluster.outputs.internal_subnets_ids
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
   github_auth_client_secret                         = var.github_auth_client_secret
