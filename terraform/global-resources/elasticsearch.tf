@@ -164,7 +164,7 @@ data "aws_iam_policy_document" "audit_1" {
 resource "aws_elasticsearch_domain" "audit_1" {
   domain_name           = local.audit_domain
   provider              = aws.cloud-platform
-  elasticsearch_version = "6.5"
+  elasticsearch_version = "7.10"
 
   cluster_config {
     instance_type          = "m4.2xlarge.elasticsearch"
