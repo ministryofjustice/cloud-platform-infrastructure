@@ -167,12 +167,12 @@ resource "aws_elasticsearch_domain" "audit_1" {
   elasticsearch_version = "7.10"
 
   cluster_config {
-    instance_type          = "m4.2xlarge.elasticsearch"
-    instance_count         = "8"
+    instance_type            = "m4.2xlarge.elasticsearch"
+    instance_count           = "8"
     dedicated_master_enabled = true
     dedicated_master_type    = "m4.large.elasticsearch"
     dedicated_master_count   = "3"
-    zone_awareness_enabled = true
+    zone_awareness_enabled   = true
   }
 
   ebs_options {
