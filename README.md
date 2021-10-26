@@ -8,11 +8,47 @@ Here you'll also find instruction on how to operate a Cloud Platform cluster.
 
 ## Table of contents
 
+  - [How to run tests](#how-to-run-tests)
   - [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
   - [Cloud Platform environments](#cloud-platform-environments)
   - [Terraform modules](#terraform-modules)
   - [How to add your examples](#how-to-add-your-examples)
   - [Create/Delete a cluster](#createdelete-a-cluster)
+
+## How to run tests
+
+To run the end to end tests we must go inside the `test/e2e/` folder and execute:
+
+```
+$ go test -v -config ../config/live.yaml
+```
+
+The flag `-config` allow us to specify different configuration files depending on which components we want to test for different clusters.
+
+### Running individual tests
+
+A neat trick in Ginkgo is to place an "F" in front of the "Describe", "It" or "Context" functions. This marks it as [focused](https://onsi.github.io/ginkgo/#focused-specs).
+
+So, if you have spec like:
+
+```
+    It("should be idempotent", func() {
+```
+
+You rewrite it as:
+
+```
+    FIt("should be idempotent", func() {
+```
+
+And it will run exactly that one spec:
+
+```
+[Fail] testing Migrate setCurrentDbVersion [It] should be idempotent
+...
+Ran 1 of 5 Specs in 0.003 seconds
+FAIL! -- 0 Passed | 1 Failed | 0 Pending | 4 Skipped
+```
 
 ## Terraform and Cloud Platform environment management
 

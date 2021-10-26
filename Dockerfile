@@ -1,15 +1,76 @@
-FROM golang:1.16-alpine AS builder
+# FROM golang:alpine AS builder
+
+# ENV CGO_ENABLED=0 \
+#     GOOS=linux
+
+# WORKDIR /build
+
+# COPY . .
+
+# RUN go mod download
+# RUN cd ./test/e2e && go test -c -o cloud-platform-infra-test
+
+# RUN apk update && apk add --no-cache --upgrade curl groff
+# RUN rm /var/cache/apk/*
+
+# RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+# RUN chmod 755 kubectl && mv kubectl /usr/bin/kubectl
+
+# # ---------
+
+# FROM ubuntu:latest AS aws
+
+# ENV \
+#   AWSCLI_BUNDLE_URL="https://s3.amazonaws.com/aws-cli" \
+#   AWSCLI_BUNDLE_FILENAME="awscli-bundle"
+
+# RUN apt-get update
+
+# RUN apt-get -qq install -y \
+#   curl \
+#   python \
+#   unzip
+
+# WORKDIR /tmp
+
+# RUN curl -O "${AWSCLI_BUNDLE_URL}/${AWSCLI_BUNDLE_FILENAME}.zip"
+
+# # ---------
+
+# FROM alpine
+
+# WORKDIR /app
+# RUN addgroup -g 1000 -S appgroup && \
+#     adduser -u 1000 -S appuser -G appgroup
+
+# # Testing tools
+# COPY --from=builder /build/test/e2e/cloud-platform-infra-test /usr/bin/
+# COPY --from=builder /build/test/config /app/
+
+# # Tools to interact with cloud-platform infrastructure
+# COPY --from=aws /usr/local/aws /usr/local/aws/
+# COPY --from=aws /usr/local/bin/aws /usr/local/bin/
+# COPY --from=builder /usr/bin/kubectl /usr/local/bin/kubectl
+
+# COPY --from=ministryofjustice/cloud-platform-cli:1.12.6 /usr/local/bin/cloud-platform /usr/local/bin/cloud-platform
+
+# COPY --from=hashicorp/terraform:0.14.8 /bin/terraform /usr/local/bin/terraform
+
+# USER 1000
+
+
+FROM golang:alpine AS builder
 
 ENV CGO_ENABLED=0 \
     GOOS=linux
 
 WORKDIR /build
-COPY go.mod .
+COPY . .
 COPY go.sum .
 RUN go mod download
 
 COPY . .
-RUN cd e2e && go test -c -o e2e-tests 
+RUN cd ./test/e2e && go test -c -o ./test/e2e-tests
 
 FROM python:3-alpine3.13 AS installer
 
