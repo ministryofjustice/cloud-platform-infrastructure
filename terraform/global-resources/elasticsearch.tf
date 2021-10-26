@@ -170,7 +170,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
     instance_type            = "m4.2xlarge.elasticsearch"
     instance_count           = "8"
     dedicated_master_enabled = true
-    dedicated_master_type    = "m4.large.elasticsearch"
+    dedicated_master_type    = "r5.large.search"
     dedicated_master_count   = "3"
     zone_awareness_enabled   = true
   }
