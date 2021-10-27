@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .cert-name }}
+  namespace: {{ .namespace }}
+spec:
+  commonName: {{ .hostname }}
+  dnsNames:
+  - {{ .hostname }}
+  secretName: {{ .cert-name }}-secret
+  issuerRef:
+    kind: Clusterissuer
+    name: letsencrypt-{{ .environment }}
