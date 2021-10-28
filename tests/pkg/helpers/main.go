@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"text/template"
+	"time"
 
 	"github.com/go-resty/resty/v2"
 	"github.com/gruntwork-io/terratest/modules/k8s"
@@ -14,12 +15,12 @@ import (
 // HellowoldOpt type allows you to specify options for
 // deploying a helloworld app template in a cluster.
 type HelloworldOpt struct {
-	Class         string `default:"nginx"`
-	Identifier    string `default:"green-blue"`
-	EnableModSec  string `default:"false"`
-	Weight        string `default:"100"`
-	ModSecSnippet string
-	Hostname      string `example:"hostname.cloud-platform...."`
+	Class      string `default:"nginx"`
+	Identifier string `default:"integration-test-green"`
+	// EnableModSec  string `default:"\"false\""`
+	Weight string `default:"\"100\""`
+	// ModSecSnippet string
+	Hostname string `example:"hostname.cloud-platform...."`
 }
 
 // CreateHelloWorldApp takes a HelloworldOpt type and KubectlOptions arguments
@@ -34,13 +35,13 @@ func CreateHelloWorldApp(app *HelloworldOpt, opt *k8s.KubectlOptions) error {
 			"kubernetes.io/ingress.class":                     app.Class,
 			"external-dns.alpha.kubernetes.io/aws-weight":     app.Weight,
 			"external-dns.alpha.kubernetes.io/set-identifier": app.Identifier,
-			"nginx.ingress.kubernetes.io/enable-modsecurity":  app.EnableModSec,
-			"nginx.ingress.kubernetes.io/modsecurity-snippet": "|\n     SecRuleEngine On",
+			// "nginx.ingress.kubernetes.io/enable-modsecurity":  app.EnableModSec,
+			// "nginx.ingress.kubernetes.io/modsecurity-snippet": "|\n     SecRuleEngine On",
 		},
 		"host": app.Hostname,
 	}
 
-	tpl, err := TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "outputTemplateDeployment.yaml.tmpl", templateVars)
+	tpl, err := TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", templateVars)
 	if err != nil {
 		return fmt.Errorf("failed to create the helloworld template: %s", err)
 	}
@@ -49,6 +50,8 @@ func CreateHelloWorldApp(app *HelloworldOpt, opt *k8s.KubectlOptions) error {
 	if err != nil {
 		return fmt.Errorf("failed to apply the helloworld template: %s", err)
 	}
+
+	k8s.WaitUntilIngressAvailableV1Beta1(GinkgoT(), opt, "integration-test-app-ing", 60, 5*time.Second)
 
 	return nil
 }
