@@ -1,11 +1,13 @@
 package integration_tests
 
 import (
+	"crypto/tls"
 	"fmt"
 	"html/template"
-	"math/rand"
+	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/tests/pkg/helpers"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -13,40 +15,52 @@ import (
 
 var _ = Describe("cert-manager", func() {
 	var (
-		namespace = fmt.Sprintf("cert-manager-test-%v", rand.Int())
+		namespace = fmt.Sprintf("cert-manager-test-%v", strings.ToLower(random.UniqueId()))
 		options   = k8s.NewKubectlOptions("", "", namespace)
-		host      = fmt.Sprintf("https://%s.%v", namespace, c.ClusterName)
+		host      = fmt.Sprintf("%s.%v", namespace, c.ClusterName)
 	)
 
 	BeforeEach(func() {
 		k8s.CreateNamespace(GinkgoT(), options, namespace)
 
+		// Create the application and ingress rule
 		app := helpers.HelloworldOpt{
-			Hostname: host,
+			Hostname:   host,
+			Class:      "nginx",
+			Identifier: namespace + "-integration-test" + "green",
+			// EnableModSec: "\"false\"",
+			// ModSecSnippet: "",
+			Weight: "\"100\"",
 		}
 
 		err := helpers.CreateHelloWorldApp(&app, options)
 		Expect(err).NotTo(HaveOccurred())
 
+		// Create the certificate resource
 		tpl, err := helpers.TemplateFile("./fixtures/certificate.yaml.tmpl", "cert.yaml.tmpl", template.FuncMap{
 			"cert-name":   namespace,
 			"namespace":   namespace,
 			"hostname":    host,
 			"environment": "staging",
 		})
+		Expect(err).NotTo(HaveOccurred())
 
 		err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
 		Expect(err).NotTo(HaveOccurred())
 	})
 
 	AfterEach(func() {
-		defer k8s.DeleteNamespace(GinkgoT(), options, namespace)
-		// destroy ingress resource
-		// destroy namespace
+		// defer k8s.DeleteNamespace(GinkgoT(), options, namespace)
 	})
 
 	Context("when a certificate resource is created", func() {
-		// validate_certificate
+		FIt("should allow a TLS handshake \n", func() {
+			c, err := tls.Dial("tcp", host+":443", nil)
+			Expect(err).NotTo(HaveOccurred())
+
+			fmt.Println(c)
+		})
+
 		// gomega validation
 	})
 })
