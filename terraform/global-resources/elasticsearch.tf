@@ -239,12 +239,12 @@ resource "aws_elasticsearch_domain" "audit_1" {
 
 # audit cluster for live
 resource "aws_elasticsearch_domain" "audit_live" {
-  domain_name           = local.audit_domain
+  domain_name           = local.audit_live_domain
   provider              = aws.cloud-platform
   elasticsearch_version = "OpenSearch_1.0"
 
   cluster_config {
-    instance_type            = "m4.2xlarge.elasticsearch"
+    instance_type            = "m5.2xlarge.elasticsearch"
     instance_count           = "8"
     dedicated_master_enabled = true
     dedicated_master_type    = "r5.large.search"
