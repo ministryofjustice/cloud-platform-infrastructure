@@ -247,7 +247,7 @@ resource "aws_elasticsearch_domain" "audit_live" {
     instance_type            = "m5.2xlarge.elasticsearch"
     instance_count           = "8"
     dedicated_master_enabled = true
-    dedicated_master_type    = "r5.large.search"
+    dedicated_master_type    = "r5.xlarge.search"
     dedicated_master_count   = "3"
     zone_awareness_enabled   = true
   }
