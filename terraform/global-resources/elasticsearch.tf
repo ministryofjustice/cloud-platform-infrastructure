@@ -9,7 +9,11 @@ locals {
 
   audit_domain = "cloud-platform-audit"
 
+  audit_live_domain = "cloud-platform-audit-live"
+
   allowed_audit_1_ips = local.allowed_live_1_ips
+
+  allowed_audit_live_ips = merge(local.allowed_live_1_ips, { "88.98.227.149" = "raz" })
 
   test_domain = "cloud-platform-test"
 
@@ -160,6 +164,43 @@ data "aws_iam_policy_document" "audit_1" {
   }
 }
 
+data "aws_iam_policy_document" "audit_live" {
+  statement {
+    actions = [
+      "es:AddTags",
+      "es:ESHttpHead",
+      "es:DescribeElasticsearchDomain",
+      "es:ESHttpPost",
+      "es:ESHttpGet",
+      "es:ESHttpPut",
+      "es:DescribeElasticsearchDomainConfig",
+      "es:ListTags",
+      "es:DescribeElasticsearchDomains",
+      "es:ListDomainNames",
+      "es:ListElasticsearchInstanceTypes",
+      "es:DescribeElasticsearchInstanceTypeLimits",
+      "es:ListElasticsearchVersions",
+      "es:*"
+    ]
+
+    resources = [
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.audit_live_domain}/*",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+
+      values = keys(local.allowed_audit_live_ips)
+    }
+  }
+}
+
 # audit cluster for live-1
 resource "aws_elasticsearch_domain" "audit_1" {
   domain_name           = local.audit_domain
@@ -195,6 +236,43 @@ resource "aws_elasticsearch_domain" "audit_1" {
     Domain = local.audit_domain
   }
 }
+
+# audit cluster for live
+resource "aws_elasticsearch_domain" "audit_live" {
+  domain_name           = local.audit_live_domain
+  provider              = aws.cloud-platform
+  elasticsearch_version = "OpenSearch_1.0"
+
+  cluster_config {
+    instance_type            = "m5.2xlarge.elasticsearch"
+    instance_count           = "8"
+    dedicated_master_enabled = true
+    dedicated_master_type    = "r5.large.elasticsearch"
+    dedicated_master_count   = "3"
+    zone_awareness_enabled   = true
+  }
+
+  ebs_options {
+    ebs_enabled = "true"
+    volume_type = "gp2"
+    volume_size = "1536"
+  }
+
+  advanced_options = {
+    "rest.action.multi.allow_explicit_index" = "true"
+  }
+
+  access_policies = data.aws_iam_policy_document.audit_live.json
+
+  snapshot_options {
+    automated_snapshot_start_hour = 23
+  }
+
+  tags = {
+    Domain = local.audit_domain
+  }
+}
+
 
 data "aws_iam_policy_document" "test" {
   statement {
