@@ -147,7 +147,7 @@ module "opa" {
 module "starter_pack" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.1.4"
 
-  enable_starter_pack = terraform.workspace == terraform.workspace == "live" ? false : true
+  enable_starter_pack = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
 }
 
