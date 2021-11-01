@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html/template"
 	"strings"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -15,9 +16,10 @@ import (
 
 var _ = Describe("cert-manager", func() {
 	var (
-		namespace = fmt.Sprintf("cert-manager-test-%v", strings.ToLower(random.UniqueId()))
+		namespace = fmt.Sprintf("cert-test-%v", strings.ToLower(random.UniqueId()))
 		options   = k8s.NewKubectlOptions("", "", namespace)
-		host      = fmt.Sprintf("%s.%v", namespace, c.ClusterName)
+		domain    = "raz-test.cloud-platform.service.justice.gov.uk"
+		host      = fmt.Sprintf("%s.%s", namespace, domain)
 	)
 
 	BeforeEach(func() {
@@ -28,17 +30,15 @@ var _ = Describe("cert-manager", func() {
 			Hostname:   host,
 			Class:      "nginx",
 			Identifier: namespace + "-integration-test" + "green",
-			// EnableModSec: "\"false\"",
-			// ModSecSnippet: "",
-			Weight: "\"100\"",
+			Weight:     "\"100\"",
 		}
 
 		err := helpers.CreateHelloWorldApp(&app, options)
 		Expect(err).NotTo(HaveOccurred())
 
 		// Create the certificate resource
-		tpl, err := helpers.TemplateFile("./fixtures/certificate.yaml.tmpl", "cert.yaml.tmpl", template.FuncMap{
-			"cert-name":   namespace,
+		tpl, err := helpers.TemplateFile("./fixtures/certificate.yaml.tmpl", "certificate.yaml.tmpl", template.FuncMap{
+			"certname":    namespace,
 			"namespace":   namespace,
 			"hostname":    host,
 			"environment": "staging",
@@ -58,7 +58,8 @@ var _ = Describe("cert-manager", func() {
 			c, err := tls.Dial("tcp", host+":443", nil)
 			Expect(err).NotTo(HaveOccurred())
 
-			fmt.Println(c)
+			time.Sleep(120 * time.Second)
+
 		})
 
 		// gomega validation
