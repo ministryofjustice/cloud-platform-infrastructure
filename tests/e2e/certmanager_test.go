@@ -18,7 +18,7 @@ var _ = Describe("cert-manager", func() {
 	var (
 		namespace = fmt.Sprintf("cert-test-%v", strings.ToLower(random.UniqueId()))
 		options   = k8s.NewKubectlOptions("", "", namespace)
-		domain    = "raz-test.cloud-platform.service.justice.gov.uk"
+		domain    = "integrationtest.service.justice.gov.uk"
 		host      = fmt.Sprintf("%s.%s", namespace, domain)
 	)
 
@@ -53,9 +53,13 @@ var _ = Describe("cert-manager", func() {
 		// defer k8s.DeleteNamespace(GinkgoT(), options, namespace)
 	})
 
+	Context("to verifiy the installation", func() {
+		//https://cert-manager.io/next-docs/installation/verify/
+	})
+
 	Context("when a certificate resource is created", func() {
 		FIt("should allow a TLS handshake \n", func() {
-			c, err := tls.Dial("tcp", host+":443", nil)
+			_, err := tls.Dial("tcp", host+":443", nil)
 			Expect(err).NotTo(HaveOccurred())
 
 			time.Sleep(120 * time.Second)
