@@ -49,10 +49,6 @@ locals {
       dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
     })
 
-    # Issue in v17.1.0, where each plan will have a change for the templates, this cause our divergence pipeline fail"
-    # Pinned the version until this fix get merged https://github.com/terraform-aws-modules/terraform-aws-eks/pull/1447
-    launch_template_version = "1"
-
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
     k8s_labels = {
       Terraform = "true"
