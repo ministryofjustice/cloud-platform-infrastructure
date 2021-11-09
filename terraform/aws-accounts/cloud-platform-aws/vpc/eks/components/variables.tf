@@ -25,7 +25,8 @@ variable "elasticsearch_hosts_maps" {
 
 variable "elasticsearch_audit_hosts_maps" {
   default = {
-    manager = "search-cloud-platform-audit-dq5bdnjokj4yt7qozshmifug6e.eu-west-2.es.amazonaws.com"
+    manager = "search-cloud-platform-audit-live-hfclvgaq73cul7ku362rvigti4.eu-west-2.es.amazonaws.com"
+    live    = "search-cloud-platform-audit-live-hfclvgaq73cul7ku362rvigti4.eu-west-2.es.amazonaws.com"
   }
 }
 

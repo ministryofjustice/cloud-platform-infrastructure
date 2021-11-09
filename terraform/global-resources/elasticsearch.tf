@@ -12,8 +12,9 @@ locals {
   audit_live_domain = "cloud-platform-audit-live"
 
   allowed_audit_1_ips = local.allowed_live_1_ips
+  # for tests, use something like merge(local.allowed_live_1_ips, { "88.98.227.149" = "raz" })
 
-  allowed_audit_live_ips = merge(local.allowed_live_1_ips, { "88.98.227.149" = "raz" })
+  allowed_audit_live_ips = local.allowed_live_1_ips
 
   test_domain = "cloud-platform-test"
 
