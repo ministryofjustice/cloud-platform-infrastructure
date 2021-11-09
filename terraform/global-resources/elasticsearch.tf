@@ -180,8 +180,7 @@ data "aws_iam_policy_document" "audit_live" {
       "es:ListDomainNames",
       "es:ListElasticsearchInstanceTypes",
       "es:DescribeElasticsearchInstanceTypeLimits",
-      "es:ListElasticsearchVersions",
-      "es:*"
+      "es:ListElasticsearchVersions"
     ]
 
     resources = [
