@@ -50,20 +50,23 @@ var _ = Describe("cert-manager", func() {
 	})
 
 	AfterEach(func() {
-		// defer k8s.DeleteNamespace(GinkgoT(), options, namespace)
-	})
-
-	Context("to verifiy the installation", func() {
-		//https://cert-manager.io/next-docs/installation/verify/
+		defer k8s.DeleteNamespace(GinkgoT(), options, namespace)
 	})
 
 	Context("when a certificate resource is created", func() {
 		FIt("should allow a TLS handshake \n", func() {
-			_, err := tls.Dial("tcp", host+":443", nil)
-			Expect(err).NotTo(HaveOccurred())
+			time.Sleep(160 * time.Second)
+			conn, err := tls.Dial("tcp", host+":443", nil)
+			if err != nil {
+				panic("Server doesn't support SSL certificate err: " + err.Error())
+			}
 
-			time.Sleep(120 * time.Second)
-
+			err = conn.VerifyHostname(host)
+			if err != nil {
+				panic("Hostname doesn't match with certificate: " + err.Error())
+			}
+			expiry := conn.ConnectionState().PeerCertificates[0].NotAfter
+			fmt.Printf("Issuer: %s\nExpiry: %v\n", conn.ConnectionState().PeerCertificates[0].Issuer, expiry.Format(time.RFC850))
 		})
 
 		// gomega validation
