@@ -58,7 +58,7 @@ module "external_dns" {
 
   # EKS doesn't use KIAM but it is a requirement for the module.
   dependence_kiam = ""
-  depends_on      = [module.monitoring]
+  #depends_on      = [module.monitoring]
 
   # This section is for EKS
   eks                         = true
@@ -110,7 +110,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=1.7.9"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.0.0"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
