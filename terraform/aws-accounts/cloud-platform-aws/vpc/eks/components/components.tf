@@ -26,7 +26,7 @@ module "concourse" {
   authorized_keys_github_token                      = var.authorized_keys_github_token
   sonarqube_token                                   = var.sonarqube_token
   sonarqube_host                                    = var.sonarqube_host
-  dependence_prometheus                             = module.monitoring.helm_prometheus_operator_status
+  dependence_prometheus                             = module.monitoring.helm_prometheus_operator_eks_status
   hoodaw_host                                       = var.hoodaw_host
   hoodaw_api_key                                    = var.hoodaw_api_key
   github_actions_secrets_token                      = var.github_actions_secrets_token
@@ -41,7 +41,7 @@ module "cert_manager" {
 
   # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade, 
   # but cluster creation fails without, so will have to be temporarily disabled when upgrading
-  dependence_prometheus = module.monitoring.helm_prometheus_operator_status
+  dependence_prometheus = module.monitoring.helm_prometheus_operator_eks_status
   dependence_opa        = "ignore"
 
   # This section is for EKS
@@ -105,7 +105,7 @@ module "logging" {
 
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
-  dependence_prometheus    = module.monitoring.helm_prometheus_operator_status
+  dependence_prometheus    = module.monitoring.helm_prometheus_operator_eks_status
   eks                      = true
 }
 
@@ -155,7 +155,7 @@ module "velero" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=0.0.8"
 
   iam_role_nodes        = data.aws_iam_role.nodes.arn
-  dependence_prometheus = module.monitoring.helm_prometheus_operator_status
+  dependence_prometheus = module.monitoring.helm_prometheus_operator_eks_status
   cluster_domain_name   = data.terraform_remote_state.cluster.outputs.cluster_domain_name
 
   # This section is for EKS
