@@ -29,7 +29,8 @@ var _ = Describe("cert-manager", func() {
 		app := helpers.HelloworldOpt{
 			Hostname:   host,
 			Class:      "nginx",
-			Identifier: namespace + "-integration-test" + "green",
+			Identifier: namespace + "-integration-test-" + "green",
+			Namespace:  namespace,
 			Weight:     "\"100\"",
 		}
 
@@ -54,19 +55,16 @@ var _ = Describe("cert-manager", func() {
 	})
 
 	Context("when a certificate resource is created", func() {
-		FIt("should allow a TLS handshake \n", func() {
-			time.Sleep(160 * time.Second)
-			conn, err := tls.Dial("tcp", host+":443", nil)
-			if err != nil {
-				panic("Server doesn't support SSL certificate err: " + err.Error())
-			}
+		FIt("should return the correct certificate name", func() {
+			time.Sleep(160 * time.Second) // Wait for the certificate to be ready
+			conn, err := tls.Dial("tcp", host+":443", &tls.Config{InsecureSkipVerify: true})
+			Expect(err).NotTo(HaveOccurred())
 
-			err = conn.VerifyHostname(host)
-			if err != nil {
-				panic("Hostname doesn't match with certificate: " + err.Error())
-			}
-			expiry := conn.ConnectionState().PeerCertificates[0].NotAfter
-			fmt.Printf("Issuer: %s\nExpiry: %v\n", conn.ConnectionState().PeerCertificates[0].Issuer, expiry.Format(time.RFC850))
+			defer conn.Close()
+
+			cert := conn.ConnectionState().PeerCertificates[0].Issuer.Organization
+
+			Expect(cert[0]).To(Equal("(STAGING) Let's Encrypt"))
 		})
 
 		// gomega validation
