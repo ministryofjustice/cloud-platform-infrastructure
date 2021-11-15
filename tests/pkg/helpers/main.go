@@ -17,10 +17,9 @@ import (
 type HelloworldOpt struct {
 	Class      string `default:"nginx"`
 	Identifier string `default:"integration-test-green"`
-	// EnableModSec  string `default:"\"false\""`
-	Weight string `default:"\"100\""`
-	// ModSecSnippet string
-	Hostname string `example:"hostname.cloud-platform...."`
+	Weight     string `default:"\"100\""`
+	Hostname   string `example:"hostname.cloud-platform...."`
+	Namespace  string `default:"default"`
 }
 
 // CreateHelloWorldApp takes a HelloworldOpt type and KubectlOptions arguments
@@ -35,10 +34,9 @@ func CreateHelloWorldApp(app *HelloworldOpt, opt *k8s.KubectlOptions) error {
 			"kubernetes.io/ingress.class":                     app.Class,
 			"external-dns.alpha.kubernetes.io/aws-weight":     app.Weight,
 			"external-dns.alpha.kubernetes.io/set-identifier": app.Identifier,
-			// "nginx.ingress.kubernetes.io/enable-modsecurity":  app.EnableModSec,
-			// "nginx.ingress.kubernetes.io/modsecurity-snippet": "|\n     SecRuleEngine On",
 		},
-		"host": app.Hostname,
+		"host":      app.Hostname,
+		"namespace": app.Namespace,
 	}
 
 	tpl, err := TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", templateVars)
