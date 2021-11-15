@@ -7,7 +7,7 @@ spec:
   commonName: {{ .hostname }}
   dnsNames:
   - {{ .hostname }}
-  secretName: {{ .certname }}-secret
+  secretName: {{ .namespace }}-secret
   issuerRef:
     kind: ClusterIssuer
     name: letsencrypt-{{ .environment }}
