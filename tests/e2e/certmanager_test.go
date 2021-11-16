@@ -56,7 +56,9 @@ var _ = Describe("cert-manager", func() {
 
 	Context("when a certificate resource is created", func() {
 		FIt("should return the correct certificate name", func() {
-			time.Sleep(160 * time.Second) // Wait for the certificate to be ready
+			// time.Sleep(160 * time.Second) // Wait for the certificate to be ready
+			waitForCertificate(options, namespace, 120)
+
 			conn, err := tls.Dial("tcp", host+":443", &tls.Config{InsecureSkipVerify: true})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -70,3 +72,20 @@ var _ = Describe("cert-manager", func() {
 		// gomega validation
 	})
 })
+
+func waitForCertificate(options *k8s.KubectlOptions, namespace string, seconds int) string {
+	var status string
+	for i := 0; i < 12; i++ {
+		status, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "certificate", namespace, "-o", "jsonpath='{.items[*].status.conditions[?(@.type==\"Ready\")].status}'")
+		Expect(err).NotTo(HaveOccurred())
+
+		fmt.Println(status)
+		if status == "True" {
+			break
+		}
+		time.Sleep(10 * time.Second)
+		fmt.Println("Waiting for certificate to be ready")
+	}
+
+	return status
+}
