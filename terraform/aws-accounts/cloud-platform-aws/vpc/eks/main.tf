@@ -140,7 +140,7 @@ resource "aws_eks_identity_provider_config" "oidc_associate" {
 ###############
 
 module "aws_vpc_cni" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-vpc-cni?ref=1.0.0"
 
   depends_on               = [module.eks]
   eks_cluster_id           = module.eks.cluster_id
