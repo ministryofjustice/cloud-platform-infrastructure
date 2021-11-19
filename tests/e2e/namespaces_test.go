@@ -57,7 +57,7 @@ var _ = Describe("Namespace checks", func() {
 		m := make(map[string]string)
 		for _, ns := range allPods {
 			// exclude ephemeral namespaces created by the framework itself
-			r := regexp.MustCompile("^smoketest-*")
+			r := regexp.MustCompile("^smoketest-.*")
 			if r.MatchString(ns.Namespace) == true {
 				continue
 			}
