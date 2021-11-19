@@ -170,5 +170,9 @@ module "eks" {
     }
   ]
 
-  tags = local.tags
+  tags = {
+    Terraform = "true"
+    Cluster   = terraform.workspace
+    Domain    = local.fqdn
+  }
 }

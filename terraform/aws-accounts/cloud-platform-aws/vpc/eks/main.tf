@@ -38,12 +38,6 @@ locals {
   auth0_extra_callbacks = {
     manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
   }
-
-  tags = {
-    Terraform = "true"
-    Cluster   = terraform.workspace
-    Domain    = local.fqdn
-  }
 }
 
 data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
