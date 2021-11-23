@@ -1,4 +1,4 @@
-TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:raz
+TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:2.0
 
 tools-shell:
 	docker run --platform=linux/amd64 --rm -it \
