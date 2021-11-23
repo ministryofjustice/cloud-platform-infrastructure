@@ -1,7 +1,6 @@
-TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:1.43
+TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:raz
 
 tools-shell:
-	docker pull --platform=linux/amd64 $(TOOLS_IMAGE)
 	docker run --platform=linux/amd64 --rm -it \
     -e AWS_PROFILE=$${AWS_PROFILE} \
     -e AUTH0_DOMAIN=$${AUTH0_DOMAIN} \
