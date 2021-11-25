@@ -155,3 +155,38 @@ module "aws_vpc_cni" {
   eks_cluster_id           = module.eks.cluster_id
   modify_existing_resource = true
 }
+
+###############
+# kube-proxy #
+###############
+
+resource "aws_eks_addon" "kube_proxy" {
+
+  cluster_name      = terraform.workspace
+  addon_name        = "kube-proxy"
+  resolve_conflicts = "OVERWRITE"
+  addon_version     = "v1.20.7-eksbuild.1"
+
+  tags = {
+    Terraform = "true"
+    Cluster   = terraform.workspace
+    Domain    = local.fqdn
+  }
+}
+
+###########
+# coredns #
+###########
+
+resource "aws_eks_addon" "coredns" {
+
+  cluster_name      = terraform.workspace
+  addon_name        = "coredns"
+  resolve_conflicts = "OVERWRITE"
+  addon_version     = "v1.8.3-eksbuild.1"
+  tags = {
+    Terraform = "true"
+    Cluster   = terraform.workspace
+    Domain    = local.fqdn
+  }
+}
