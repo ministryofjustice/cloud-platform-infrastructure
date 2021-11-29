@@ -25,7 +25,7 @@ locals {
     default = "3"
   }
 
- # To manage different cluster versions
+  # To manage different cluster versions
   cluster_version = {
     live    = "1.19"
     manager = "1.19"
