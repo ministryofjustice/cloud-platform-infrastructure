@@ -14,7 +14,6 @@ provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
   token                  = data.aws_eks_cluster_auth.cluster.token
-  load_config_file       = false
 }
 
 locals {
@@ -25,7 +24,12 @@ locals {
     manager = "4"
     default = "3"
   }
-
+  # To manage different cluster versions
+  cluster_version = {
+    live    = "1.19"
+    manager = "1.19"
+    default = "1.19"
+  }
   node_size = {
     live    = ["r5.xlarge", "r4.xlarge"]
     manager = ["m5.xlarge", "m4.xlarge"]
@@ -104,7 +108,7 @@ module "eks" {
   subnets                       = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
   vpc_id                        = data.aws_vpc.selected.id
   write_kubeconfig              = false
-  cluster_version               = "1.19"
+  cluster_version               = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
   enable_irsa                   = true
   cluster_enabled_log_types     = var.cluster_enabled_log_types
   cluster_log_retention_in_days = var.cluster_log_retention_in_days
