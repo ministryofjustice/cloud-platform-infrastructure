@@ -38,6 +38,13 @@ locals {
   auth0_extra_callbacks = {
     manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
   }
+
+  tags = {
+    Terraform = "true"
+    Cluster   = terraform.workspace
+    Domain    = local.fqdn
+  }
+
 }
 
 data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
@@ -133,4 +140,20 @@ resource "aws_eks_identity_provider_config" "oidc_associate" {
     groups_claim                  = var.auth0_groupsClaim
     required_claims               = {}
   }
+}
+
+#######################
+# EKS Cluster add-ons #
+#######################
+module "aws_eks_addons" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons=1.0.1"
+
+  depends_on              = [module.eks]
+  cluster_name            = terraform.workspace
+  eks_cluster_id          = module.eks.cluster_id
+  addon_create_vpc_cni    = true
+  addon_create_kube_proxy = false
+  addon_create_coredns    = false
+  cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
+  addon_tags              = local.tags
 }
