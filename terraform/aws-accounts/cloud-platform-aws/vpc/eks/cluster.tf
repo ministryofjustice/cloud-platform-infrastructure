@@ -29,7 +29,7 @@ locals {
   cluster_version = {
     live    = "1.19"
     manager = "1.19"
-    default = "1.20"
+    default = "1.19"
   }
   node_size = {
     live    = ["r5.xlarge", "r4.xlarge"]
