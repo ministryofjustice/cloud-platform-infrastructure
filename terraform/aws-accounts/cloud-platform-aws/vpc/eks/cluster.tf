@@ -99,6 +99,12 @@ locals {
     ]
   }
 
+  tags = {
+    Terraform = "true"
+    Cluster   = terraform.workspace
+    Domain    = local.fqdn
+  }
+
 }
 
 module "eks" {
@@ -174,9 +180,21 @@ module "eks" {
     }
   ]
 
-  tags = {
-    Terraform = "true"
-    Cluster   = terraform.workspace
-    Domain    = local.fqdn
-  }
+  tags = local.tags
+}
+
+#######################
+# EKS Cluster add-ons #
+#######################
+module "aws_eks_addons" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=update-version"
+
+  depends_on              = [module.eks]
+  cluster_name            = terraform.workspace
+  eks_cluster_id          = module.eks.cluster_id
+  addon_create_vpc_cni    = true
+  addon_create_kube_proxy = true
+  addon_create_coredns    = true
+  cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
+  addon_tags              = local.tags
 }
