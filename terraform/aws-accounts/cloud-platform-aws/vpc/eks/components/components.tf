@@ -72,12 +72,11 @@ module "ingress_controllers" {
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
-  # This module requires prometheus and cert-manager
-  dependence_prometheus  = "ignore"
-  dependence_certmanager = module.cert_manager.helm_cert_manager_status
-  dependence_opa         = "ignore"
-  # It depends on complete cert-manager module
-  depends_on = [module.cert_manager]
+  depends_on = [
+    module.cert_manager,
+    module.monitoring
+  ]
+
 }
 
 module "modsec_ingress_controllers" {
