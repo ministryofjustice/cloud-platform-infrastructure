@@ -66,7 +66,7 @@ module "external_dns" {
 }
 
 module "ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.3.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=one"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
