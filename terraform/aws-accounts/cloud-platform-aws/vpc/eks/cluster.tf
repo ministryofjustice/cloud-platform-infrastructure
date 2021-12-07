@@ -29,7 +29,7 @@ locals {
   cluster_version = {
     live    = "1.19"
     manager = "1.19"
-    default = "1.19"
+    default = "1.20"
   }
   node_size = {
     live    = ["r5.xlarge", "r4.xlarge"]
@@ -109,7 +109,7 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "v17.3.0"
+  version = "v17.23.0"
 
   cluster_name                  = terraform.workspace
   subnets                       = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
