@@ -60,7 +60,7 @@ locals {
       dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
     })
 
-    ami_release_version    = lookup(local.node_ami_version, terraform.workspace, local.node_ami_version["default"])
+    ami_release_version = lookup(local.node_ami_version, terraform.workspace, local.node_ami_version["default"])
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
     k8s_labels = {
@@ -86,7 +86,7 @@ locals {
       dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
     })
 
-    ami_release_version    = lookup(local.node_ami_version, terraform.workspace, local.node_ami_version["default"])
+    ami_release_version = lookup(local.node_ami_version, terraform.workspace, local.node_ami_version["default"])
 
     instance_types = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
     k8s_labels = {
@@ -197,7 +197,7 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.0.4"
 
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
