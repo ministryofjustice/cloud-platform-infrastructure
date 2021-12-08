@@ -109,7 +109,7 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "v17.23.0"
+  version = "v17.24.0"
 
   cluster_name                  = terraform.workspace
   subnets                       = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
@@ -188,7 +188,7 @@ module "eks" {
 #######################
 module "aws_eks_addons" {
   source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.0.5"
-  depends_on              = [module.eks]
+  depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
   cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
