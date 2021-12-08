@@ -31,6 +31,12 @@ locals {
     manager = "1.19"
     default = "1.20"
   }
+
+  node_ami_version = {
+    live    = "1.19.6-20210722"
+    manager = "1.19.6-20210722"
+    default = "1.20.11-20211117"
+  }
   node_size = {
     live    = ["r5.xlarge", "r4.xlarge"]
     manager = ["m5.xlarge", "m4.xlarge"]
@@ -53,6 +59,8 @@ locals {
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
       dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
     })
+
+    ami_release_version    = lookup(local.node_ami_version, terraform.workspace, local.node_ami_version["default"])
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
     k8s_labels = {
@@ -77,6 +85,8 @@ locals {
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
       dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
     })
+
+    ami_release_version    = lookup(local.node_ami_version, terraform.workspace, local.node_ami_version["default"])
 
     instance_types = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
     k8s_labels = {
@@ -188,7 +198,7 @@ module "eks" {
 #######################
 module "aws_eks_addons" {
   source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.0.4"
-  depends_on              = [module.eks.cluster_id]
+
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
   cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
