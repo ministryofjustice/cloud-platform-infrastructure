@@ -27,7 +27,7 @@ locals {
   }
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.19"
+    live    = "1.20"
     manager = "1.20"
     default = "1.20"
   }
@@ -109,7 +109,7 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "v17.24.0"
+  version = "v17.23.0"
 
   cluster_name                  = terraform.workspace
   subnets                       = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
