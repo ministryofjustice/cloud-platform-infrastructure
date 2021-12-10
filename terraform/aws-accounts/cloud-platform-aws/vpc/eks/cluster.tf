@@ -27,9 +27,9 @@ locals {
   }
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.19"
-    manager = "1.19"
-    default = "1.19"
+    live    = "1.20"
+    manager = "1.20"
+    default = "1.20"
   }
   node_size = {
     live    = ["r5.xlarge", "r4.xlarge"]
@@ -109,7 +109,7 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "v17.3.0"
+  version = "v17.23.0"
 
   cluster_name                  = terraform.workspace
   subnets                       = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
@@ -187,8 +187,8 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.0.4"
-  depends_on              = [module.eks]
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.0.5"
+  depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
   cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
