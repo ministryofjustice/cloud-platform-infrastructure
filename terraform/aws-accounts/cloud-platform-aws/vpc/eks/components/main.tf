@@ -130,7 +130,7 @@ resource "helm_release" "calico" {
   chart      = "aws-calico"
   repository = "https://aws.github.io/eks-charts"
   namespace  = "kube-system"
-  version    = "0.3.5"
+  version    = "0.3.10"
 
   depends_on = [kubectl_manifest.calico_crds]
 }
