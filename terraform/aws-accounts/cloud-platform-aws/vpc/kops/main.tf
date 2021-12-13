@@ -119,3 +119,4 @@ module "auth0" {
   services_base_domain = local.services_base_domain
   extra_callbacks      = lookup(local.auth0_extra_callbacks, terraform.workspace, [""])
 }
+
