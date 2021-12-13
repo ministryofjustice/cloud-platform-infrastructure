@@ -124,3 +124,4 @@ module "velero" {
   dependence_prometheus = module.prometheus.helm_prometheus_operator_status
   cluster_domain_name   = data.terraform_remote_state.cluster.outputs.cluster_domain_name
 }
+
