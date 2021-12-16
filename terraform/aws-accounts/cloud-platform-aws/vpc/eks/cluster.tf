@@ -33,7 +33,7 @@ locals {
   }
   node_size = {
     live    = ["r5.xlarge", "r4.xlarge"]
-    manager = ["m5.xlarge", "m4.xlarge"]
+    manager = ["r5.xlarge", "r4.xlarge"]
     default = ["m5.large", "m4.large"]
   }
 
