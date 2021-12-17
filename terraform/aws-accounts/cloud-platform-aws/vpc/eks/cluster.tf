@@ -44,10 +44,12 @@ locals {
   }
 
   default_ng = {
-    desired_capacity = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_capacity     = 60
-    min_capacity     = 1
-    subnets          = data.aws_subnet_ids.private.ids
+    desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
+    max_capacity         = 60
+    min_capacity         = 1
+    subnets              = data.aws_subnet_ids.private.ids
+    bootstrap_extra_args = "--use-max-pods false"
+    kubelet_extra_args   = "--max-pods=110"
 
     create_launch_template = true
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
@@ -187,7 +189,7 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.0.5"
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=upgrade-cni-prefix"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
