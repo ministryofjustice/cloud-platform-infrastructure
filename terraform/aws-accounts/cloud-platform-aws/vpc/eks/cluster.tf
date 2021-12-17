@@ -32,9 +32,9 @@ locals {
     default = "1.20"
   }
   node_size = {
-    live    = ["r5.xlarge", "r4.xlarge"]
-    manager = ["m5.xlarge", "m4.xlarge"]
-    default = ["m5.large", "m4.large"]
+    live    = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
+    manager = ["m5.xlarge", "m5.2xlarge", "m5a.xlarge"]
+    default = ["m5.large", "m5.xlarge", "m5a.large"]
   }
 
   monitoring_node_size = {
