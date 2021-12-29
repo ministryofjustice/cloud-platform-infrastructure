@@ -189,7 +189,7 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=upgrade-cni-prefix"
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.1.0"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
