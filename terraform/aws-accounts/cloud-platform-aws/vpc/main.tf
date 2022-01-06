@@ -36,8 +36,8 @@ module "vpc" {
   enable_dns_hostnames = true
 
   public_dedicated_network_acl = true
-  public_inbound_acl_rules     = concat(local.network_acls["block_inbound"], local.network_acls["public_inbound"])
-  public_outbound_acl_rules    = concat(local.network_acls["block_outbound"], local.network_acls["public_outbound"])
+  public_inbound_acl_rules     = concat(local.network_acls["deny_inbound"], local.network_acls["allow_inbound"], local.network_acls["default_inbound"])
+  public_outbound_acl_rules    = concat(local.network_acls["deny_outbound"], local.network_acls["default_outbound"])
 
   private_dedicated_network_acl = false
 
