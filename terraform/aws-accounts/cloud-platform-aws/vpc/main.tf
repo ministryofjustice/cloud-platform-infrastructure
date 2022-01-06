@@ -18,22 +18,6 @@ provider "aws" {
   profile = "moj-cp"
 }
 
-###########################
-# Locals & Data Resources #
-###########################
-
-locals {
-  vpc_name             = terraform.workspace
-  vpc_base_domain_name = "${local.vpc_name}.cloud-platform.service.justice.gov.uk"
-  cluster_tags = {
-    for name in lookup(var.cluster_names, terraform.workspace, [terraform.workspace]) :
-    "kubernetes.io/cluster/${name}" => "shared"
-  }
-  vpc_tags = merge({
-    "kubernetes.io/cluster/${local.vpc_name}" = "shared"
-  }, local.cluster_tags)
-}
-
 #######
 # VPC #
 #######
@@ -50,6 +34,12 @@ module "vpc" {
   enable_nat_gateway   = true
   enable_vpn_gateway   = false
   enable_dns_hostnames = true
+
+  public_dedicated_network_acl = true
+  public_inbound_acl_rules     = concat(local.network_acls["block_inbound"], local.network_acls["public_inbound"])
+  public_outbound_acl_rules    = concat(local.network_acls["block_outbound"], local.network_acls["public_outbound"])
+
+  private_dedicated_network_acl = false
 
   public_subnet_tags = merge({
     SubnetType               = "Utility"
