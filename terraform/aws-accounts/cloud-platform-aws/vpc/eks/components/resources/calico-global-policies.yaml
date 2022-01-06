@@ -30,3 +30,28 @@ spec:
       destination:
         nets:
         - 0.0.0.0/0
+---
+apiVersion: crd.projectcalico.org/v1
+kind: GlobalNetworkPolicy
+metadata:
+  name: deny-specific-ip
+spec:
+  types:
+    - Ingress
+  egress:
+    - action: Log
+      metadata: {}
+      protocol: TCP
+      source:
+        nets:
+          - 82.132.219.134/32
+    - action: Deny
+      metadata: {}
+      protocol: TCP
+      source:
+        nets:
+          - 82.132.219.134/32
+    - action: Allow
+      source:
+        nets:
+        - 0.0.0.0/0
