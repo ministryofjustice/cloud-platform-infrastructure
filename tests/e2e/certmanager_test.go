@@ -105,24 +105,3 @@ func waitForCertificateToBeReady(namespace string, options *k8s.KubectlOptions, 
 	}
 	return fmt.Errorf("Certificate %s is not ready", namespace)
 }
-
-// func WaitUntilIngressAvailableV1Beta1(t testing.TestingT, options *k8s.KubectlOptions, ingressName string, retries int, sleepBetweenRetries time.Duration) {
-// 	statusMsg := fmt.Sprintf("Wait for ingress %s to be provisioned.", ingressName)
-// 	message := retry.DoWithRetry(
-// 		t,
-// 		statusMsg,
-// 		retries,
-// 		sleepBetweenRetries,
-// 		func() (string, error) {
-// 			ingress, err := GetIngressV1Beta1E(t, options, ingressName)
-// 			if err != nil {
-// 				return "", err
-// 			}
-// 			if !IsIngressAvailableV1Beta1(ingress) {
-// 				return "", IngressNotAvailableV1Beta1{ingress: ingress}
-// 			}
-// 			return "Ingress is now available", nil
-// 		},
-// 	)
-// 	logger.Logf(t, message)
-// }
