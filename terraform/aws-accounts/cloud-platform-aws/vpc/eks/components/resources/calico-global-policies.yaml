@@ -38,19 +38,19 @@ metadata:
 spec:
   types:
     - Ingress
-  egress:
+  ingress:
     - action: Log
       metadata: {}
       protocol: TCP
       source:
         nets:
-          - 82.132.219.134/32
+          - 82.132.230.96/32
     - action: Deny
       metadata: {}
       protocol: TCP
       source:
         nets:
-          - 82.132.219.134/32
+          - 82.132.230.96/32
     - action: Allow
       source:
         nets:
