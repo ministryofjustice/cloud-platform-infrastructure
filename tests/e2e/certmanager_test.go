@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"html/template"
 	"strings"
@@ -16,7 +17,8 @@ import (
 
 var _ = Describe("cert-manager", func() {
 	const (
-		domain = "integrationtest.service.justice.gov.uk" // All clusters have access to the test domain name
+		// All clusters have access to the test domain name
+		domain = "integrationtest.service.justice.gov.uk"
 	)
 
 	Context("when the namespace has a certificate resource", func() {
@@ -27,7 +29,6 @@ var _ = Describe("cert-manager", func() {
 
 			err  error
 			cert []string
-			// resp *http.Response
 			conn *tls.Conn
 		)
 
@@ -56,13 +57,8 @@ var _ = Describe("cert-manager", func() {
 			conn, err = tls.Dial("tcp", host+":443", &tls.Config{InsecureSkipVerify: true})
 			Expect(err).NotTo(HaveOccurred())
 			cert = conn.ConnectionState().PeerCertificates[0].Issuer.Organization
-			// resp, _ = http.Get("https://" + host)
-
-			// defer resp.Body.Close()
-			// defer conn.Close()
 
 			Expect(cert[0]).To(Equal("(STAGING) Let's Encrypt"))
-			// Expect(resp.StatusCode).To(Equal(200))
 		})
 	})
 })
@@ -83,23 +79,50 @@ func createCertificate(namespace, host string, options *k8s.KubectlOptions) erro
 		return err
 	}
 
-	// err = waitForCertificateToBeReady(namespace, options)
-	// if err != nil {
-	// 	return err
-	// }
-	time.Sleep(160 * time.Second) // Wait for the certificate to be ready
+	err = waitForCertificateToBeReady(namespace, options, 200)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func waitForCertificateToBeReady(namespace string, options *k8s.KubectlOptions) error {
-	// Wait 160 seconds for the certificate to be ready
-	for i := 0; i < 160; i++ {
-		err := k8s.RunKubectlE(GinkgoT(), options, "get", "certificate", namespace, "-o", "jsonpath={.status.conditions[?(@.type=='Ready')].status}")
-		if err == nil {
+func waitForCertificateToBeReady(namespace string, options *k8s.KubectlOptions, retries int) error {
+	fmt.Printf("Waiting for certificate %s to be ready %v times\n", namespace, retries)
+
+	for i := 0; i < retries; i++ {
+		fmt.Println("Checking certificate status: attempt" + fmt.Sprintf("%v", i+1))
+		status, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "certificate", namespace, "-o", "jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'")
+		if err != nil {
+			return errors.New("Certificate creation failed")
+		}
+		fmt.Println("status:", status)
+		if status == "'True'" {
 			return nil
 		}
-		time.Sleep(1 * time.Second)
+
+		time.Sleep(5 * time.Second)
 	}
-	return nil
+	return fmt.Errorf("Certificate %s is not ready", namespace)
 }
+
+// func WaitUntilIngressAvailableV1Beta1(t testing.TestingT, options *k8s.KubectlOptions, ingressName string, retries int, sleepBetweenRetries time.Duration) {
+// 	statusMsg := fmt.Sprintf("Wait for ingress %s to be provisioned.", ingressName)
+// 	message := retry.DoWithRetry(
+// 		t,
+// 		statusMsg,
+// 		retries,
+// 		sleepBetweenRetries,
+// 		func() (string, error) {
+// 			ingress, err := GetIngressV1Beta1E(t, options, ingressName)
+// 			if err != nil {
+// 				return "", err
+// 			}
+// 			if !IsIngressAvailableV1Beta1(ingress) {
+// 				return "", IngressNotAvailableV1Beta1{ingress: ingress}
+// 			}
+// 			return "Ingress is now available", nil
+// 		},
+// 	)
+// 	logger.Logf(t, message)
+// }
