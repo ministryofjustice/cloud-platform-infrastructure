@@ -2,11 +2,8 @@ package integration_tests
 
 import (
 	"crypto/tls"
-	"errors"
 	"fmt"
-	"html/template"
 	"strings"
-	"time"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -16,16 +13,11 @@ import (
 )
 
 var _ = Describe("cert-manager", func() {
-	const (
-		// All clusters have access to the test domain name
-		domain = "integrationtest.service.justice.gov.uk"
-	)
-
 	Context("when the namespace has a certificate resource", func() {
 		var (
-			namespace = fmt.Sprintf("cert-smoketest-%v", strings.ToLower(random.UniqueId()))
+			namespace = fmt.Sprintf("smoketest-certman-%s", strings.ToLower(random.UniqueId()))
 			options   = k8s.NewKubectlOptions("", "", namespace)
-			host      = fmt.Sprintf("%s.%s", namespace, domain)
+			host      = fmt.Sprintf("%s.%s", namespace, testDomain)
 
 			err  error
 			cert []string
@@ -45,7 +37,7 @@ var _ = Describe("cert-manager", func() {
 			err = helpers.CreateHelloWorldApp(&app, options)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = createCertificate(namespace, host, options)
+			err = helpers.CreateCertificate(namespace, host, options)
 			Expect(err).NotTo(HaveOccurred())
 		})
 
@@ -53,7 +45,7 @@ var _ = Describe("cert-manager", func() {
 			k8s.DeleteNamespace(GinkgoT(), options, namespace)
 		})
 
-		FIt("should succeed and present a staging certificate", func() {
+		It("should succeed and present a staging certificate", func() {
 			conn, err = tls.Dial("tcp", host+":443", &tls.Config{InsecureSkipVerify: true})
 			Expect(err).NotTo(HaveOccurred())
 			cert = conn.ConnectionState().PeerCertificates[0].Issuer.Organization
@@ -62,46 +54,3 @@ var _ = Describe("cert-manager", func() {
 		})
 	})
 })
-
-func createCertificate(namespace, host string, options *k8s.KubectlOptions) error {
-	tpl, err := helpers.TemplateFile("./fixtures/certificate.yaml.tmpl", "certificate.yaml.tmpl", template.FuncMap{
-		"certname":    namespace,
-		"namespace":   namespace,
-		"hostname":    host,
-		"environment": "staging",
-	})
-	if err != nil {
-		return err
-	}
-
-	err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
-	if err != nil {
-		return err
-	}
-
-	err = waitForCertificateToBeReady(namespace, options, 200)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func waitForCertificateToBeReady(namespace string, options *k8s.KubectlOptions, retries int) error {
-	fmt.Printf("Waiting for certificate %s to be ready %v times\n", namespace, retries)
-
-	for i := 0; i < retries; i++ {
-		fmt.Println("Checking certificate status: attempt" + fmt.Sprintf("%v", i+1))
-		status, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "certificate", namespace, "-o", "jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'")
-		if err != nil {
-			return errors.New("Certificate creation failed")
-		}
-		fmt.Println("status:", status)
-		if status == "'True'" {
-			return nil
-		}
-
-		time.Sleep(5 * time.Second)
-	}
-	return fmt.Errorf("Certificate %s is not ready", namespace)
-}
