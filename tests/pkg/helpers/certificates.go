@@ -49,12 +49,11 @@ func WaitForCertificateToBeReady(certName string, options *k8s.KubectlOptions, r
 		if err != nil {
 			return errors.New("Certificate creation failed")
 		}
-		fmt.Println("status:", status)
 		if status == "'True'" {
 			return nil
 		}
 
-		fmt.Printf("Failed to validate certificate %s, sleeping for 10 seconds\n", certName)
+		fmt.Printf("Failed to validate certificate %s, sleeping for %v seconds\n", certName, retryInterval)
 		time.Sleep(time.Duration(retryInterval) * time.Second)
 	}
 	return fmt.Errorf("certificate %s is not ready", certName)
