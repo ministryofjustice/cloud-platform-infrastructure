@@ -2,6 +2,9 @@
 clusterName: 'live.cloud-platform.service.justice.gov.uk'
 namespaces:
   cert-manager:
+    services:
+      - "cert-manager"
+      - "cert-manager-webhook"
     servicemonitors:
       - cert-manager
   ingress-controllers:

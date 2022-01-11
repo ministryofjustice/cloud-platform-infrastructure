@@ -44,7 +44,7 @@ spec:
   tls:
   - hosts:
     - {{ .host }}
-    secretName: hello-world-ssl
+    secretName: {{ .namespace }}-secret
   rules:
   - host: {{ .host }}
     http:
