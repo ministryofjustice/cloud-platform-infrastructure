@@ -98,6 +98,7 @@ locals {
   cloudwatch_workspace = {
     manager = false
     live    = true
+    live-1  = true
     default = false
   }
 
