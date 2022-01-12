@@ -95,6 +95,18 @@ locals {
     default = false
   }
 
+  cloudwatch_workspace = {
+    manager = false
+    live    = true
+    default = false
+  }
+
+  manager_workspace = {
+    manager = true
+    live    = false
+    default = false
+  }
+
   hostzones = {
     manager = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",

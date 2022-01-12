@@ -124,10 +124,10 @@ module "monitoring" {
   enable_prometheus_affinity_and_tolerations = true
 
   enable_thanos_helm_chart = lookup(local.prod_workspace, terraform.workspace, false)
-  enable_thanos_compact    = terraform.workspace == "manager" ? true : false
+  enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
 
-  enable_ecr_exporter        = can(regex("live", terraform.workspace)) ? true : false
-  enable_cloudwatch_exporter = can(regex("live", terraform.workspace)) ? true : false
+  enable_ecr_exporter        = lookup(local.cloudwatch_workspace, terraform.workspace, false)
+  enable_cloudwatch_exporter = lookup(local.cloudwatch_workspace, terraform.workspace, false)
 
   # This section is for EKS
   eks                         = true
