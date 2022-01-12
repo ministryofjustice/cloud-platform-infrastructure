@@ -110,7 +110,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.0.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.0.3"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
@@ -126,8 +126,8 @@ module "monitoring" {
   enable_thanos_helm_chart = lookup(local.prod_workspace, terraform.workspace, false)
   enable_thanos_compact    = terraform.workspace == "manager" ? true : false
 
-  enable_ecr_exporter        = true
-  enable_cloudwatch_exporter = true
+  enable_ecr_exporter        = can(regex("live", terraform.workspace)) ? true : false
+  enable_cloudwatch_exporter = can(regex("live", terraform.workspace)) ? true : false
 
   # This section is for EKS
   eks                         = true
