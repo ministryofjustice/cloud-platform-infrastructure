@@ -30,11 +30,11 @@ namespaces:
       - prometheus-operator-kube-p-apiserver
       - prometheus-operator-kube-p-coredns
       - prometheus-operator-kube-p-grafana
-      - prometheus-operator-kube-p-kube-state-metrics
+      - prometheus-operator-kube-state-metrics
       - prometheus-operator-kube-p-kubelet
       - prometheus-operator-kube-p-node-exporter
       - prometheus-operator-kube-p-operator
-      - prometheus-operator-kube-p-prometheus
+      - prometheus-operator-prometheus-node-exporter
   opa:
   velero:
     servicemonitors:
