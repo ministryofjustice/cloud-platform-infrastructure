@@ -7,10 +7,9 @@ describe "servicemonitors", speed: "fast" do
     expected = [
       "prometheus-operator-kube-p-alertmanager",
       "prometheus-operator-kube-p-apiserver",
+      "prometheus-operator-kube-p-coredns",
       "prometheus-operator-kube-p-grafana",
-      "prometheus-operator-kube-p-kube-state-metrics",
       "prometheus-operator-kube-p-kubelet",
-      "prometheus-operator-kube-p-node-exporter",
       "prometheus-operator-kube-p-operator",
       "prometheus-operator-kube-p-prometheus"
     ]
@@ -22,9 +21,11 @@ describe "servicemonitors", speed: "fast" do
 
     expected = [
       "prometheus-operator-kube-p-kube-controller-manager",
-      "prometheus-operator-kube-p-coredns",
       "prometheus-operator-kube-p-kube-etcd",
-      "prometheus-operator-kube-p-kube-scheduler"
+      "prometheus-operator-kube-p-kube-proxy",
+      "prometheus-operator-kube-p-kube-scheduler",
+      "prometheus-operator-kube-p-kube-state-metrics",
+      "prometheus-operator-kube-p-node-exporter"
     ]
     expect(names).to include(*expected)
   end
