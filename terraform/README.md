@@ -4,31 +4,29 @@ This `README` will serve as a brief outline of the `cloud-platform-infrastructur
 
 ```
 ├── README.md
-├── cloud-platform-account
-├── cloud-platform-components
-├── cloud-platform-dr
-├── cloud-platform
-├── global-resources
+├── aws-accounts         # resources split up by AWS account
+├── global-resources     # common resources for all clusters across a multitude of AWS accounts
+├── cross-account-IAM    # cross-account IAM (Q: why is it separate?)
 └── modules
 ```
-At present, there is no pipeline to apply changes to the Cloud Platform Infrastructure so this must be applied locally using:
+
+The nesting of the terraform folders reflects the **dependencies** between them. For example when you are provisioning a new cluster, the terraform must be [applied in this order](https://runbooks.cloud-platform.service.justice.gov.uk/eks-cluster.html):
+```
+aws-accounts/cloud-platform-aws/vpc 
+aws-accounts/cloud-platform-aws/vpc/eks 
+aws-accounts/cloud-platform-aws/vpc/eks/components
+```
+
+## Deployment
+
+There is Continuous Deployment for this terraform: [cloud-platform-infrastructure Concourse pipeline](https://concourse.cloud-platform.service.justice.gov.uk/teams/main/pipelines/cloud-platform-infrastructure)
+
+Terraform folders can also be applied manually using this general formula:
 
 ```terraform
 terraform init
-terraform workspace select <clusterName>
+terraform workspace select <clusterName>  # this line is not needed for global-resources
 terraform apply
 ```
-## Cloud Platform Account
-To be run at account level only. Contains (AWS) account level configuration such as `cloudtrail` and `dlm`.
 
-## Cloud Platform Components
-Contains a variety of applications to bootstrap a Kubernetes cluster into a "ready" state including `pod-security-policies`, `monitoring` and `kiam`.
-
-## Cloud Platform
-This directory will create you the outlines of a Kubernetes cluster, including a `kops.tf` to be used to create or modify a cluster. 
-
-## Cloud Platform DR
-To be used in a disaster recovery scenario, which restores resources and data.
-
-## Global Resources
-The global-resources directory contains Terraform code to build the common resources for all clusters across a multitude of AWS accounts.
+Each folder's README should have a "How do I use this?" section with the precise commands.
