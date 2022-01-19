@@ -110,7 +110,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=upg-thanos"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
