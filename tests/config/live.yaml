@@ -32,7 +32,7 @@ namespaces:
       - prometheus-operator-kube-p-grafana
       - prometheus-operator-kube-state-metrics
       - prometheus-operator-kube-p-kubelet
-      - prometheus-operator-kube-p-node-exporter
+      - prometheus-operator-kube-p-prometheus
       - prometheus-operator-kube-p-operator
       - prometheus-operator-prometheus-node-exporter
   opa:
