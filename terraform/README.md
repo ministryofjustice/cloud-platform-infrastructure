@@ -6,7 +6,7 @@ This `README` will serve as a brief outline of the `cloud-platform-infrastructur
 ├── README.md
 ├── aws-accounts         # resources split up by AWS account
 ├── global-resources     # common resources for all clusters across a multitude of AWS accounts
-├── cross-account-IAM    # cross-account IAM (Q: why is it separate?)
+├── cross-account-IAM    # cross-account IAM - will be deleted soon - see https://user-guide.cloud-platform.service.justice.gov.uk/documentation/other-topics/migrate-to-live.html#step-3-migrate-your-namespace-environment-to-quot-live-quot
 └── modules
 ```
 
