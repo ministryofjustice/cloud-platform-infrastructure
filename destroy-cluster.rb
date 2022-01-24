@@ -193,9 +193,6 @@ class ClusterDeleter
     dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks/components"
     tf_init dir
     tf_workspace_select(dir, cluster_name)
-    # terraform refresh until this issue get fixed for terraform-provider-kubernetes
-    # https://github.com/hashicorp/terraform-provider-kubernetes/issues/1131
-    tf_refresh(dir)
     tf_destroy(dir)
   end
 
@@ -207,10 +204,6 @@ class ClusterDeleter
     dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks"
     tf_init dir
     tf_workspace_select(dir, cluster_name)
-    # EKS cluster often fails to delete due to config_auth Unauthorized
-    # run terraform refresh as suggested in the issue
-    # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/1162
-    execute %(cd #{dir}; terraform refresh)
     tf_destroy(dir)
   end
 
@@ -242,10 +235,6 @@ class ClusterDeleter
 
   def tf_init(dir)
     execute "cd #{dir}; terraform init"
-  end
-
-  def tf_refresh(dir)
-    execute "cd #{dir}; terraform refresh"
   end
 
   def tf_workspace_select(dir, workspace)
