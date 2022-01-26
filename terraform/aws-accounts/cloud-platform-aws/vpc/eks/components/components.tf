@@ -135,13 +135,14 @@ module "monitoring" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.2.1"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.2.2"
   depends_on = [module.monitoring, module.ingress_controllers, module.velero, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
   enable_external_dns_weight     = terraform.workspace == "live" ? true : false
   cluster_color                  = terraform.workspace == "live" ? "green" : "black"
+  integration_test_zone          = data.aws_route53_zone.integrationtest.name
 }
 
 module "starter_pack" {
