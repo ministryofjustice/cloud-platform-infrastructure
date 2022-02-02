@@ -22,6 +22,9 @@ provider "helm" {
   kubernetes {}
 }
 
+##################
+# Data Resources #
+##################
 data "terraform_remote_state" "cluster" {
   backend = "s3"
 
@@ -42,6 +45,10 @@ data "terraform_remote_state" "network" {
     key     = "aws-accounts/cloud-platform-aws/vpc/${terraform.workspace}/terraform.tfstate"
     profile = "moj-cp"
   }
+}
+
+data "aws_route53_zone" "integrationtest" {
+  name = "integrationtest.service.justice.gov.uk"
 }
 
 // This is the kubernetes role that node hosts are assigned.
