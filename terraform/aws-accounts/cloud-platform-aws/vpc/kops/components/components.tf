@@ -102,12 +102,15 @@ module "ingress_controllers" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.2.1"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.2.3"
   depends_on = [module.prometheus, module.ingress_controllers, module.velero, module.kiam, module.cert_manager]
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   # boolean expression for applying opa valid hostname for test clusters only.
   enable_invalid_hostname_policy = terraform.workspace == local.live_workspace ? false : true
+  enable_external_dns_weight     = terraform.workspace == "live-1" ? true : false
+  cluster_color                  = terraform.workspace == "live-1" ? "blue" : "black"
+  integration_test_zone          = data.aws_route53_zone.integrationtest.name
 }
 
 module "starter_pack" {
