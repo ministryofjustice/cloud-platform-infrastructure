@@ -30,9 +30,6 @@ provider "auth0" {
   domain = local.auth0_tenant_domain
 }
 
-##################
-# Data Resources #
-##################
 data "aws_s3_bucket" "kops_state" {
   bucket   = "cloud-platform-kops-state"
   provider = aws.ireland
@@ -40,10 +37,6 @@ data "aws_s3_bucket" "kops_state" {
 
 data "aws_route53_zone" "cloud_platform" {
   name = "cloud-platform.service.justice.gov.uk"
-}
-
-data "aws_route53_zone" "integrationtest" {
-  name = "integrationtest.service.justice.gov.uk"
 }
 
 ###########################
