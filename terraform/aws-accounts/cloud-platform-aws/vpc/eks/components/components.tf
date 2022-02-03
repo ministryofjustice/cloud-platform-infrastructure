@@ -153,7 +153,7 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.7.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.7.2"
 
   iam_role_nodes        = data.aws_iam_role.nodes.arn
   dependence_prometheus = module.monitoring.helm_prometheus_operator_eks_status
