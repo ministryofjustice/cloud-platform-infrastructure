@@ -10,15 +10,6 @@ terraform {
   }
 }
 
-provider "aws" {
-  region = "eu-west-2"
-}
-
-# Check module source: https://github.com/ministryofjustice/cloud-platform-terraform-auth0
-provider "auth0" {
-  domain = var.auth0_tenant_domain
-}
-
 data "terraform_remote_state" "global" {
   backend = "s3"
 
@@ -29,8 +20,13 @@ data "terraform_remote_state" "global" {
   }
 }
 
-data "aws_s3_bucket" "kops_state" {
-  bucket = "cloud-platform-ephemeral-test-kops-state"
+provider "aws" {
+  region = "eu-west-2"
+}
+
+# Check module source: https://github.com/ministryofjustice/cloud-platform-terraform-auth0
+provider "auth0" {
+  domain = var.auth0_tenant_domain
 }
 
 ###########################
@@ -45,6 +41,46 @@ locals {
   auth0_tenant_domain        = "justice-cloud-platform.eu.auth0.com"
   services_base_domain       = "apps.${local.cluster_base_domain_name}"
   services_eks_domain        = "apps.${local.cluster_base_domain_name}"
+}
+
+data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
+  name = "et.cloud-platform.service.justice.gov.uk."
+}
+
+data "aws_vpc" "selected" {
+  filter {
+    name   = "tag:Name"
+    values = [local.vpc]
+  }
+}
+
+data "aws_subnet_ids" "private" {
+  vpc_id = data.aws_vpc.selected.id
+
+  tags = {
+    SubnetType = "Private"
+  }
+}
+
+# This is to get subnet_id, to create a separate node group for monitoring with 2 nodes in "eu-west-2b".
+data "aws_subnet_ids" "private_zone_2b" {
+  vpc_id = data.aws_vpc.selected.id
+
+  tags = {
+    SubnetType = "Private"
+  }
+  filter {
+    name   = "availability-zone"
+    values = ["eu-west-2b"]
+  }
+}
+
+data "aws_subnet_ids" "public" {
+  vpc_id = data.aws_vpc.selected.id
+
+  tags = {
+    SubnetType = "Utility"
+  }
 }
 
 #########

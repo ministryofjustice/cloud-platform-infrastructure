@@ -60,7 +60,7 @@ locals {
     k8s_labels = {
       Terraform = "true"
       Cluster   = terraform.workspace
-      Domain    = local.fqdn
+      Domain    = local.cluster_base_domain_name
     }
     additional_tags = {
       default_ng    = "true"
@@ -85,7 +85,7 @@ locals {
       Terraform                                     = "true"
       "cloud-platform.justice.gov.uk/monitoring-ng" = "true"
       Cluster                                       = terraform.workspace
-      Domain                                        = local.fqdn
+      Domain                                        = local.cluster_base_domain_name
     }
     additional_tags = {
       monitoring_ng = "true"
@@ -104,7 +104,7 @@ locals {
   tags = {
     Terraform = "true"
     Cluster   = terraform.workspace
-    Domain    = local.fqdn
+    Domain    = local.cluster_base_domain_name
   }
 
 }
@@ -167,17 +167,6 @@ module "eks" {
     {
       userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
       username = "VijayVeeranki"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/cloud-platform/manager-concourse"
-      username = "manager-concourse"
-      groups   = ["system:masters"]
-    },
-    # Manager-concourse-cloud-platform-admin used by the cloud-platform-cli
-    {
-      userarn  = "arn:aws:iam::754256621582:user/cloud-platform/manager-concourse-cloud-platform-admin"
-      username = "manager-concourse-cloud-platform-admin"
       groups   = ["system:masters"]
     }
   ]
