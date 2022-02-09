@@ -4,7 +4,7 @@ terraform {
     bucket               = "cloud-platform-ephemeral-test-tfstate"
     region               = "eu-west-2"
     key                  = "terraform.tfstate"
-    workspace_key_prefix = "cloud-platform"
+    workspace_key_prefix = "aws-accounts/cloud-platform-ephemeral-test/vpc/eks"
     dynamodb_table       = "cloud-platform-ephemeral-test-tfstate"
     encrypt              = true
   }
