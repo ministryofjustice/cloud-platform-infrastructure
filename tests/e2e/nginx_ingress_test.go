@@ -66,9 +66,20 @@ var _ = Describe("Nginx Ingress", func() {
 			k8s.KubectlApplyFromString(GinkgoT(), options, tpl)
 			k8s.WaitUntilIngressAvailableV1Beta1(GinkgoT(), options, "integration-test-app-ing", 60, 5*time.Second)
 
-			retry.DoWithRetry(GinkgoT(), fmt.Sprintf("Waiting for sucessfull DNS lookup from %s", host), 20, 10*time.Second, func() (string, error) {
-				return helpers.DNSLookUp(host)
+			retry.DoWithRetry(GinkgoT(), fmt.Sprintf("evaluating http code for %s", host), 20, 10*time.Second, func() (string, error) {
+				s, err := helpers.HttpStatusCode(url)
+				if err != nil {
+					log.Fatalf("execution: %s", err)
+				}
+
+				if s != 200 {
+					return "", fmt.Errorf("Expected http return code 200. Got '%v'", s)
+				}
+				return "", nil
 			})
+
+			// Sleep for 60 seconds
+			time.Sleep(60 * time.Second)
 
 			Expect(helpers.HttpStatusCode(url)).To(Equal(200))
 		})
