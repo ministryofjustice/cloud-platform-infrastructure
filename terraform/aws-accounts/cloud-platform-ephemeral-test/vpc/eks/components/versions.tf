@@ -14,11 +14,9 @@ terraform {
     null = {
       source = "hashicorp/null"
     }
-    template = {
-      source = "hashicorp/template"
-    }
-    tls = {
-      source = "hashicorp/tls"
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "1.11.2"
     }
   }
   required_version = ">= 0.14"
