@@ -6,7 +6,7 @@ terraform {
     key                  = "terraform.tfstate"
     workspace_key_prefix = "aws-accounts/cloud-platform-ephemeral-test/vpc/eks"
     dynamodb_table       = "cloud-platform-ephemeral-test-tfstate"
-    encrypt = true
+    encrypt              = true
 
   }
 }

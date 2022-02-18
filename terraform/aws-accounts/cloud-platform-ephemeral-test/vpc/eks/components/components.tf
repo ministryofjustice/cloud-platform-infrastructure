@@ -102,7 +102,7 @@ module "opa" {
   enable_invalid_hostname_policy = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
   enable_external_dns_weight     = terraform.workspace == "live" ? true : false
   cluster_color                  = terraform.workspace == "live" ? "green" : "black"
- // integration_test_zone          = data.aws_route53_zone.integrationtest.name
+  // integration_test_zone          = data.aws_route53_zone.integrationtest.name
 }
 
 module "starter_pack" {
