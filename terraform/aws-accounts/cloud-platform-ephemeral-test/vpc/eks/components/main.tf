@@ -52,7 +52,7 @@ data "terraform_remote_state" "cluster" {
   config = {
     bucket  = "cloud-platform-ephemeral-test-tfstate"
     region  = "eu-west-2"
-    key     = "cloud-platform/${terraform.workspace}/terraform.tfstate"
+    key     = "aws-accounts/cloud-platform-ephemeral-test/vpc/eks/${terraform.workspace}/terraform.tfstate"
     profile = "moj-et"
   }
 }
