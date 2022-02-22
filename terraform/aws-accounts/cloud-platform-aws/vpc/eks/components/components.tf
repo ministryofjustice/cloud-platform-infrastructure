@@ -89,6 +89,36 @@ module "modsec_ingress_controllers" {
   depends_on = [module.ingress_controllers]
 }
 
+module "ingress_controllers_v1" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=one"
+
+  replica_count       = "1"
+  controller_name     = "default"
+  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+
+  depends_on = [
+    module.cert_manager,
+    module.monitoring
+  ]
+
+}
+
+module "modsec_ingress_controllers_v1" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=one"
+
+  replica_count       = "1"
+  controller_name     = "modsec"
+  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+  enable_modsec       = true
+  enable_owasp        = true
+
+  depends_on = [module.ingress_controllers]
+}
+
 module "kuberos" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.3.3"
 
@@ -135,7 +165,7 @@ module "monitoring" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.2.3"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=ing-v1"
   depends_on = [module.monitoring, module.ingress_controllers, module.velero, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
