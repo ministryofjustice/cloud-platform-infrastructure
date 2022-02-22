@@ -66,10 +66,34 @@ module "external_dns" {
 }
 
 module "ingress_controllers" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.3.4"
+
+  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+
+  # This module requires prometheus and cert-manager
+  dependence_prometheus  = "ignore"
+  dependence_certmanager = module.cert_manager.helm_cert_manager_status
+  dependence_opa         = "ignore"
+  # It depends on complete cert-manager module
+  depends_on = [module.cert_manager]
+}
+
+module "modsec_ingress_controllers" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.3.2"
+
+  controller_name = "modsec01"
+  replica_count   = "6"
+
+  depends_on = [module.ingress_controllers]
+}
+
+module "ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=one"
 
-  replica_count       = "6"
-  controller_name     = "nginx"
+  replica_count       = "1"
+  controller_name     = "default"
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
@@ -81,11 +105,11 @@ module "ingress_controllers" {
 
 }
 
-module "modsec_ingress_controllers" {
+module "modsec_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=one"
 
-  replica_count       = "6"
-  controller_name     = "modsec01"
+  replica_count       = "1"
+  controller_name     = "modsec"
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
