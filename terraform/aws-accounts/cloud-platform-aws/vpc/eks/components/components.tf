@@ -116,7 +116,7 @@ module "modsec_ingress_controllers_v1" {
   enable_modsec       = true
   enable_owasp        = true
 
-  depends_on = [module.ingress_controllers]
+  depends_on = [module.ingress_controllers_v1]
 }
 
 module "kuberos" {
