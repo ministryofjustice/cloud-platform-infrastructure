@@ -28,7 +28,7 @@ locals {
   # To manage different cluster versions
   cluster_version = {
     live    = "1.20"
-    manager = "1.20"
+    manager = "1.21"
     default = "1.20"
   }
   node_size = {
