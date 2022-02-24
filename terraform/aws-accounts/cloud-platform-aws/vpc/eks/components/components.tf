@@ -90,7 +90,7 @@ module "modsec_ingress_controllers" {
 }
 
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=one"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.0"
 
   replica_count       = "1"
   controller_name     = "default"
@@ -106,7 +106,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=one"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.0"
 
   replica_count       = "1"
   controller_name     = "modsec"
@@ -165,7 +165,7 @@ module "monitoring" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=ing-v1"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.3.0"
   depends_on = [module.monitoring, module.ingress_controllers, module.velero, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
