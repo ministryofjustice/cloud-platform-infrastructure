@@ -29,7 +29,7 @@ variable "availability_zones" {
 variable "cluster_node_count_a" {
   description = "The number of worker node in the cluster in Availability Zone eu-west-2a"
   default = {
-    live-1  = "10"
+    live-1  = "4"
     default = "1"
   }
 }
@@ -37,7 +37,7 @@ variable "cluster_node_count_a" {
 variable "cluster_node_count_b" {
   description = "The number of worker node in the cluster in Availability Zone eu-west-2b"
   default = {
-    live-1  = "10"
+    live-1  = "4"
     default = "1"
   }
 }
@@ -45,7 +45,7 @@ variable "cluster_node_count_b" {
 variable "cluster_node_count_c" {
   description = "The number of worker node in the cluster in Availability Zone eu-west-2c"
   default = {
-    live-1  = "10"
+    live-1  = "4"
     default = "1"
   }
 }

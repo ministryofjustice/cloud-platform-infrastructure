@@ -410,12 +410,12 @@ metadata:
   name: 2xlarge-nodes-1.18.2
 spec:
   image: 099720109477/ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-20210325
-  machineType: r5.2xlarge
+  machineType: r5.xlarge
   maxSize: 2
   minSize: 2
   rootVolumeSize: 256
   nodeLabels:
-    kops.k8s.io/instancegroup: 2xlarge-nodes-1.18.2
+    kops.k8s.io/instancegroup: xlarge-nodes-1.18.2
     cloud-platform.justice.gov.uk/monitoring-ng: "true"
   cloudLabels:
     application: moj-cloud-platform
@@ -459,8 +459,8 @@ spec:
     - r5.xlarge
     - c5.xlarge
     - r4.xlarge
-  maxSize: 10
-  minSize: 10
+  maxSize: 4
+  minSize: 4
   rootVolumeSize: 256
   nodeLabels:
     kops.k8s.io/instancegroup: nodes-1.18.2-eu-west-2a
@@ -494,8 +494,8 @@ spec:
     - r5.xlarge
     - c5.xlarge
     - r4.xlarge
-  maxSize: 10
-  minSize: 10
+  maxSize: 4
+  minSize: 4
   rootVolumeSize: 256
   nodeLabels:
     kops.k8s.io/instancegroup: nodes-1.18.2-eu-west-2b
@@ -529,8 +529,8 @@ spec:
     - r5.xlarge
     - c5.xlarge
     - r4.xlarge
-  maxSize: 10
-  minSize: 10
+  maxSize: 4
+  minSize: 4
   rootVolumeSize: 256
   nodeLabels:
     kops.k8s.io/instancegroup: nodes-1.18.2-eu-west-2c
