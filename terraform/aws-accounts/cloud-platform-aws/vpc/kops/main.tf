@@ -65,7 +65,7 @@ locals {
 ########
 
 module "kops" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.2.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kops?ref=0.2.3"
 
   vpc_name            = local.vpc
   cluster_domain_name = trimsuffix(local.cluster_base_domain_name, ".")
