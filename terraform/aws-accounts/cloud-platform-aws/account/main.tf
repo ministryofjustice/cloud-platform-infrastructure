@@ -59,6 +59,20 @@ module "ecr_fluentbit" {
   team_name = "cloud-platform"
 }
 
+# This zone is used for integration tests.
+resource "aws_route53_zone" "shared" {
+  name = "test.cloud-platform.service.justice.gov.uk"
+
+  tags = {
+    business-unit          = "webops"
+    application            = "shared-zone-for-test"
+    is-production          = "false"
+    environment-name       = "test"
+    owner                  = "webops"
+    infrastructure-support = "platforms@digital.service.justice.gov.uk"
+  }
+}
+
 
 ##############
 # S3 buckets #
