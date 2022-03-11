@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -49,6 +50,8 @@ var _ = Describe("cert-manager", func() {
 			conn, err = tls.Dial("tcp", host+":443", &tls.Config{InsecureSkipVerify: true})
 			Expect(err).NotTo(HaveOccurred())
 			cert = conn.ConnectionState().PeerCertificates[0].Issuer.Organization
+
+			time.Sleep(60 * time.Second)
 
 			Expect(cert[0]).To(Equal("(STAGING) Let's Encrypt"))
 		})
