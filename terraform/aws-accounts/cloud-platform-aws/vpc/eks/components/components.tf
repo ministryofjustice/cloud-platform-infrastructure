@@ -90,7 +90,7 @@ module "modsec_ingress_controllers" {
 }
 
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.3"
 
   replica_count       = "2"
   controller_name     = "default"
@@ -98,6 +98,8 @@ module "ingress_controllers_v1" {
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
+  # Enable this when we remove the module "ingress_controllers"
+  enable_external_dns_annotation = false
   depends_on = [
     module.cert_manager,
     module.monitoring
@@ -106,7 +108,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.3"
 
   replica_count       = "2"
   controller_name     = "modsec"
