@@ -2,7 +2,7 @@ FROM golang:1.17-alpine AS builder
 
 ENV CGO_ENABLED=0 \
     GOOS=linux \
-    KUBECTL_VERSION=1.20.7
+    KUBECTL_VERSION=1.21.5
 
 WORKDIR /build
 
