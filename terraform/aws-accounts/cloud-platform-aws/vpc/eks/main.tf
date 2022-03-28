@@ -34,9 +34,14 @@ locals {
     live    = "live-1"
   }
 
+  is_live_cluster      = terraform.workspace == "live"
+  services_base_domain = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : local.fqdn
+
   # Some clusters (like manager) need extra callbacks URLs in auth0
   auth0_extra_callbacks = {
     manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
+    live    = concat([for i in ["prometheus", "alertmanager"] : "https://${i}.${local.fqdn}/oauth2/callback"],
+    ["https://grafana.${local.fqdn}/login/generic_oauth"])
   }
 }
 
@@ -118,7 +123,7 @@ module "auth0" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.2.2"
 
   cluster_name         = terraform.workspace
-  services_base_domain = local.fqdn
+  services_base_domain = local.services_base_domain
   extra_callbacks      = lookup(local.auth0_extra_callbacks, terraform.workspace, [""])
 }
 
