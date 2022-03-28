@@ -33,14 +33,14 @@ module "kiam" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.3.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.0"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
   oidc_kubernetes_client_secret = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   cluster_address               = "https://api.${data.terraform_remote_state.cluster.outputs.cluster_domain_name}"
-  create_aws_redirect           = terraform.workspace == local.live_workspace ? true : false
+  create_aws_redirect           = false
 }
 
 
@@ -58,7 +58,7 @@ module "logging" {
 }
 
 module "prometheus" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.0.1.1"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   iam_role_nodes                             = data.aws_iam_role.nodes.arn
@@ -68,8 +68,8 @@ module "prometheus" {
   enable_thanos_helm_chart                   = terraform.workspace == local.live_workspace ? true : false
   enable_thanos_sidecar                      = terraform.workspace == local.live_workspace ? true : false
   enable_prometheus_affinity_and_tolerations = terraform.workspace == local.live_workspace ? true : false
-  enable_kibana_audit_proxy                  = terraform.workspace == local.live_workspace ? true : false
-  enable_kibana_proxy                        = terraform.workspace == local.live_workspace ? true : false
+  enable_kibana_audit_proxy                  = false
+  enable_kibana_proxy                        = false
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_components_client_id     = data.terraform_remote_state.cluster.outputs.oidc_components_client_id

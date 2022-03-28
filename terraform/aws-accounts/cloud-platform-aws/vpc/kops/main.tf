@@ -53,11 +53,6 @@ locals {
   is_live_cluster      = terraform.workspace == "live-1"
   services_base_domain = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : local.cluster_base_domain_name
 
-  # This is to maintain multiple URLs for monitoring stack, in light of the EKS migration
-  auth0_extra_callbacks = {
-    live-1 = concat([for i in ["prometheus", "alertmanager"] : "https://${i}.${local.cluster_base_domain_name}/oauth2/callback"],
-    ["https://grafana.${local.cluster_base_domain_name}/login/generic_oauth"])
-  }
 }
 
 ########
@@ -116,6 +111,5 @@ module "auth0" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.2.2"
 
   cluster_name         = local.cluster_name
-  services_base_domain = local.services_base_domain
-  extra_callbacks      = lookup(local.auth0_extra_callbacks, terraform.workspace, [""])
+  services_base_domain = local.cluster_base_domain_name
 }
