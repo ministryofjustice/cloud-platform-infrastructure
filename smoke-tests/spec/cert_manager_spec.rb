@@ -48,7 +48,7 @@ end
 def create_certificate(namespace, host)
   json = <<~EOF
     {
-      "apiVersion": "cert-manager.io/v1alpha3",
+      "apiVersion": "cert-manager.io/v1",
       "kind": "Certificate",
       "metadata": {
         "name": "cert-manager-integration-test",
