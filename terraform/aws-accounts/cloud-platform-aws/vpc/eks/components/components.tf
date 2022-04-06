@@ -167,8 +167,63 @@ module "monitoring" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 
+## OPA role was defined in https://github.com/open-policy-agent/kube-mgmt
+## but not read from values anymore, to be removed when the chart is fixed
+
+resource "kubernetes_cluster_role" "opa" {
+  metadata {
+    name = "opa"
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["configmaps"]
+    verbs      = ["update", "patch", "get", "list", "watch"]
+  }
+  rule {
+    api_groups = [""]
+    resources  = ["namespaces"]
+    verbs      = ["get", "list", "watch"]
+  }
+  rule {
+    api_groups = ["extensions"]
+    resources  = ["ingresses"]
+    verbs      = ["get", "list", "watch"]
+  }
+  rule {
+    api_groups = ["networking.k8s.io"]
+    resources  = ["ingresses"]
+    verbs      = ["get", "list", "watch"]
+  }
+}
+
+resource "kubernetes_service_account" "opa" {
+  metadata {
+    name      = "opa"
+    namespace = "opa"
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "opa" {
+  metadata {
+    name = "opa"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "opa"
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = "opa"
+    namespace = "opa"
+  }
+}
+
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=move-chart"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=move-chart"
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
