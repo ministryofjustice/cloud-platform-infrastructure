@@ -170,6 +170,28 @@ module "monitoring" {
 ## OPA role was defined in https://github.com/open-policy-agent/kube-mgmt
 ## but not read from values anymore, to be removed when the chart is fixed
 
+resource "kubernetes_namespace" "opa" {
+  metadata {
+    name = "opa"
+
+    labels = {
+      "name"                                           = "opa"
+      "openpolicyagent.org/webhook"                    = "ignore"
+      "cloud-platform.justice.gov.uk/is-production"    = "true"
+      "cloud-platform.justice.gov.uk/environment-name" = "production"
+    }
+
+    annotations = {
+      "cloud-platform.justice.gov.uk/application"   = "OPA"
+      "cloud-platform.justice.gov.uk/business-unit" = "Platforms"
+      "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+      "cloud-platform.justice.gov.uk/slack-channel" = "cloud-platform"
+      "cloud-platform-out-of-hours-alert"           = "true"
+    }
+  }
+}
+
 resource "kubernetes_cluster_role" "opa" {
   metadata {
     name = "opa"
