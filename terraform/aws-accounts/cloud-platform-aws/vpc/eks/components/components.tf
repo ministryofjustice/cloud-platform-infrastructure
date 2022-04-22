@@ -168,7 +168,7 @@ module "monitoring" {
 }
 
 module "opa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=rules-indent"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.4.1"
   depends_on = [module.monitoring, module.modsec_ingress_controllers, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
