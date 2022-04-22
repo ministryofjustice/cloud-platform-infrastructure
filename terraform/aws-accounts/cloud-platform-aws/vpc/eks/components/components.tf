@@ -169,7 +169,7 @@ module "monitoring" {
 
 module "opa" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=rules-indent"
-  depends_on = [module.monitoring, module.ingress_controllers, module.cert_manager]
+  depends_on = [module.monitoring, module.modsec_ingress_controllers, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
