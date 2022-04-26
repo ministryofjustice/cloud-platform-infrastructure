@@ -30,6 +30,8 @@ module "concourse" {
   hoodaw_host                                       = var.hoodaw_host
   hoodaw_api_key                                    = var.hoodaw_api_key
   github_actions_secrets_token                      = var.github_actions_secrets_token
+    
+  depends_on = [module.ingress_controllers]
 }
 
 module "cert_manager" {
@@ -129,6 +131,8 @@ module "kuberos" {
   oidc_kubernetes_client_secret = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   cluster_address               = data.terraform_remote_state.cluster.outputs.cluster_endpoint
+  
+  depends_on = [module.ingress_controllers]
 }
 
 module "logging" {
@@ -183,6 +187,8 @@ module "starter_pack" {
 
   enable_starter_pack = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  
+  depends_on = [module.ingress_controllers]
 }
 
 module "velero" {
@@ -211,5 +217,7 @@ module "sonarqube" {
 
   # This is to enable sonarqube, by default it is false for test clusters
   enable_sonarqube = lookup(local.prod_workspace, terraform.workspace, false)
+  
+  depends_on = [module.ingress_controllers]
 }
 
