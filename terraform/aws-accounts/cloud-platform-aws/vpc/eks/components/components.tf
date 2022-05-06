@@ -30,7 +30,7 @@ module "concourse" {
   hoodaw_host                                       = var.hoodaw_host
   hoodaw_api_key                                    = var.hoodaw_api_key
   github_actions_secrets_token                      = var.github_actions_secrets_token
-    
+
   depends_on = [module.ingress_controllers]
 }
 
@@ -125,24 +125,22 @@ module "kuberos" {
   oidc_kubernetes_client_secret = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   cluster_address               = data.terraform_remote_state.cluster.outputs.cluster_endpoint
-  
+
   depends_on = [module.ingress_controllers]
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.2.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.3.0"
 
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   dependence_prometheus    = module.monitoring.helm_prometheus_operator_eks_status
-  eks                      = true
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.2.0"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
-  iam_role_nodes                             = data.aws_iam_role.nodes.arn
   pagerduty_config                           = var.pagerduty_config
   cluster_domain_name                        = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_components_client_id                  = data.terraform_remote_state.cluster.outputs.oidc_components_client_id
@@ -157,16 +155,13 @@ module "monitoring" {
   enable_thanos_helm_chart = lookup(local.prod_workspace, terraform.workspace, false)
   enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
 
-  enable_ecr_exporter        = lookup(local.cloudwatch_workspace, terraform.workspace, false)
-  enable_cloudwatch_exporter = lookup(local.cloudwatch_workspace, terraform.workspace, false)
-
-  # This section is for EKS
-  eks                         = true
+  enable_ecr_exporter         = lookup(local.cloudwatch_workspace, terraform.workspace, false)
+  enable_cloudwatch_exporter  = lookup(local.cloudwatch_workspace, terraform.workspace, false)
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 
 module "opa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.4.1"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.4.1"
   depends_on = [module.monitoring, module.modsec_ingress_controllers, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -181,7 +176,7 @@ module "starter_pack" {
 
   enable_starter_pack = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  
+
   depends_on = [module.ingress_controllers]
 }
 
@@ -211,7 +206,7 @@ module "sonarqube" {
 
   # This is to enable sonarqube, by default it is false for test clusters
   enable_sonarqube = lookup(local.prod_workspace, terraform.workspace, false)
-  
+
   depends_on = [module.ingress_controllers]
 }
 
