@@ -178,14 +178,11 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.7.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=rm-live-1-ref-vel"
 
-  iam_role_nodes        = data.aws_iam_role.nodes.arn
   dependence_prometheus = module.monitoring.helm_prometheus_operator_eks_status
   cluster_domain_name   = data.terraform_remote_state.cluster.outputs.cluster_domain_name
 
-  # This section is for EKS
-  eks                         = true
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 
