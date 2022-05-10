@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/aws/aws-sdk-go v1.27.1
 	github.com/go-resty/resty/v2 v2.6.0
+	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/gruntwork-io/terratest v0.34.4
 	github.com/onsi/ginkgo v1.15.0
 	github.com/onsi/gomega v1.10.5
