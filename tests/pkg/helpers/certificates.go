@@ -27,8 +27,8 @@ func CreateCertificate(namespace, host string, options *k8s.KubectlOptions) erro
 		return err
 	}
 
-	// Wait for the certificate 20 times, with a 10 second sleep between each check
-	err = WaitForCertificateToBeReady(namespace, options, 20, 10)
+	// Wait for the certificate 20 times, with a 20 second sleep between each check
+	err = WaitForCertificateToBeReady(namespace, options, 20, 20)
 	if err != nil {
 		return err
 	}
