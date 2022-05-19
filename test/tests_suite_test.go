@@ -14,8 +14,11 @@ import (
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/config"
 )
 
-// All clusters have access to the test domain name
-const testDomain = "integrationtest.service.justice.gov.uk"
+// All clusters have access to the test domain name and their own domain name
+const (
+	testDomain = "integrationtest.service.justice.gov.uk"
+	domain     = "cloud-platform.service.justice.gov.uk"
+)
 
 // c is global, so all tests has access to it
 var c *config.Config
