@@ -3,6 +3,7 @@ package integration_tests
 import (
 	"fmt"
 	"html/template"
+	"os"
 	"time"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
@@ -18,11 +19,15 @@ var _ = Describe("external-DNS checks", func() {
 	var (
 		namespaceName = c.ExternalDNS.GetNamespaceName()
 		options       = k8s.NewKubectlOptions("", "", namespaceName)
-		domain        = fmt.Sprintf("%s.%s", namespaceName, c.ExternalDNS.Domain)
+		domain        = fmt.Sprintf("%s.%s", namespaceName, testDomain)
 		tpl           string
 	)
 
 	BeforeEach(func() {
+		if os.Getenv("AWS_PROFILE") == "" && os.Getenv("AWS_ACCESS_KEY_ID") == "" {
+			Skip("AWS environment variable not defined. Skipping test.")
+		}
+
 		if (config.ExternalDNS{}) == c.ExternalDNS {
 			Skip("Nginx Ingress Controller component not defined, skipping test")
 		}

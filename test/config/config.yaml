@@ -46,6 +46,5 @@ modsecIngressController:
 externalDNS:
   namespacePrefix: "e2e-tests-externaldns-"
   hostedZoneId: Z02429076QQMAO8KXV68
-  domain: integrationtest.service.justice.gov.uk
 filesExist:
   - "https://github.com/ministryofjustice/cloud-platform-terraform-bastion/blob/main/files/authorized_keys.txt"
