@@ -1,22 +1,16 @@
 package integration_tests
 
 import (
-	"context"
-	"errors"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"testing"
 
 	"github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v2"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"github.com/ministryofjustice/cloud-platform-go-library/client"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/config"
 )
 
@@ -30,20 +24,28 @@ var c *config.Config
 var log = logrus.New()
 
 // configFile holds the path for the configuration file where test are declared
-var configFile = flag.String("config", "./config/config.yaml", "Path for the configuration file where test are declared")
+var (
+	configFile = flag.String("config", "./config/config.yaml", "Path for the configuration file where test are declared")
+	cluster    = flag.String("cluster", "", "Set the cluster name")
+)
 
 // TestMain controls pre/post test logic
 func TestMain(m *testing.M) {
 	flag.Parse()
-	config, err := config.ParseConfigFile(*configFile)
+
+	var err error
+	c, err = config.ParseConfigFile(*configFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Set global variable
-	c = config
+	err = c.SetClusterName(*cluster)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Run tests
+	fmt.Printf("Starting tests on cluster: %s\n", c.ClusterName)
 	exitVal := m.Run()
 
 	os.Exit(exitVal)

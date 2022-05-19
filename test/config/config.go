@@ -1,14 +1,18 @@
 package config
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/ministryofjustice/cloud-platform-go-library/client"
 	"gopkg.in/yaml.v2"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/util/homedir"
 )
 
 // ExternalDNS holds the config for externalDNS component
@@ -59,25 +63,35 @@ func ParseConfigFile(f string) (*Config, error) {
 		return nil, err
 	}
 
-	err = t.defaultsFromEnvs()
-	if err != nil {
-		return nil, err
-	}
-
 	return &t, nil
 }
 
-// defaultsFromEnvs process the mandatory fields in the config. If they are not set,
-// it tries to load them from environment variables
-func (c Config) defaultsFromEnvs() error {
-	if c.ClusterName == "" {
-		c.ClusterName = os.Getenv("CP_CLUSTER_NAME")
-		if c.ClusterName == "" {
-			return errors.New("cluster Name is mandatory - not found it neither in config file nor environment variable")
-		}
+// SetClusterName is a setter method to define the name of the cluster to work on.
+func (c *Config) SetClusterName(cluster string) error {
+	var kubeconfig string
+	if home := homedir.HomeDir(); home != "" {
+		kubeconfig = filepath.Join(home, ".kube", "config")
 	}
 
-	return nil
+	if c.ClusterName == "" {
+		k, err := client.NewKubeClientWithValues(kubeconfig, "")
+		if err != nil {
+			return fmt.Errorf("Unable to create kubeclient: %e", err)
+		}
+		nodes, err := k.Clientset.CoreV1().Nodes().List(context.Background(), metav1.ListOptions{})
+		if err != nil {
+			return fmt.Errorf("Unable to fetch node name: %e", err)
+		}
+
+		// All Cloud Platform clusters are tagged with the label Cluster=<ClusterName>.
+		c.ClusterName = nodes.Items[0].Labels["Cluster"]
+	}
+
+	if c.ClusterName != "" {
+		return nil
+	}
+
+	return errors.New("unable to locate cluster from kubeconfig file")
 }
 
 // defaultsFromEnvs process the mandatory fields in the config. If they are not set,
