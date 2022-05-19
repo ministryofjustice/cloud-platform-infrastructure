@@ -20,3 +20,15 @@ list-clusters:
 	kops get clusters
 	@echo
 	aws eks list-clusters --region=eu-west-2
+
+test:
+	@echo "Testing cluster"
+	docker run --platform=linux/amd64 -it --rm \
+		-v $(KUBE_CONFIG):/tests/config \
+		-v $(HOME)/.aws:/tests/.aws \
+		-e AWS_CONFIG_FILE=/tests/.aws/config \
+		-e AWS_PROFILE=$(AWS_PROFILE) \
+		-e AWS_SHARED_CREDENTIALS_FILE=/tests/.aws/credentials \
+		-e KUBECONFIG=/tests/config \
+		$(TOOLS_IMAGE) go test -v ./...
+
