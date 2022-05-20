@@ -2,17 +2,75 @@
 
 ## Introduction
 
-This repository will contain all that's required to create a Cloud Platform Kubernetes cluster. The majority of this repo is made up of Terraform scripts that will be actioned by a pipeline.
+This repository will contain all that's required to create a MoJ Cloud Platform Kubernetes cluster. The majority of this repo is made up of Terraform scripts that will be actioned by a pipeline.
 
-Here you'll also find instruction on how to operate a Cloud Platform cluster.
+Here you'll also find instruction on how to operate a MoJ Cloud Platform cluster.
 
 ## Table of contents
 
-  - [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
-  - [Cloud Platform environments](#cloud-platform-environments)
-  - [Terraform modules](#terraform-modules)
-  - [How to add your examples](#how-to-add-your-examples)
-  - [Create/Delete a cluster](#createdelete-a-cluster)
+- [How to run Go tests](#how-to-run-go-tests)
+- [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
+- [Cloud Platform environments](#cloud-platform-environments)
+- [Terraform modules](#terraform-modules)
+- [How to add your examples](#how-to-add-your-examples)
+- [Create/Delete a cluster](#createdelete-a-cluster)
+
+## How to run Go tests
+
+To run the integration tests on a MoJ Cloud Platform cluster you must have the following tools installed:
+(Tool versioning is very important. I find it best to refer to the official MoJ Cloud Platform tools docker [image](https://github.com/ministryofjustice/cloud-platform-tools-image/blob/main/Dockerfile))
+
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+- [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+- [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+- [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [Go](https://go.dev/doc/install)
+
+You can then either run:
+
+```bash
+make run-tests
+```
+
+or using Go:
+
+```bash
+go test -v ./...
+```
+
+### Arguments
+
+```bash
+-cluster # [optional] specifies the cluster name you'd like to use. [default] current context
+-config # [optional] specifies the config file to test against. [default] ./test/config/config.yaml
+```
+
+The flag `-config` allows you to specify different configuration files depending on which components we want to test for different clusters.
+
+### Running individual tests
+
+A neat trick in Ginkgo is to place an "F" in front of the "Describe", "It" or "Context" functions. This marks it as [focused](https://onsi.github.io/ginkgo/#focused-specs).
+
+So, if you have spec like:
+
+```
+    It("should be idempotent", func() {
+```
+
+You rewrite it as:
+
+```
+    FIt("should be idempotent", func() {
+```
+
+And it will run exactly that one spec:
+
+```
+[Fail] testing Migrate setCurrentDbVersion [It] should be idempotent
+...
+Ran 1 of 5 Specs in 0.003 seconds
+FAIL! -- 0 Passed | 1 Failed | 0 Pending | 4 Skipped
+```
 
 ## Terraform and Cloud Platform environment management
 
@@ -91,7 +149,7 @@ module "cluster_dns" {
 }
 ```
 
-This structure allows us to reduce the blast radius of errors when compared to  a single state store, and also allows us to separate infrastructure into multiple logical areas, with different access controls for each.
+This structure allows us to reduce the blast radius of errors when compared to a single state store, and also allows us to separate infrastructure into multiple logical areas, with different access controls for each.
 
 ### Cloud Platform environments
 
