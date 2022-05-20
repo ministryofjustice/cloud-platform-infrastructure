@@ -1,7 +1,9 @@
-TOOLS_IMAGE := ministryofjustice/cloud-platform-tools:2.2.0
+TAG := 2.2.0
+TOOLS_IMAGE := ministryofjustice/cloud-platform-tools
+TEST_IMAGE := ministryofjustice/cloud-platform-infrastructure
 
 tools-shell:
-	docker pull --platform=linux/amd64 $(TOOLS_IMAGE)
+	docker pull --platform=linux/amd64 $(TOOLS_IMAGE):$(TAG)
 	docker run --platform=linux/amd64 --rm -it \
     -e AWS_PROFILE=$${AWS_PROFILE} \
     -e AUTH0_DOMAIN=$${AUTH0_DOMAIN} \
@@ -13,7 +15,7 @@ tools-shell:
 		-v $${HOME}/.gnupg:/root/.gnupg \
 		-v $${HOME}/.docker:/root/.docker \
 		-w /app \
-		$(TOOLS_IMAGE) bash
+		$(TOOLS_IMAGE):$(TAG) bash
 
 # For CP team-members. List all the clusters which currently exist
 list-clusters:
@@ -22,7 +24,7 @@ list-clusters:
 	aws eks list-clusters --region=eu-west-2
 
 run-tests:
-	docker pull --platform=linux/amd64 $(TOOLS_IMAGE)
+	docker pull --platform=linux/amd64 $(TEST_IMAGE):$(TAG)
 	docker run --platform=linux/amd64 --rm -it \
     -e AWS_PROFILE=$${AWS_PROFILE} \
 		-v $$(pwd):/app \
@@ -31,5 +33,5 @@ run-tests:
 		-v $${HOME}/.gnupg:/root/.gnupg \
 		-v $${HOME}/.docker:/root/.docker \
 		-w /app \
-		$(TOOLS_IMAGE) go test -v ./...
+		$(TEST_IMAGE):$(TAG) go test -v ./...
 
