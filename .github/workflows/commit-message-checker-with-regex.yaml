@@ -24,10 +24,3 @@ jobs:
           commits: ${{ steps.get-pr-commits.outputs.commits }}
           pattern: '^.{0,72}(\n.*)*$'
           error: 'Subject too long (max 72)'
-          
-      - name: Check for Capitalize the subject line
-        uses: tim-actions/commit-message-checker-with-regex@v0.3.1
-        with:
-          commits: ${{ steps.get-pr-commits.outputs.commits }}
-          pattern: '^[A-Z]'
-          error: 'You should capitalize the first word of the subject line'
