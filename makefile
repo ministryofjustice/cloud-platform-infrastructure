@@ -33,5 +33,5 @@ run-tests:
 		-v $${HOME}/.gnupg:/root/.gnupg \
 		-v $${HOME}/.docker:/root/.docker \
 		-w /app \
-		$(TEST_IMAGE):$(TAG) go test -v ./...
+		$(TEST_IMAGE):$(TAG) bash -c "cd test && ginkgo -v . -args -ginkgo.randomizeAllSpecs -ginkgo.progress -ginkgo.noisySkippings -test.v -ginkgo.slowSpecThreshold=120"
 
