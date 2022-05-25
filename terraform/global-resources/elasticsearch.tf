@@ -245,7 +245,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
     Domain = local.audit_domain
   }
   log_publishing_options {
-    cloudwatch_log_group_arn = "arn:aws:logs:eu-west-2:754256621582:log-group:/aws/OpenSearchService/domains/cloud-platform-audit/application-logs"
+    cloudwatch_log_group_arn = "arn:aws:logs:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:log-group:/aws/OpenSearchService/domains/${local.audit_domain}/application-logs"
     enabled                  = true
     log_type                 = "ES_APPLICATION_LOGS"
   }
@@ -288,7 +288,7 @@ resource "aws_elasticsearch_domain" "audit_live" {
   }
 
   log_publishing_options {
-    cloudwatch_log_group_arn = "arn:aws:logs:eu-west-2:754256621582:log-group:/aws/OpenSearchService/domains/cloud-platform-audit-live/application-logs"
+    cloudwatch_log_group_arn = "arn:aws:logs:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:log-group:/aws/OpenSearchService/domains/${local.audit_live_domain}/application-logs"
     enabled                  = true
     log_type                 = "ES_APPLICATION_LOGS"
   }
