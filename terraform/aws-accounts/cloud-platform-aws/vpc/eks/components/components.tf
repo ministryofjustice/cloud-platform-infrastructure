@@ -85,7 +85,7 @@ module "modsec_ingress_controllers" {
 module "ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.7"
 
-  replica_count       = "2"
+  replica_count       = "6"
   controller_name     = "default"
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
@@ -103,7 +103,7 @@ module "ingress_controllers_v1" {
 module "modsec_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.7"
 
-  replica_count       = "2"
+  replica_count       = "6"
   controller_name     = "modsec"
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
