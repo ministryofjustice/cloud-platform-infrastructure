@@ -107,7 +107,6 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
-    # "override_main_response_version"         = "true"
   }
 
   access_policies = data.aws_iam_policy_document.live_1.json
