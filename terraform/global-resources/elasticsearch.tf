@@ -107,6 +107,7 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
+    # "override_main_response_version"         = "true"
   }
 
   access_policies = data.aws_iam_policy_document.live_1.json
@@ -114,6 +115,13 @@ resource "aws_elasticsearch_domain" "live_1" {
   snapshot_options {
     automated_snapshot_start_hour = 23
   }
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = ""
+    enabled                  = false
+    log_type                 = "ES_APPLICATION_LOGS"
+  }
+
 
   tags = {
     Domain = local.live_domain
@@ -211,7 +219,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
     instance_type            = "m4.2xlarge.elasticsearch"
     instance_count           = "8"
     dedicated_master_enabled = true
-    dedicated_master_type    = "r5.large.search"
+    dedicated_master_type    = "r5.large.elasticsearch"
     dedicated_master_count   = "3"
     zone_awareness_enabled   = true
   }
@@ -224,6 +232,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
+    "override_main_response_version"         = "true"
   }
 
   access_policies = data.aws_iam_policy_document.audit_1.json
@@ -234,6 +243,11 @@ resource "aws_elasticsearch_domain" "audit_1" {
 
   tags = {
     Domain = local.audit_domain
+  }
+  log_publishing_options {
+    cloudwatch_log_group_arn = "arn:aws:logs:eu-west-2:754256621582:log-group:/aws/OpenSearchService/domains/cloud-platform-audit/application-logs"
+    enabled                  = true
+    log_type                 = "ES_APPLICATION_LOGS"
   }
 }
 
@@ -260,6 +274,7 @@ resource "aws_elasticsearch_domain" "audit_live" {
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
+    "override_main_response_version"         = "false"
   }
 
   access_policies = data.aws_iam_policy_document.audit_live.json
@@ -270,6 +285,12 @@ resource "aws_elasticsearch_domain" "audit_live" {
 
   tags = {
     Domain = local.audit_domain
+  }
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = "arn:aws:logs:eu-west-2:754256621582:log-group:/aws/OpenSearchService/domains/cloud-platform-audit-live/application-logs"
+    enabled                  = true
+    log_type                 = "ES_APPLICATION_LOGS"
   }
 }
 
