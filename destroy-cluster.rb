@@ -40,10 +40,10 @@ class ClusterDeleter
     check_prerequisites
     target_eks_cluster
     abort_if_user_namespaces_exist
-    # terraform_eks_components
-    # terraform_base_eks
-    # terraform_vpc if destroy_vpc?
-    # terraform_workspaces_eks
+    terraform_eks_components
+    terraform_base_eks
+    terraform_vpc if destroy_vpc?
+    terraform_workspaces_eks
   end
 
   private
