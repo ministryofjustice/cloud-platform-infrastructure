@@ -20,6 +20,8 @@ provider "aws" {
   profile = "moj-cp"
 }
 
+data "aws_caller_identity" "current" {}
+
 # IAM configuration for cloud-platform. Users, groups, etc
 module "iam" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.10"
