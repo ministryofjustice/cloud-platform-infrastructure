@@ -27,6 +27,14 @@ module "iam" {
   aws_account_name = "cloud-platform-aws"
 }
 
+# Github SSO
+module "sso" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.0.0"
+
+  aws_account_id      = data.aws_caller_identity.current.account_id
+  auth0_tenant_domain = "justice-cloud-platform.eu.auth0.com"
+}
+
 # Baselines: cloudtrail, cloudwatch, lambda. Everything that our accounts should have
 module "baselines" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.7"
