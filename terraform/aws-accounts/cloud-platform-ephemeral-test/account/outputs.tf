@@ -17,3 +17,7 @@ output "aws_account_hostzone_name" {
 output "baselines_logging_buckets" {
   value = module.baselines.logging_buckets
 }
+
+output "click_here_to_login" {
+  value = module.sso.saml_login_page
+}
