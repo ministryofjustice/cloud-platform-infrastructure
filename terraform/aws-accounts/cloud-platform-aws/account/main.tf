@@ -20,11 +20,21 @@ provider "aws" {
   profile = "moj-cp"
 }
 
+data "aws_caller_identity" "current" {}
+
 # IAM configuration for cloud-platform. Users, groups, etc
 module "iam" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.10"
 
   aws_account_name = "cloud-platform-aws"
+}
+
+# Github SSO
+module "sso" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.0.0"
+
+  aws_account_id      = data.aws_caller_identity.current.account_id
+  auth0_tenant_domain = "justice-cloud-platform.eu.auth0.com"
 }
 
 # Baselines: cloudtrail, cloudwatch, lambda. Everything that our accounts should have
