@@ -10,6 +10,7 @@ terraform {
 
 locals {
   auth0_tenant_domain = "justice-cloud-platform.eu.auth0.com"
+  auth0_groupsClaim   = "https://k8s.integration.dsd.io/groups"
 }
 
 provider "auth0" {
