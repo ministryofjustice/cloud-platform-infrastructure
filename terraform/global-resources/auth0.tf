@@ -25,3 +25,11 @@ resource "auth0_rule_config" "k8s-oidc-group-claim-domain" {
   key   = "K8S_OIDC_GROUP_CLAIM_DOMAIN"
   value = "https://k8s.integration.dsd.io/groups"
 }
+
+# Module for auth0 actions
+module "global_auth0" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-global-resources-auth0?ref=1.0.0"
+
+  auth0_tenant_domain = local.auth0_tenant_domain
+  auth0_groupsClaim   = local.auth0_groupsClaim
+}
