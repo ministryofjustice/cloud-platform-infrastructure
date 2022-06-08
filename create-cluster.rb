@@ -14,8 +14,8 @@ MAX_CLUSTER_NAME_LENGTH = 12
 CLUSTER_SUFFIX = "cloud-platform.service.justice.gov.uk"
 AWS_REGION = "eu-west-2"
 
-REQUIRED_ENV_VARS = %w[AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET KOPS_STATE_STORE]
-REQUIRED_EXECUTABLES = %w[git-crypt terraform helm aws kops ssh-keygen]
+REQUIRED_ENV_VARS = %w[AWS_PROFILE AUTH0_DOMAIN AUTH0_CLIENT_ID AUTH0_CLIENT_SECRET]
+REQUIRED_EXECUTABLES = %w[git-crypt terraform helm aws ssh-keygen]
 REQUIRED_AWS_PROFILES = %w[moj-cp]
 
 NONE = "none"
@@ -37,17 +37,9 @@ def main(options)
   execute "git-crypt unlock" if gitcrypt_unlock
 
   create_vpc(vpc_name)
-  if kind == "eks" || kind == "EKS"
-    create_cluster_eks(cluster_name, vpc_name)
-    sleep(extra_wait)
-    install_components_eks(cluster_name)
-  else
-    create_cluster_kops(cluster_name, vpc_name)
-    run_kops(cluster_name, dockerconfig)
-    sleep(extra_wait)
-    install_components_kops(cluster_name)
-  end
-
+  create_cluster_eks(cluster_name, vpc_name)
+  sleep(extra_wait)
+  install_components_eks(cluster_name)
   run_integration_tests(cluster_name) if integration_tests
   run_and_output "kubectl cluster-info"
 end
@@ -65,20 +57,6 @@ def create_vpc(vpc_name)
   run_and_output "cd #{dir}; #{tf_apply}"
 end
 
-def create_cluster_kops(cluster_name, vpc_name)
-  FileUtils.rm_rf("terraform/aws-accounts/cloud-platform-aws/vpc/kops/.terraform")
-  dir = "terraform/aws-accounts/cloud-platform-aws/vpc/kops"
-  switch_terraform_workspace(dir, cluster_name)
-
-  tf_apply = [
-    "terraform apply",
-    *("-var vpc_name=\"#{vpc_name}\"" if vpc_name),
-    "-auto-approve"
-  ].join(" ")
-
-  run_and_output "cd #{dir}; #{tf_apply}"
-end
-
 def create_cluster_eks(cluster_name, vpc_name)
   FileUtils.rm_rf("terraform/aws-accounts/cloud-platform-aws/vpc/eks/.terraform")
   dir = "terraform/aws-accounts/cloud-platform-aws/vpc/eks"
@@ -90,58 +68,6 @@ def create_cluster_eks(cluster_name, vpc_name)
   ].join(" ")
 
   run_and_output "cd #{dir}; #{tf_apply}"
-end
-
-def run_kops(cluster_name, dockerconfig)
-  run_and_output "kops create -f kops/#{cluster_name}.yaml"
-
-  # If -d argument is passed this function will be called.
-  add_dockerconfig(cluster_name, dockerconfig) if dockerconfig != NONE
-
-  # This is a throwaway SSH key which we never need again.
-  execute("rm -f /tmp/#{cluster_name} /tmp/#{cluster_name}.pub")
-  execute("ssh-keygen -b 4096 -P '' -f /tmp/#{cluster_name}")
-
-  run_and_output "kops create secret --name #{cluster_name}.#{CLUSTER_SUFFIX} sshpublickey admin -i /tmp/#{cluster_name}.pub"
-  run_and_output "kops update cluster #{cluster_name}.#{CLUSTER_SUFFIX} --yes --alsologtostderr"
-
-  wait_for_kops_validate
-end
-
-# Adds a Docker config file to all nodes to avoid rate limiting on Docker Hub.
-def add_dockerconfig(cluster_name, path)
-  # Avoid exiting the script if the path isn't found.
-  if !File.exist?(path)
-    puts "ERROR: Docker config file specified #{path} does not exist."
-  else
-    run_and_output "kops create secret dockerconfig -f #{path} --name #{cluster_name}.#{CLUSTER_SUFFIX}"
-  end
-end
-
-# TODO: figure out this problem, and fix it.
-# For some reason, the first terraform apply sometimes fails with an error "could not find a ready tiller pod"
-# This seems to be quite misleading, since adding a delay after 'helm repo update' makes no difference.
-# A second run of the terraform apply usually works correctly.
-def install_components_kops(cluster_name)
-  dir = "terraform/aws-accounts/cloud-platform-aws/vpc/kops/components"
-  execute "cd #{dir}; rm -rf .terraform"
-  switch_terraform_workspace(dir, cluster_name)
-  disable_alerts(dir)
-
-  # Ensure we have the latest helm charts for all the required components
-  execute "helm repo add jetstack https://charts.jetstack.io ; helm repo update"
-  # Without this step, you may get errors like this:
-  #
-  #     helm_release.open-policy-agent: chart “opa” matching 1.3.2 not found in stable index. (try ‘helm repo update’). No chart version found for opa-1.3.2
-  #
-
-  cmd = "cd #{dir}; terraform apply -auto-approve"
-  if cmd_successful?(cmd)
-    log "Cluster components installed."
-  else
-    log "Cluster components failed to install. Aborting."
-    exit 1
-  end
 end
 
 # This is a tactical fix to install our own pod security policies in an EKS cluster. When PSP's are deprecated and we create policies via another means, this method can be removed.
@@ -193,26 +119,6 @@ def disable_alerts(dir)
   # This will disable lower priority alerts for your cluster by replacing the alertmanager slack webhook url with a dummy value
   `sed -i 's/cloud_platform_slack_webhook\\s\\{1,\\}=\\s\\{1,\\}".*"/cloud_platform_slack_webhook = "dummydummy"/g'  #{dir}/terraform.tfvars`
   `sed -i 's/hooks.slack.com/dummy.slack.com/g'  #{dir}/terraform.tfvars`
-end
-
-def wait_for_kops_validate
-  max_tries = 30
-  validated = false
-
-  (1..max_tries).each do |attempt|
-    log "Validate cluster, attempt #{attempt} of #{max_tries}..."
-
-    if cmd_successful?("kops validate cluster")
-      log "Cluster validated."
-      validated = true
-      break
-    else
-      log "Sleeping before retry..."
-      sleep 60
-    end
-  end
-
-  raise "ERROR Failed to validate cluster after $max_tries attempts." unless validated
 end
 
 def switch_terraform_workspace(dir, name)
@@ -321,10 +227,6 @@ def parse_options
 
     opts.on("-i", "--no-integration-test", "Don't run integration tests after creating the cluster") do |name|
       options[:integration_tests] = false
-    end
-
-    opts.on("-k", "--kind EKS_OR_KOPS", "eks or kops? Create cluster script now supoort EKS, default to kops") do |name|
-      options[:kind] = name
     end
 
     opts.on("-t", "--extra-wait N", Float, "The time between kops validate and deploy of components. We need to wait for DNS propagation") do |n|
