@@ -13,7 +13,7 @@ resource "auth0_rule" "add-github-teams-to-oidc-group-claim" {
     "${path.module}/resources/auth0-rules/add-github-teams-to-oidc-group-claim.js",
   )
   order   = 30
-  enabled = true
+  enabled = false
 }
 
 resource "auth0_rule_config" "aws-account-id" {
