@@ -32,7 +32,7 @@ spec:
   selector:
     app: integration-test-app
 ---
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: <%= ingress_name %>
@@ -53,10 +53,7 @@ spec:
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
         backend:
-          service:
-            name: integration-test-svc
-            port: 
-              number: 80
+          serviceName: integration-test-svc
+          servicePort: 80
 
