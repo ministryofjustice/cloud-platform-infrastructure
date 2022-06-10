@@ -1,4 +1,4 @@
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: integration-test-app-ing
@@ -16,7 +16,10 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: integration-test-nginx-svc
-          servicePort: 80
+          service:
+            name: integration-test-nginx-svc
+            port: 
+              number: 80
         path: /dps/("health")$
