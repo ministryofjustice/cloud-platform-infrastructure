@@ -1,5 +1,5 @@
 ---
-apiVersion: networking.k8s.io/v1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: e2e-tests-externaldns
@@ -13,9 +13,6 @@ spec:
     http:
       paths:
       - path: /
-        pathType: ImplementationSpecific
         backend:
-          service:
-            name: ingress-external-svc
-            port: 
-              number: 80
+          serviceName: ingress-external-svc
+          servicePort: 80
