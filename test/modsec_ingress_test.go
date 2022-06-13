@@ -60,6 +60,7 @@ var _ = Describe("Modsec Ingress", func() {
 					"nginx.ingress.kubernetes.io/modsecurity-snippet": "|\n     SecRuleEngine On",
 				},
 				"host": host,
+				"namespace": namespaceName,
 			}
 
 			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", TemplateVars)
