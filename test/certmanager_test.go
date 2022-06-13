@@ -51,7 +51,7 @@ var _ = Describe("cert-manager", func() {
 			Expect(err).NotTo(HaveOccurred())
 			cert = conn.ConnectionState().PeerCertificates[0].Issuer.Organization
 
-			time.Sleep(60 * time.Second)
+			time.Sleep(120 * time.Second)
 
 			Expect(cert[0]).To(Equal("(STAGING) Let's Encrypt"))
 		})
