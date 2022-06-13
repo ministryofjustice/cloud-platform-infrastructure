@@ -1,4 +1,4 @@
-TAG := 2.2.1
+TAG := 2.2.2
 TOOLS_IMAGE := ministryofjustice/cloud-platform-tools
 TEST_IMAGE := ministryofjustice/cloud-platform-infrastructure
 
