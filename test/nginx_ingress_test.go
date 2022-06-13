@@ -56,6 +56,7 @@ var _ = Describe("Nginx Ingress", func() {
 					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
 				},
 				"host": host,
+				"namespace": namespaceName,
 			}
 
 			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", TemplateVars)
