@@ -13,16 +13,7 @@ resource "auth0_rule" "add-github-teams-to-oidc-group-claim" {
     "${path.module}/resources/auth0-rules/add-github-teams-to-oidc-group-claim.js",
   )
   order   = 30
-  enabled = true
-}
-
-resource "auth0_rule" "add-github-teams-to-saml-mappings" {
-  name = "add-github-teams-to-saml-mappings"
-  script = file(
-    "${path.module}/resources/auth0-rules/add-github-teams-to-saml-mappings.js",
-  )
-  order   = 40
-  enabled = true
+  enabled = false
 }
 
 resource "auth0_rule_config" "aws-account-id" {
@@ -35,13 +26,10 @@ resource "auth0_rule_config" "k8s-oidc-group-claim-domain" {
   value = "https://k8s.integration.dsd.io/groups"
 }
 
-resource "auth0_rule_config" "aws-saml-provider-name" {
-  key   = "AWS_SAML_PROVIDER_NAME"
-  value = aws_iam_saml_provider.auth0.name
-}
+# Module for auth0 actions
+module "global_auth0" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-global-resources-auth0?ref=1.0.0"
 
-resource "auth0_rule_config" "aws-saml-role-prefix" {
-  key   = "AWS_SAML_ROLE_PREFIX"
-  value = "saml-github."
+  auth0_tenant_domain = local.auth0_tenant_domain
+  auth0_groupsClaim   = local.auth0_groupsClaim
 }
-

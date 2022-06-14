@@ -1,25 +1,21 @@
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: integration-test-app-ing
+  name: e2e-tests-externaldns
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
     kubernetes.io/ingress.class: "nginx"
     external-dns.alpha.kubernetes.io/aws-weight: "100"
-    external-dns.alpha.kubernetes.io/set-identifier: <%= set_identifier %>
+    external-dns.alpha.kubernetes.io/set-identifier: e2e-tests-externaldns-{{ .namespace }}-green
 spec:
-  tls:
-  - hosts:
-    - badsyntax<%= host %>
   rules:
-  - host: badsyntax<%= host %>
+  - host: {{ .domain }}
     http:
       paths:
       - path: /
         pathType: ImplementationSpecific
         backend:
           service:
-            name: integration-test-nginx-svc
+            name: ingress-external-svc
             port:
               number: 80
-        path: /dps/("health")$

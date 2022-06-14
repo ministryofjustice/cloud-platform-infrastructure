@@ -26,7 +26,7 @@ module "concourse" {
   authorized_keys_github_token                      = var.authorized_keys_github_token
   sonarqube_token                                   = var.sonarqube_token
   sonarqube_host                                    = var.sonarqube_host
-  dependence_prometheus                             = module.monitoring.helm_prometheus_operator_eks_status
+  dependence_prometheus                             = module.monitoring.prometheus_operator_crds_status
   hoodaw_host                                       = var.hoodaw_host
   hoodaw_api_key                                    = var.hoodaw_api_key
   github_actions_secrets_token                      = var.github_actions_secrets_token
@@ -42,19 +42,19 @@ module "cert_manager" {
 
   # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade, 
   # but cluster creation fails without, so will have to be temporarily disabled when upgrading
-  dependence_prometheus = module.monitoring.helm_prometheus_operator_eks_status
+  dependence_prometheus = module.monitoring.prometheus_operator_crds_status
   dependence_opa        = "ignore"
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.8.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.9.1"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
 
-  dependence_prometheus       = module.monitoring.helm_prometheus_operator_eks_status
+  dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 
@@ -70,7 +70,7 @@ module "ingress_controllers" {
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
   dependence_opa         = "ignore"
   # It depends on complete cert-manager module
-  depends_on = [module.cert_manager]
+  //depends_on = [module.cert_manager]
 }
 
 module "modsec_ingress_controllers" {
@@ -83,9 +83,9 @@ module "modsec_ingress_controllers" {
 }
 
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.8"
 
-  replica_count       = "2"
+  replica_count       = "6"
   controller_name     = "default"
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
@@ -95,15 +95,15 @@ module "ingress_controllers_v1" {
   enable_external_dns_annotation = false
   depends_on = [
     module.cert_manager,
-    module.monitoring
+    module.monitoring.prometheus_operator_crds_status
   ]
 
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.8"
 
-  replica_count       = "2"
+  replica_count       = "6"
   controller_name     = "modsec"
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
@@ -115,7 +115,7 @@ module "modsec_ingress_controllers_v1" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.3"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
@@ -131,11 +131,11 @@ module "logging" {
 
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
-  dependence_prometheus    = module.monitoring.helm_prometheus_operator_eks_status
+  dependence_prometheus    = module.monitoring.prometheus_operator_crds_status
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.2.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.2.3"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   pagerduty_config                           = var.pagerduty_config
@@ -159,7 +159,7 @@ module "monitoring" {
 
 module "opa" {
   source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.4.2"
-  depends_on = [module.monitoring, module.modsec_ingress_controllers, module.modsec_ingress_controllers_v1, module.cert_manager]
+  depends_on = [module.monitoring.prometheus_operator_crds_status, module.modsec_ingress_controllers, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
@@ -180,7 +180,7 @@ module "starter_pack" {
 module "velero" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.8.0"
 
-  dependence_prometheus = module.monitoring.helm_prometheus_operator_eks_status
+  dependence_prometheus = module.monitoring.prometheus_operator_crds_status
   cluster_domain_name   = data.terraform_remote_state.cluster.outputs.cluster_domain_name
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url

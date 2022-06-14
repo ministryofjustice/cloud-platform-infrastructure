@@ -8,6 +8,6 @@ output "cp_zone_id" {
   description = "This output is very important, it is widely used from kops/eks clusters"
 }
 
-output "cloud_platform_kops_state" {
-  value = aws_s3_bucket.cloud_platform_kops_state.bucket
+output "click_here_to_login" {
+  value = module.sso.saml_login_page
 }

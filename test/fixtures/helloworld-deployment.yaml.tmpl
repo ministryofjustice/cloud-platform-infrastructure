@@ -35,21 +35,18 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: <%= ingress_name %>
+  name: integration-test-app-ing
   annotations:
-    kubernetes.io/ingress.class: <%= ingress_class %> 
-    external-dns.alpha.kubernetes.io/aws-weight: "100"
-    external-dns.alpha.kubernetes.io/set-identifier: <%= set_identifier %>  
-    nginx.ingress.kubernetes.io/enable-modsecurity: "false"
-    nginx.ingress.kubernetes.io/modsecurity-snippet: |
-      SecRuleEngine On
+{{- range $key, $value := .ingress_annotations }}
+   {{ $key }}: {{ $value }}
+{{- end }}
 spec:
   tls:
   - hosts:
-    - <%= host %>
-    secretName: hello-world-ssl
+    - {{ .host }}
+    secretName: {{ .namespace }}-secret
   rules:
-  - host: <%= host %>
+  - host: {{ .host }}
     http:
       paths:
       - path: /
@@ -59,4 +56,3 @@ spec:
             name: integration-test-svc
             port:
               number: 80
-

@@ -18,7 +18,8 @@ resource "kubernetes_pod_security_policy" "privileged" {
 
     allowed_capabilities = [
       "NET_BIND_SERVICE",
-      "NET_ADMIN"
+      "NET_ADMIN",
+      "SYS_CHROOT"
     ]
 
     required_drop_capabilities = [

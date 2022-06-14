@@ -1,0 +1,50 @@
+---
+clusterName:
+namespaces:
+  cert-manager:
+    services:
+      - "cert-manager"
+      - "cert-manager-webhook"
+    servicemonitors:
+      - cert-manager
+  ingress-controllers:
+    servicemonitors:
+      - modsec01-nx-controller
+      - nginx-ingress-acme-ingress-nginx-controller
+  kube-system:
+  logging:
+    daemonsets:
+      - "fluent-bit"
+    servicemonitors:
+      - fluent-bit
+  monitoring:
+    daemonsets:
+      - "prometheus-operator-prometheus-node-exporter"
+    services:
+      - "prometheus-operated"
+      - "alertmanager-operated"
+    secrets:
+      - "test"
+    servicemonitors:
+      - prometheus-operator-kube-p-alertmanager
+      - prometheus-operator-kube-p-apiserver
+      - prometheus-operator-kube-p-coredns
+      - prometheus-operator-kube-p-grafana
+      - prometheus-operator-kube-state-metrics
+      - prometheus-operator-kube-p-kubelet
+      - prometheus-operator-kube-p-prometheus
+      - prometheus-operator-kube-p-operator
+      - prometheus-operator-prometheus-node-exporter
+  opa:
+  velero:
+    servicemonitors:
+      - velero
+nginxIngressController:
+  namespacePrefix: "smoketest-ingress-"
+modsecIngressController:
+  namespacePrefix: "smoketest-modsec-"
+externalDNS:
+  namespacePrefix: "e2e-tests-externaldns-"
+  hostedZoneId: Z02429076QQMAO8KXV68
+filesExist:
+  - "https://github.com/ministryofjustice/cloud-platform-terraform-bastion/blob/main/files/authorized_keys.txt"
