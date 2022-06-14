@@ -9,6 +9,6 @@ spec:
   podSpec: # The exact pod spec that will run.  All normal pod spec is valid here.
     containers:
       - env: # Environment variables are optional but a recommended way to configure check behavior
-        image: image: ministryofjustice/namespace-kh-check:latest
+        image: ministryofjustice/namespace-kh-check:latest
         imagePullPolicy: Always # During check development, it helps to set this to 'Always' to prevent on-node image caching.
         name: main
