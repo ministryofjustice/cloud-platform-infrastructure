@@ -115,7 +115,7 @@ module "modsec_ingress_controllers_v1" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.4"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
@@ -169,7 +169,7 @@ module "opa" {
 }
 
 module "starter_pack" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.1.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.1.6"
 
   enable_starter_pack = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
