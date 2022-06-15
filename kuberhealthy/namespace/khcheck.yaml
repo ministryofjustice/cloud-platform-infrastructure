@@ -2,7 +2,7 @@ apiVersion: comcast.github.io/v1
 kind: KuberhealthyCheck
 metadata:
   name: namespace-kh-check
-  namespace: monitoring
+  namespace: kuberhealthy
 spec:
   runInterval: 30s # The interval that Kuberhealthy will run your check on
   timeout: 2m # After this much time, Kuberhealthy will kill your check and consider it "failed"
@@ -12,3 +12,5 @@ spec:
         image: ministryofjustice/namespace-kh-check:latest
         imagePullPolicy: Always # During check development, it helps to set this to 'Always' to prevent on-node image caching.
         name: main
+        securityContext:
+          runAsUser: 999
