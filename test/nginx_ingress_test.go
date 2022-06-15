@@ -16,7 +16,7 @@ import (
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
 
-var _ = FDescribe("Nginx Ingress", func() {
+var _ = Describe("Nginx Ingress", func() {
 	var (
 		currentCluster = c.ClusterName
 		namespaceName  = fmt.Sprintf("smoketest-ingress-%s", strings.ToLower(random.UniqueId()))
@@ -55,7 +55,7 @@ var _ = FDescribe("Nginx Ingress", func() {
 					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
 					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
 				},
-				"host": host,
+				"host":      host,
 				"namespace": namespaceName,
 			}
 

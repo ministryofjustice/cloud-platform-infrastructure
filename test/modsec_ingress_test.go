@@ -16,7 +16,7 @@ import (
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
 
-var _ = FDescribe("Modsec Ingress", func() {
+var _ = Describe("Modsec Ingress", func() {
 	var (
 		currentCluster = c.ClusterName
 		namespaceName  = fmt.Sprintf("smoketest-modsec-%s", strings.ToLower(random.UniqueId()))
@@ -59,7 +59,7 @@ var _ = FDescribe("Modsec Ingress", func() {
 					"nginx.ingress.kubernetes.io/enable-modsecurity":  "\"true\"",
 					"nginx.ingress.kubernetes.io/modsecurity-snippet": "|\n     SecRuleEngine On",
 				},
-				"host": host,
+				"host":      host,
 				"namespace": namespaceName,
 			}
 

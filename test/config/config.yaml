@@ -1,5 +1,5 @@
 ---
-clusterName: "cp-1306-1120"
+clusterName:
 namespaces:
   cert-manager:
     services:
