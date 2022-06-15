@@ -1,5 +1,5 @@
 ---
-clusterName:
+clusterName: "cp-1306-1120"
 namespaces:
   cert-manager:
     services:
@@ -11,6 +11,8 @@ namespaces:
     servicemonitors:
       - modsec01-nx-controller
       - nginx-ingress-acme-ingress-nginx-controller
+      - nginx-default-ingress-ctl
+      - nginx-modsec-ingress-ctl
   kube-system:
   logging:
     daemonsets:

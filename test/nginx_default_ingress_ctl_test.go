@@ -12,14 +12,13 @@ import (
 	"github.com/gruntwork-io/terratest/modules/retry"
 	. "github.com/onsi/gomega"
 
-	"github.com/ministryofjustice/cloud-platform-infrastructure/test/config"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
 
-var _ = Describe("Nginx Ingress", func() {
+var _ = FDescribe("Nginx Ingress", func() {
 	var (
 		currentCluster = c.ClusterName
-		namespaceName  = fmt.Sprintf("smoketest-ingress-%s", strings.ToLower(random.UniqueId()))
+		namespaceName  = fmt.Sprintf("smoketest-ingress-v1-%s", strings.ToLower(random.UniqueId()))
 		host           = fmt.Sprintf("%s-nginx.apps.%s.%s", namespaceName, currentCluster, domain)
 		options        = k8s.NewKubectlOptions("", "", namespaceName)
 		url            = fmt.Sprintf("https://%s", host)
@@ -28,10 +27,6 @@ var _ = Describe("Nginx Ingress", func() {
 	)
 
 	BeforeEach(func() {
-		if (config.NginxIngressController{}) == c.NginxIngressController {
-			Skip("Nginx Ingress Controller component not defined, skipping test")
-		}
-
 		By("not having an ingress resource deployed")
 
 		Expect(helpers.HttpStatusCode(url)).To(Equal(404))
@@ -55,11 +50,12 @@ var _ = Describe("Nginx Ingress", func() {
 					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
 					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
 				},
-				"host":  host,
-				"class": class,
+				"host":      host,
+				"class":     class,
+				"namespace": namespaceName,
 			}
 
-			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment.yaml.tmpl", TemplateVars)
+			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", TemplateVars)
 			if err != nil {
 				log.Fatalf("execution: %s", err)
 			}

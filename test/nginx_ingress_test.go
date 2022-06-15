@@ -16,7 +16,7 @@ import (
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
 
-var _ = Describe("Nginx Ingress", func() {
+var _ = FDescribe("Nginx Ingress", func() {
 	var (
 		currentCluster = c.ClusterName
 		namespaceName  = fmt.Sprintf("smoketest-ingress-%s", strings.ToLower(random.UniqueId()))

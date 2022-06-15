@@ -16,7 +16,7 @@ import (
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
 
-var _ = Describe("Modsec Ingress", func() {
+var _ = FDescribe("Modsec Ingress", func() {
 	var (
 		currentCluster = c.ClusterName
 		namespaceName  = fmt.Sprintf("smoketest-modsec-%s", strings.ToLower(random.UniqueId()))

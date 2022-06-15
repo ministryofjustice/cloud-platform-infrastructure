@@ -51,6 +51,9 @@ spec:
     http:
       paths:
       - path: /
+        pathType: ImplementationSpecific
         backend:
-          serviceName: integration-test-svc
-          servicePort: 80
+          service:
+            name: integration-test-svc
+            port:
+              number: 80
