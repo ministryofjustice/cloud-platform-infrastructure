@@ -115,7 +115,7 @@ module "modsec_ingress_controllers_v1" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.6"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
@@ -132,6 +132,7 @@ module "logging" {
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   dependence_prometheus    = module.monitoring.prometheus_operator_crds_status
+  enable_curator_cronjob   = terraform.workspace == "live" ? true : false
 }
 
 module "monitoring" {
