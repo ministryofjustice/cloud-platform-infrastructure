@@ -45,7 +45,7 @@ var _ = Describe("Modsec Ingress", func() {
 		defer k8s.DeleteNamespace(GinkgoT(), options, namespaceName)
 	})
 
-	Context("when ingress resource is deployed using 'modsec' ingress controller and modsec enabled", func() {
+	Context("when ingress resource is deployed using 'modsec01' ingress controller and modsec enabled", func() {
 		It("should block the request if the url is malicious", func() {
 			var err error
 

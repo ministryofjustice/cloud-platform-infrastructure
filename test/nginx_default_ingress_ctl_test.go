@@ -39,7 +39,7 @@ var _ = Describe("Nginx Default Ingress v1", func() {
 		defer k8s.DeleteNamespace(GinkgoT(), options, namespaceName)
 	})
 
-	Context("when ingress resource is deployed using 'nginx' ingress controller", func() {
+	Context("when ingress resource is deployed using 'default' ingress controller", func() {
 		It("should expose the service to the internet", func() {
 			var err error
 
