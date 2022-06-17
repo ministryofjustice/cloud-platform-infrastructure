@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: integration-test-helloworld
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: integration-test-app
+  template:
+    metadata:
+      labels:
+        app: integration-test-app
+    spec:
+      containers:
+      - name: nginx
+        image: bitnami/nginx
+        ports:
+        - containerPort: 8080
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: integration-test-svc
+  labels:
+    app: integration-test-svc
+spec:
+  ports:
+  - port: 80
+    name: http
+    targetPort: 8080
+  selector:
+    app: integration-test-app
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: integration-test-app-ing
+  annotations:
+{{- range $key, $value := .ingress_annotations }}
+   {{ $key }}: {{ $value }}
+{{- end }}
+spec:
+  ingressClassName: {{ .class }}
+  tls:
+  - hosts:
+    - {{ .host }}
+    secretName: {{ .namespace }}-secret
+  rules:
+  - host: {{ .host }}
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          service:
+            name: integration-test-svc
+            port:
+              number: 80

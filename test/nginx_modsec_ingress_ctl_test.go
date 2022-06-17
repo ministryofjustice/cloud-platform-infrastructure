@@ -12,27 +12,23 @@ import (
 	"github.com/gruntwork-io/terratest/modules/retry"
 	. "github.com/onsi/gomega"
 
-	"github.com/ministryofjustice/cloud-platform-infrastructure/test/config"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
 
-var _ = Describe("Modsec Ingress", func() {
+var _ = Describe("Modsec Ingress v1", func() {
 	var (
 		currentCluster = c.ClusterName
-		namespaceName  = fmt.Sprintf("smoketest-modsec-%s", strings.ToLower(random.UniqueId()))
+		namespaceName  = fmt.Sprintf("smoketest-modsec-v1-%s", strings.ToLower(random.UniqueId()))
 		host           = fmt.Sprintf("%s.apps.%s.%s", namespaceName, currentCluster, domain)
 		options        = k8s.NewKubectlOptions("", "", namespaceName)
 		url            = fmt.Sprintf("https://%s", host)
 		good_url       = fmt.Sprintf("https://%s", host)
 		bad_url        = fmt.Sprintf("%s?exec=/bin/bash", url)
+		class          = "modsec"
 		tpl            string
 	)
 
 	BeforeEach(func() {
-		if (config.ModsecIngressController{}) == c.ModsecIngressController {
-			Skip("Modsec Ingress Controller component not defined, skipping test")
-		}
-
 		By("not having an ingress resource deployed")
 
 		Expect(helpers.HttpStatusCode(url)).To(Equal(404))
@@ -45,7 +41,7 @@ var _ = Describe("Modsec Ingress", func() {
 		defer k8s.DeleteNamespace(GinkgoT(), options, namespaceName)
 	})
 
-	Context("when ingress resource is deployed using 'modsec01' ingress controller and modsec enabled", func() {
+	Context("when ingress resource is deployed using 'modsec' ingress controller and modsec enabled", func() {
 		It("should block the request if the url is malicious", func() {
 			var err error
 
@@ -53,17 +49,17 @@ var _ = Describe("Modsec Ingress", func() {
 
 			TemplateVars := map[string]interface{}{
 				"ingress_annotations": map[string]string{
-					"kubernetes.io/ingress.class":                     "modsec01",
 					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
 					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
 					"nginx.ingress.kubernetes.io/enable-modsecurity":  "\"true\"",
 					"nginx.ingress.kubernetes.io/modsecurity-snippet": "|\n     SecRuleEngine On",
 				},
 				"host":      host,
+				"class":     class,
 				"namespace": namespaceName,
 			}
 
-			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", TemplateVars)
+			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", TemplateVars)
 			if err != nil {
 				log.Fatalf("execution: %s", err)
 			}

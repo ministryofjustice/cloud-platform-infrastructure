@@ -55,7 +55,7 @@ var _ = Describe("Nginx Ingress", func() {
 					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
 					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
 				},
-				"host": host,
+				"host":      host,
 				"namespace": namespaceName,
 			}
 
