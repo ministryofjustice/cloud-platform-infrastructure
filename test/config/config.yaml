@@ -11,8 +11,8 @@ namespaces:
     servicemonitors:
       - modsec01-nx-controller
       - nginx-ingress-acme-ingress-nginx-controller
-      - nginx-default-ingress-ctl
-      - nginx-modsec-ingress-ctl
+      - nginx-ingress-default-controller
+      - nginx-ingress-modsec-controller
   kube-system:
   logging:
     daemonsets:
