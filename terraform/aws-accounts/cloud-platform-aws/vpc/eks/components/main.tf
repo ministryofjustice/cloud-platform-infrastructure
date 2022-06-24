@@ -22,7 +22,7 @@ provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
   exec {
-    api_version = "client.authentication.k8s.io/v1alpha1"
+    api_version = "client.authentication.k8s.io/v1beta1"
     args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.cluster.name]
     command     = "aws"
   }
@@ -34,7 +34,7 @@ provider "helm" {
     host                   = data.aws_eks_cluster.cluster.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
     exec {
-      api_version = "client.authentication.k8s.io/v1alpha1"
+      api_version = "client.authentication.k8s.io/v1beta1"
       args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.cluster.name]
       command     = "aws"
     }
@@ -66,10 +66,6 @@ data "aws_eks_cluster" "cluster" {
 
 data "aws_eks_cluster_auth" "cluster" {
   name = terraform.workspace
-}
-
-data "aws_iam_role" "nodes" {
-  name = data.terraform_remote_state.cluster.outputs.eks_worker_iam_role_name
 }
 
 data "aws_route53_zone" "selected" {
@@ -128,42 +124,81 @@ locals {
 ##########
 # Calico #
 ##########
+resource "kubernetes_namespace" "tigera_operator" {
+  metadata {
+    name = "tigera-operator"
 
-data "kubectl_file_documents" "calico_crds" {
-  content = file("${path.module}/resources/calico-crds.yaml")
+    labels = {
+      "component" = "networking"
+    }
+
+    annotations = {
+      "cloud-platform.justice.gov.uk/application"                = "Networking"
+      "cloud-platform.justice.gov.uk/business-unit"              = "Platforms"
+      "cloud-platform.justice.gov.uk/owner"                      = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"                = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+      "iam.amazonaws.com/permitted"                              = ".*"
+      "cloud-platform.justice.gov.uk/can-tolerate-master-taints" = "true"
+      "cloud-platform-out-of-hours-alert"                        = "true"
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [metadata]
+  }
 }
 
+resource "kubernetes_namespace" "calico_system" {
+  metadata {
+    name = "calico-system"
+
+    labels = {
+      "component"                    = "networking"
+    }
+
+    annotations = {
+      "cloud-platform.justice.gov.uk/application"                = "Networking"
+      "cloud-platform.justice.gov.uk/business-unit"              = "Platforms"
+      "cloud-platform.justice.gov.uk/owner"                      = "Cloud Platform: platforms@digital.justice.gov.uk"
+      "cloud-platform.justice.gov.uk/source-code"                = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+      "iam.amazonaws.com/permitted"                              = ".*"
+      "cloud-platform.justice.gov.uk/can-tolerate-master-taints" = "true"
+      "cloud-platform-out-of-hours-alert"                        = "true"
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [metadata]
+  }
+}
+
+// Copied from https://github.com/projectcalico/calico/tree/release-v3.21/libcalico-go/config/crd
+data "kubectl_filename_list" "calico_crds" {
+  pattern = "${path.module}/resources/crd.projectcalico.org*yaml"
+}
 resource "kubectl_manifest" "calico_crds" {
-  count     = length(data.kubectl_file_documents.calico_crds.documents)
-  yaml_body = element(data.kubectl_file_documents.calico_crds.documents, count.index)
+  count     = length(data.kubectl_filename_list.calico_crds.matches)
+  yaml_body = file(element(data.kubectl_filename_list.calico_crds.matches, count.index))
 }
 
 resource "helm_release" "calico" {
-  name       = "calico"
-  chart      = "aws-calico"
-  repository = "https://aws.github.io/eks-charts"
-  namespace  = "kube-system"
-  version    = "0.3.10"
-
-  depends_on = [kubectl_manifest.calico_crds]
+  name       = "tigera-operator"
+  chart      = "tigera-operator"
+  repository = "https://docs.projectcalico.org/charts"
+  namespace  = "tigera-operator"
+  version    = "v3.23.1"
   timeout    = "900"
 
   set {
-    name  = "calico.typha.resources.limits.memory"
-    value = "256Mi"
+    name  = "installation.kubernetesProvider"
+    value = "EKS"
   }
-  set {
-    name  = "calico.typha.resources.limits.cpu"
-    value = "200m"
-  }
-  set {
-    name  = "calico.node.resources.limits.memory"
-    value = "128Mi"
-  }
-  set {
-    name  = "calico.node.resources.limits.cpu"
-    value = "200m"
-  }
+
+  depends_on = [
+    kubernetes_namespace.tigera_operator,
+    kubernetes_namespace.calico_system,
+    kubectl_manifest.calico_crds
+  ]
 }
 
 data "kubectl_file_documents" "calico_global_policies" {

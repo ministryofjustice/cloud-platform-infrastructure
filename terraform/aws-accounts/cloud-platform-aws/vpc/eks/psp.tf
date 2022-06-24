@@ -110,6 +110,11 @@ resource "kubernetes_cluster_role_binding" "privileged" {
   }
   subject {
     kind      = "ServiceAccount"
+    name      = "calico-node"
+    namespace = "calico-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
     name      = "cluster-autoscaler-aws-cluster-autoscaler"
     namespace = "kube-system"
   }
@@ -122,6 +127,21 @@ resource "kubernetes_cluster_role_binding" "privileged" {
     kind      = "ServiceAccount"
     name      = "typha-cpha"
     namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "calico-typha"
+    namespace = "calico-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "calico-kube-controllers"
+    namespace = "calico-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "tigera-operator"
+    namespace = "tigera-operator"
   }
 
   subject {

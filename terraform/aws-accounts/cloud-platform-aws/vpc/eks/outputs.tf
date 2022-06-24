@@ -1,11 +1,3 @@
-output "eks_worker_iam_role_arn" {
-  value = module.eks.worker_iam_role_arn
-}
-
-output "eks_worker_iam_role_name" {
-  value = module.eks.worker_iam_role_name
-}
-
 output "vpc_id" {
   value = data.aws_vpc.selected.id
 }
