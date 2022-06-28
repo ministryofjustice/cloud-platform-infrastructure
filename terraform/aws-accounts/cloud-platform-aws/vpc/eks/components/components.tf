@@ -83,7 +83,7 @@ module "modsec_ingress_controllers" {
 }
 
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.9"
 
   replica_count       = "6"
   controller_name     = "default"
@@ -101,7 +101,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.9"
 
   replica_count       = "6"
   controller_name     = "modsec"
@@ -136,7 +136,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.2.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=upg-oidc"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   pagerduty_config                           = var.pagerduty_config
