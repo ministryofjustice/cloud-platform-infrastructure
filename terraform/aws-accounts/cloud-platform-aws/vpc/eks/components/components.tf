@@ -136,7 +136,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.2.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=upg-oidc"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   pagerduty_config                           = var.pagerduty_config
