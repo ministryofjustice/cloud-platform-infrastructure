@@ -186,6 +186,9 @@ module "velero" {
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
+module "kuberhealthy" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=v1.0.0"
+}
 
 module "sonarqube" {
   count  = terraform.workspace == "manager" ? 1 : 0
