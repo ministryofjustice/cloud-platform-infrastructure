@@ -15,6 +15,7 @@ EKS_SYSTEM_NAMESPACES = %w[
   monitoring
   opa
   velero
+  kuberhealthy
 ] + (0..9).map { |i| "starter-pack-#{i}" }
 
 MAX_CLUSTER_NAME_LENGTH = 12
