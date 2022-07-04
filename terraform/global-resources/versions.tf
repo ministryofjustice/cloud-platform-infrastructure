@@ -6,7 +6,7 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.68.0"
+      version = "~> 4.20.1"
     }
     external = {
       source = "hashicorp/external"
