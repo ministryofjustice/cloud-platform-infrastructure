@@ -126,7 +126,6 @@ module "eks" {
   node_groups = {
     default_ng    = local.default_ng
     monitoring_ng = local.monitoring_ng
-
   }
 
   # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
