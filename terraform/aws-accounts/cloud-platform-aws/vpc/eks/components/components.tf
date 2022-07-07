@@ -138,10 +138,11 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=grafana-sentry"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   pagerduty_config                           = var.pagerduty_config
+  sentry_token                               = var.sentry_token
   cluster_domain_name                        = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_components_client_id                  = data.terraform_remote_state.cluster.outputs.oidc_components_client_id
   oidc_components_client_secret              = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret

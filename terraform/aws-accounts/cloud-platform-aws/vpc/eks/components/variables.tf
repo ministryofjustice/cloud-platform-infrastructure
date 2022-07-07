@@ -79,3 +79,8 @@ variable "github_actions_secrets_token" {
   default     = ""
   description = "Github personal access token able to update any MoJ repository. Used to create github actions secrets"
 }
+variable "sentry_token" {
+  default     = ""
+  description = "see https://grafana.com/grafana/plugins/grafana-sentry-datasource/"
+}
+ 
