@@ -1,6 +1,7 @@
 .terraform
 *.tfstate*
 .terraform.lock.hcl
+!terraform/global-resources/.terraform.lock.hcl
 ssh/*id_rsa
 generated/*
 .bundle
