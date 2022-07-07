@@ -20,6 +20,8 @@ const (
 	domain     = "cloud-platform.service.justice.gov.uk"
 )
 
+const hostedZoneId = "Z02429076QQMAO8KXV68"
+
 // c is global, so all tests has access to it
 var c *config.Config
 
@@ -37,6 +39,7 @@ func TestMain(m *testing.M) {
 	flag.Parse()
 
 	var err error
+	// TODO: Remove configfile location
 	c, err = config.ParseConfigFile(*configFile)
 	if err != nil {
 		log.Fatal(err)
