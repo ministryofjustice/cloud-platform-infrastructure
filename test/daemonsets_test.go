@@ -21,32 +21,27 @@ var _ = Describe("Daemonsets checks", func() {
 
 		options := k8s.NewKubectlOptions("", "", "")
 
+		list, err := k8s.ListDaemonSetsE(GinkgoT(), options, metav1.ListOptions{})
+		if err != nil {
+			Fail(fmt.Sprintf("Failed to list daemonsets: %s", err))
+		}
+
 		for _, daemonSet := range c.DaemonSets {
-			// get all daemonsets and return the ones that are not notFoundDaemonSets
-			ds, err := k8s.ListDaemonSetsE(GinkgoT(), options, metav1.ListOptions{})
-			if err != nil {
-				Fail(fmt.Sprintf("Failed to list daemonsets: %s", err))
-			}
-			for _, d := range ds {
+			var found bool
+			for _, d := range list {
 				if d.Name == daemonSet {
+					found = true
 					continue
 				}
-				notFoundDaemonSets = append(notFoundDaemonSets, d.Name)
+
+			}
+			if !found {
+				notFoundDaemonSets = append(notFoundDaemonSets, daemonSet)
 			}
 		}
 
-		// for _, ds := range c.DaemonSets {
-		// 	options := k8s.NewKubectlOptions("", "", "")
-		// 	for _, v := range ds {
-		// _, err := k8s.GetDaemonSetE(GinkgoT(), options, v)
-		// 		if err != nil {
-		// 			notFoundDaemonSets = append(notFoundDaemonSets, v)
-		// 		}
-		// 	}
-		// }
-
-		// if notFoundDaemonSets != nil {
-		// 	Fail(fmt.Sprintf("The following daemonsets DO NOT exist: %v", notFoundDaemonSets))
-		// }
+		if notFoundDaemonSets != nil {
+			Fail(fmt.Sprintf("The following daemonsets DO NOT exist: %v", notFoundDaemonSets))
+		}
 	})
 })

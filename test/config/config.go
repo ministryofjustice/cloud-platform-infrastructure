@@ -106,7 +106,7 @@ func (c *Config) ExpectedServices() {
 }
 
 func (c *Config) ExpectedDaemonSets() {
-	c.DaemonSets = append(c.DaemonSets, "fluent-bit", "prometheus-operator-prometheus-node-exporter")
+	c.DaemonSets = append(c.DaemonSets, "fluent-bit", "prometheus-operator-prometheus-node-exporter", "fake-daemonset")
 }
 
 func (c *Config) ExpectedServiceMonitors() {
