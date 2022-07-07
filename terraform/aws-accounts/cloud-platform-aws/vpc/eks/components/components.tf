@@ -87,6 +87,7 @@ module "ingress_controllers_v1" {
 
   replica_count       = "6"
   controller_name     = "default"
+  enable_latest_tls   = true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
@@ -110,6 +111,7 @@ module "modsec_ingress_controllers_v1" {
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
   enable_modsec       = true
   enable_owasp        = true
+  enable_latest_tls   = true
 
   depends_on = [module.ingress_controllers_v1]
 }
