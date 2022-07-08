@@ -17,7 +17,7 @@ var _ = Describe("Daemonsets", func() {
 		It("should exist the in the cluster", func() {
 			c.ExpectedDaemonSets()
 
-			if len(c.DaemonSets) == 0 {
+			if len(c.Daemonsets) == 0 {
 				Skip("No daemonsets defined, skipping test")
 			}
 
@@ -28,14 +28,13 @@ var _ = Describe("Daemonsets", func() {
 				Fail(fmt.Sprintf("Failed to list daemonsets: %s", err))
 			}
 
-			for _, daemonSet := range c.DaemonSets {
+			for _, daemonSet := range c.Daemonsets {
 				var found bool
 				for _, d := range list {
 					if d.Name == daemonSet {
 						found = true
 						continue
 					}
-
 				}
 				if !found {
 					notFoundDaemonSets = append(notFoundDaemonSets, daemonSet)

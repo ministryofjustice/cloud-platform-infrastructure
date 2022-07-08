@@ -33,9 +33,9 @@ type ModsecIngressController struct {
 // Config holds the basic structure of test's YAML file
 type Config struct {
 	ClusterName             string                  `yaml:"clusterName"`
-	Services                []string                `yaml:"services"`
-	DaemonSets              []string                `yaml:"daemonSets"`
-	ServiceMonitors         []string                `yaml:"serviceMonitors"`
+	Services                []string                `yaml:"expectedServices"`
+	Daemonsets              []string                `yaml:"expectedDaemonSets"`
+	ServiceMonitors         []string                `yaml:"expectedServiceMonitors"`
 	Namespaces              map[string]K8SObjects   `yaml:"namespaces"`
 	ExternalDNS             ExternalDNS             `yaml:"externalDNS"`
 	NginxIngressController  NginxIngressController  `yaml:"nginxIngressController"`
@@ -106,7 +106,7 @@ func (c *Config) ExpectedServices() {
 }
 
 func (c *Config) ExpectedDaemonSets() {
-	c.DaemonSets = append(c.DaemonSets, "fluent-bit", "prometheus-operator-prometheus-node-exporter")
+	c.Daemonsets = append(c.Daemonsets, "fluent-bit", "prometheus-operator-prometheus-node-exporter")
 }
 
 func (c *Config) ExpectedServiceMonitors() {
