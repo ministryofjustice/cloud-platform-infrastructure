@@ -11,37 +11,36 @@ import (
 )
 
 var _ = Describe("Daemonsets", func() {
-	var notFoundDaemonSets []string
-
 	Context("expected daemonsets", func() {
 		It("should exist the in the cluster", func() {
+			// Populate the daemonsets expected in the cluster
 			c.ExpectedDaemonSets()
 
 			if len(c.Daemonsets) == 0 {
 				Skip("No daemonsets defined, skipping test")
 			}
 
+			// Create options to communicate with terratest.
+			// This will query all namespaces in the cluster.
 			options := k8s.NewKubectlOptions("", "", "")
 
+			// Get list of all daemonsets objects in the cluster
 			list, err := k8s.ListDaemonSetsE(GinkgoT(), options, metav1.ListOptions{})
 			if err != nil {
 				Fail(fmt.Sprintf("Failed to list daemonsets: %s", err))
 			}
 
-			for _, daemonSet := range c.Daemonsets {
-				var found bool
-				for _, d := range list {
-					if d.Name == daemonSet {
-						found = true
-						continue
-					}
-				}
-				if !found {
-					notFoundDaemonSets = append(notFoundDaemonSets, daemonSet)
-				}
+			// Loop through the list of objects and put the names in a slice
+			var actualDaemonSets []string
+			for _, clusterDaemonset := range list {
+				actualDaemonSets = append(actualDaemonSets, clusterDaemonset.Name)
 			}
 
-			Expect(notFoundDaemonSets).To(BeEmpty())
+			// Compare expected daemonsets to actual daemonsets
+			for _, expectedDaemonSet := range c.Daemonsets {
+				Expect(actualDaemonSets).To(ContainElement(expectedDaemonSet))
+			}
+
 		})
 	})
 })
