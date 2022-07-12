@@ -107,6 +107,7 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
+    "indices.query.bool.max_clause_count"    = 3000
   }
 
   access_policies = data.aws_iam_policy_document.live_1.json
