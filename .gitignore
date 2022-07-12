@@ -2,6 +2,7 @@
 *.tfstate*
 .terraform.lock.hcl
 !terraform/global-resources/.terraform.lock.hcl
+!terraform/cross-account-IAM/.terraform.lock.hcl
 ssh/*id_rsa
 generated/*
 .bundle
