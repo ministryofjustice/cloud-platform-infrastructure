@@ -13,3 +13,7 @@ updates:
     directory: "/terraform/global-resources"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/terraform/cross-account-IAM"
+    schedule:
+      interval: "weekly"
