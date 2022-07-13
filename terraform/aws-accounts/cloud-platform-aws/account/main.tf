@@ -76,7 +76,7 @@ module "ecr_fluentbit" {
 
 module "s3_bucket_thanos" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "1.18.0"
+  version = "3.3.0"
 
   bucket = "cloud-platform-prometheus-thanos"
   acl    = "private"
