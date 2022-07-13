@@ -22,7 +22,7 @@ var _ = Describe("Nginx Default Ingress v1", func() {
 		host           = fmt.Sprintf("%s-nginx.apps.%s.%s", namespaceName, currentCluster, domain)
 		options        = k8s.NewKubectlOptions("", "", namespaceName)
 		url            = fmt.Sprintf("https://%s", host)
-		class          = "nginx"
+		class          = "default"
 		tpl            string
 	)
 
