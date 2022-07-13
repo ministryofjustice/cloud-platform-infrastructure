@@ -72,12 +72,11 @@ func (c *Config) ExpectedNamespaces() {
 // ExpectedServices returns a slice of all the Services
 // that are expected to be in the cluster.
 func (c *Config) ExpectedServices() {
-	if strings.Contains(strings.ToLower(c.ClusterName), "manager") {
-		c.Services = append(c.Services, "concourse")
-	}
-
-	// Populate remaining services that exist in all clusters
 	c.Services = append(c.Services, "cert-manager", "cert-manager-webhook", "prometheus-operated", "alertmanager-operated")
+
+	if strings.Contains(strings.ToLower(c.ClusterName), "manager") {
+		c.Services = append(c.Services, "concourse-web", "concourse-worker")
+	}
 }
 
 func (c *Config) ExpectedDaemonSets() {
