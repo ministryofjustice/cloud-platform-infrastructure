@@ -16,14 +16,13 @@ import (
 
 // All clusters have access to the test domain name and their own domain name
 const (
-	testDomain = "integrationtest.service.justice.gov.uk"
-	domain     = "cloud-platform.service.justice.gov.uk"
+	testDomain   = "integrationtest.service.justice.gov.uk"
+	domain       = "cloud-platform.service.justice.gov.uk"
+	hostedZoneId = "Z02429076QQMAO8KXV68"
 )
 
-const hostedZoneId = "Z02429076QQMAO8KXV68"
-
-// c is global, so all tests has access to it
-var c *config.Config
+// // c is global, so all tests has access to it
+var c config.Config
 
 // Create a new instance of the logger. You can have any number of instances.
 var log = logrus.New()
@@ -37,9 +36,9 @@ func TestMain(m *testing.M) {
 
 	c = config.Config{}
 
-	err = c.SetClusterName(*cluster)
+	err := c.SetClusterName(*cluster)
 	if err != nil {
-		log.Fatal(err)
+		Fail(fmt.Sprintf("Failed to set cluster name: %s", err))
 	}
 
 	// Run tests
