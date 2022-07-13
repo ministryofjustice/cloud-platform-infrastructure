@@ -17,3 +17,7 @@ updates:
     directory: "/terraform/cross-account-IAM"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/terraform/aws-accounts/cloud-platform-aws/account"
+    schedule:
+      interval: "weekly"
