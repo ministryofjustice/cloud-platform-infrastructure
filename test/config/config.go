@@ -52,21 +52,7 @@ type K8SObjects struct {
 	Secrets         []string `yaml:"secrets"`
 }
 
-// ParseConfigFile loads the test file supplied
-func ParseConfigFile(f string) (*Config, error) {
-	testsFilePath, err := ioutil.ReadFile(f)
-	if err != nil {
-		return nil, err
 	}
-
-	t := Config{}
-
-	err = yaml.Unmarshal(testsFilePath, &t)
-	if err != nil {
-		return nil, err
-	}
-
-	return &t, nil
 }
 
 // SetClusterName is a setter method to define the name of the cluster to work on.

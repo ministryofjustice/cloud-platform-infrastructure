@@ -28,22 +28,14 @@ var c *config.Config
 // Create a new instance of the logger. You can have any number of instances.
 var log = logrus.New()
 
-// configFile holds the path for the configuration file where test are declared
-var (
-	configFile = flag.String("config", "./config/config.yaml", "Path for the configuration file where test are declared")
-	cluster    = flag.String("cluster", "", "Set the cluster name")
-)
+// cluster lets you select which cluster to run the tests on
+var cluster = flag.String("cluster", "", "Set the cluster name")
 
 // TestMain controls pre/post test logic
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	var err error
-	// TODO: Remove configfile location
-	c, err = config.ParseConfigFile(*configFile)
-	if err != nil {
-		log.Fatal(err)
-	}
+	c = config.Config{}
 
 	err = c.SetClusterName(*cluster)
 	if err != nil {
