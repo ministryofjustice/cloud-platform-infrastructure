@@ -8,27 +8,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/ministryofjustice/cloud-platform-go-library/client"
-	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/util/homedir"
 )
-
-// ExternalDNS holds the config for externalDNS component
-type ExternalDNS struct {
-	NamespacePrefix string `yaml:"namespacePrefix"`
-	HostedZoneId    string `yaml:"hostedZoneId"`
-	Domain          string `yaml:"domain"`
-}
-
-// NginxIngressController holds the config for nginx ingress controller component
-type NginxIngressController struct {
-	NamespacePrefix string `yaml:"namespacePrefix"`
-}
-type ModsecIngressController struct {
-	NamespacePrefix string `yaml:"namespacePrefix"`
-}
 
 // Config holds the basic structure of test's YAML file
 type Config struct {
@@ -37,19 +20,6 @@ type Config struct {
 	Daemonsets              []string                `yaml:"expectedDaemonSets"`
 	ServiceMonitors         []string                `yaml:"expectedServiceMonitors"`
 	Namespaces              map[string]K8SObjects   `yaml:"namespaces"`
-	ExternalDNS             ExternalDNS             `yaml:"externalDNS"`
-	NginxIngressController  NginxIngressController  `yaml:"nginxIngressController"`
-	ModsecIngressController ModsecIngressController `yaml:"modsecIngressController"`
-	FilesExist              []string                `yaml:"filesExist"`
-}
-
-// K8SObjects are kubernetes objects nested from namespaces, we need to check
-// these resources are checked for its existence
-type K8SObjects struct {
-	Servicemonitors []string `yaml:"servicemonitors"`
-	Daemonsets      []string `yaml:"daemonsets"`
-	Services        []string `yaml:"services"`
-	Secrets         []string `yaml:"secrets"`
 }
 
 	}
@@ -103,12 +73,6 @@ func (c *Config) ExpectedServiceMonitors() {
 	c.ServiceMonitors = append(c.ServiceMonitors, "cert-manager", "nginx-ingress-modsec-controller", "modsec01-nx-controller", "velero", "fluent-bit", "nginx-ingress-acme-ingress-nginx-controller", "nginx-ingress-default-controller", "fluent-bit", "prometheus-operator-prometheus-node-exporter", "prometheus-operated", "alertmanager-operated", "prometheus-operator-kube-p-alertmanager", "prometheus-operator-kube-p-apiserver", "prometheus-operator-kube-p-coredns", "prometheus-operator-kube-p-grafana", "prometheus-operator-kube-state-metrics", "prometheus-operator-kube-p-kubelet", "prometheus-operator-kube-p-prometheus", "prometheus-operator-kube-p-operator", "prometheus-operator-prometheus-node-exporter")
 }
 
-// GetNamespaceName returns random namespace name, it considers (if set) the prefix
-// specified in the configuration
-func (e *ExternalDNS) GetNamespaceName() string {
-	if e.NamespacePrefix != "" {
-		return fmt.Sprintf("%s%s", e.NamespacePrefix, strings.ToLower(random.UniqueId()))
 	}
 
-	return fmt.Sprintf("external-dns-test-%s", strings.ToLower(random.UniqueId()))
 }
