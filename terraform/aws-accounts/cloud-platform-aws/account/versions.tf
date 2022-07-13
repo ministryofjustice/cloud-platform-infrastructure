@@ -14,7 +14,7 @@ terraform {
     }
     curl = {
       source  = "anschoewe/curl"
-      version = "0.1.4"
+      version = "1.0.2"
     }
   }
   required_version = ">= 0.14"
