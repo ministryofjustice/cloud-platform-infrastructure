@@ -27,10 +27,12 @@ type Config struct {
 	ServiceMonitors map[string][]string `yaml:"expectedServiceMonitors"`
 	// Namespaces defines the names of namespaces. This is used for simple looping.
 	Namespaces []string `yaml:"namespaces"`
+	// Prefix defines the prefix string used before objects names.
+	Prefix string
 }
 
 // NewConfig returns a new Config with values passed in.
-func NewConfig(clusterName string, services []string, daemonsets []string, serviceMonitors map[string][]string, namespaces []string) *Config {
+func NewConfig(clusterName string, services []string, daemonsets []string, serviceMonitors map[string][]string, namespaces []string, prefix string) *Config {
 	return &Config{
 		ClusterName:     clusterName,
 		Services:        services,

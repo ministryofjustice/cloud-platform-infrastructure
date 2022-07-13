@@ -18,7 +18,7 @@ import (
 var _ = Describe("Modsec Ingress v1", func() {
 	var (
 		currentCluster = c.ClusterName
-		namespaceName  = fmt.Sprintf("smoketest-modsec-v1-%s", strings.ToLower(random.UniqueId()))
+		namespaceName  = fmt.Sprintf("%s-modsec-v1-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 		host           = fmt.Sprintf("%s.apps.%s.%s", namespaceName, currentCluster, domain)
 		options        = k8s.NewKubectlOptions("", "", namespaceName)
 		url            = fmt.Sprintf("https://%s", host)
