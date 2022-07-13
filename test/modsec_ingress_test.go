@@ -12,7 +12,6 @@ import (
 	"github.com/gruntwork-io/terratest/modules/retry"
 	. "github.com/onsi/gomega"
 
-	"github.com/ministryofjustice/cloud-platform-infrastructure/test/config"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
 
@@ -29,10 +28,6 @@ var _ = Describe("Modsec Ingress", func() {
 	)
 
 	BeforeEach(func() {
-		if (config.ModsecIngressController{}) == c.ModsecIngressController {
-			Skip("Modsec Ingress Controller component not defined, skipping test")
-		}
-
 		By("not having an ingress resource deployed")
 
 		Expect(helpers.HttpStatusCode(url)).To(Equal(404))

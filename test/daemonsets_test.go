@@ -16,10 +16,6 @@ var _ = Describe("Daemonsets", func() {
 			// Populate the daemonsets expected in the cluster
 			c.ExpectedDaemonSets()
 
-			if len(c.Daemonsets) == 0 {
-				Skip("No daemonsets defined, skipping test")
-			}
-
 			// Create options to communicate with terratest.
 			// This will query all namespaces in the cluster.
 			options := k8s.NewKubectlOptions("", "", "")
