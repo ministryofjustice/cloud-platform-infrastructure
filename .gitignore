@@ -1,6 +1,7 @@
 .terraform
 *.tfstate*
 .terraform.lock.hcl
+!terraform/aws-accounts/cloud-platform-aws/account/.terraform.lock.hcl
 !terraform/global-resources/.terraform.lock.hcl
 !terraform/cross-account-IAM/.terraform.lock.hcl
 ssh/*id_rsa
