@@ -8,16 +8,15 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/route53"
-	"github.com/ministryofjustice/cloud-platform-infrastructure/test/config"
 )
 
 // RecordSets uses the AWS API to return domain entry existence in Route53
 // using the hostzone ID specified in the configuration
-func RecordSets(d string, c *config.ExternalDNS) (bool, error) {
+func RecordSets(d, hostedZone string) (bool, error) {
 	svc := route53.New(session.New())
 
 	params := &route53.ListResourceRecordSetsInput{
-		HostedZoneId: aws.String(c.HostedZoneId),
+		HostedZoneId: aws.String(hostedZone),
 	}
 
 	sets, err := svc.ListResourceRecordSets(params)
