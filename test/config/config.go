@@ -14,11 +14,19 @@ import (
 
 // Config holds the basic structure of test's YAML file
 type Config struct {
-	ClusterName     string              `yaml:"clusterName"`
-	Services        []string            `yaml:"expectedServices"`
-	Daemonsets      []string            `yaml:"expectedDaemonSets"`
+	// ClusterName is obtained either by argument or interpolation from a node label.
+	ClusterName string `yaml:"clusterName"`
+	// Services is a slice of services names only. There is no requirement
+	// to hold the whole service object in memory.
+	Services []string `yaml:"expectedServices"`
+	// Daemonsets is a slice of daemonset names only.
+	Daemonsets []string `yaml:"expectedDaemonSets"`
+	// ServiceMonitors is a hashmap of [namespaces]ServiceMonitors.string
+	// The Prometheus client requires a namespace to perform the lookup,
+	// as per the namespace key.
 	ServiceMonitors map[string][]string `yaml:"expectedServiceMonitors"`
-	Namespaces      []string            `yaml:"namespaces"`
+	// Namespaces defines the names of namespaces. This is used for simple looping.
+	Namespaces []string `yaml:"namespaces"`
 }
 
 // NewConfig returns a new Config with values passed in.
@@ -79,10 +87,13 @@ func (c *Config) ExpectedServices() {
 	}
 }
 
+// ExpectedDaemonSets populates the 'Daemonsets' object in the 'Config' struct.
 func (c *Config) ExpectedDaemonSets() {
 	c.Daemonsets = append(c.Daemonsets, "fluent-bit", "prometheus-operator-prometheus-node-exporter")
 }
 
+// ExpectedServiceMonitors populates the 'ServiceMonitors' object in the 'Config' struct. A hashmap is used here
+// as querying a Prometheus service monitor requires the namespace of the monitor in question. This is less than ideal.
 func (c *Config) ExpectedServiceMonitors() {
 	// serviceMonitors describes all the service monitors that are expected to be in the cluster and their
 	// accompanying namespaces.
@@ -97,6 +108,7 @@ func (c *Config) ExpectedServiceMonitors() {
 		"monitoring": {"prometheus-operator-prometheus-node-exporter", "prometheus-operated", "alertmanager-operated", "prometheus-operator-kube-p-alertmanager", "prometheus-operator-kube-p-apiserver", "prometheus-operator-kube-p-coredns", "prometheus-operator-kube-p-grafana", "prometheus-operator-kube-state-metrics", "prometheus-operator-kube-p-kubelet", "prometheus-operator-kube-p-prometheus", "prometheus-operator-kube-p-operator", "prometheus-operator-prometheus-node-exporter"},
 	}
 
+	// Manager cluster contains a concourse service. This service doesn't exist on any other cluster (including test)
 	if strings.Contains(strings.ToLower(c.ClusterName), "manager") {
 		serviceMonitors["concourse"] = []string{"concourse"}
 	}
