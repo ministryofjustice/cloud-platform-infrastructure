@@ -55,8 +55,11 @@ data "aws_vpc" "selected" {
   }
 }
 
-data "aws_subnet_ids" "private" {
-  vpc_id = data.aws_vpc.selected.id
+data "aws_subnets" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.selected.id]
+  }
 
   tags = {
     SubnetType = "Private"
@@ -64,20 +67,27 @@ data "aws_subnet_ids" "private" {
 }
 
 # This is to get subnet_id, to create a separate node group for monitoring with 2 nodes in "eu-west-2b".
-data "aws_subnet_ids" "private_zone_2b" {
-  vpc_id = data.aws_vpc.selected.id
-
-  tags = {
-    SubnetType = "Private"
+data "aws_subnets" "private_zone_2b" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.selected.id]
   }
+
   filter {
     name   = "availability-zone"
     values = ["eu-west-2b"]
   }
+
+  tags = {
+    SubnetType = "Private"
+  }
 }
 
-data "aws_subnet_ids" "public" {
-  vpc_id = data.aws_vpc.selected.id
+data "aws_subnets" "public" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.selected.id]
+  }
 
   tags = {
     SubnetType = "Utility"
@@ -87,8 +97,8 @@ data "aws_subnet_ids" "public" {
 # This required by an output (internal_subnets) which is used by
 # concourse.
 data "aws_subnet" "private_cidrs" {
-  count = length(tolist(data.aws_subnet_ids.private.ids))
-  id    = tolist(data.aws_subnet_ids.private.ids)[count.index]
+  count = length(tolist(data.aws_subnets.private.ids))
+  id    = tolist(data.aws_subnets.private.ids)[count.index]
 }
 
 # #################
