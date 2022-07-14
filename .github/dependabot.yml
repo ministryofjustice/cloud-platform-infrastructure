@@ -25,3 +25,7 @@ updates:
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/eks"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "terraform"
+    directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/eks/components"
+    schedule:
+      interval: "weekly"
