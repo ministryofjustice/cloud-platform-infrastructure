@@ -35,12 +35,6 @@ locals {
   }
 }
 
-data "aws_region" "moj-dsd" {
-}
-
-data "aws_caller_identity" "moj-dsd" {
-}
-
 data "aws_region" "moj-cp" {
   provider = aws.cloud-platform
 }
