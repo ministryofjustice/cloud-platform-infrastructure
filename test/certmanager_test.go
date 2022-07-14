@@ -16,7 +16,7 @@ import (
 var _ = Describe("cert-manager", func() {
 	Context("when the namespace has a certificate resource", func() {
 		var (
-			namespace = fmt.Sprintf("smoketest-certman-%s", strings.ToLower(random.UniqueId()))
+			namespace = fmt.Sprintf("%s-certman-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 			options   = k8s.NewKubectlOptions("", "", namespace)
 			host      = fmt.Sprintf("%s.%s", namespace, testDomain)
 

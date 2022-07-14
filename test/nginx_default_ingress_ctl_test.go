@@ -18,7 +18,7 @@ import (
 var _ = Describe("Nginx Default Ingress v1", func() {
 	var (
 		currentCluster = c.ClusterName
-		namespaceName  = fmt.Sprintf("smoketest-ingress-v1-%s", strings.ToLower(random.UniqueId()))
+		namespaceName  = fmt.Sprintf("%s-ingress-v1-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 		host           = fmt.Sprintf("%s-nginx.apps.%s.%s", namespaceName, currentCluster, domain)
 		options        = k8s.NewKubectlOptions("", "", namespaceName)
 		url            = fmt.Sprintf("https://%s", host)

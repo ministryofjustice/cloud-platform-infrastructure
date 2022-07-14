@@ -18,7 +18,7 @@ import (
 
 var _ = Describe("external-DNS checks", func() {
 	var (
-		namespaceName = fmt.Sprintf("smoketest-external-dns-%s", strings.ToLower(random.UniqueId()))
+		namespaceName = fmt.Sprintf("%s-external-dns-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 		options       = k8s.NewKubectlOptions("", "", namespaceName)
 		domain        = fmt.Sprintf("%s.%s", namespaceName, testDomain)
 		tpl           string

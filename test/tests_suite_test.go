@@ -34,7 +34,9 @@ var cluster = flag.String("cluster", "", "Set the cluster name")
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	c = config.Config{}
+	c = config.Config{
+		Prefix: "smoketest",
+	}
 
 	err := c.SetClusterName(*cluster)
 	if err != nil {
