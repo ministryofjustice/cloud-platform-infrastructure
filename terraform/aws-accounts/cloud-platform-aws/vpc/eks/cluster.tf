@@ -111,7 +111,7 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "v17.23.0"
+  version = "18.26.3"
 
   cluster_name                  = terraform.workspace
   subnets                       = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
