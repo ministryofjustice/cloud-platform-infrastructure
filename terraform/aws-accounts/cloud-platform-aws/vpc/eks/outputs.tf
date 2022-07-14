@@ -11,7 +11,7 @@ output "vpc_id" {
 }
 
 output "internal_subnets" {
-  value = data.aws_subnet.private_cidrs.*.cidr_block
+  value = data.aws_subnet.private_cidrs[*].cidr_block
 }
 
 output "internal_subnets_ids" {
