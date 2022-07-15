@@ -3,16 +3,21 @@ package integration_tests
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"testing"
 
-	"github.com/sirupsen/logrus"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/config"
 )
+
+type GinkgoWriterHack interface {
+	AndRedirectTo(writer io.Writer)
+}
 
 // All clusters have access to the test domain name and their own domain name
 const (
@@ -21,22 +26,22 @@ const (
 	hostedZoneId = "Z02429076QQMAO8KXV68"
 )
 
-// // c is global, so all tests has access to it
+// c is global, so all tests has access to it
 var c config.Config
-
-// Create a new instance of the logger. You can have any number of instances.
-var log = logrus.New()
-
-// cluster lets you select which cluster to run the tests on
-var cluster = flag.String("cluster", "", "Set the cluster name")
 
 // TestMain controls pre/post test logic
 func TestMain(m *testing.M) {
+	// cluster lets you select which cluster to run the tests on
+	cluster := flag.String("cluster", "", "Set the cluster name")
+	debug := flag.Bool("debug", false, "sets log level to debug")
+
 	flag.Parse()
 
 	c = config.Config{
 		Prefix: "smoketest",
 	}
+
+	setupLogging(*debug)
 
 	err := c.SetClusterName(*cluster)
 	if err != nil {
@@ -44,7 +49,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Run tests
-	fmt.Printf("Starting tests on cluster: %s\n", c.ClusterName)
+	log.Info().Msgf("Running tests on cluster: %s", c.ClusterName)
 	exitVal := m.Run()
 
 	os.Exit(exitVal)
@@ -54,4 +59,23 @@ func TestMain(m *testing.M) {
 func TestTests(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "Tests Suite")
+}
+
+// setupLogging configures the zerolog package depending on arguments passed to it
+func setupLogging(debug bool) {
+	// Deafault log level is info
+	zerolog.SetGlobalLevel(zerolog.InfoLevel)
+
+	// Set colour output
+	log.Logger = log.Output(zerolog.ConsoleWriter{
+		Out:        os.Stderr,
+		TimeFormat: zerolog.TimeFormatUnix,
+		NoColor:    false,
+	})
+
+	// Set log level to debug if requested
+	if debug {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+		log.Debug().Msg("Debug logging enabled")
+	}
 }

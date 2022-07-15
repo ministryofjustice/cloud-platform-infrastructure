@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -57,7 +58,7 @@ var _ = Describe("Nginx Default Ingress v1", func() {
 
 			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", TemplateVars)
 			if err != nil {
-				log.Fatalf("execution: %s", err)
+				log.Fatalf("Failed to generate deployment: %v", err)
 			}
 
 			k8s.KubectlApplyFromString(GinkgoT(), options, tpl)

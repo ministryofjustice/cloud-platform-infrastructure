@@ -11,6 +11,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/retry"
 	. "github.com/onsi/gomega"
+	"github.com/rs/zerolog/log"
 
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
@@ -61,7 +62,7 @@ var _ = Describe("Modsec Ingress v1", func() {
 
 			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", TemplateVars)
 			if err != nil {
-				log.Fatalf("execution: %s", err)
+				log.Fatal().Err(err).Msg("Failed to render template")
 			}
 
 			k8s.KubectlApplyFromString(GinkgoT(), options, tpl)
@@ -70,7 +71,7 @@ var _ = Describe("Modsec Ingress v1", func() {
 			retry.DoWithRetry(GinkgoT(), fmt.Sprintf("evaluating http code for %s", host), 2, 120*time.Second, func() (string, error) {
 				s, err := helpers.HttpStatusCode(url)
 				if err != nil {
-					log.Fatalf("execution: %s", err)
+					log.Error().Err(err).Msg("Failed to get http status code")
 				}
 
 				if s != 200 {
