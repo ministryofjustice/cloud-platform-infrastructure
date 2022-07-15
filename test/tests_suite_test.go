@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"os"
 	"testing"
-
-	"github.com/sirupsen/logrus"
+	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -22,21 +21,22 @@ const (
 )
 
 // // c is global, so all tests has access to it
-var c config.Config
-
-// Create a new instance of the logger. You can have any number of instances.
-var log = logrus.New()
-
-// cluster lets you select which cluster to run the tests on
-var cluster = flag.String("cluster", "", "Set the cluster name")
+var (
+	c config.Config
+	// log = zerolog.New(GinkgoWriter).With().Str("cluster", c.ClusterName).Logger()
+)
 
 // TestMain controls pre/post test logic
 func TestMain(m *testing.M) {
+	// debug := flag.Bool("debug", false, "sets log level to debug")
+	// cluster lets you select which cluster to run the tests on
+	cluster := flag.String("cluster", "", "Set the cluster name")
 	flag.Parse()
 
 	c = config.Config{
 		Prefix: "smoketest",
 	}
+	// setupLogging(*debug)
 
 	err := c.SetClusterName(*cluster)
 	if err != nil {
@@ -44,7 +44,7 @@ func TestMain(m *testing.M) {
 	}
 
 	// Run tests
-	fmt.Printf("Starting tests on cluster: %s\n", c.ClusterName)
+	fmt.Println("Running tests on cluster: ", c.ClusterName)
 	exitVal := m.Run()
 
 	os.Exit(exitVal)
@@ -53,8 +53,22 @@ func TestMain(m *testing.M) {
 // TestTests Rans the Ginkgo specs
 func TestTests(t *testing.T) {
 	RegisterFailHandler(Fail)
+
 	suiteConfig, reporterConfig := GinkgoConfiguration()
 	suiteConfig.RandomizeAllSpecs = true
-	reporterConfig.FullTrace = true
-	RunSpecs(t, "Tests Suite")
+	suiteConfig.Timeout = 40 * time.Minute
+	suiteConfig.EmitSpecProgress = true
+	suiteConfig.FailFast = false
+	suiteConfig.FlakeAttempts = 3
+	suiteConfig.EmitSpecProgress = true
+	suiteConfig.ParallelTotal = 3
+
+	reporterConfig.NoColor = false
+	reporterConfig.SlowSpecThreshold = 120 * time.Second
+	reporterConfig.Verbose = false
+	reporterConfig.Succinct = true
+	reporterConfig.FullTrace = false
+
+	GinkgoWriter.TeeTo(os.Stdout)
+	RunSpecs(t, "Running integration tests in cluster")
 }

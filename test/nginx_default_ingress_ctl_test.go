@@ -57,7 +57,7 @@ var _ = Describe("Nginx Default Ingress v1", func() {
 
 			tpl, err = helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", TemplateVars)
 			if err != nil {
-				log.Fatalf("execution: %s", err)
+				// log.Fatal().Err(err).Msg("Failed to create deployment")
 			}
 
 			k8s.KubectlApplyFromString(GinkgoT(), options, tpl)
@@ -66,7 +66,7 @@ var _ = Describe("Nginx Default Ingress v1", func() {
 			retry.DoWithRetry(GinkgoT(), fmt.Sprintf("evaluating http code for %s", host), 20, 10*time.Second, func() (string, error) {
 				s, err := helpers.HttpStatusCode(url)
 				if err != nil {
-					log.Fatalf("execution: %s", err)
+					// log.Error().Err(err).Msg("Failed to get http status code")
 				}
 
 				if s != 200 {
