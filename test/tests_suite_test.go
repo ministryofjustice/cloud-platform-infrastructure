@@ -8,7 +8,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/config"
@@ -53,5 +53,8 @@ func TestMain(m *testing.M) {
 // TestTests Rans the Ginkgo specs
 func TestTests(t *testing.T) {
 	RegisterFailHandler(Fail)
+	suiteConfig, reporterConfig := GinkgoConfiguration()
+	suiteConfig.RandomizeAllSpecs = true
+	reporterConfig.FullTrace = true
 	RunSpecs(t, "Tests Suite")
 }

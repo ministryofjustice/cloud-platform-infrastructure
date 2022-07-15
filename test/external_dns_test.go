@@ -12,7 +12,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/retry"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
