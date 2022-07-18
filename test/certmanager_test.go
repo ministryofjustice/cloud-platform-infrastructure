@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -13,6 +14,43 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+// DefaultCert is the struct of the default certificate used
+// for wildcard certificates, such as *.apps.<host>
+type DefaultCert struct {
+	Spec struct {
+		IssuerRef struct {
+			Kind string `json:"kind"`
+			Name string `json:"name"`
+		} `json:"issuerRef"`
+	} `json:"spec"`
+	Status struct {
+		Conditions []struct {
+			Status string `json:"status"`
+		} `json:"conditions"`
+	} `json:"status"`
+}
+
+// Check if the default ingress-controller certificate exists
+var _ = Describe("Default ingress-controller certificate", func() {
+	options := k8s.NewKubectlOptions("", "", "ingress-controllers")
+
+	// Get the default ingress-controller certificate
+	certificate, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "certificate", "default", "-o", "json")
+	Expect(err).ToNot(HaveOccurred())
+
+	// Unmarshal the certificate
+	var cert DefaultCert
+	err = json.Unmarshal([]byte(certificate), &cert)
+	Expect(err).ToNot(HaveOccurred())
+
+	It("should be valid", func() {
+		Expect(cert.Status.Conditions[0].Status).To(Equal("True"))
+	})
+	It("should be issued by the default issuer", func() {
+		Expect(cert.Spec.IssuerRef.Kind).To(Equal("ClusterIssuer"))
+		Expect(cert.Spec.IssuerRef.Name).To(Equal("letsencrypt-production"))
+	})
+})
 // TODO: This test fails far too often. We should look at asynchronous testing to see if we can get it to pass.i
 // https://onsi.github.io/gomega/#eventually
 var _ = Describe("cert-manager", func() {
