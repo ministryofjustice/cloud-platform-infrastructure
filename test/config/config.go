@@ -103,11 +103,11 @@ func (c *Config) ExpectedServiceMonitors() {
 		// NamespaceName: []Services
 		"cert-manager": {"cert-manager"},
 
-		"ingress-controllers": {"nginx-ingress-modsec-controller", "modsec01-nx-controller", "velero", "fluent-bit", "nginx-ingress-acme-ingress-nginx-controller", "nginx-ingress-default-controller"},
+		"ingress-controllers": {"nginx-ingress-modsec-controller", "modsec01-nx-controller", "nginx-ingress-acme-ingress-nginx-controller", "nginx-ingress-default-controller"},
 
 		"logging": {"fluent-bit"},
 
-		"monitoring": {"prometheus-operator-prometheus-node-exporter", "prometheus-operated", "alertmanager-operated", "prometheus-operator-kube-p-alertmanager", "prometheus-operator-kube-p-apiserver", "prometheus-operator-kube-p-coredns", "prometheus-operator-kube-p-grafana", "prometheus-operator-kube-state-metrics", "prometheus-operator-kube-p-kubelet", "prometheus-operator-kube-p-prometheus", "prometheus-operator-kube-p-operator", "prometheus-operator-prometheus-node-exporter"},
+		"monitoring": {"prometheus-operator-prometheus-node-exporter", "prometheus-operator-kube-p-alertmanager", "prometheus-operator-kube-p-apiserver", "prometheus-operator-kube-p-coredns", "prometheus-operator-kube-p-grafana", "prometheus-operator-kube-state-metrics", "prometheus-operator-kube-p-kubelet", "prometheus-operator-kube-p-prometheus", "prometheus-operator-kube-p-operator", "prometheus-operator-prometheus-node-exporter"},
 	}
 
 	// Manager cluster contains a concourse service. This service doesn't exist on any other cluster (including test)
