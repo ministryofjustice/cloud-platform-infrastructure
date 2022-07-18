@@ -29,6 +29,10 @@ type Config struct {
 	Namespaces []string `yaml:"namespaces"`
 	// Prefix defines the prefix string used before objects names.
 	Prefix string
+	// PrometheusRules defines the Prometheus rules that are expected to be in the cluster.
+	PrometheusRules []string `yaml:"prometheusRules"`
+	// CustomResourceDefinitions defines the CustomResourceDefinitions that are expected to be in the cluster.
+	CustomResourceDefinitions []string `yaml:"customResourceDefinitions"`
 }
 
 // NewConfig returns a new Config with values passed in.
@@ -71,6 +75,49 @@ func (c *Config) SetClusterName(cluster string) error {
 	}
 
 	return errors.New("unable to locate cluster from kubeconfig file")
+}
+
+// ExpectedCrds returns a slice of all the CustomResourceDefinitions expected in a cluster. We only need the name of the CRDS here.
+func (c *Config) ExpectedCrds() {
+	c.CustomResourceDefinitions = append(c.CustomResourceDefinitions,
+		"prometheuses.monitoring.coreos.com",
+		"prometheusrules.monitoring.coreos.com",
+		"thanosrulers.monitoring.coreos.com",
+		"probes.monitoring.coreos.com",
+		"alertmanagerconfigs.monitoring.coreos.com",
+		"alertmanagers.monitoring.coreos.com",
+	)
+}
+
+// GetPrometheusRules returns a slice of all the Prometheus rules expected in a cluster
+func (c *Config) ExpectedPromRules() {
+	c.PrometheusRules = append(c.PrometheusRules,
+		"prometheus-operator-custom-alerts-node.rules",
+		"prometheus-operator-custom-kubernetes-apps.rules",
+		"prometheus-operator-kube-p-alertmanager.rules",
+		"prometheus-operator-kube-p-config-reloaders",
+		"prometheus-operator-kube-p-k8s.rules",
+		"prometheus-operator-kube-p-kube-apiserver-availability.rules",
+		"prometheus-operator-kube-p-kube-apiserver-burnrate.rules",
+		"prometheus-operator-kube-p-kube-apiserver-histogram.rules",
+		"prometheus-operator-kube-p-kube-apiserver-slos",
+		"prometheus-operator-kube-p-kube-apiserver.rules",
+		"prometheus-operator-kube-p-kube-prometheus-general.rules",
+		"prometheus-operator-kube-p-kube-prometheus-node-recording.rules",
+		"prometheus-operator-kube-p-kube-state-metrics",
+		"prometheus-operator-kube-p-kubelet.rules",
+		"prometheus-operator-kube-p-kubernetes-resources",
+		"prometheus-operator-kube-p-kubernetes-storage",
+		"prometheus-operator-kube-p-kubernetes-system",
+		"prometheus-operator-kube-p-kubernetes-system-apiserver",
+		"prometheus-operator-kube-p-kubernetes-system-kubelet",
+		"prometheus-operator-kube-p-node-exporter",
+		"prometheus-operator-kube-p-node-exporter.rules",
+		"prometheus-operator-kube-p-node-network",
+		"prometheus-operator-kube-p-node.rules",
+		"prometheus-operator-kube-p-prometheus",
+		"prometheus-operator-kube-p-prometheus-operator",
+	)
 }
 
 // ExpectedNamespaces returns a slice of all the namespaces
