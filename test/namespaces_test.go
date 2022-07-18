@@ -11,6 +11,16 @@ import (
 )
 
 var _ = Describe("Namespaces", func() {
+	It("should contain OPA labels", func() {
+		// Get the kube-system namespace, it should contain an ignore for OPA.
+		// If it doesn't, nothing will deploy there.
+		namespace := k8s.GetNamespace(GinkgoT(), k8s.NewKubectlOptions("", "", ""), "kube-system")
+
+		// Get the labels
+		labels := namespace.GetLabels()
+		Expect(labels).To(HaveKeyWithValue("openpolicyagent.org/webhook", "ignore"))
+	})
+
 	Context("expected namespaces", func() {
 		It("should exist in the cluster", func() {
 			// Populate the expected namespaces in the cluster
