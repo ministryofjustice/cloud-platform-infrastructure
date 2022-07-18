@@ -35,12 +35,13 @@ module "concourse" {
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.0"
+  # source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.0"
+  source = "../../../../../../../cloud-platform-terraform-certmanager"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
 
-  # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade, 
+  # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade,
   # but cluster creation fails without, so will have to be temporarily disabled when upgrading
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
   dependence_opa        = "ignore"
