@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -18,11 +18,11 @@ import (
 var _ = Describe("Nginx Default Ingress v1", func() {
 	var (
 		currentCluster = c.ClusterName
-		namespaceName  = fmt.Sprintf("smoketest-ingress-v1-%s", strings.ToLower(random.UniqueId()))
+		namespaceName  = fmt.Sprintf("%s-ingress-v1-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 		host           = fmt.Sprintf("%s-nginx.apps.%s.%s", namespaceName, currentCluster, domain)
 		options        = k8s.NewKubectlOptions("", "", namespaceName)
 		url            = fmt.Sprintf("https://%s", host)
-		class          = "nginx"
+		class          = "default"
 		tpl            string
 	)
 

@@ -8,7 +8,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/config"
@@ -16,35 +16,31 @@ import (
 
 // All clusters have access to the test domain name and their own domain name
 const (
-	testDomain = "integrationtest.service.justice.gov.uk"
-	domain     = "cloud-platform.service.justice.gov.uk"
+	testDomain   = "integrationtest.service.justice.gov.uk"
+	domain       = "cloud-platform.service.justice.gov.uk"
+	hostedZoneId = "Z02429076QQMAO8KXV68"
 )
 
-// c is global, so all tests has access to it
-var c *config.Config
+// // c is global, so all tests has access to it
+var c config.Config
 
 // Create a new instance of the logger. You can have any number of instances.
 var log = logrus.New()
 
-// configFile holds the path for the configuration file where test are declared
-var (
-	configFile = flag.String("config", "./config/config.yaml", "Path for the configuration file where test are declared")
-	cluster    = flag.String("cluster", "", "Set the cluster name")
-)
+// cluster lets you select which cluster to run the tests on
+var cluster = flag.String("cluster", "", "Set the cluster name")
 
 // TestMain controls pre/post test logic
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	var err error
-	c, err = config.ParseConfigFile(*configFile)
-	if err != nil {
-		log.Fatal(err)
+	c = config.Config{
+		Prefix: "smoketest",
 	}
 
-	err = c.SetClusterName(*cluster)
+	err := c.SetClusterName(*cluster)
 	if err != nil {
-		log.Fatal(err)
+		Fail(fmt.Sprintf("Failed to set cluster name: %s", err))
 	}
 
 	// Run tests
@@ -57,5 +53,8 @@ func TestMain(m *testing.M) {
 // TestTests Rans the Ginkgo specs
 func TestTests(t *testing.T) {
 	RegisterFailHandler(Fail)
+	suiteConfig, reporterConfig := GinkgoConfiguration()
+	suiteConfig.RandomizeAllSpecs = true
+	reporterConfig.FullTrace = true
 	RunSpecs(t, "Tests Suite")
 }

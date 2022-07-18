@@ -4,32 +4,39 @@ import (
 	"fmt"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Daemonsets checks", func() {
-	var notFoundDaemonSets []string
+var _ = Describe("Daemonsets", func() {
+	Context("expected daemonsets", func() {
+		It("should exist the in the cluster", func() {
+			// Populate the daemonsets expected in the cluster
+			c.ExpectedDaemonSets()
 
-	It("should exist the following daemonsets", func() {
-		daemonSets := c.GetExpectedDaemonSets()
+			// Create options to communicate with terratest.
+			// This will query all namespaces in the cluster.
+			options := k8s.NewKubectlOptions("", "", "")
 
-		if len(daemonSets) == 0 {
-			Skip("No daemonsets defined, skipping test")
-		}
-
-		for ns, ds := range daemonSets {
-			options := k8s.NewKubectlOptions("", "", ns)
-			for _, v := range ds {
-				_, err := k8s.GetDaemonSetE(GinkgoT(), options, v)
-				if err != nil {
-					notFoundDaemonSets = append(notFoundDaemonSets, v)
-				}
+			// Get list of all daemonsets objects in the cluster
+			list, err := k8s.ListDaemonSetsE(GinkgoT(), options, metav1.ListOptions{})
+			if err != nil {
+				Fail(fmt.Sprintf("Failed to list daemonsets: %s", err))
 			}
-		}
 
-		if notFoundDaemonSets != nil {
-			Fail(fmt.Sprintf("The following daemonsets DO NOT exist: %v", notFoundDaemonSets))
-		}
+			// Loop through the list of objects and put the names in a slice
+			var actualDaemonSets []string
+			for _, clusterDaemonset := range list {
+				actualDaemonSets = append(actualDaemonSets, clusterDaemonset.Name)
+			}
+
+			// Compare expected daemonsets to actual daemonsets
+			for _, expectedDaemonSet := range c.Daemonsets {
+				Expect(actualDaemonSets).To(ContainElement(expectedDaemonSet))
+			}
+
+		})
 	})
 })

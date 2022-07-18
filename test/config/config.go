@@ -4,66 +4,42 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"path/filepath"
 	"strings"
 
-	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/ministryofjustice/cloud-platform-go-library/client"
-	"gopkg.in/yaml.v2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/util/homedir"
 )
 
-// ExternalDNS holds the config for externalDNS component
-type ExternalDNS struct {
-	NamespacePrefix string `yaml:"namespacePrefix"`
-	HostedZoneId    string `yaml:"hostedZoneId"`
-	Domain          string `yaml:"domain"`
-}
-
-// NginxIngressController holds the config for nginx ingress controller component
-type NginxIngressController struct {
-	NamespacePrefix string `yaml:"namespacePrefix"`
-}
-type ModsecIngressController struct {
-	NamespacePrefix string `yaml:"namespacePrefix"`
-}
-
 // Config holds the basic structure of test's YAML file
 type Config struct {
-	ClusterName             string                  `yaml:"clusterName"`
-	Namespaces              map[string]K8SObjects   `yaml:"namespaces"`
-	ExternalDNS             ExternalDNS             `yaml:"externalDNS"`
-	NginxIngressController  NginxIngressController  `yaml:"nginxIngressController"`
-	ModsecIngressController ModsecIngressController `yaml:"modsecIngressController"`
-	FilesExist              []string                `yaml:"filesExist"`
+	// ClusterName is obtained either by argument or interpolation from a node label.
+	ClusterName string `yaml:"clusterName"`
+	// Services is a slice of services names only. There is no requirement
+	// to hold the whole service object in memory.
+	Services []string `yaml:"expectedServices"`
+	// Daemonsets is a slice of daemonset names only.
+	Daemonsets []string `yaml:"expectedDaemonSets"`
+	// ServiceMonitors is a hashmap of [namespaces]ServiceMonitors.string
+	// The Prometheus client requires a namespace to perform the lookup,
+	// as per the namespace key.
+	ServiceMonitors map[string][]string `yaml:"expectedServiceMonitors"`
+	// Namespaces defines the names of namespaces. This is used for simple looping.
+	Namespaces []string `yaml:"namespaces"`
+	// Prefix defines the prefix string used before objects names.
+	Prefix string
 }
 
-// K8SObjects are kubernetes objects nested from namespaces, we need to check
-// these resources are checked for its existence
-type K8SObjects struct {
-	Servicemonitors []string `yaml:"servicemonitors"`
-	Daemonsets      []string `yaml:"daemonsets"`
-	Services        []string `yaml:"services"`
-	Secrets         []string `yaml:"secrets"`
-}
-
-// ParseConfigFile loads the test file supplied
-func ParseConfigFile(f string) (*Config, error) {
-	testsFilePath, err := ioutil.ReadFile(f)
-	if err != nil {
-		return nil, err
+// NewConfig returns a new Config with values passed in.
+func NewConfig(clusterName string, services []string, daemonsets []string, serviceMonitors map[string][]string, namespaces []string, prefix string) *Config {
+	return &Config{
+		ClusterName:     clusterName,
+		Services:        services,
+		Daemonsets:      daemonsets,
+		ServiceMonitors: serviceMonitors,
+		Namespaces:      namespaces,
 	}
-
-	t := Config{}
-
-	err = yaml.Unmarshal(testsFilePath, &t)
-	if err != nil {
-		return nil, err
-	}
-
-	return &t, nil
 }
 
 // SetClusterName is a setter method to define the name of the cluster to work on.
@@ -73,18 +49,21 @@ func (c *Config) SetClusterName(cluster string) error {
 		kubeconfig = filepath.Join(home, ".kube", "config")
 	}
 
-	if c.ClusterName == "" {
+	if cluster == "" {
 		k, err := client.NewKubeClientWithValues(kubeconfig, "")
 		if err != nil {
 			return fmt.Errorf("Unable to create kubeclient: %e", err)
 		}
+
 		nodes, err := k.Clientset.CoreV1().Nodes().List(context.Background(), metav1.ListOptions{})
 		if err != nil {
 			return fmt.Errorf("Unable to fetch node name: %e", err)
 		}
 
+		clusterName := nodes.Items[0].Labels["Cluster"]
+
 		// All Cloud Platform clusters are tagged with the label Cluster=<ClusterName>.
-		c.ClusterName = nodes.Items[0].Labels["Cluster"]
+		c.ClusterName = clusterName
 	}
 
 	if c.ClusterName != "" {
@@ -94,66 +73,47 @@ func (c *Config) SetClusterName(cluster string) error {
 	return errors.New("unable to locate cluster from kubeconfig file")
 }
 
-// defaultsFromEnvs process the mandatory fields in the config. If they are not set,
-// it tries to load them from environment variables
-func (c *Config) GetExpectedDaemonSets() map[string][]string {
-	r := make(map[string][]string)
-
-	for ns, val := range c.Namespaces {
-		var daemonSets []string
-
-		daemonSets = append(daemonSets, val.Daemonsets...)
-
-		if len(daemonSets) > 0 {
-			r[ns] = daemonSets
-		}
-	}
-
-	return r
-}
-
-// GetServiceMonitors process the mandatory fields in the config. If they are not set,
-// it tries to load them from environment variables
-func (c *Config) GetExpectedServiceMonitors() map[string][]string {
-	r := make(map[string][]string)
-
-	for ns, val := range c.Namespaces {
-		var serviceMonitors []string
-
-		serviceMonitors = append(serviceMonitors, val.Servicemonitors...)
-
-		if len(serviceMonitors) > 0 {
-			r[ns] = serviceMonitors
-		}
-	}
-
-	return r
-}
-
-// GetExpectedServices returns a slice of all the services
+// ExpectedNamespaces returns a slice of all the namespaces
 // that are expected to be in the cluster.
-func (c *Config) GetExpectedServices() map[string][]string {
-	r := make(map[string][]string)
-
-	for ns, val := range c.Namespaces {
-		var services []string
-
-		services = append(services, val.Services...)
-
-		if len(services) > 0 {
-			r[ns] = services
-		}
-	}
-
-	return r
+func (c *Config) ExpectedNamespaces() {
+	c.Namespaces = append(c.Namespaces, "cert-manager", "ingress-controllers", "logging", "monitoring", "opa", "velero")
 }
 
-// GetNamespaceName returns random namespace name, it considers (if set) the prefix
-// specified in the configuration
-func (e *ExternalDNS) GetNamespaceName() string {
-	if e.NamespacePrefix != "" {
-		return fmt.Sprintf("%s%s", e.NamespacePrefix, strings.ToLower(random.UniqueId()))
+// ExpectedServices returns a slice of all the Services
+// that are expected to be in the cluster.
+func (c *Config) ExpectedServices() {
+	c.Services = append(c.Services, "cert-manager", "cert-manager-webhook", "prometheus-operated", "alertmanager-operated")
+
+	if strings.Contains(strings.ToLower(c.ClusterName), "manager") {
+		c.Services = append(c.Services, "concourse-web", "concourse-worker")
+	}
+}
+
+// ExpectedDaemonSets populates the 'Daemonsets' object in the 'Config' struct.
+func (c *Config) ExpectedDaemonSets() {
+	c.Daemonsets = append(c.Daemonsets, "fluent-bit", "prometheus-operator-prometheus-node-exporter")
+}
+
+// ExpectedServiceMonitors populates the 'ServiceMonitors' object in the 'Config' struct. A hashmap is used here
+// as querying a Prometheus service monitor requires the namespace of the monitor in question. This is less than ideal.
+func (c *Config) ExpectedServiceMonitors() {
+	// serviceMonitors describes all the service monitors that are expected to be in the cluster and their
+	// accompanying namespaces.
+	var serviceMonitors = map[string][]string{
+		// NamespaceName: []Services
+		"cert-manager": {"cert-manager"},
+
+		"ingress-controllers": {"nginx-ingress-modsec-controller", "modsec01-nx-controller", "velero", "fluent-bit", "nginx-ingress-acme-ingress-nginx-controller", "nginx-ingress-default-controller"},
+
+		"logging": {"fluent-bit"},
+
+		"monitoring": {"prometheus-operator-prometheus-node-exporter", "prometheus-operated", "alertmanager-operated", "prometheus-operator-kube-p-alertmanager", "prometheus-operator-kube-p-apiserver", "prometheus-operator-kube-p-coredns", "prometheus-operator-kube-p-grafana", "prometheus-operator-kube-state-metrics", "prometheus-operator-kube-p-kubelet", "prometheus-operator-kube-p-prometheus", "prometheus-operator-kube-p-operator", "prometheus-operator-prometheus-node-exporter"},
 	}
 
-	return fmt.Sprintf("external-dns-test-%s", strings.ToLower(random.UniqueId()))
+	// Manager cluster contains a concourse service. This service doesn't exist on any other cluster (including test)
+	if strings.Contains(strings.ToLower(c.ClusterName), "manager") {
+		serviceMonitors["concourse"] = []string{"concourse"}
+	}
+
+	c.ServiceMonitors = serviceMonitors
 }

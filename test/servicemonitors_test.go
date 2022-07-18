@@ -5,32 +5,30 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	testHelpers "github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("ServiceMonitors checks", func() {
-	var notFoundServiceMonitors []string
+var _ = Describe("ServiceMonitors", func() {
+	Context("when checking if the expected service monitors exist", func() {
+		It("should return true", func() {
+			c.ExpectedServiceMonitors()
 
-	It("should exist the following servicemonitors", func() {
-		serviceMonitors := c.GetExpectedServiceMonitors()
+			var notFound []string
 
-		if len(serviceMonitors) == 0 {
-			Skip("No servicemonitors defined, skipping test")
-		}
+			if len(c.ServiceMonitors) == 0 {
+				Skip("No servicemonitors defined, skipping test")
+			}
 
-		for ns, sm := range serviceMonitors {
-			options := k8s.NewKubectlOptions("", "", ns)
-
-			for _, v := range sm {
-				_, err := testHelpers.GetServiceMonitorSetE(GinkgoT(), options, v)
-				if err != nil {
-					notFoundServiceMonitors = append(notFoundServiceMonitors, v)
+			for namespace, serviceMonitors := range c.ServiceMonitors {
+				for _, serviceMonitor := range serviceMonitors {
+					_, err := testHelpers.GetPrometheusClientSetE(GinkgoT(), k8s.NewKubectlOptions("", "", namespace))
+					if err != nil {
+						notFound = append(notFound, fmt.Sprintf("%s/%s", namespace, serviceMonitor))
+					}
 				}
 			}
-		}
-
-		if notFoundServiceMonitors != nil {
-			Fail(fmt.Sprintf("The following servicemonitors DO NOT exist: %v", notFoundServiceMonitors))
-		}
+			Expect(notFound).To(BeEmpty())
+		})
 	})
 })

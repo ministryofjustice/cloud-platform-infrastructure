@@ -5,21 +5,20 @@ import (
 	"strings"
 	"time"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/gruntwork-io/terratest/modules/retry"
 	. "github.com/onsi/gomega"
 
-	"github.com/ministryofjustice/cloud-platform-infrastructure/test/config"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
 
 var _ = Describe("Modsec Ingress", func() {
 	var (
 		currentCluster = c.ClusterName
-		namespaceName  = fmt.Sprintf("smoketest-modsec-%s", strings.ToLower(random.UniqueId()))
+		namespaceName  = fmt.Sprintf("%s-modsec-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 		host           = fmt.Sprintf("%s.apps.%s.%s", namespaceName, currentCluster, domain)
 		options        = k8s.NewKubectlOptions("", "", namespaceName)
 		url            = fmt.Sprintf("https://%s", host)
@@ -29,10 +28,6 @@ var _ = Describe("Modsec Ingress", func() {
 	)
 
 	BeforeEach(func() {
-		if (config.ModsecIngressController{}) == c.ModsecIngressController {
-			Skip("Modsec Ingress Controller component not defined, skipping test")
-		}
-
 		By("not having an ingress resource deployed")
 
 		Expect(helpers.HttpStatusCode(url)).To(Equal(404))

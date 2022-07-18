@@ -1,6 +1,5 @@
 .terraform
 *.tfstate*
-.terraform.lock.hcl
 ssh/*id_rsa
 generated/*
 .bundle

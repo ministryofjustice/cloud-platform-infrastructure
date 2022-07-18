@@ -38,14 +38,17 @@ or using Go:
 go test -v ./...
 ```
 
+or
+
+```bash
+cd test; go test -v . # for realtime response
+```
+
 ### Arguments
 
 ```bash
 -cluster # [optional] specifies the cluster name you'd like to use. [default] current context
--config # [optional] specifies the config file to test against. [default] ./test/config/config.yaml
 ```
-
-The flag `-config` allows you to specify different configuration files depending on which components we want to test for different clusters.
 
 ### Running individual tests
 

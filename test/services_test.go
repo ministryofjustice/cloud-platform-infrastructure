@@ -4,42 +4,35 @@ import (
 	"fmt"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // Services defined in plain text in the cluster manifest.
-var _ = Describe("The services in the cluster", func() {
-	var servicesNotRunning []string
+var _ = Describe("Services", func() {
+	Context("when checking if the expected services exist", func() {
+		It("should equal actual services in a cluster", func() {
+			// Populate the expected services in the cluster
+			c.ExpectedServices()
 
-	It("should exist as defined", func() {
-		services := c.GetExpectedServices()
-		if len(services) == 0 {
-			Skip("No services defined, skipping test")
-		}
-
-		for namespace, svc := range services {
-			options := k8s.NewKubectlOptions("", "", namespace)
-			for _, v := range svc {
-				_, err := k8s.GetServiceE(GinkgoT(), options, v)
-				if err != nil {
-					servicesNotRunning = append(servicesNotRunning, v)
-				}
+			options := k8s.NewKubectlOptions("", "", "")
+			// Get the services in the clus
+			services, err := k8s.ListServicesE(GinkgoT(), options, metav1.ListOptions{})
+			if err != nil {
+				Fail(fmt.Sprintf("Failed to get services: %s", err))
 			}
-		}
 
-		if servicesNotRunning != nil {
-			Fail(fmt.Sprintf("The following services DO NOT exist: %v", servicesNotRunning))
-		}
-	})
+			// Put the service name into a slice
+			var serviceNames []string
+			for _, service := range services {
+				serviceNames = append(serviceNames, service.Name)
+			}
 
-	It("shouldn't be there because they're fake", func() {
-		fakeService := "ObviouslyFake"
-
-		options := k8s.NewKubectlOptions("", "", "default")
-		_, err := k8s.GetServiceE(GinkgoT(), options, fakeService)
-		if err.Error() == "services \"ObviouslyFake\" not found" {
-			return
-		}
-		Fail(fmt.Sprintf("A service named %s shouldn't exist.", fakeService))
+			// Compare the expected services with the services in the cluster
+			for _, expectedService := range c.Services {
+				Expect(serviceNames).To(ContainElement(expectedService))
+			}
+		})
 	})
 })

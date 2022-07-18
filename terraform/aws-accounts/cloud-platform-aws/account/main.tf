@@ -24,7 +24,7 @@ data "aws_caller_identity" "current" {}
 
 # IAM configuration for cloud-platform. Users, groups, etc
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.12"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.13"
 
   aws_account_name = "cloud-platform-aws"
 }
@@ -63,7 +63,7 @@ resource "aws_route53_zone" "cloud_platform_justice_gov_uk" {
 }
 
 module "ecr_fluentbit" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=4.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=4.6"
 
   repo_name = "fluent-bit"
   team_name = "cloud-platform"
@@ -76,7 +76,7 @@ module "ecr_fluentbit" {
 
 module "s3_bucket_thanos" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "1.18.0"
+  version = "3.3.0"
 
   bucket = "cloud-platform-prometheus-thanos"
   acl    = "private"
@@ -127,7 +127,8 @@ module "s3_bucket_velero" {
 }
 
 module "s3_bucket_kubeconfigs" {
-  source = "terraform-aws-modules/s3-bucket/aws"
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "3.3.0"
 
   bucket = "cloud-platform-concourse-kubeconfig"
   acl    = "private"

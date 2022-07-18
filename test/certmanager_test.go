@@ -9,14 +9,16 @@ import (
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
+// TODO: This test fails far too often. We should look at asynchronous testing to see if we can get it to pass.i
+// https://onsi.github.io/gomega/#eventually
 var _ = Describe("cert-manager", func() {
 	Context("when the namespace has a certificate resource", func() {
 		var (
-			namespace = fmt.Sprintf("smoketest-certman-%s", strings.ToLower(random.UniqueId()))
+			namespace = fmt.Sprintf("%s-certman-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 			options   = k8s.NewKubectlOptions("", "", namespace)
 			host      = fmt.Sprintf("%s.%s", namespace, testDomain)
 
