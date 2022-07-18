@@ -18,7 +18,7 @@ var _ = Describe("Custom resource definitions", func() {
 		Fail(err.Error())
 	}
 
-	FIt("should return all expected CRDs", func() {
+	It("should return all expected CRDs", func() {
 		for _, expectedCrd := range c.CustomResourceDefinitions {
 			Expect(crds).To(ContainSubstring(expectedCrd))
 		}
