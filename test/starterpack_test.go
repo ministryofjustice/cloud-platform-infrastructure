@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"net/http"
+	"strings"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -9,7 +10,11 @@ import (
 
 var _ = Describe("Starterpack", func() {
 	host := "helloworld-app-starter-pack-0.apps." + c.ClusterName + ".cloud-platform.service.justice.gov.uk"
+
 	It("should respond OK to a GET request", func() {
+		if strings.Contains(strings.ToLower(c.ClusterName), "manager") {
+			Skip("Skipping this test on the manager cluster")
+		}
 		resp, err := http.Get("https://" + host)
 		if err != nil {
 			Fail(err.Error())
