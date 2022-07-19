@@ -1,6 +1,7 @@
 package integration_tests
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -11,8 +12,8 @@ import (
 var _ = Describe("Starterpack", func() {
 	host := "helloworld-app-starter-pack-0.apps." + c.ClusterName + ".cloud-platform.service.justice.gov.uk"
 	It("should respond OK to a GET request", func() {
-		if strings.Contains(strings.ToLower(c.ClusterName), "manager") {
-			Skip("The Manager cluster does not have a Starterpack app")
+		if strings.Contains(strings.ToLower(c.ClusterName), "manager") || strings.Contains(strings.ToLower(c.ClusterName), "live") {
+			Skip(fmt.Sprintf("Starterpack doesn't exist on: %s", c.ClusterName))
 		}
 
 		resp, err := http.Get("https://" + host)
