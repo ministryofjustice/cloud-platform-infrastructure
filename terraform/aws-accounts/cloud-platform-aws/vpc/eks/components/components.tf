@@ -125,7 +125,7 @@ module "kuberos" {
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   cluster_address               = data.terraform_remote_state.cluster.outputs.cluster_endpoint
 
-  depends_on = [module.ingress_controllers]
+  depends_on = [module.ingress_controllers_v1]
 }
 
 module "logging" {
@@ -177,7 +177,7 @@ module "starter_pack" {
   enable_starter_pack = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
 
-  depends_on = [module.ingress_controllers]
+   depends_on = [module.ingress_controllers_v1]
 }
 
 module "velero" {
