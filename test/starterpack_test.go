@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strings"
 
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -15,6 +16,8 @@ var _ = Describe("Starterpack", func() {
 		if strings.Contains(strings.ToLower(c.ClusterName), "manager") {
 			Skip("Skipping this test on the manager cluster")
 		}
+
+	It("should respond OK to a GET request", func() {
 		resp, err := http.Get("https://" + host)
 		if err != nil {
 			Fail(err.Error())

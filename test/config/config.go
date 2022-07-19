@@ -80,12 +80,22 @@ func (c *Config) SetClusterName(cluster string) error {
 // ExpectedCrds returns a slice of all the CustomResourceDefinitions expected in a cluster. We only need the name of the CRDS here.
 func (c *Config) ExpectedCrds() {
 	c.CustomResourceDefinitions = append(c.CustomResourceDefinitions,
+		"alertmanagerconfigs.monitoring.coreos.com",
+		"alertmanagers.monitoring.coreos.com",
+		"certificaterequests.cert-manager.io",
+		"certificates.cert-manager.io",
+		"challenges.acme.cert-manager.io",
+		"clusterissuers.cert-manager.io",
+		"issuers.cert-manager.io",
+		"orders.acme.cert-manager.io",
+		"probes.monitoring.coreos.com",
+		"prometheuses.monitoring.coreos.com",
+		"prometheusrules.monitoring.coreos.com",
+		"podmonitors.monitoring.coreos.com",
 		"prometheuses.monitoring.coreos.com",
 		"prometheusrules.monitoring.coreos.com",
 		"thanosrulers.monitoring.coreos.com",
-		"probes.monitoring.coreos.com",
-		"alertmanagerconfigs.monitoring.coreos.com",
-		"alertmanagers.monitoring.coreos.com",
+		"servicemonitors.monitoring.coreos.com",
 	)
 }
 
