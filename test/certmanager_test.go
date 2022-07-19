@@ -51,14 +51,19 @@ var _ = Describe("Default ingress-controller certificate", func() {
 		Expect(cert.Spec.IssuerRef.Name).To(Equal("letsencrypt-production"))
 	})
 })
-// TODO: This test fails far too often. We should look at asynchronous testing to see if we can get it to pass.i
-// https://onsi.github.io/gomega/#eventually
-var _ = Describe("cert-manager", func() {
+
+// This test checks if a staging let's encrypt cert is assigned to an app
+// It's less than ideal as it relies on the staging let's encrypt issuer
+// responds in time. Eventually, we'll look to see if we can utilise
+// https://github.com/letsencrypt/pebble.
+
+// It includes FlakeAttempts to ensure that the test doesn't fail on the chance
+// of a slow acme response.
+var _ = Describe("cert-manager", FlakeAttempts(3), func() {
 	Context("when the namespace has a certificate resource", func() {
 		var (
-			namespace = fmt.Sprintf("%s-certman-%s", c.Prefix, strings.ToLower(random.UniqueId()))
-			options   = k8s.NewKubectlOptions("", "", namespace)
-			host      = fmt.Sprintf("%s.%s", namespace, testDomain)
+			namespace, host string
+			options         *k8s.KubectlOptions
 
 			err  error
 			cert []string
@@ -66,6 +71,9 @@ var _ = Describe("cert-manager", func() {
 		)
 
 		BeforeEach(func() {
+			namespace = fmt.Sprintf("%s-certman-%s", c.Prefix, strings.ToLower(random.UniqueId()))
+			options = k8s.NewKubectlOptions("", "", namespace)
+			host = fmt.Sprintf("%s.%s", namespace, testDomain)
 			k8s.CreateNamespace(GinkgoT(), options, namespace)
 			app := helpers.HelloworldOpt{
 				Hostname:   host,
@@ -91,9 +99,7 @@ var _ = Describe("cert-manager", func() {
 			Expect(err).NotTo(HaveOccurred())
 			cert = conn.ConnectionState().PeerCertificates[0].Issuer.Organization
 
-			time.Sleep(120 * time.Second)
-
-			Expect(cert[0]).To(Equal("(STAGING) Let's Encrypt"))
+			Eventually(cert[0]).WithTimeout(20 * time.Minute).WithPolling(2 * time.Minute).Should(Equal("(STAGING) Let's Encrypt"))
 		})
 	})
 })
