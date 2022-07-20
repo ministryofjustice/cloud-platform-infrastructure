@@ -18,10 +18,9 @@ import (
 
 var _ = Describe("external-DNS checks", func() {
 	var (
-		namespaceName = fmt.Sprintf("%s-external-dns-%s", c.Prefix, strings.ToLower(random.UniqueId()))
-		options       = k8s.NewKubectlOptions("", "", namespaceName)
-		domain        = fmt.Sprintf("%s.%s", namespaceName, testDomain)
-		tpl           string
+		namespaceName, domain string
+		options               *k8s.KubectlOptions
+		tpl                   string
 	)
 
 	BeforeEach(func() {
@@ -29,6 +28,9 @@ var _ = Describe("external-DNS checks", func() {
 			Skip("AWS environment variable not defined. Skipping test.")
 		}
 
+		namespaceName = fmt.Sprintf("%s-external-dns-%s", c.Prefix, strings.ToLower(random.UniqueId()))
+		options = k8s.NewKubectlOptions("", "", namespaceName)
+		domain = fmt.Sprintf("%s.%s", namespaceName, testDomain)
 		k8s.CreateNamespace(GinkgoT(), options, namespaceName)
 	})
 
