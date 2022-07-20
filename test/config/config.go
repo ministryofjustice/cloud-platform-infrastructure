@@ -50,12 +50,7 @@ func NewConfig(clusterName string, services []string, daemonsets []string, servi
 // SetClusterName is a setter method to define the name of the cluster to work on.
 func (c *Config) SetClusterName(cluster string) error {
 	if cluster == "" {
-		k, err := client.NewKubeClientWithValues(c.Client.Path, "")
-		if err != nil {
-			return fmt.Errorf("Unable to create kubeclient: %e", err)
-		}
-
-		nodes, err := k.Clientset.CoreV1().Nodes().List(context.Background(), metav1.ListOptions{})
+		nodes, err := c.Client.Clientset.CoreV1().Nodes().List(context.Background(), metav1.ListOptions{})
 		if err != nil {
 			return fmt.Errorf("Unable to fetch node name: %e", err)
 		}
