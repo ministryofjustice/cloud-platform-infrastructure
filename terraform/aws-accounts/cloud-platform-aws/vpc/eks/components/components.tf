@@ -138,7 +138,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.1"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   pagerduty_config                           = var.pagerduty_config
@@ -189,5 +189,5 @@ module "velero" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=v1.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.0.1"
 }
