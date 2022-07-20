@@ -4,16 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"path/filepath"
 	"strings"
 
 	"github.com/ministryofjustice/cloud-platform-go-library/client"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/util/homedir"
 )
 
 // Config holds the basic structure of test's YAML file
 type Config struct {
+	// Client is a cloud-platform-go-library struct that essentially gives you a kubernetes.Interface
+	// to interact with the cluster.
+	Client client.KubeClient
 	// ClusterName is obtained either by argument or interpolation from a node label.
 	ClusterName string `yaml:"clusterName"`
 	// Services is a slice of services names only. There is no requirement
@@ -48,13 +49,8 @@ func NewConfig(clusterName string, services []string, daemonsets []string, servi
 
 // SetClusterName is a setter method to define the name of the cluster to work on.
 func (c *Config) SetClusterName(cluster string) error {
-	var kubeconfig string
-	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	}
-
 	if cluster == "" {
-		k, err := client.NewKubeClientWithValues(kubeconfig, "")
+		k, err := client.NewKubeClientWithValues(c.Client.Path, "")
 		if err != nil {
 			return fmt.Errorf("Unable to create kubeclient: %e", err)
 		}
