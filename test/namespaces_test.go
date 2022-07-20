@@ -1,84 +1,73 @@
 package integration_tests
 
 import (
-	"fmt"
-	"regexp"
+	"context"
+	"strings"
 
-	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var _ = Describe("Namespaces", func() {
-	It("should contain OPA labels", func() {
-		// Get the kube-system namespace, it should contain an ignore for OPA.
-		// If it doesn't, nothing will deploy there.
-		namespace := k8s.GetNamespace(GinkgoT(), k8s.NewKubectlOptions("", "", ""), "kube-system")
+	Context("when checking kube-system", func() {
+		It("should contain OPA labels", func() {
+			// Get the kube-system namespace, it should contain an ignore for OPA.
+			// If it doesn't, nothing will deploy there.
+			namespace, err := c.Client.Clientset.CoreV1().Namespaces().Get(context.TODO(), "kube-system", metav1.GetOptions{})
+			Expect(err).ToNot(HaveOccurred())
 
-		// Get the labels
-		labels := namespace.GetLabels()
-		Expect(labels).To(HaveKeyWithValue("openpolicyagent.org/webhook", "ignore"))
+			labels := namespace.GetLabels()
+			Expect(labels).To(HaveKeyWithValue("openpolicyagent.org/webhook", "ignore"))
+		})
 	})
 
-	Context("expected namespaces", func() {
-		It("should exist in the cluster", func() {
+	Context("when checking current namespaces", func() {
+		GinkgoWriter.Printf("Getting list of namespaces\n")
+		namespaces, err := c.Client.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
+		Expect(err).To(BeNil())
+
+		It("should contain all expected namespaces", func() {
 			// Populate the expected namespaces in the cluster
 			c.ExpectedNamespaces()
-			var notFound []string
 
-			for _, namespace := range c.Namespaces {
-				options := k8s.NewKubectlOptions("", "", namespace)
-				_, err := k8s.GetNamespaceE(GinkgoT(), options, namespace)
-				if err != nil {
-					notFound = append(notFound, namespace)
-				}
+			// To match the namespace names in the cluster with the expected namespaces in the test, we need to
+			// add them to their own slice.
+			var namespacesInCluster []string
+			for _, namespace := range namespaces.Items {
+				namespacesInCluster = append(namespacesInCluster, namespace.GetName())
 			}
-			Expect(notFound).Error().Should(BeEmpty())
+
+			GinkgoWriter.Printf("Checking the expected namespaces exist: %s\n", c.Namespaces)
+			for _, namespace := range c.Namespaces {
+				Expect(namespacesInCluster).To(ContainElement(namespace))
+			}
 		})
 
 		// Namespaces must have the appropriate annotations for things like
 		// monitoring. This test checks all namespaces for annotations. If the
 		// annotation list appears empty, it will fail.
 		It("must have the appropriate annotations", func() {
-			options := k8s.NewKubectlOptions("", "", "")
-			listOptions := metav1.ListOptions{}
-
-			// Grab all pods in the cluster to query the namespace name.
-			allPods := k8s.ListPods(GinkgoT(), options, listOptions)
-
-			// Becuase of the lack of a 'get all ns' in terratest we
-			// need to loop over every pod, grab the namepspace name
-			// and add it to a map. A map was chosen so we can perform
-			// a quick lookup of duplicates (because of the lack of
-			// slice.contains in go).
-			m := make(map[string]string)
-			for _, ns := range allPods {
-				// exclude ephemeral namespaces created by the framework itself
-				r := regexp.MustCompile("^smoketest-.*")
-				if r.MatchString(ns.Namespace) == true {
-					continue
-				}
-
-				_, ok := m[ns.Namespace]
-				if !ok {
-					m[ns.Namespace] = ""
-				}
+			toIgnore := []string{
+				"kube-system",
+				"kube-public",
+				"kube-node-lease",
+				"default",
 			}
 
-			// Loop over each key in the map and add namespace names
-			// to a collection.
-			var unannotatedNs []string
-			for k := range m {
-				ns, _ := k8s.GetNamespaceE(GinkgoT(), options, k)
-				if len(ns.Annotations) < 1 {
-					unannotatedNs = append(unannotatedNs, ns.Name)
+		out:
+			for _, namespace := range namespaces.Items {
+				// If the namespace is in the ignore list, skip it
+				for _, ignore := range toIgnore {
+					namespaceName := namespace.Name
+					if namespaceName == ignore || strings.Contains(namespaceName, "smoketest") {
+						continue out
+					}
 				}
-			}
 
-			// If the unannotatedNs collection has entries the test will fail.
-			if unannotatedNs != nil {
-				Fail(fmt.Sprintf("The following namespaces DO NOT have annotations: %v", unannotatedNs))
+				// Get the annotations
+				annotations := namespace.GetAnnotations()
+				Expect(annotations).ShouldNot(BeEmpty())
 			}
 		})
 	})
