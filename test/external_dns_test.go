@@ -9,70 +9,78 @@ import (
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
-	"github.com/gruntwork-io/terratest/modules/retry"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("external-DNS checks", func() {
+// External DNS tests the external-dns function in a cluster can create
+// and destroy route53 entries. It uses the test domain to register.
+var _ = Describe("external-dns", func() {
 	var (
 		namespaceName, domain string
 		options               *k8s.KubectlOptions
-		tpl                   string
 	)
 
+	// You must have your AWS credentials set up in your environment before you run these tests
 	BeforeEach(func() {
 		if os.Getenv("AWS_PROFILE") == "" && os.Getenv("AWS_ACCESS_KEY_ID") == "" {
 			Skip("AWS environment variable not defined. Skipping test.")
 		}
 
-		namespaceName = fmt.Sprintf("%s-external-dns-%s", c.Prefix, strings.ToLower(random.UniqueId()))
+		namespaceName = fmt.Sprintf("%s-extdns-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 		options = k8s.NewKubectlOptions("", "", namespaceName)
 		domain = fmt.Sprintf("%s.%s", namespaceName, testDomain)
-		k8s.CreateNamespace(GinkgoT(), options, namespaceName)
+
+		err := k8s.CreateNamespaceE(GinkgoT(), options, namespaceName)
+		Expect(err).ToNot(HaveOccurred())
+
+		tpl, err := helpers.TemplateFile("./fixtures/external-dns-ingress.yaml.tmpl", "external-dns-ingress.yaml.tmpl", template.FuncMap{
+			"domain":    domain,
+			"namespace": namespaceName,
+		})
+		Expect(err).NotTo(HaveOccurred())
+
+		k8s.KubectlApplyFromString(GinkgoT(), options, tpl)
+		k8s.WaitUntilIngressAvailable(GinkgoT(), options, "e2e-tests-externaldns", 6, 20*time.Second)
 	})
 
 	AfterEach(func() {
-		defer k8s.KubectlDeleteFromString(GinkgoT(), options, tpl)
 		defer k8s.DeleteNamespace(GinkgoT(), options, namespaceName)
 	})
 
+	Context("when creating and then deleting an ingress resource", func() {
+		It("should delete the A record", func() {
+			GinkgoWriter.Printf("\nWaiting for A record to be created\n")
+			Eventually(func() bool {
+				exists, err := helpers.RecordSets(domain, hostedZoneId)
+				Expect(err).NotTo(HaveOccurred())
+				return exists
+			}, "10m", "10s").Should(BeTrue())
+
+			GinkgoWriter.Printf("\nDeleting ingress resource %s\n", namespaceName)
+			err := k8s.RunKubectlE(GinkgoT(), options, "delete", "ingress", "e2e-tests-externaldns")
+			Expect(err).NotTo(HaveOccurred())
+
+			GinkgoWriter.Printf("\nWaiting for A record to be deleted\n")
+			Eventually(func() bool {
+				exists, err := helpers.RecordSets(domain, hostedZoneId)
+				Expect(err).NotTo(HaveOccurred())
+				return !exists
+			}, "10m", "10s").Should(BeFalse())
+
+		})
+	})
+
 	Context("when ingress resource is created", func() {
-		It("should work create the A record", func() {
-			By("Deploying ingress resource")
-
-			tpl, err := helpers.TemplateFile("./fixtures/external-dns-ingress.yaml.tmpl", "external-dns-ingress.yaml.tmpl", template.FuncMap{
-				"domain":    domain,
-				"namespace": namespaceName,
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			k8s.KubectlApplyFromString(GinkgoT(), options, tpl)
-			k8s.WaitUntilIngressAvailableV1Beta1(GinkgoT(), options, "e2e-tests-externaldns", 60, 5*time.Second)
-
-			By("having an ingress resource deployed we should expect DNS entry for it")
-
-			var existArecord bool
-
-			retry.DoWithRetry(GinkgoT(), fmt.Sprintf("Waiting for sucessfull DNS entry in Route53 (returning: %t)", existArecord), 8, 10*time.Second, func() (string, error) {
-				a, err := helpers.RecordSets(domain, hostedZoneId)
-				if err != nil {
-					return "", err
-				}
-
-				if a == false {
-					return "", fmt.Errorf("Expected A record in Route53 but the AWS query returns '%t'", a)
-				}
-
-				existArecord = a
-
-				return "", nil
-			})
-
-			Expect(err).NotTo(HaveOccurred())
-			Ω(existArecord).Should(BeTrue())
+		It("should create the A record", func() {
+			GinkgoWriter.Printf("\nWaiting for A record to be created")
+			Eventually(func() bool {
+				exists, err := helpers.RecordSets(domain, hostedZoneId)
+				Expect(err).NotTo(HaveOccurred())
+				return exists
+			}, "10m", "10s").Should(BeTrue())
 		})
 	})
 })
