@@ -189,5 +189,5 @@ module "velero" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.0.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.0.3"
 }
