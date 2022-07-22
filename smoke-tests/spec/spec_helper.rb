@@ -107,8 +107,8 @@ require "json"
 require "date"
 require "open3"
 require "./spec/constants"
+require "./spec/route53_helper"
 require "./spec/kubernetes_helper"
-require "./spec/external_dns_helper"
 
 def readable_timestamp
   Time.now.strftime("%Y%m%d%H%M%S")
