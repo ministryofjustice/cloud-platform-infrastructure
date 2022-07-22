@@ -25,6 +25,7 @@ To run the integration tests on a MoJ Cloud Platform cluster you must have the f
 - [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 - [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
 - [Go](https://go.dev/doc/install)
+- [Ginkgo v2](https://onsi.github.io/ginkgo/#installing-ginkgo)
 
 You can then either run:
 
@@ -41,13 +42,15 @@ go test -v ./...
 or
 
 ```bash
-cd test; go test -v . # for realtime response
+cd test; ginkgo -r -v  # for realtime response
 ```
 
 ### Arguments
 
 ```bash
 -cluster # [optional] specifies the cluster name you'd like to use. [default] current context
+
+-kubeconfig # [optional] define where your kubeconfig file is located. [default] ~/.kube/config
 ```
 
 ### Running individual tests

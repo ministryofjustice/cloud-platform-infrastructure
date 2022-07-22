@@ -36,7 +36,7 @@ func TestMain(m *testing.M) {
 	if home := homedir.HomeDir(); home != "" {
 		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
 	} else {
-		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+		kubeconfig = flag.String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
 	}
 
 	var cluster = flag.String("cluster", "", "(optional) set the cluster name")
