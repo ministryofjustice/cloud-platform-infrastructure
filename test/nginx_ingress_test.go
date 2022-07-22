@@ -85,17 +85,19 @@ var _ = Describe("ingress-controllers", func() {
 
 			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", TemplateVars)
 			if err != nil {
-				Fail(err.Error())
+				Fail("Failed to create helloworld deployment: " + err.Error())
 			}
 
-			k8s.KubectlApplyFromString(GinkgoT(), options, tpl)
+			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
+			Expect(err).To(BeNil())
+
 			k8s.WaitUntilIngressAvailable(GinkgoT(), options, "integration-test-app-ing", 8, 20*time.Second)
 
 			GinkgoWriter.Printf("Checking that the ingress is available at https://%s\n", host)
 			Eventually(func() int {
 				resp, err := http.Get("https://" + host)
 				if err != nil {
-					Fail(err.Error())
+					Fail("Failed to perform GET request, do you have a connection to the Internet? Error: " + err.Error())
 				}
 				defer resp.Body.Close()
 				return resp.StatusCode
