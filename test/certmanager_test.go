@@ -89,23 +89,20 @@ var _ = Describe("cert-manager", FlakeAttempts(3), func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			GinkgoWriter.Printf("Checking the certificate is valid")
-			Eventually(func() bool {
-				certificate, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "certificate", "-o", "json")
-				Expect(err).ToNot(HaveOccurred())
+			Eventually(func() string {
+				status, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "certificate", namespace, "-o", "jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'")
+				Expect(err).NotTo(HaveOccurred())
 
-				var cert DefaultCert
-				err = json.Unmarshal([]byte(certificate), &cert)
-				Expect(err).ToNot(HaveOccurred())
-
-				return cert.Status.Conditions[0].Status == "True"
-			}, "5m", "1m").Should(BeTrue())
+				return status
+			}, "10m", "30s").Should(Equal("'True'"))
 		})
 
 		AfterEach(func() {
-			k8s.DeleteNamespace(GinkgoT(), options, namespace)
+			err = k8s.DeleteNamespaceE(GinkgoT(), options, namespace)
+			Expect(err).NotTo(HaveOccurred())
 		})
 
-		FIt("should succeed and present a staging certificate", func() {
+		It("should succeed and present a staging certificate", func() {
 			Eventually(func() string {
 				conn, err = tls.Dial("tcp", host+":443", &tls.Config{InsecureSkipVerify: true})
 				Expect(err).NotTo(HaveOccurred())
