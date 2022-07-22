@@ -2,7 +2,6 @@ package integration_tests
 
 import (
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
@@ -17,14 +16,15 @@ import (
 
 var _ = Describe("ingress-controllers", func() {
 	var (
-		namespaceName, host string
-		options             *k8s.KubectlOptions
+		namespaceName, host, url string
+		options                  *k8s.KubectlOptions
 	)
 
 	BeforeEach(func() {
 		namespaceName = fmt.Sprintf("%s-ing-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 		host = fmt.Sprintf("%s.apps.%s.%s", namespaceName, c.ClusterName, domain)
 		options = k8s.NewKubectlOptions("", "", namespaceName)
+		url = fmt.Sprintf("https://%s", host)
 
 		err := k8s.CreateNamespaceE(GinkgoT(), options, namespaceName)
 		Expect(err).ToNot(HaveOccurred())
@@ -61,19 +61,17 @@ var _ = Describe("ingress-controllers", func() {
 
 			GinkgoWriter.Printf("Checking that the ingress is available at https://%s\n", host)
 			Eventually(func() int {
-				resp, err := http.Get("https://" + host)
-				if err != nil {
-					Fail(err.Error())
-				}
-				defer resp.Body.Close()
-				return resp.StatusCode
+				s, err := helpers.HttpStatusCode(url)
+				Expect(err).To(BeNil())
+
+				return s
 			}, "8m", "30s").Should(Equal(200))
 
 		})
 	})
 
 	Context("when an ingress resource is deployed using 'default' ingress controller", func() {
-		FIt("should expose the service to the internet", func() {
+		It("should expose the service to the internet", func() {
 			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
 			class := "default"
 
@@ -97,16 +95,12 @@ var _ = Describe("ingress-controllers", func() {
 
 			k8s.WaitUntilIngressAvailable(GinkgoT(), options, "integration-test-app-ing", 8, 20*time.Second)
 
-			GinkgoWriter.Printf("Checking that the ingress is available at https://%s\n", host)
+			GinkgoWriter.Printf("Checking that the ingress is available at %s\n", url)
 			Eventually(func() int {
-				fmt.Println("Checking that the ingress is available at https://" + host)
-				resp, err := http.Get("https://" + host)
-				if err != nil {
-					Fail("Failed to perform GET request, do you have a connection to the Internet? Error: " + err.Error())
-				}
-				fmt.Println("Response: ", resp.StatusCode)
-				defer resp.Body.Close()
-				return resp.StatusCode
+				s, err := helpers.HttpStatusCode(url)
+				Expect(err).To(BeNil())
+
+				return s
 			}, "8m", "30s").Should(Equal(200))
 		})
 	})
