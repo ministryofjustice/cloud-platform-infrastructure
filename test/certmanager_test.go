@@ -1,16 +1,21 @@
 package integration_tests
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"strings"
 
+	v1 "github.com/cert-manager/cert-manager/pkg/apis/certmanager/v1"
+	"github.com/cert-manager/cert-manager/pkg/client/clientset/versioned"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/rest"
 )
 
 // DefaultCert is the struct of the default certificate used
@@ -59,6 +64,11 @@ var _ = Describe("Default ingress-controller certificate", func() {
 // It includes FlakeAttempts to ensure that the test doesn't fail on the chance
 // of a slow acme response.
 var _ = Describe("cert-manager", FlakeAttempts(3), func() {
+	// Create a certmanager versioned clientset
+	// TODO: Add the certificate client create to the cloud-platform-go-library client package
+	client, err := versioned.NewForConfig(&rest.Config{})
+	Expect(err).ToNot(HaveOccurred())
+
 	Context("when the namespace has a certificate resource", func() {
 		var (
 			namespace, host string
@@ -85,16 +95,20 @@ var _ = Describe("cert-manager", FlakeAttempts(3), func() {
 			err = helpers.CreateHelloWorldApp(&app, options)
 			Expect(err).NotTo(HaveOccurred())
 
-			err = helpers.CreateCertificate(namespace, host, options)
+			// Request a certificate from the staging let's encrypt issuer
+			err = helpers.CreateCertificate(namespace, host, "staging", options)
 			Expect(err).NotTo(HaveOccurred())
 
 			GinkgoWriter.Printf("Checking the certificate is valid")
-			Eventually(func() string {
-				status, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "certificate", namespace, "-o", "jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'")
+			Eventually(func() v1.CertificateStatus {
+				cert, err := client.CertmanagerV1().Certificates(namespace).Get(context.TODO(), namespace, metav1.GetOptions{})
+				// status, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "certificate", namespace, "-o", "jsonpath='{.status.conditions[?(@.type==\"Ready\")].status}'")
 				Expect(err).NotTo(HaveOccurred())
 
-				return status
-			}, "10m", "30s").Should(Equal("'True'"))
+				fmt.Println(cert)
+
+				return cert.Status
+			}, "10m", "30s").Should(Equal(metav1.ConditionTrue))
 		})
 
 		AfterEach(func() {
@@ -102,7 +116,7 @@ var _ = Describe("cert-manager", FlakeAttempts(3), func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
-		It("should succeed and present a staging certificate", func() {
+		FIt("should succeed and present a staging certificate", func() {
 			Eventually(func() string {
 				conn, err = tls.Dial("tcp", host+":443", &tls.Config{InsecureSkipVerify: true})
 				Expect(err).NotTo(HaveOccurred())
