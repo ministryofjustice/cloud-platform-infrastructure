@@ -26,11 +26,13 @@ var _ = Describe("ingress-controllers", func() {
 		host = fmt.Sprintf("%s.apps.%s.%s", namespaceName, c.ClusterName, domain)
 		options = k8s.NewKubectlOptions("", "", namespaceName)
 
-		k8s.CreateNamespace(GinkgoT(), options, namespaceName)
+		err := k8s.CreateNamespaceE(GinkgoT(), options, namespaceName)
+		Expect(err).ToNot(HaveOccurred())
 	})
 
 	AfterEach(func() {
-		defer k8s.DeleteNamespace(GinkgoT(), options, namespaceName)
+		err := k8s.DeleteNamespaceE(GinkgoT(), options, namespaceName)
+		Expect(err).ToNot(HaveOccurred())
 	})
 
 	Context("when an ingress resource is deployed using the 'nginx' ingress controller", func() {
@@ -49,10 +51,12 @@ var _ = Describe("ingress-controllers", func() {
 
 			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", TemplateVars)
 			if err != nil {
-				Fail(err.Error())
+				Fail(fmt.Sprintf("Failed to perform GET request, do you have a connection to the Internet? Error: %s", err.Error()))
 			}
 
-			k8s.KubectlApplyFromString(GinkgoT(), options, tpl)
+			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
+			Expect(err).ToNot(HaveOccurred())
+
 			k8s.WaitUntilIngressAvailable(GinkgoT(), options, "integration-test-app-ing", 6, 20*time.Second)
 
 			GinkgoWriter.Printf("Checking that the ingress is available at https://%s\n", host)
@@ -95,10 +99,12 @@ var _ = Describe("ingress-controllers", func() {
 
 			GinkgoWriter.Printf("Checking that the ingress is available at https://%s\n", host)
 			Eventually(func() int {
+				fmt.Println("Checking that the ingress is available at https://" + host)
 				resp, err := http.Get("https://" + host)
 				if err != nil {
 					Fail("Failed to perform GET request, do you have a connection to the Internet? Error: " + err.Error())
 				}
+				fmt.Println("Response: ", resp.StatusCode)
 				defer resp.Body.Close()
 				return resp.StatusCode
 			}, "8m", "30s").Should(Equal(200))
