@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -88,18 +87,31 @@ var _ = Describe("cert-manager", FlakeAttempts(3), func() {
 
 			err = helpers.CreateCertificate(namespace, host, options)
 			Expect(err).NotTo(HaveOccurred())
+
+			GinkgoWriter.Printf("Checking the certificate is valid")
+			Eventually(func() bool {
+				certificate, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "certificate", "-o", "json")
+				Expect(err).ToNot(HaveOccurred())
+
+				var cert DefaultCert
+				err = json.Unmarshal([]byte(certificate), &cert)
+				Expect(err).ToNot(HaveOccurred())
+
+				return cert.Status.Conditions[0].Status == "True"
+			}, "5m", "1m").Should(BeTrue())
 		})
 
 		AfterEach(func() {
 			k8s.DeleteNamespace(GinkgoT(), options, namespace)
 		})
 
-		It("should succeed and present a staging certificate", func() {
-			conn, err = tls.Dial("tcp", host+":443", &tls.Config{InsecureSkipVerify: true})
-			Expect(err).NotTo(HaveOccurred())
-			cert = conn.ConnectionState().PeerCertificates[0].Issuer.Organization
-
-			Eventually(cert[0]).WithTimeout(20 * time.Minute).WithPolling(2 * time.Minute).Should(Equal("(STAGING) Let's Encrypt"))
+		FIt("should succeed and present a staging certificate", func() {
+			Eventually(func() string {
+				conn, err = tls.Dial("tcp", host+":443", &tls.Config{InsecureSkipVerify: true})
+				Expect(err).NotTo(HaveOccurred())
+				cert = conn.ConnectionState().PeerCertificates[0].Issuer.Organization
+				return cert[0]
+			}, "3m", "30s").Should(Equal("(STAGING) Let's Encrypt"))
 		})
 	})
 })

@@ -45,7 +45,7 @@ func CreateHelloWorldApp(app *HelloworldOpt, opt *k8s.KubectlOptions) error {
 		return fmt.Errorf("failed to apply the helloworld template: %s", err)
 	}
 
-	k8s.WaitUntilIngressAvailableV1Beta1(GinkgoT(), opt, "integration-test-app-ing", 60, 5*time.Second)
+	k8s.WaitUntilIngressAvailable(GinkgoT(), opt, "integration-test-app-ing", 8, 20*time.Second)
 
 	return nil
 }
