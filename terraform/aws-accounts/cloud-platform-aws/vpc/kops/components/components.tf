@@ -101,7 +101,7 @@ module "ingress_controllers" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.2.3"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.4.2"
   depends_on = [module.prometheus, module.ingress_controllers, module.velero, module.kiam, module.cert_manager]
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
