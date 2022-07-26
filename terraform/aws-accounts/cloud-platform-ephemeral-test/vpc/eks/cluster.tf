@@ -27,9 +27,9 @@ locals {
   }
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.20"
-    manager = "1.20"
-    default = "1.20"
+    live    = "1.21"
+    manager = "1.21"
+    default = "1.21"
   }
   node_size = {
     live    = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
@@ -168,6 +168,21 @@ module "eks" {
       userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
       username = "VijayVeeranki"
       groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/JackStockley"
+      username = "JackStockley"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/JakeMulley"
+      username = "JakeMulley"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/SteveWilliams"
+      username = "SteveWilliams"
+      groups   = ["system:masters"]
     }
   ]
 
@@ -178,7 +193,7 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.1.0"
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.2.1"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id

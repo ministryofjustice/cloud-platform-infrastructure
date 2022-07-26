@@ -89,7 +89,7 @@ data "aws_subnet_ids" "public" {
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.2.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.3.0"
 
   cluster_name         = terraform.workspace
   services_base_domain = local.cluster_base_domain_name

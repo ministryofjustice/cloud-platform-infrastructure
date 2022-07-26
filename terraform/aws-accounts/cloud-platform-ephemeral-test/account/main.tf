@@ -37,26 +37,16 @@ module "baselines" {
 #######
 
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.12"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.13"
 
   aws_account_name = "cloud-platform-ephemeral-test"
 }
 
 module "sso" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.1.0"
 
   aws_account_id      = data.aws_caller_identity.current.account_id
   auth0_tenant_domain = "moj-cloud-platforms-dev.eu.auth0.com"
-}
-
-##############
-# kOps State #
-##############
-
-module "kops_state_backend" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kops-state-backend?ref=1.0.1"
-
-  bucket_name = "${var.aws_account_name}-kops-state"
 }
 
 #######
