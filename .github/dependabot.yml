@@ -9,6 +9,10 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-aws/account"
     schedule:
