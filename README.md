@@ -9,6 +9,7 @@ Here you'll also find instruction on how to operate a MoJ Cloud Platform cluster
 ## Table of contents
 
 - [How to run Go tests](#how-to-run-go-tests)
+- [How to update Go dependencies](#how-to-update-go-dependencies)
 - [Terraform and Cloud Platform environment management](#terraform-and-cloud-platform-environment-management)
 - [Cloud Platform environments](#cloud-platform-environments)
 - [Terraform modules](#terraform-modules)
@@ -81,6 +82,18 @@ FAIL! -- 0 Passed | 1 Failed | 0 Pending | 4 Skipped
 ### Making changes to Ginkgo tests
 
 Ginkgo works best from the command-line, and [ginkgo watch](https://onsi.github.io/ginkgo/#watching-for-changes) makes it easy to rerun tests on the command line whenever changes are detected.
+
+## How to update Go dependencies
+
+With the repository cloned:
+
+```bash
+cd test; go get -u ./...
+```
+
+Perform the tests as outlined [above](#how-to-run-go-tests) and confirm they pass.
+
+Create a PR and merge to main.
 
 ## Terraform and Cloud Platform environment management
 
