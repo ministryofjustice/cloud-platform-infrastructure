@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .jobName }}
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: smoketest-logging
+        image: bitnami/nginx
+        command: ["curl", "-s", "-XGET", "{{ .searchTerm }}", "-H", 'Content-Type: application/json', "-d", '{ "query": { "bool": { "must": [ { "match": { "kubernetes.namespace_name.keyword": "{{ .namespace }}" } } ] } } }']
