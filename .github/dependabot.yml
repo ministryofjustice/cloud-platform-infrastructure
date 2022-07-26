@@ -39,11 +39,6 @@ updates:
       interval: "weekly"
       day: "sunday"
   - package-ecosystem: "terraform"
-    directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/kops/components"
-    schedule:
-      interval: "weekly"
-      day: "sunday"
-  - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-dsd"
     schedule:
       interval: "weekly"
@@ -65,11 +60,6 @@ updates:
       day: "sunday"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-ephemeral-test/vpc/eks/components"
-    schedule:
-      interval: "weekly"
-      day: "sunday"
-  - package-ecosystem: "terraform"
-    directory: "/terraform/cross-account-IAM"
     schedule:
       interval: "weekly"
       day: "sunday"
