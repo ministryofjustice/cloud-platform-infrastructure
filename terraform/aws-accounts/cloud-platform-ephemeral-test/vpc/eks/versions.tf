@@ -2,7 +2,7 @@ terraform {
   required_providers {
     auth0 = {
       source  = "alexkappa/auth0"
-      version = "= 0.19.0"
+      version = "0.26.2"
     }
     aws = {
       source  = "hashicorp/aws"
