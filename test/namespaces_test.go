@@ -4,12 +4,40 @@ import (
 	"context"
 	"strings"
 
+	"github.com/gruntwork-io/terratest/modules/k8s"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// canIPerformAction is a wrapper for the Terratest kubectl command. It should return a bool dependant on the
+// outcome of an `auth can-i` command.
+func canIPerformAction(kubectlOptions *k8s.KubectlOptions, verb, resource, user, namespace string) (string, error) {
+	return k8s.RunKubectlAndGetOutputE(GinkgoT(), kubectlOptions, "auth", "can-i", verb, resource, "--namespace", namespace, "--as", "test", "--as-group github:"+user, "--as-group system:authenticated")
+}
+
 var _ = Describe("Namespaces", func() {
+	Context("By impersonating a non-privileged user", func() {
+		var (
+			verb, resource, impersonateUser string
+		)
+
+		options := k8s.NewKubectlOptions("", "", "")
+		FIt("shouldn't be able to get resources in system namespaces", func() {
+			verb = "get"
+			resource = "pods"
+			impersonateUser = "notWebops"
+
+			for _, namespace := range []string{"kube-system", "kube-public"} {
+				// We deliberately don't handle the error here as it will always fail.
+				output, _ := canIPerformAction(options, verb, resource, impersonateUser, namespace)
+				// Expect(err).NotTo(HaveOccurred())
+
+				Expect(output).To(ContainSubstring("no"))
+			}
+		})
+	})
+
 	Context("when checking kube-system", func() {
 		It("should contain OPA labels", func() {
 			// Get the kube-system namespace, it should contain an ignore for OPA.
