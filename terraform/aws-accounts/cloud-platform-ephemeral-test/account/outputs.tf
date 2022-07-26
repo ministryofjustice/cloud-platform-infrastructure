@@ -2,10 +2,6 @@ output "route53_root_domain_dns" {
   value = aws_route53_zone.aws_account_hostzone_id.name_servers
 }
 
-output "kops_state_s3_bucket_name" {
-  value = module.kops_state_backend.bucket_name
-}
-
 output "aws_account_hostzone_id" {
   value = aws_route53_zone.aws_account_hostzone_id.zone_id
 }
