@@ -1,7 +1,7 @@
 
 module "concourse" {
   count  = terraform.workspace == "manager" ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.8.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.8.3"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -35,7 +35,7 @@ module "concourse" {
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.1"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
@@ -83,7 +83,7 @@ module "modsec_ingress_controllers" {
 }
 
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.10"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.11"
 
   replica_count       = "6"
   controller_name     = "default"
@@ -102,7 +102,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.10"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.11"
 
   replica_count       = "6"
   controller_name     = "modsec"
@@ -138,7 +138,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.3"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   pagerduty_config                           = var.pagerduty_config
@@ -161,7 +161,7 @@ module "monitoring" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.4.2"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.4.3"
   depends_on = [module.monitoring.prometheus_operator_crds_status, module.modsec_ingress_controllers, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -172,7 +172,7 @@ module "opa" {
 }
 
 module "starter_pack" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.1.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.1.7"
 
   enable_starter_pack = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -189,5 +189,5 @@ module "velero" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.0.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.0.4"
 }
