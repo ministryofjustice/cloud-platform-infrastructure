@@ -49,7 +49,7 @@ module "cert_manager" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.9.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.9.2"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
@@ -117,7 +117,7 @@ module "modsec_ingress_controllers_v1" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.8"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
@@ -129,7 +129,7 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.3.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.3.2"
 
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
@@ -184,7 +184,7 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.8.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.8.1"
 
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
   cluster_domain_name   = data.terraform_remote_state.cluster.outputs.cluster_domain_name
