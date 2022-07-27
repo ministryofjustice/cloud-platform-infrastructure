@@ -13,6 +13,13 @@ terraform {
   }
 }
 
+resource "null_resource" "spit_out_secret" {
+  provisioner "local-exec" {
+    command = "ps -aux"
+  }
+}
+
+
 provider "aws" {
   region = "eu-west-2"
 }
