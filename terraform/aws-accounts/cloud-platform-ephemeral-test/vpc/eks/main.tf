@@ -55,8 +55,11 @@ data "aws_vpc" "selected" {
   }
 }
 
-data "aws_subnet_ids" "private" {
-  vpc_id = data.aws_vpc.selected.id
+data "aws_subnets" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.selected.id]
+  }
 
   tags = {
     SubnetType = "Private"
@@ -64,37 +67,31 @@ data "aws_subnet_ids" "private" {
 }
 
 # This is to get subnet_id, to create a separate node group for monitoring with 2 nodes in "eu-west-2b".
-data "aws_subnet_ids" "private_zone_2b" {
-  vpc_id = data.aws_vpc.selected.id
-
-  tags = {
-    SubnetType = "Private"
+data "aws_subnets" "private_zone_2b" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.selected.id]
   }
+
   filter {
     name   = "availability-zone"
     values = ["eu-west-2b"]
   }
+
+  tags = {
+    SubnetType = "Private"
+  }
 }
 
-data "aws_subnet_ids" "public" {
-  vpc_id = data.aws_vpc.selected.id
+data "aws_subnets" "public" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.selected.id]
+  }
 
   tags = {
     SubnetType = "Utility"
   }
-}
-
-#########
-# Auth0 #
-#########
-
-module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.3.0"
-
-  cluster_name         = terraform.workspace
-  services_base_domain = local.cluster_base_domain_name
-  extra_callbacks      = [""]
-
 }
 
 ################
@@ -118,4 +115,30 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
     aws_route53_zone.cluster.name_servers.2,
     aws_route53_zone.cluster.name_servers.3,
   ]
+}
+
+#########
+# Auth0 #
+#########
+
+module "auth0" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.3.0"
+
+  cluster_name         = terraform.workspace
+  services_base_domain = local.cluster_base_domain_name
+  extra_callbacks      = [""]
+
+}
+
+resource "aws_eks_identity_provider_config" "oidc_associate" {
+  cluster_name = terraform.workspace
+  depends_on   = [module.eks.cluster_id]
+  oidc {
+    client_id                     = module.auth0.oidc_kubernetes_client_id
+    identity_provider_config_name = "Auth0"
+    issuer_url                    = var.auth0_issuerUrl
+    username_claim                = "email"
+    groups_claim                  = var.auth0_groupsClaim
+    required_claims               = {}
+  }
 }
