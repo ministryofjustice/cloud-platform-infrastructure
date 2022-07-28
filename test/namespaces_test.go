@@ -2,39 +2,96 @@ package integration_tests
 
 import (
 	"context"
+	"html/template"
 	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// canIPerformAction is a wrapper for the Terratest kubectl command. It should return a bool dependant on the
-// outcome of an `auth can-i` command.
-func canIPerformAction(kubectlOptions *k8s.KubectlOptions, verb, resource, user, namespace string) (string, error) {
-	return k8s.RunKubectlAndGetOutputE(GinkgoT(), kubectlOptions, "auth", "can-i", verb, resource, "--namespace", namespace, "--as", "test", "--as-group github:"+user, "--as-group system:authenticated")
-}
-
 var _ = Describe("Namespaces", func() {
-	Context("By impersonating a non-privileged user", func() {
+	Context("when impersonating a non-privileged user", func() {
 		var (
 			verb, resource, impersonateUser string
 		)
 
 		options := k8s.NewKubectlOptions("", "", "")
-		FIt("shouldn't be able to get resources in system namespaces", func() {
+		It("shouldn't return resources from a system namespace", func() {
 			verb = "get"
 			resource = "pods"
-			impersonateUser = "notWebops"
+			impersonateUser = "test-webops"
 
 			for _, namespace := range []string{"kube-system", "kube-public"} {
 				// We deliberately don't handle the error here as it will always fail.
 				output, _ := canIPerformAction(options, verb, resource, impersonateUser, namespace)
-				// Expect(err).NotTo(HaveOccurred())
-
 				Expect(output).To(ContainSubstring("no"))
 			}
+		})
+
+		It("shouldn't allow exec into pods from a webops namespace", func() {
+			verb = "exec"
+			resource = "pods"
+			impersonateUser = "test-webops"
+			namespace := "logging"
+			// We deliberately don't handle the error here as it will always fail.
+			output, _ := canIPerformAction(options, verb, resource, impersonateUser, namespace)
+			Expect(output).To(ContainSubstring("no"))
+		})
+
+		// This test has a dependency on the `test-webops` GitHub user and group existing.
+		It("should allow them to get pods from a namespace they created", func() {
+			verb = "get"
+			resource = "pods"
+			impersonateUser = "test-webops"
+			namespace := "smoketest-ns-" + strings.ToLower(random.UniqueId())
+
+			tpl, err := helpers.TemplateFile("./fixtures/namespace.yaml.tmpl", "namespace.yaml.tmpl", template.FuncMap{
+				"namespace": namespace,
+			})
+			Expect(err).ToNot(HaveOccurred())
+
+			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
+			Expect(err).ToNot(HaveOccurred())
+
+			Eventually(func() string {
+				// We deliberately don't handle the error here as it will always fail.
+				output, _ := canIPerformAction(options, verb, resource, impersonateUser, namespace)
+				return output
+			}, "5m", "30s").Should(ContainSubstring("yes"))
+		})
+	})
+
+	Context("when impersonating a privileged user", func() {
+		var (
+			verb, resource, impersonateUser string
+		)
+
+		options := k8s.NewKubectlOptions("", "", "")
+		It("should return resources from a system namespace", func() {
+			verb = "get"
+			resource = "pods"
+			impersonateUser = "webops"
+
+			for _, namespace := range []string{"kube-system", "kube-public"} {
+				// We deliberately don't handle the error here as it will always fail.
+				output, _ := canIPerformAction(options, verb, resource, impersonateUser, namespace)
+				Expect(output).To(ContainSubstring("yes"))
+			}
+		})
+
+		It("should allow exec into pods from a webops namespace", func() {
+			verb = "exec"
+			resource = "pods"
+			impersonateUser = "webops"
+			namespace := "logging"
+			// We deliberately don't handle the error here as it will always fail.
+			output, _ := canIPerformAction(options, verb, resource, impersonateUser, namespace)
+
+			Expect(output).To(ContainSubstring("yes"))
 		})
 	})
 
@@ -100,3 +157,9 @@ var _ = Describe("Namespaces", func() {
 		})
 	})
 })
+
+// canIPerformAction is a wrapper for the Terratest kubectl command. It should return a bool dependant on the
+// outcome of an `auth can-i` command.
+func canIPerformAction(kubectlOptions *k8s.KubectlOptions, verb, resource, user, namespace string) (string, error) {
+	return k8s.RunKubectlAndGetOutputE(GinkgoT(), kubectlOptions, "auth", "can-i", verb, resource, "--namespace", namespace, "--as", "test", "--as-group", "github:"+user, "--as-group", "system:authenticated")
+}
