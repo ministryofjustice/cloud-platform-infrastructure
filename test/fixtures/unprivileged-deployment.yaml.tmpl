@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unprivileged-integration-test
+  namespace: {{ .namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: unprivileged-integration-test
+  template:
+    metadata:
+      labels:
+        app: unprivileged-integration-test
+    spec:
+      containers:
+        - name: nginx
+          image: bitnami/nginx
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5432
+
