@@ -11,6 +11,17 @@ variable "vpc_name" {
   default     = ""
 }
 
+variable "auth0_issuerUrl" {
+  description = "domain IssuerURL by which Auth0 can find the OpenID Provider Configuration Document"
+  default     = "https://justice-cloud-platform.eu.auth0.com/"
+}
+
+# Set when Auth0 account is setup in here: /terraform/global-resources/auth0.tf
+variable "auth0_groupsClaim" {
+  description = "OIDC Group Claim domain for justice cloud-platform account"
+  default     = "https://k8s.integration.dsd.io/groups"
+}
+
 variable "auth0_tenant_domain" {
   description = "This is the auth0 tenant domain"
   default     = "justice-cloud-platform.eu.auth0.com"

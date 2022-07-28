@@ -9,9 +9,9 @@ data "aws_eks_cluster" "cluster" {
 
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
   exec {
-    api_version = "client.authentication.k8s.io/v1alpha1"
+    api_version = "client.authentication.k8s.io/v1beta1"
     args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.cluster.name]
     command     = "aws"
   }
@@ -47,7 +47,7 @@ locals {
     desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_capacity         = 60
     min_capacity         = 1
-    subnets              = data.aws_subnet_ids.private.ids
+    subnets              = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
     kubelet_extra_args   = "--max-pods=110"
 
@@ -73,7 +73,7 @@ locals {
     desired_capacity = 2
     max_capacity     = 3
     min_capacity     = 1
-    subnets          = data.aws_subnet_ids.private_zone_2b.ids
+    subnets          = data.aws_subnets.private_zone_2b.ids
 
     create_launch_template = true
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
@@ -114,7 +114,7 @@ module "eks" {
   version = "v17.23.0"
 
   cluster_name                  = terraform.workspace
-  subnets                       = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
+  subnets                       = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
   vpc_id                        = data.aws_vpc.selected.id
   write_kubeconfig              = false
   cluster_version               = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])

@@ -11,11 +11,11 @@ output "vpc_id" {
 }
 
 output "internal_subnets_ids" {
-  value = tolist(data.aws_subnet_ids.private.ids)
+  value = sort(tolist(data.aws_subnets.private.ids))
 }
 
 output "external_subnets_ids" {
-  value = tolist(data.aws_subnet_ids.public.ids)
+  value = sort(tolist(data.aws_subnets.public.ids))
 }
 
 output "cluster_domain_name" {
