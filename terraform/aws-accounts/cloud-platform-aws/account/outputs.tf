@@ -9,5 +9,6 @@ output "cp_zone_id" {
 }
 
 output "click_here_to_login" {
-  value = module.sso.saml_login_page
+  value       = module.sso.saml_login_page
+  description = "SSO login page for Cloud Platform"
 }
