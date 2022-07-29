@@ -2,7 +2,8 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.terraform.io/alexkappa/auth0" {
-  version = "0.26.2"
+  version     = "0.26.2"
+  constraints = "0.26.2"
   hashes = [
     "h1:k8ICfvHpOEvz5nsZJirH2VF1RnOEhqIEVpowiVHuzzQ=",
     "zh:160767ad6cb0a2b176cf21fe811aedf28795e60d8cd71a4ec04e947a45b36e25",
@@ -23,7 +24,7 @@ provider "registry.terraform.io/alexkappa/auth0" {
 
 provider "registry.terraform.io/auth0/auth0" {
   version     = "0.34.0"
-  constraints = "0.34.0"
+  constraints = ">= 0.27.0, 0.34.0"
   hashes = [
     "h1:phcgf6T5SJaLSsK1X33YnrNRBiKgo5GisksYglr/fpA=",
     "zh:35f8edd313a978a582e61ae3ac547b859a36436a154d51d3a4443e841f77d97b",
