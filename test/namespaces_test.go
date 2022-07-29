@@ -57,6 +57,9 @@ var _ = Describe("Namespaces", func() {
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
 			Expect(err).ToNot(HaveOccurred())
 
+			// Clean up namespace after the test completes
+			defer k8s.KubectlDeleteFromStringE(GinkgoT(), options, tpl)
+
 			Eventually(func() string {
 				// We deliberately don't handle the error here as it will always fail.
 				output, _ := canIPerformAction(options, verb, resource, impersonateUser, namespace)
