@@ -1,4 +1,3 @@
-
 module "concourse" {
   count  = terraform.workspace == "manager" ? 1 : 0
   source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.8.3"
@@ -70,7 +69,7 @@ module "ingress_controllers" {
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
   dependence_opa         = "ignore"
   # It depends on complete cert-manager module
-  //depends_on = [module.cert_manager]
+  # depends_on = [module.cert_manager]
 }
 
 module "modsec_ingress_controllers" {
@@ -98,7 +97,6 @@ module "ingress_controllers_v1" {
     module.cert_manager,
     module.monitoring.prometheus_operator_crds_status
   ]
-
 }
 
 module "modsec_ingress_controllers_v1" {
@@ -186,11 +184,11 @@ module "starter_pack" {
 module "velero" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.8.1"
 
-  dependence_prometheus = module.monitoring.prometheus_operator_crds_status
-  cluster_domain_name   = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-
+  dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
+  cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
+
 module "kuberhealthy" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.0.4"
 }
