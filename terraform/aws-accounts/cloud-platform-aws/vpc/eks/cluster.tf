@@ -21,7 +21,7 @@ locals {
   # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler)
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/835
   node_groups_count = {
-    live    = "42"
+    live    = "54"
     manager = "4"
     default = "3"
   }
