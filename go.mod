@@ -3,7 +3,7 @@ module github.com/ministryofjustice/cloud-platform-infrastructure
 go 1.18
 
 require (
-	github.com/aws/aws-sdk-go v1.44.62
+	github.com/aws/aws-sdk-go v1.44.65
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gruntwork-io/terratest v0.40.18
 	github.com/ministryofjustice/cloud-platform-go-library v0.0.0-20220708164239-3ef56c2f2e50
@@ -14,6 +14,7 @@ require (
 	github.com/prometheus-operator/prometheus-operator/pkg/client v0.58.0
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.0
+	k8s.io/api v0.24.3
 	k8s.io/apimachinery v0.24.3
 	k8s.io/client-go v0.24.3
 )
@@ -74,7 +75,6 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/api v0.24.3 // indirect
 	k8s.io/apiextensions-apiserver v0.24.3 // indirect
 	k8s.io/klog/v2 v2.70.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20220627174259-011e075b9cb8 // indirect
