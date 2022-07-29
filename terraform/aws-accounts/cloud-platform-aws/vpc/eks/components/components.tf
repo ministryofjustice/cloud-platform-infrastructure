@@ -171,18 +171,6 @@ module "opa" {
   integration_test_zone          = data.aws_route53_zone.integrationtest.name
 }
 
-module "starter_pack" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.1.7"
-
-  enable_starter_pack = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
-  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-
-  depends_on = [
-    module.ingress_controllers_v1,
-    module.modsec_ingress_controllers_v1
-  ]
-}
-
 module "velero" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.8.1"
 
