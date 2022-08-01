@@ -151,12 +151,12 @@ module "s3_bucket_kubeconfigs" {
   }
 }
 
-// Create a DynamoDB table so we can lock the terraform state of each
-// namespace in the cloud-platform-environments repository, as we
-// `terraform apply` it.
-//
-// This table name is referenced from the environments repo, so that
-// terraform can use it to lock the state of each namespace.
+# Create a DynamoDB table so we can lock the terraform state of each
+# namespace in the cloud-platform-environments repository, as we
+# `terraform apply` it.
+#
+# This table name is referenced from the environments repo, so that
+# terraform can use it to lock the state of each namespace.
 resource "aws_dynamodb_table" "cloud_platform_environments_terraform_lock" {
   name           = "cloud-platform-environments-terraform-lock"
   hash_key       = "LockID"
@@ -183,4 +183,3 @@ resource "aws_s3_bucket_object" "kubeconfig" {
   content                = templatefile("${path.module}/templates/kubeconfig.tpl", { clusters = var.kubeconfig_clusters })
   server_side_encryption = "AES256"
 }
-
