@@ -148,7 +148,9 @@ var _ = Describe("Namespaces", func() {
 				// If the namespace is in the ignore list, skip it
 				for _, ignore := range toIgnore {
 					namespaceName := namespace.Name
-					if namespaceName == ignore || strings.Contains(namespaceName, "smoketest") {
+					// All integration test namespaces are prefixed with "smoketest" or "integrationtest", we need to ignore these.
+					// Eventually, we'll phase out the 'integrationtest' prefix, but for now, we'll keep it, until we abolish Ruby tests.
+					if namespaceName == ignore || strings.HasPrefix(namespaceName, "smoketest") || strings.HasPrefix(namespaceName, "integrationtest") {
 						continue out
 					}
 				}
