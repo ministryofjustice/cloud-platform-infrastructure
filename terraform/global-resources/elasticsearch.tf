@@ -2,9 +2,9 @@ locals {
   live_domain = "cloud-platform-live"
 
   allowed_live_1_ips = {
-    "35.178.209.113/32" = "live-1-a"
-    "35.177.252.54/32"  = "live-1-b"
     "3.8.51.207/32"     = "live-1-c"
+    "35.177.252.54/32"  = "live-1-b"
+    "35.178.209.113/32" = "live-1-a"
   }
 
   audit_domain = "cloud-platform-audit"
@@ -78,13 +78,13 @@ data "aws_iam_policy_document" "live_1" {
 resource "aws_elasticsearch_domain" "live_1" {
   domain_name           = local.live_domain
   provider              = aws.cloud-platform
-  elasticsearch_version = "7.4"
+  elasticsearch_version = "7.10"
 
   cluster_config {
     instance_type            = "r5.4xlarge.elasticsearch"
     instance_count           = "15"
     dedicated_master_enabled = true
-    dedicated_master_type    = "m4.large.elasticsearch"
+    dedicated_master_type    = "m5.large.elasticsearch"
     dedicated_master_count   = "3"
     zone_awareness_enabled   = true
 
@@ -95,7 +95,7 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   ebs_options {
     ebs_enabled = "true"
-    volume_type = "gp2"
+    volume_type = "gp3"
     volume_size = "1536"
   }
 
