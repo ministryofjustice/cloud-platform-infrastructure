@@ -13,10 +13,12 @@ spec:
       labels:
         app: privileged-integration-test
     spec:
+      securityContext:
+        runAsUser: 0
+        runAsGroup: 0
+        fsGroup: 0
       containers:
-        - name: postgres
-          image: postgres:10.4
-          imagePullPolicy: "IfNotPresent"
-          ports:
-            - containerPort: 5432
+        - name: box
+          image: busybox:1
+          command: [ "sh", "-c", "sleep 1h" ]
 
