@@ -12,10 +12,6 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "2.12.1"
     }
-    alexkappa = {
-      source  = "alexkappa/auth0"
-      version = "0.26.2"
-    }
   }
   required_version = ">= 0.14"
 }
