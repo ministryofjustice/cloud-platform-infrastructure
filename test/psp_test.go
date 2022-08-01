@@ -17,6 +17,8 @@ import (
 	. "github.com/onsi/gomega"
 )
 
+// A Cloud Platform cluster contains Pod Security policies (PSP) that are used to control container privileges.
+// The below tests verify that the PSPs are applied correctly to new pods in the cluster.
 var _ = Describe("pod security policies", func() {
 	It("should have the expected policies defined", func() {
 		// Get a list of policies in the cluster
@@ -40,6 +42,7 @@ var _ = Describe("pod security policies", func() {
 			options   *k8s.KubectlOptions
 		)
 		BeforeEach(func() {
+			// Create a new namespace
 			namespace = fmt.Sprintf("%s-psp-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 			options = k8s.NewKubectlOptions("", "", namespace)
 
@@ -53,10 +56,12 @@ var _ = Describe("pod security policies", func() {
 		})
 
 		AfterEach(func() {
+			// Clean up the namespace
 			err := k8s.DeleteNamespaceE(GinkgoT(), options, namespace)
 			Expect(err).NotTo(HaveOccurred())
 		})
 
+		// In a privileged namespace, the container should be able to run privileged containers.
 		It("should work in a privileged namespace", func() {
 			err := makeNamespacePrivileged(options, namespace)
 			Expect(err).NotTo(HaveOccurred())
@@ -70,15 +75,23 @@ var _ = Describe("pod security policies", func() {
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
 			Expect(err).NotTo(HaveOccurred())
 
-			Eventually(func() []corev1.Pod {
+			// Eventually do you see a pod "Running" in the namespace i.e. the container is allowed to run
+			Eventually(func() bool {
+				GinkgoWriter.Printf("Checking for privileged pod in privileged namespace %s\n", namespace)
 				list, err := c.Client.Clientset.CoreV1().Pods(namespace).List(context.Background(), v1.ListOptions{})
 				if err != nil {
 					Fail(fmt.Sprintf("Failed to list pods in namespace %s: %s", namespace, err))
 				}
-				return list.Items
-			}, "2m", "10s").ShouldNot(BeEmpty())
+				for _, pod := range list.Items {
+					if pod.Status.Phase == corev1.PodRunning {
+						return true
+					}
+				}
+				return false
+			}, "2m", "10s").Should(BeTrue())
 		})
 
+		// In a restricted namespace, the container should not be able to run privileged containers.
 		It("shouldn't work in a unprivileged namespace", func() {
 			// Create a pod in the unprivileged namespace
 			tpl, err := helpers.TemplateFile("./fixtures/privileged-deployment.yaml.tmpl", "privileged-deployment.yaml.tmpl", template.FuncMap{
@@ -89,19 +102,19 @@ var _ = Describe("pod security policies", func() {
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
 			Expect(err).NotTo(HaveOccurred())
 
-			Consistently(func() error {
-				GinkgoWriter.Printf("Checking for privileged pod in namespace %s\n", namespace)
+			Consistently(func() bool {
+				GinkgoWriter.Printf("Checking for privileged pod in unprivileged namespace %s\n", namespace)
 				list, err := c.Client.Clientset.CoreV1().Pods(namespace).List(context.Background(), v1.ListOptions{})
 				if err != nil {
 					Fail(fmt.Sprintf("Failed to list pods in namespace %s: %s", namespace, err))
 				}
 				for _, pod := range list.Items {
 					if pod.Status.Phase == corev1.PodRunning {
-						return fmt.Errorf("Pod %s is in a running state, and it shouldn't be", pod.Name)
+						return false
 					}
 				}
-				return nil
-			}, "1m", "30s").Should(BeNil())
+				return true
+			}, "1m", "30s").Should(BeTrue())
 		})
 	})
 
@@ -112,6 +125,7 @@ var _ = Describe("pod security policies", func() {
 		)
 
 		BeforeEach(func() {
+			// Create a new namespace
 			namespace = fmt.Sprintf("%s-psp-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 			options = k8s.NewKubectlOptions("", "", namespace)
 
@@ -125,10 +139,12 @@ var _ = Describe("pod security policies", func() {
 		})
 
 		AfterEach(func() {
+			// Clean up the namespace
 			err := k8s.DeleteNamespaceE(GinkgoT(), options, namespace)
 			Expect(err).NotTo(HaveOccurred())
 		})
 
+		// In a privileged namespace, the unprivileged container should be able to run privileged containers.
 		It("should work in a privileged namespace", func() {
 			err := makeNamespacePrivileged(options, namespace)
 			Expect(err).NotTo(HaveOccurred())
@@ -142,14 +158,19 @@ var _ = Describe("pod security policies", func() {
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
 			Expect(err).NotTo(HaveOccurred())
 
-			Eventually(func() []corev1.Pod {
-				GinkgoWriter.Printf("Checking for unprivileged pod in namespace %s\n", namespace)
+			Eventually(func() bool {
+				GinkgoWriter.Printf("Checking for unprivileged pod in privileged namespace %s\n", namespace)
 				list, err := c.Client.Clientset.CoreV1().Pods(namespace).List(context.Background(), v1.ListOptions{})
 				if err != nil {
 					Fail(fmt.Sprintf("Failed to list pods in namespace %s: %s", namespace, err))
 				}
-				return list.Items
-			}, "2m", "10s").ShouldNot(BeEmpty())
+				for _, pod := range list.Items {
+					if pod.Status.Phase == corev1.PodRunning {
+						return true
+					}
+				}
+				return false
+			}, "2m", "10s").Should(BeTrue())
 		})
 
 		It("should work in a unprivileged namespace", func() {
@@ -162,14 +183,19 @@ var _ = Describe("pod security policies", func() {
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
 			Expect(err).NotTo(HaveOccurred())
 
-			Eventually(func() []corev1.Pod {
-				GinkgoWriter.Printf("Checking for unprivileged pod in namespace %s\n", namespace)
+			Eventually(func() bool {
+				GinkgoWriter.Printf("Checking for unprivileged pod in unprivileged namespace %s\n", namespace)
 				list, err := c.Client.Clientset.CoreV1().Pods(namespace).List(context.Background(), v1.ListOptions{})
 				if err != nil {
 					Fail(fmt.Sprintf("Failed to list pods in namespace %s: %s", namespace, err))
 				}
-				return list.Items
-			}, "2m", "10s").ShouldNot(BeEmpty())
+				for _, pod := range list.Items {
+					if pod.Status.Phase == corev1.PodRunning {
+						return true
+					}
+				}
+				return false
+			}, "2m", "10s").Should(BeTrue())
 		})
 	})
 })
