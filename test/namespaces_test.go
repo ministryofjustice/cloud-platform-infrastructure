@@ -155,7 +155,10 @@ var _ = Describe("Namespaces", func() {
 
 				// Get the annotations
 				annotations := namespace.GetAnnotations()
-				Expect(annotations).ShouldNot(BeEmpty())
+				if len(annotations) == 0 {
+					// Handle empty namepsaces by printing the offending namespace and failing the test
+					Fail("Namespace " + namespace.Name + " has no annotations")
+				}
 			}
 		})
 	})
