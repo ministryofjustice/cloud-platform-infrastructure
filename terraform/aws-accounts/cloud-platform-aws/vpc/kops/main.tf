@@ -35,11 +35,6 @@ data "aws_route53_zone" "cloud_platform" {
 locals {
   cluster_name             = terraform.workspace
   cluster_base_domain_name = "${local.cluster_name}.cloud-platform.service.justice.gov.uk"
-  vpc                      = var.vpc_name == "" ? terraform.workspace : var.vpc_name
-
-  is_live_cluster      = terraform.workspace == "live-1"
-  services_base_domain = local.is_live_cluster ? "cloud-platform.service.justice.gov.uk" : local.cluster_base_domain_name
-
 }
 
 # Modules
