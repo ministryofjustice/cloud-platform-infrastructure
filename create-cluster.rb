@@ -25,7 +25,6 @@ def main(options)
   kind = options[:kind]
   vpc_name = options[:vpc_name]
   gitcrypt_unlock = options[:gitcrypt_unlock]
-  integration_tests = options[:integration_tests]
   dockerconfig = options[:dockerconfig]
   extra_wait = options[:extra_wait]
 
@@ -40,7 +39,6 @@ def main(options)
   create_cluster_eks(cluster_name, vpc_name)
   sleep(extra_wait)
   install_components_eks(cluster_name)
-  run_integration_tests(cluster_name) if integration_tests
   run_and_output "kubectl cluster-info"
 end
 
@@ -195,22 +193,8 @@ def running_in_docker_container?
   File.file?("/proc/1/cgroup") && File.read("/proc/1/cgroup") =~ /(docker|kubepods|0::\/)/
 end
 
-def run_integration_tests(cluster_name)
-  dir = "smoke-tests/"
-  output = "./#{cluster_name}-rspec.txt"
-
-  cmd = [
-    "cd #{dir}",
-    "bundle binstubs bundler --force --path /usr/local/bin",
-    "bundle binstubs rspec-core --path /usr/local/bin",
-    "rspec --tag ~live-1 --tag ~eks-manager --format progress --format documentation --out #{output}"
-  ].join("; ")
-
-  run_and_output(cmd)
-end
-
 def parse_options
-  options = {gitcrypt_unlock: true, integration_tests: true, extra_wait: 0, kind: "kops", dockerconfig: NONE}
+  options = {gitcrypt_unlock: true, extra_wait: 0, kind: "kops", dockerconfig: NONE}
 
   OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
@@ -223,10 +207,6 @@ def parse_options
 
     opts.on("-g", "--no-gitcrypt", "Avoid the execution of git-crypt unlock (example: pipeline tools might do that for you)") do |name|
       options[:gitcrypt_unlock] = false
-    end
-
-    opts.on("-i", "--no-integration-test", "Don't run integration tests after creating the cluster") do |name|
-      options[:integration_tests] = false
     end
 
     opts.on("-t", "--extra-wait N", Float, "The time between kops validate and deploy of components. We need to wait for DNS propagation") do |n|
