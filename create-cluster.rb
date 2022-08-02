@@ -22,10 +22,8 @@ NONE = "none"
 
 def main(options)
   cluster_name = options[:cluster_name]
-  kind = options[:kind]
   vpc_name = options[:vpc_name]
   gitcrypt_unlock = options[:gitcrypt_unlock]
-  dockerconfig = options[:dockerconfig]
   extra_wait = options[:extra_wait]
 
   vpc_name = cluster_name if vpc_name.nil?
@@ -194,7 +192,7 @@ def running_in_docker_container?
 end
 
 def parse_options
-  options = {gitcrypt_unlock: true, extra_wait: 0, kind: "kops", dockerconfig: NONE}
+  options = {gitcrypt_unlock: true, extra_wait: 0}
 
   OptionParser.new { |opts|
     opts.on("-n", "--name CLUSTER-NAME", "Cluster name (max. #{MAX_CLUSTER_NAME_LENGTH} chars)") do |name|
@@ -211,10 +209,6 @@ def parse_options
 
     opts.on("-t", "--extra-wait N", Float, "The time between kops validate and deploy of components. We need to wait for DNS propagation") do |n|
       options[:extra_wait] = n
-    end
-
-    opts.on("-d", "--dockerconfig DOCKER-CONFIG", "Authenticate to Docker hub using a docker config file") do |name|
-      options[:dockerconfig] = name
     end
 
     opts.on_tail("-h", "--help", "Show help message") do
