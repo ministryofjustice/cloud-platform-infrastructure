@@ -67,7 +67,7 @@ func TestSpec(t *testing.T) {
 	suiteConfig.RandomizeAllSpecs = true
 	reporterConfig.FullTrace = true
 
-	var _ = AfterSuite(func() {
+	_ = AfterSuite(func() {
 		GinkgoWriter.Println("Cleaning up after suite")
 		err := c.Cleanup()
 		Expect(err).ToNot(HaveOccurred())
