@@ -56,7 +56,7 @@ var _ = Describe("Namespaces", func() {
 			Expect(err).ToNot(HaveOccurred())
 
 			// Clean up namespace after the test completes
-			defer k8s.KubectlDeleteFromStringE(GinkgoT(), options, tpl)
+			defer k8s.KubectlDeleteFromString(GinkgoT(), options, tpl)
 
 			Eventually(func() string {
 				// We deliberately don't handle the error here as it will always fail.
