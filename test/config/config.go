@@ -165,3 +165,23 @@ func (c *Config) ExpectedServiceMonitors() {
 
 	c.ServiceMonitors = serviceMonitors
 }
+
+// Cleanup will look for namespaces with the predefined prefix set and delete them.
+// Usually tests will perform this action post-test, so this method acts as a catchall
+func (c *Config) Cleanup() error {
+	namespaces, err := c.Client.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+
+	for _, namespace := range namespaces.Items {
+		if strings.Contains(namespace.Name, c.Prefix) {
+			err = c.Client.Clientset.CoreV1().Namespaces().Delete(context.TODO(), namespace.Name, metav1.DeleteOptions{})
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
