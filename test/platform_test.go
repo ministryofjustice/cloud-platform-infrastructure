@@ -60,14 +60,14 @@ func TestMain(m *testing.M) {
 	os.Exit(exitVal)
 }
 
-// TestTests Rans the Ginkgo specs
-func TestTests(t *testing.T) {
+// TestSpec runs all tests
+func TestSpec(t *testing.T) {
 	RegisterFailHandler(Fail)
 	suiteConfig, reporterConfig := GinkgoConfiguration()
 	suiteConfig.RandomizeAllSpecs = true
 	reporterConfig.FullTrace = true
 
-	AfterSuite(func() {
+	var _ = AfterSuite(func() {
 		GinkgoWriter.Println("Cleaning up after suite")
 		err := c.Cleanup()
 		Expect(err).ToNot(HaveOccurred())
