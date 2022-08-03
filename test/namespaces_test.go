@@ -15,9 +15,7 @@ import (
 
 var _ = Describe("Namespaces", func() {
 	Context("when impersonating a non-privileged user", func() {
-		var (
-			verb, resource, impersonateUser string
-		)
+		var verb, resource, impersonateUser string
 
 		options := k8s.NewKubectlOptions("", "", "")
 		It("shouldn't return resources from a system namespace", func() {
@@ -69,9 +67,7 @@ var _ = Describe("Namespaces", func() {
 	})
 
 	Context("when impersonating a privileged user", func() {
-		var (
-			verb, resource, impersonateUser string
-		)
+		var verb, resource, impersonateUser string
 
 		options := k8s.NewKubectlOptions("", "", "")
 		It("should return resources from a system namespace", func() {

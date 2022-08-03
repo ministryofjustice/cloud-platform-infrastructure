@@ -39,7 +39,7 @@ func TestMain(m *testing.M) {
 		kubeconfig = flag.String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
 	}
 
-	var cluster = flag.String("cluster", "", "(optional) set the cluster name")
+	cluster := flag.String("cluster", "", "(optional) set the cluster name")
 	flag.Parse()
 
 	client, err := client.NewKubeClientWithValues(*kubeconfig, "")

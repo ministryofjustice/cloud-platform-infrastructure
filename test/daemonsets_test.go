@@ -36,7 +36,6 @@ var _ = Describe("Daemonsets", func() {
 			for _, expectedDaemonSet := range c.Daemonsets {
 				Expect(actualDaemonSets).To(ContainElement(expectedDaemonSet))
 			}
-
 		})
 	})
 })
