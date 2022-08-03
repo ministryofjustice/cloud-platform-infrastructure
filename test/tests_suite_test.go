@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/util/homedir"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -26,9 +25,6 @@ const (
 
 // // c is global, so all tests has access to it
 var c config.Config
-
-// Create a new instance of the logger. You can have any number of instances.
-var log = logrus.New()
 
 // TestMain controls pre/post test logic
 func TestMain(m *testing.M) {
