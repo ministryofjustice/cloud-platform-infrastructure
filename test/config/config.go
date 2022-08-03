@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ministryofjustice/cloud-platform-go-library/client"
+	kubeErr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -177,6 +178,10 @@ func (c *Config) Cleanup() error {
 	for _, namespace := range namespaces.Items {
 		if strings.Contains(namespace.Name, c.Prefix) {
 			err = c.Client.Clientset.CoreV1().Namespaces().Delete(context.TODO(), namespace.Name, metav1.DeleteOptions{})
+			if kubeErr.IsNotFound(err) {
+				// This is fine, it just means the namespace was already deleted.
+				continue
+			}
 			if err != nil {
 				return err
 			}
