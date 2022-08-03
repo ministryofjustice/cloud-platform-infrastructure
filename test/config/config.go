@@ -147,7 +147,7 @@ func (c *Config) ExpectedDaemonSets() {
 func (c *Config) ExpectedServiceMonitors() {
 	// serviceMonitors describes all the service monitors that are expected to be in the cluster and their
 	// accompanying namespaces.
-	var serviceMonitors = map[string][]string{
+	serviceMonitors := map[string][]string{
 		// NamespaceName: []Services
 		"cert-manager": {"cert-manager"},
 

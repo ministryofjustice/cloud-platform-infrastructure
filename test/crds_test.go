@@ -23,5 +23,4 @@ var _ = Describe("Custom resource definitions", func() {
 			Expect(crds).To(ContainSubstring(expectedCrd))
 		}
 	})
-
 })

@@ -66,7 +66,6 @@ var _ = Describe("ingress-controllers", func() {
 
 				return s
 			}, "8m", "30s").Should(Equal(200))
-
 		})
 	})
 
