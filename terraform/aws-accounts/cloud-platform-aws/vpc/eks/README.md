@@ -13,7 +13,7 @@ This README describes the main infrastructure components required to deliver a p
 
 ## Requirements
 
-- Terraform >= 12
+- Terraform >= 14
 - [aws-iam-authenticator](https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 - [Helm <= 2.14.3](https://github.com/helm/helm/releases/tag/v2.14.3)
