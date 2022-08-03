@@ -52,7 +52,7 @@ func (c *Config) SetClusterName(cluster string) error {
 	if cluster == "" {
 		nodes, err := c.Client.Clientset.CoreV1().Nodes().List(context.Background(), metav1.ListOptions{})
 		if err != nil {
-			return fmt.Errorf("Unable to fetch node name: %e", err)
+			return fmt.Errorf("unable to fetch node name: %e", err)
 		}
 
 		clusterName := nodes.Items[0].Labels["Cluster"]
