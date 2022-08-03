@@ -20,6 +20,8 @@ jobs:
       - uses: terraform-linters/setup-tflint@v2
         with:
           tflint_version: v0.39.1
-      - run: tflint --version
-      - run: tflint --init
-      - run: tflint -f compact
+      - working-directory: ${{ matrix.directory }}
+        run:
+          tflint --version
+          tflint --init
+          tflint -f compact
