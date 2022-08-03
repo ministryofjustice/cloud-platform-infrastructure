@@ -1,0 +1,25 @@
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tflint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: ["terraform/aws-accounts/cloud-platform-aws/account", "terraform/global-resources"]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v3
+        with:
+          path: ~/.tflint.d/plugins
+          key: tflint-${{ hashFiles('.tflint.hcl') }}
+      - uses: terraform-linters/setup-tflint@v2
+        with:
+          tflint_version: v0.39.1
+      - run: tflint --version
+      - run: tflint --init
+      - run: tflint -f compact
