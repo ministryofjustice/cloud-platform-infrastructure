@@ -31,7 +31,7 @@ jobs:
 
       - name: Run gofumpt command
         run: |
-          gofumpt -l -w ./
+          gofumpt -l -d ./
 
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
