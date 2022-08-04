@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"k8s.io/client-go/util/homedir"
 
@@ -57,6 +58,14 @@ func TestMain(m *testing.M) {
 	fmt.Printf("Starting tests on cluster: %s\n", c.ClusterName)
 	exitVal := m.Run()
 
+	// Cleanup all prefixed namespaces after the tests have finished.
+	// I can't use AfterSuite here because it doesn't handle parallel tests.
+	defer func() {
+		if err := c.Cleanup(); err != nil {
+			Fail(fmt.Sprintf("Failed to cleanup: %s", err))
+		}
+	}()
+
 	os.Exit(exitVal)
 }
 
@@ -65,13 +74,8 @@ func TestSpec(t *testing.T) {
 	RegisterFailHandler(Fail)
 	suiteConfig, reporterConfig := GinkgoConfiguration()
 	suiteConfig.RandomizeAllSpecs = true
+	suiteConfig.Timeout = 25 * time.Minute
 	reporterConfig.FullTrace = true
 
-	_ = AfterSuite(func() {
-		GinkgoWriter.Println("Cleaning up after suite")
-		err := c.Cleanup()
-		Expect(err).ToNot(HaveOccurred())
-	})
-
-	RunSpecs(t, "Tests Suite")
+	RunSpecs(t, "Tests Suite", suiteConfig, reporterConfig)
 }
