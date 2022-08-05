@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: unprivileged-integration-test
-  namespace: <%= namespace %>
+  namespace: {{ .namespace }}
 spec:
   replicas: 1
   selector:
@@ -13,10 +13,12 @@ spec:
       labels:
         app: unprivileged-integration-test
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
-        - name: nginx
-          image: bitnami/nginx
-          imagePullPolicy: "IfNotPresent"
-          ports:
-            - containerPort: 5432
+        - name: box
+          image: busybox:1
+          command: [ "sh", "-c", "sleep 1h" ]
 

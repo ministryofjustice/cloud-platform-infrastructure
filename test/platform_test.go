@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
-	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/util/homedir"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -27,9 +27,6 @@ const (
 // // c is global, so all tests has access to it
 var c config.Config
 
-// Create a new instance of the logger. You can have any number of instances.
-var log = logrus.New()
-
 // TestMain controls pre/post test logic
 func TestMain(m *testing.M) {
 	var kubeconfig *string
@@ -39,7 +36,7 @@ func TestMain(m *testing.M) {
 		kubeconfig = flag.String("kubeconfig", "", "(optional) absolute path to the kubeconfig file")
 	}
 
-	var cluster = flag.String("cluster", "", "(optional) set the cluster name")
+	cluster := flag.String("cluster", "", "(optional) set the cluster name")
 	flag.Parse()
 
 	client, err := client.NewKubeClientWithValues(*kubeconfig, "")
@@ -61,14 +58,24 @@ func TestMain(m *testing.M) {
 	fmt.Printf("Starting tests on cluster: %s\n", c.ClusterName)
 	exitVal := m.Run()
 
+	// Cleanup all prefixed namespaces after the tests have finished.
+	// I can't use AfterSuite here because it doesn't handle parallel tests.
+	defer func() {
+		if err := c.Cleanup(); err != nil {
+			Fail(fmt.Sprintf("Failed to cleanup: %s", err))
+		}
+	}()
+
 	os.Exit(exitVal)
 }
 
-// TestTests Rans the Ginkgo specs
-func TestTests(t *testing.T) {
+// TestSpec runs all tests
+func TestSpec(t *testing.T) {
 	RegisterFailHandler(Fail)
 	suiteConfig, reporterConfig := GinkgoConfiguration()
 	suiteConfig.RandomizeAllSpecs = true
+	suiteConfig.Timeout = 25 * time.Minute
 	reporterConfig.FullTrace = true
-	RunSpecs(t, "Tests Suite")
+
+	RunSpecs(t, "Tests Suite", suiteConfig, reporterConfig)
 }

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/ministryofjustice/cloud-platform-go-library/client"
+	kubeErr "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -52,7 +53,7 @@ func (c *Config) SetClusterName(cluster string) error {
 	if cluster == "" {
 		nodes, err := c.Client.Clientset.CoreV1().Nodes().List(context.Background(), metav1.ListOptions{})
 		if err != nil {
-			return fmt.Errorf("Unable to fetch node name: %e", err)
+			return fmt.Errorf("unable to fetch node name: %e", err)
 		}
 
 		clusterName := nodes.Items[0].Labels["Cluster"]
@@ -147,7 +148,7 @@ func (c *Config) ExpectedDaemonSets() {
 func (c *Config) ExpectedServiceMonitors() {
 	// serviceMonitors describes all the service monitors that are expected to be in the cluster and their
 	// accompanying namespaces.
-	var serviceMonitors = map[string][]string{
+	serviceMonitors := map[string][]string{
 		// NamespaceName: []Services
 		"cert-manager": {"cert-manager"},
 
@@ -164,4 +165,28 @@ func (c *Config) ExpectedServiceMonitors() {
 	}
 
 	c.ServiceMonitors = serviceMonitors
+}
+
+// Cleanup will look for namespaces with the predefined prefix set and delete them.
+// Usually tests will perform this action post-test, so this method acts as a catchall
+func (c *Config) Cleanup() error {
+	namespaces, err := c.Client.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		return err
+	}
+
+	for _, namespace := range namespaces.Items {
+		if strings.Contains(namespace.Name, c.Prefix) {
+			err = c.Client.Clientset.CoreV1().Namespaces().Delete(context.TODO(), namespace.Name, metav1.DeleteOptions{})
+			if kubeErr.IsNotFound(err) {
+				// This is fine, it just means the namespace was already deleted.
+				continue
+			}
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
 }

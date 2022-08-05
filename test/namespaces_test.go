@@ -15,9 +15,7 @@ import (
 
 var _ = Describe("Namespaces", func() {
 	Context("when impersonating a non-privileged user", func() {
-		var (
-			verb, resource, impersonateUser string
-		)
+		var verb, resource, impersonateUser string
 
 		options := k8s.NewKubectlOptions("", "", "")
 		It("shouldn't return resources from a system namespace", func() {
@@ -58,7 +56,7 @@ var _ = Describe("Namespaces", func() {
 			Expect(err).ToNot(HaveOccurred())
 
 			// Clean up namespace after the test completes
-			defer k8s.KubectlDeleteFromStringE(GinkgoT(), options, tpl)
+			defer k8s.KubectlDeleteFromString(GinkgoT(), options, tpl)
 
 			Eventually(func() string {
 				// We deliberately don't handle the error here as it will always fail.
@@ -69,9 +67,7 @@ var _ = Describe("Namespaces", func() {
 	})
 
 	Context("when impersonating a privileged user", func() {
-		var (
-			verb, resource, impersonateUser string
-		)
+		var verb, resource, impersonateUser string
 
 		options := k8s.NewKubectlOptions("", "", "")
 		It("should return resources from a system namespace", func() {
@@ -148,14 +144,19 @@ var _ = Describe("Namespaces", func() {
 				// If the namespace is in the ignore list, skip it
 				for _, ignore := range toIgnore {
 					namespaceName := namespace.Name
-					if namespaceName == ignore || strings.Contains(namespaceName, "smoketest") {
+					// All integration test namespaces are prefixed with "smoketest" or "integrationtest", we need to ignore these.
+					// Eventually, we'll phase out the 'integrationtest' prefix, but for now, we'll keep it, until we abolish Ruby tests.
+					if namespaceName == ignore || strings.HasPrefix(namespaceName, "smoketest") || strings.HasPrefix(namespaceName, "integrationtest") {
 						continue out
 					}
 				}
 
 				// Get the annotations
 				annotations := namespace.GetAnnotations()
-				Expect(annotations).ShouldNot(BeEmpty())
+				if len(annotations) == 0 {
+					// Handle empty namepsaces by printing the offending namespace and failing the test
+					Fail("Namespace " + namespace.Name + " has no annotations")
+				}
 			}
 		})
 	})

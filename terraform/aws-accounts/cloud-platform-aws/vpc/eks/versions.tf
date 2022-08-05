@@ -6,15 +6,11 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "4.23.0"
+      version = "4.24.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = "2.12.1"
-    }
-    alexkappa = {
-      source  = "alexkappa/auth0"
-      version = "0.26.2"
     }
   }
   required_version = ">= 0.14"

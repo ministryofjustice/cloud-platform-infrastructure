@@ -13,7 +13,8 @@ import (
 // RecordSets uses the AWS API to return domain entry existence in Route53
 // using the hostzone ID specified in the configuration
 func RecordSets(d, hostedZone string) (bool, error) {
-	svc := route53.New(session.New())
+	mySession := session.Must(session.NewSession())
+	svc := route53.New(mySession)
 
 	params := &route53.ListResourceRecordSetsInput{
 		HostedZoneId: aws.String(hostedZone),

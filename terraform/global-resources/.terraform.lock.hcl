@@ -99,22 +99,3 @@ provider "registry.terraform.io/hashicorp/template" {
   ]
 }
 
-provider "registry.terraform.io/phillbaker/elasticsearch" {
-  version = "2.0.2"
-  hashes = [
-    "h1:m+cj3gpTKXWPvQfXu5Ci5U3dkWL8XMGCrJZgFql+7UY=",
-    "zh:0731d004b42660fe0abebb69182b359925c0aee2f41d107054fc6f7e6adadcf4",
-    "zh:24c0b238169cf2ca507e7f8fc0af54f9e369234bb5d0dc48f7fd78b24fff3709",
-    "zh:2890f1d2c43c0ae5253261e5aac9c70708ac6e864f5f230d900c0ff67743fa6d",
-    "zh:422dfc6d826245cdfc019d77a3eb9dbb8aab99383cc4d3832191b92c36a8bb4b",
-    "zh:43ab3a87e9ef8910a9f3135e9bb68abe75f158326b5131faa17594f744f1696a",
-    "zh:46d068f9509a8d3455ac890bb558c8da6b0e78fa1d81d27652a88b5f67269eae",
-    "zh:4a4908bd98c8fdec5dd7a2781f27f0db87d425bb7cf501e48fff0ee4110944b4",
-    "zh:7187409d3b089d0c12371548fcb5b4f7cd2733498162acb558be9d3656195cab",
-    "zh:a67c19b1d718ed9460e32a8ba9b75e0978ee567644996cd1a5867a3c09ba7a8a",
-    "zh:af4d5d53eea0b5eea05b0ba429796c2b34a8670286c6106246c922c67b0d6a76",
-    "zh:b77efadeff1dcc8a25605d2c510f034168db8ed2cd98ab6322e7602a3ebd4031",
-    "zh:bc41f25ca62e32f5551263badd57aaf0557d7ab267a7708c1c0f99d1c7ca84f7",
-    "zh:e05e1490c40c65e3ed43691b7f85dfeb145063ed439b7804c6796c81440794f9",
-  ]
-}

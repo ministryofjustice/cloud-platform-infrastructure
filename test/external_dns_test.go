@@ -69,7 +69,6 @@ var _ = Describe("external-dns", func() {
 				Expect(err).NotTo(HaveOccurred())
 				return !exists
 			}, "10m", "10s").Should(BeFalse())
-
 		})
 	})
 
