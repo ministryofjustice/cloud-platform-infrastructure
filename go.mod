@@ -5,14 +5,13 @@ go 1.18
 require (
 	github.com/aws/aws-sdk-go v1.44.66
 	github.com/go-resty/resty/v2 v2.7.0
-	github.com/gruntwork-io/terratest v0.40.18
+	github.com/gruntwork-io/terratest v0.40.19
 	github.com/ministryofjustice/cloud-platform-go-library v0.0.0-20220708164239-3ef56c2f2e50
 	github.com/onsi/ginkgo/v2 v2.1.4
 	github.com/onsi/gomega v1.19.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.58.0
 	github.com/prometheus-operator/prometheus-operator/pkg/client v0.58.0
-	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.0
 	k8s.io/api v0.24.3
 	k8s.io/apimachinery v0.24.3
