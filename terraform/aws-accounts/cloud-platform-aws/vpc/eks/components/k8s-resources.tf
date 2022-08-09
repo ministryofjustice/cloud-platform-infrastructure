@@ -10,7 +10,7 @@ module "eks_csi" {
 }
 
 module "efs_csi" {
-  source      = "github.com/ministryofjustice/cloud-platform-terraform-efs-csi?ref=first-release"
+  source      = "github.com/ministryofjustice/cloud-platform-terraform-efs-csi?ref=1.0.1"
   eks_cluster = terraform.workspace
 }
 
