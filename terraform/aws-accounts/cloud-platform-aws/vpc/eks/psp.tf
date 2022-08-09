@@ -171,7 +171,16 @@ resource "kubernetes_cluster_role_binding" "privileged" {
     name      = "ebs-csi-controller-sa"
     namespace = "kube-system"
   }
-
+  subject {
+    kind      = "ServiceAccount"
+    name      = "efs-csi-controller-sa"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "efs-csi-node-sa"
+    namespace = "kube-system"
+  }
 }
 
 ## Pod Security Policy: restricted
