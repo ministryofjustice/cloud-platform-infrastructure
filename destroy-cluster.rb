@@ -136,7 +136,7 @@ class ClusterDeleter
   def user_namespaces
     stdout, _, _ = execute("kubectl get ns -o name | sed 's/namespace.//'", true)
     namespaces = stdout.split("\n")
-    smoketest_ns = namespaces.find_all { |ns| ns.match?(/smoketest-.*/)}
+    smoketest_ns = namespaces.find_all { |ns| ns.match?(/smoketest-.*/) }
     namespaces - EKS_SYSTEM_NAMESPACES - smoketest_ns
   end
 
