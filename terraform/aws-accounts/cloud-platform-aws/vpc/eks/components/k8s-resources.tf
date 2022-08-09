@@ -1,3 +1,19 @@
+########
+# CSIs #
+########
+
+module "eks_csi" {
+  # waiting for https://github.com/ministryofjustice/cloud-platform/issues/4035
+  count       = 0
+  source      = "github.com/ministryofjustice/cloud-platform-terraform-eks-csi?ref=gp3"
+  eks_cluster = terraform.workspace
+}
+
+module "efs_csi" {
+  source      = "github.com/ministryofjustice/cloud-platform-terraform-efs-csi?ref=first-release"
+  eks_cluster = terraform.workspace
+}
+
 ###################
 # Storage Classes #
 ###################
@@ -34,11 +50,6 @@ resource "kubernetes_storage_class" "io1" {
   }
 }
 
-module "eks_csi" {
-  count       = 0
-  source      = "github.com/ministryofjustice/cloud-platform-terraform-eks-csi?ref=gp3"
-  eks_cluster = terraform.workspace
-}
 
 resource "kubernetes_storage_class" "storageclass_gp3" {
 
