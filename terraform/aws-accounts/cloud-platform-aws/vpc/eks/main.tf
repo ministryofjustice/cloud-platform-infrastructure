@@ -85,8 +85,8 @@ data "aws_subnet_ids" "public" {
   }
 }
 
-# This required by an output (internal_subnets) which is used by 
-# concourse. 
+# This required by an output (internal_subnets) which is used by
+# concourse.
 data "aws_subnet" "private_cidrs" {
   count = length(tolist(data.aws_subnet_ids.private.ids))
   id    = tolist(data.aws_subnet_ids.private.ids)[count.index]
@@ -120,6 +120,8 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
 #########
 
 module "auth0" {
+  # We want auth0 on all clusters by default. Count gives us the ability to create one without.
+  count = 1
   source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.3.0"
 
   cluster_name         = terraform.workspace
