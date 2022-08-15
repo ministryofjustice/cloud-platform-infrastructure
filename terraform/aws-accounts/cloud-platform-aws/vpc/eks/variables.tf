@@ -27,3 +27,8 @@ variable "cluster_log_retention_in_days" {
   description = "Number of days to retain log events. Default retention - 90 days."
   type        = number
 }
+
+variable "enable_oidc_associate" {
+  default = true
+}
+

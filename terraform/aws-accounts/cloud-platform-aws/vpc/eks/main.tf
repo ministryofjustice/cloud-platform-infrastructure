@@ -120,8 +120,6 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
 #########
 
 module "auth0" {
-  # We want auth0 on all clusters by default. Count gives us the ability to create one without.
-  count = 1
   source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.3.0"
 
   cluster_name         = terraform.workspace
@@ -130,6 +128,8 @@ module "auth0" {
 }
 
 resource "aws_eks_identity_provider_config" "oidc_associate" {
+  # We want auth0 on all clusters by default. Count gives us the ability to create one without it.
+  count = var.enable_oidc_associate ? 1 : 0
   cluster_name = terraform.workspace
   depends_on   = [module.eks.cluster_id]
   oidc {
