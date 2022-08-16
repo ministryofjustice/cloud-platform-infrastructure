@@ -1,3 +1,8 @@
+provider "elasticsearch" {
+    url         = "https://${aws_elasticsearch_domain.test.endpoint}"
+    aws_profile = "moj-cp"
+}
+
 locals {
   live_domain = "cloud-platform-live"
 
@@ -322,30 +327,49 @@ data "aws_iam_policy_document" "test" {
 }
 
 # Uncomment this, if you need to create a test ES.
-# resource "aws_elasticsearch_domain" "test" {
-#   domain_name           = "cloud-platform-test"
-#   provider              = aws.cloud-platform
-#   elasticsearch_version = "7.4"
+resource "aws_elasticsearch_domain" "test" {
+  domain_name           = "cloud-platform-test"
+  provider              = aws.cloud-platform
+  elasticsearch_version = "OpenSearch_1.3"
 
-#   cluster_config {
-#     instance_type  = "r5.large.elasticsearch"
-#     instance_count = "1"
-#   }
+  cluster_config {
+    instance_type  = "r5.xlarge.elasticsearch"
+    instance_count = "2"
+  }
 
-#   ebs_options {
-#     ebs_enabled = "true"
-#     volume_type = "gp2"
-#     volume_size = "500"
-#   }
+  ebs_options {
+    ebs_enabled = "true"
+    volume_type = "gp3"
+    volume_size = "500"
+  }
 
-#   access_policies = data.aws_iam_policy_document.test.json
+  advanced_options = {
+    "rest.action.multi.allow_explicit_index" = "true"
+    "indices.query.bool.max_clause_count"    = 3000
+  }
 
-#   log_publishing_options {
-#     cloudwatch_log_group_arn = ""
-#     enabled                  = false
-#     log_type                 = "ES_APPLICATION_LOGS"
-#   }
-# }
+  access_policies = data.aws_iam_policy_document.test.json
+
+  tags = {
+    Domain = "cloud-platform-test"
+  }
+  log_publishing_options {
+    cloudwatch_log_group_arn = "arn:aws:logs:eu-west-2:754256621582:log-group:/aws/OpenSearchService/domains/cloud-platform-test/application-logs"
+    enabled                  = true
+    log_type                 = "ES_APPLICATION_LOGS"
+  }
+}
+
+# Create an index template
+resource "elasticsearch_index_template" "test_template" {
+  name = "test_template"
+  body = templatefile("${path.module}/resources/local-values.json", {
+    no_of_shards = "1"
+  })
+
+  depends_on = [aws_elasticsearch_domain.test]
+
+}
 
 module "live_elasticsearch_monitoring" {
   source  = "dubiety/elasticsearch-cloudwatch-sns-alarms/aws"

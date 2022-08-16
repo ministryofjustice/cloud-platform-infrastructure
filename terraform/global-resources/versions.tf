@@ -12,6 +12,10 @@ terraform {
       source  = "hashicorp/external"
       version = "=2.2.2"
     }
+    elasticsearch = {
+      source = "phillbaker/elasticsearch"
+      version = "2.0.2"
+    }
   }
   required_version = ">= 0.14"
 }
