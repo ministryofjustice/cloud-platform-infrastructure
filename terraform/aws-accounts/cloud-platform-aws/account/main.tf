@@ -63,7 +63,7 @@ resource "aws_route53_zone" "cloud_platform_justice_gov_uk" {
 }
 
 module "ecr_fluentbit" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=4.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=4.7"
 
   repo_name = "fluent-bit"
   team_name = "cloud-platform"
