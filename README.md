@@ -266,24 +266,6 @@ and then navigating to the repo in GitHub and using the create a new pull reques
 
 When you do this you have the option of adding a reviewer. It's good to share your pull request for review so add a reviewer. Let the reviewer know that you are adding them so they have a chance to plan some time to do the review.
 
-### Kops
-
-The `kops/` directory contains the cluster specification, including an additional IAM policy to allow Route53 management, and config for OIDC authentication and RBAC. To make changes, edit `kops/<clusterName e.g. cloud-platform-test-3>.yaml` and:
-
-```shell
-$ cd kops
-$ kops replace -f clusterName.yaml
-$ kops cluster update
-$ kops cluster update --yes
-```
-
-If your changes require changes to instances or launch configs, you will also need to perform a rolling update to replace instances:
-
-```shell
-$ kops cluster rolling-update
-$ kops cluster rolling-update --yes
-```
-
 ### Create/Delete a cluster
 
 See [the runbooks site](https://runbooks.cloud-platform.service.justice.gov.uk)
