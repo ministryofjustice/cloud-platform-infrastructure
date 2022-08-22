@@ -349,7 +349,7 @@ data "aws_iam_policy_document" "test" {
 
 module "live_elasticsearch_monitoring" {
   source  = "dubiety/elasticsearch-cloudwatch-sns-alarms/aws"
-  version = "2.1.0"
+  version = "3.0.3"
 
   alarm_name_prefix = "cloud-platform-live-"
   domain_name       = local.live_domain
