@@ -9,7 +9,7 @@ data "aws_eks_cluster" "cluster" {
 
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = sensitive(base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data))
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
   exec {
     api_version = "client.authentication.k8s.io/v1alpha1"
     args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.cluster.name]
@@ -53,7 +53,7 @@ locals {
 
     create_launch_template = true
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
-      dockerhub_credentials = sensitive(base64encode("${var.dockerhub_user}:${var.dockerhub_token}"))
+      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
     })
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
@@ -77,7 +77,7 @@ locals {
 
     create_launch_template = true
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
-      dockerhub_credentials = sensitive(base64encode("${var.dockerhub_user}:${var.dockerhub_token}"))
+      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
     })
 
     instance_types = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
