@@ -116,7 +116,7 @@ module "eks" {
   cluster_name                  = terraform.workspace
   subnets                       = concat(tolist(data.aws_subnet_ids.private.ids), tolist(data.aws_subnet_ids.public.ids))
   vpc_id                        = data.aws_vpc.selected.id
-  write_kubeconfig              = false
+  write_kubeconfig              = true
   cluster_version               = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
   enable_irsa                   = true
   cluster_enabled_log_types     = var.cluster_enabled_log_types
