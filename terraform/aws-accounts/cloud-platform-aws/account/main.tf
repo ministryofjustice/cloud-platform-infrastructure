@@ -187,7 +187,7 @@ resource "aws_s3_bucket_object" "kubeconfig" {
 # Schedule Amazon RDS stop and start using AWS Systems Manager
 
 module "aws_scheduler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-scheduler?ref=auto-start-stop"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-scheduler?ref=0.1.0"
 
   rds_schedule_expression_stop   = "cron(0 22 ? * * *)"
   rds_schedule_expression_start  = "cron(0 06 ? * * *)"
