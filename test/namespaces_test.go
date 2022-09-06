@@ -118,13 +118,27 @@ var _ = Describe("Namespaces", func() {
 			// To match the namespace names in the cluster with the expected namespaces in the test, we need to
 			// add them to their own slice.
 			var namespacesInCluster []string
+			toIgnoreInTestCluster := []string{
+				"velero",
+			}
 			for _, namespace := range namespaces.Items {
 				namespacesInCluster = append(namespacesInCluster, namespace.GetName())
 			}
 
 			GinkgoWriter.Printf("Checking the expected namespaces exist: %s\n", c.Namespaces)
+		out:
 			for _, namespace := range c.Namespaces {
-				Expect(namespacesInCluster).To(ContainElement(namespace))
+				if strings.Contains(strings.ToLower(c.ClusterName), "manager") || strings.Contains(strings.ToLower(c.ClusterName), "live") {
+					Expect(namespacesInCluster).To(ContainElement(namespace))
+				} else {
+					for _, ignore := range toIgnoreInTestCluster {
+						// Test clusters doesnot have few namespaces comparing to live/manager. Ignore those if running these test in test cluster.
+						if namespace == ignore {
+							continue out
+						}
+					}
+					Expect(namespacesInCluster).To(ContainElement(namespace))
+				}
 			}
 		})
 

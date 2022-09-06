@@ -125,7 +125,7 @@ func (c *Config) ExpectedPromRules() {
 // ExpectedNamespaces returns a slice of all the namespaces
 // that are expected to be in the cluster.
 func (c *Config) ExpectedNamespaces() {
-	c.Namespaces = append(c.Namespaces, "cert-manager", "ingress-controllers", "logging", "monitoring", "opa")
+	c.Namespaces = append(c.Namespaces, "cert-manager", "ingress-controllers", "logging", "monitoring", "opa", "velero")
 }
 
 // ExpectedServices returns a slice of all the Services
