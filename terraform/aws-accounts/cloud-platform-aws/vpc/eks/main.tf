@@ -129,7 +129,7 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
 #########
 
 module "auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.3.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-auth0?ref=1.3.2"
 
   cluster_name         = terraform.workspace
   services_base_domain = local.services_base_domain
