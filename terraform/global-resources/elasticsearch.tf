@@ -46,7 +46,13 @@ data "aws_caller_identity" "moj-cp" {
 data "aws_iam_policy_document" "live_1" {
   statement {
     actions = [
-      "es:*",
+      "es:Describe*",
+      "es:List*",
+      "es:ESHttpGet",
+      "es:ESHttpHead",
+      "es:ESHttpPost",
+      "es:ESHttpPut",
+      "es:ESHttpPatch"
     ]
 
     resources = [
