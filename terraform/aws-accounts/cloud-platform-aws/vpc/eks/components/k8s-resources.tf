@@ -3,8 +3,6 @@
 ########
 
 module "eks_csi" {
-  # waiting for https://github.com/ministryofjustice/cloud-platform/issues/4035
-  count       = 0
   source      = "github.com/ministryofjustice/cloud-platform-terraform-eks-csi?ref=gp3"
   eks_cluster = terraform.workspace
 }
@@ -50,13 +48,12 @@ resource "kubernetes_storage_class" "io1" {
   }
 }
 
-
 resource "kubernetes_storage_class" "storageclass_gp3" {
 
   metadata {
     name = "gp3"
     annotations = {
-      "storageclass.kubernetes.io/is-default-class" = "false"
+      "storageclass.kubernetes.io/is-default-class" = "true"
     }
   }
 
@@ -72,7 +69,7 @@ resource "kubernetes_storage_class" "storageclass_gp3" {
   depends_on = [module.eks_csi]
 }
 
-# make gp2 default back
+# remvove default from GP2
 resource "kubectl_manifest" "change_sc_default" {
   depends_on = [kubernetes_storage_class.storageclass_gp3]
   yaml_body  = <<YAML
@@ -80,7 +77,7 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   annotations:
-    storageclass.kubernetes.io/is-default-class: "true"
+    storageclass.kubernetes.io/is-default-class: "false"
   name: gp2
 parameters:
   fsType: ext4
