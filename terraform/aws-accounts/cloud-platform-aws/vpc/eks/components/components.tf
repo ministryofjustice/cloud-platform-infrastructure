@@ -93,10 +93,10 @@ module "ingress_controllers_v1" {
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = false
-  depends_on = [
-    module.cert_manager,
-    module.monitoring.prometheus_operator_crds_status
-  ]
+
+  # Dependency on this ingress_controllers module as IC namespace and default certificate created in this module
+  # This dependency will go away once "module.ingress_controllers" is removed. 
+  depends_on = [module.ingress_controllers]
 }
 
 module "modsec_ingress_controllers_v1" {
@@ -123,7 +123,10 @@ module "kuberos" {
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   cluster_address               = data.terraform_remote_state.cluster.outputs.cluster_endpoint
 
-  depends_on = [module.ingress_controllers_v1]
+  depends_on = [
+    module.ingress_controllers_v1,
+    module.modsec_ingress_controllers_v1
+  ]
 }
 
 module "logging" {
@@ -136,7 +139,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.6"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   pagerduty_config                           = var.pagerduty_config
@@ -153,9 +156,10 @@ module "monitoring" {
   enable_thanos_helm_chart = lookup(local.prod_workspace, terraform.workspace, false)
   enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
 
-  enable_ecr_exporter         = lookup(local.cloudwatch_workspace, terraform.workspace, false)
-  enable_cloudwatch_exporter  = lookup(local.cloudwatch_workspace, terraform.workspace, false)
-  eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+  enable_ecr_exporter           = lookup(local.cloudwatch_workspace, terraform.workspace, false)
+  enable_cloudwatch_exporter    = lookup(local.cloudwatch_workspace, terraform.workspace, false)
+  eks_cluster_oidc_issuer_url   = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+  dependence_ingress_controller = [module.modsec_ingress_controllers_v1.helm_nginx_ingress_status]
 }
 
 module "opa" {
