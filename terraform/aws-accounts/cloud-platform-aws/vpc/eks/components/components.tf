@@ -156,6 +156,8 @@ module "monitoring" {
   enable_ecr_exporter         = lookup(local.cloudwatch_workspace, terraform.workspace, false)
   enable_cloudwatch_exporter  = lookup(local.cloudwatch_workspace, terraform.workspace, false)
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+
+  depends_on = [module.eks_csi]
 }
 
 module "opa" {
