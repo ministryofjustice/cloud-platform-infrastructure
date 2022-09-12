@@ -1,0 +1,83 @@
+{
+    "policy": {
+        "description": "a hot-warm-cold-delete workflow",
+        "default_state": "hot",
+        "schema_version": 1,
+        "states": [
+            {
+                "name": "hot",
+                "actions": [],
+                "transitions": [
+                    {
+                        "state_name": "warm",
+                        "conditions": {
+                            "min_index_age": "${warm_transition}"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "warm",
+                "actions": [
+                    {
+                        "warm_migration": {},
+                        "retry": {
+                            "count": 3,
+                            "delay": "1h"
+                        }
+                    }
+                ],
+                "transitions": [
+                    {
+                        "state_name": "cold",
+                        "conditions": {
+                            "min_index_age": "${cold_transition}"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "cold",
+                "actions": [
+                    {
+                        "cold_migration": {
+                            "timestamp_field": "${timestamp_field}"
+                        },
+                        "retry": {
+                            "count": 3,
+                            "delay": "1h"
+                        }
+                    }
+                ],
+                "transitions": [
+                    {
+                        "state_name": "delete",
+                        "conditions": {
+                            "min_index_age": "${delete_transition}"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "delete",
+                "actions": [
+                    {
+                        "cold_delete": {},
+                        "retry": {
+                            "count": 3,
+                            "delay": "1h"
+                        }
+                    }
+                ]
+            }
+        ],
+        "ism_template": [
+            {
+                "index_patterns": [
+                    "${index_pattern}"
+                ],
+                "priority": 100
+            }
+        ]
+    }
+}

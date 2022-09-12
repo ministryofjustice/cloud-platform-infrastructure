@@ -1,3 +1,8 @@
+provider "elasticsearch" {
+    url         = "https://${aws_elasticsearch_domain.live_1.endpoint}"
+    aws_profile = "moj-cp"
+}
+
 locals {
   live_domain = "cloud-platform-live"
 
@@ -125,6 +130,29 @@ resource "aws_elasticsearch_domain" "live_1" {
   tags = {
     Domain = local.live_domain
   }
+}
+
+resource "elasticsearch_opensearch_ism_policy" "ism-policy" {
+    policy_id   = "hot-warm-cold-delete"
+    body        = data.template_file.ism_policy.rendered
+}
+
+# Create ism_policy_mapping - applies policy to specified indices
+resource "elasticsearch_opensearch_ism_policy_mapping" "apply_policy" {
+  policy_id = "hot-warm-cold-delete"
+  indexes   = "test_data*"
+}
+
+
+data "template_file" "ism_policy" {
+  template = templatefile("${path.module}/resources/opensearch/ism-policy.tpl.json", {
+
+    timestamp_field   = var.timestamp_field
+    warm_transition   = var.warm_transition
+    cold_transition   = var.cold_transition
+    delete_transition = var.delete_transition
+    index_pattern     = var.index_pattern
+  })
 }
 
 
