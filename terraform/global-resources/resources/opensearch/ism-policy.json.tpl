@@ -2,7 +2,6 @@
     "policy": {
         "description": "a hot-warm-cold-delete workflow",
         "default_state": "hot",
-        "schema_version": 1,
         "states": [
             {
                 "name": "hot",
@@ -23,7 +22,8 @@
                         "warm_migration": {},
                         "retry": {
                             "count": 3,
-                            "delay": "1h"
+                            "delay": "1h",
+                            "backoff": "exponential"
                         }
                     }
                 ],
@@ -41,11 +41,16 @@
                 "actions": [
                     {
                         "cold_migration": {
-                            "timestamp_field": "${timestamp_field}"
+                            "timestamp_field": "${timestamp_field}",
+                            "end_time": null,
+                            "ignore": "none",
+                            "start_time": null
+
                         },
                         "retry": {
                             "count": 3,
-                            "delay": "1h"
+                            "delay": "1h",
+                            "backoff": "exponential"
                         }
                     }
                 ],
@@ -65,17 +70,17 @@
                         "cold_delete": {},
                         "retry": {
                             "count": 3,
-                            "delay": "1h"
+                            "delay": "1h",
+                            "backoff": "exponential"
                         }
                     }
-                ]
+                ],
+                "transitions": []
             }
         ],
         "ism_template": [
             {
-                "index_patterns": [
-                    "${index_pattern}"
-                ],
+                "index_patterns": ${index_pattern},
                 "priority": 100
             }
         ]

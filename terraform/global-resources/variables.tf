@@ -23,7 +23,9 @@ variable "delete_transition" {
 }
 
 variable "index_pattern" {
-  type        = list(string)
-  default     = []
+  default     = [
+    "test_data*",
+    "test_data_2*"
+  ]
   description = "Pattern created in Kibana, policy will apply to matching new indices"
 }
