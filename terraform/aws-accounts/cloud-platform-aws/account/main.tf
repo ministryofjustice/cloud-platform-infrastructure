@@ -63,7 +63,7 @@ resource "aws_route53_zone" "cloud_platform_justice_gov_uk" {
 }
 
 module "ecr_fluentbit" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=4.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=4.8"
 
   repo_name = "fluent-bit"
   team_name = "cloud-platform"
@@ -182,4 +182,15 @@ resource "aws_s3_bucket_object" "kubeconfig" {
 
   content                = templatefile("${path.module}/templates/kubeconfig.tpl", { clusters = var.kubeconfig_clusters })
   server_side_encryption = "AES256"
+}
+
+# Schedule Amazon RDS stop and start using AWS Systems Manager
+
+module "aws_scheduler" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-scheduler?ref=0.1.0"
+
+  rds_schedule_expression_stop  = "cron(0 22 ? * * *)"
+  rds_schedule_expression_start = "cron(0 06 ? * * *)"
+  rds_target_tag_key            = "cloud-platform-rds-auto-shutdown"
+  rds_target_tag_value          = "Schedule RDS Stop/Start during non-business hours for cost saving"
 }

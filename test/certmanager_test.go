@@ -59,7 +59,7 @@ var _ = Describe("Default ingress-controller certificate", func() {
 
 // It includes FlakeAttempts to ensure that the test doesn't fail on the chance
 // of a slow acme response.
-var _ = Describe("cert-manager", FlakeAttempts(3), func() {
+var _ = Describe("cert-manager", FlakeAttempts(2), func() {
 	Context("when the namespace has a certificate resource", func() {
 		var (
 			namespace, host string

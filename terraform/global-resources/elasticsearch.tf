@@ -7,9 +7,9 @@ locals {
   live_domain = "cloud-platform-live"
 
   allowed_live_1_ips = {
-    "3.8.51.207/32"     = "live-1-c"
     "35.177.252.54/32"  = "live-1-b"
     "35.178.209.113/32" = "live-1-a"
+    "3.8.51.207/32"     = "live-1-c"
   }
 
   audit_domain = "cloud-platform-audit"
@@ -51,7 +51,13 @@ data "aws_caller_identity" "moj-cp" {
 data "aws_iam_policy_document" "live_1" {
   statement {
     actions = [
-      "es:*",
+      "es:Describe*",
+      "es:List*",
+      "es:ESHttpGet",
+      "es:ESHttpHead",
+      "es:ESHttpPost",
+      "es:ESHttpPut",
+      "es:ESHttpPatch"
     ]
 
     resources = [
@@ -67,14 +73,6 @@ data "aws_iam_policy_document" "live_1" {
       test     = "IpAddress"
       variable = "aws:SourceIp"
 
-      # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
-      # force an interpolation expression to be interpreted as a list by wrapping it
-      # in an extra set of list brackets. That form was supported for compatibility in
-      # v0.11, but is no longer supported in Terraform v0.12.
-      #
-      # If the expression in the following list itself returns a list, remove the
-      # brackets to avoid interpretation as a list of lists. If the expression
-      # returns a single list item then leave it as-is and remove this TODO comment.
       values = keys(local.allowed_live_1_ips)
     }
   }
@@ -86,15 +84,20 @@ resource "aws_elasticsearch_domain" "live_1" {
   elasticsearch_version = "7.10"
 
   cluster_config {
-    instance_type            = "r5.4xlarge.elasticsearch"
-    instance_count           = "15"
+    instance_type            = "r6g.4xlarge.elasticsearch"
+    instance_count           = "6"
     dedicated_master_enabled = true
-    dedicated_master_type    = "m5.xlarge.elasticsearch"
+    dedicated_master_type    = "m6g.xlarge.elasticsearch"
     dedicated_master_count   = "3"
     zone_awareness_enabled   = true
-
     zone_awareness_config {
       availability_zone_count = 3
+    }
+    warm_count   = 3
+    warm_enabled = true
+    warm_type    = "ultrawarm1.medium.elasticsearch"
+    cold_storage_options {
+      enabled = true
     }
   }
 
@@ -102,11 +105,13 @@ resource "aws_elasticsearch_domain" "live_1" {
     ebs_enabled = "true"
     volume_type = "gp3"
     volume_size = "1536"
+    iops        = 4608
   }
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
     "indices.query.bool.max_clause_count"    = 3000
+    "override_main_response_version"         = "true"
   }
 
   access_policies = data.aws_iam_policy_document.live_1.json
@@ -159,14 +164,6 @@ data "aws_iam_policy_document" "audit_1" {
       test     = "IpAddress"
       variable = "aws:SourceIp"
 
-      # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
-      # force an interpolation expression to be interpreted as a list by wrapping it
-      # in an extra set of list brackets. That form was supported for compatibility in
-      # v0.11, but is no longer supported in Terraform v0.12.
-      #
-      # If the expression in the following list itself returns a list, remove the
-      # brackets to avoid interpretation as a list of lists. If the expression
-      # returns a single list item then leave it as-is and remove this TODO comment.
       values = keys(local.allowed_audit_1_ips)
     }
   }
@@ -215,18 +212,22 @@ resource "aws_elasticsearch_domain" "audit_1" {
   elasticsearch_version = "7.10"
 
   cluster_config {
-    instance_type            = "m4.2xlarge.elasticsearch"
-    instance_count           = "8"
+    instance_type            = "m6g.xlarge.elasticsearch"
+    instance_count           = "2"
     dedicated_master_enabled = true
-    dedicated_master_type    = "r5.large.elasticsearch"
+    dedicated_master_type    = "r6g.large.elasticsearch"
     dedicated_master_count   = "3"
     zone_awareness_enabled   = true
+    warm_count               = 2
+    warm_enabled             = true
+    warm_type                = "ultrawarm1.medium.elasticsearch"
   }
 
   ebs_options {
     ebs_enabled = "true"
-    volume_type = "gp2"
+    volume_type = "gp3"
     volume_size = "1536"
+    iops        = 4608
   }
 
   advanced_options = {
@@ -257,18 +258,22 @@ resource "aws_elasticsearch_domain" "audit_live" {
   elasticsearch_version = "OpenSearch_1.0"
 
   cluster_config {
-    instance_type            = "m5.2xlarge.elasticsearch"
-    instance_count           = "8"
+    instance_type            = "m6g.xlarge.elasticsearch"
+    instance_count           = "2"
     dedicated_master_enabled = true
-    dedicated_master_type    = "r5.large.elasticsearch"
+    dedicated_master_type    = "r6g.large.elasticsearch"
     dedicated_master_count   = "3"
     zone_awareness_enabled   = true
+    warm_count               = 2
+    warm_enabled             = true
+    warm_type                = "ultrawarm1.medium.elasticsearch"
   }
 
   ebs_options {
     ebs_enabled = "true"
-    volume_type = "gp2"
+    volume_type = "gp3"
     volume_size = "1536"
+    iops        = 4608
   }
 
   advanced_options = {
@@ -313,67 +318,16 @@ data "aws_iam_policy_document" "test" {
       test     = "IpAddress"
       variable = "aws:SourceIp"
 
-      # TF-UPGRADE-TODO: In Terraform v0.10 and earlier, it was sometimes necessary to
-      # force an interpolation expression to be interpreted as a list by wrapping it
-      # in an extra set of list brackets. That form was supported for compatibility in
-      # v0.11, but is no longer supported in Terraform v0.12.
-      #
-      # If the expression in the following list itself returns a list, remove the
-      # brackets to avoid interpretation as a list of lists. If the expression
-      # returns a single list item then leave it as-is and remove this TODO comment.
       values = keys(merge(local.allowed_test_ips))
     }
   }
 }
 
-# Uncomment this, if you need to create a test ES.
-resource "aws_elasticsearch_domain" "test" {
-  domain_name           = "cloud-platform-test"
-  provider              = aws.cloud-platform
-  elasticsearch_version = "OpenSearch_1.3"
-
-  cluster_config {
-    instance_type  = "r5.xlarge.elasticsearch"
-    instance_count = "2"
-  }
-
-  ebs_options {
-    ebs_enabled = "true"
-    volume_type = "gp3"
-    volume_size = "500"
-  }
-
-  advanced_options = {
-    "rest.action.multi.allow_explicit_index" = "true"
-    "indices.query.bool.max_clause_count"    = 3000
-  }
-
-  access_policies = data.aws_iam_policy_document.test.json
-
-  tags = {
-    Domain = "cloud-platform-test"
-  }
-  log_publishing_options {
-    cloudwatch_log_group_arn = "arn:aws:logs:eu-west-2:754256621582:log-group:/aws/OpenSearchService/domains/cloud-platform-test/application-logs"
-    enabled                  = true
-    log_type                 = "ES_APPLICATION_LOGS"
-  }
-}
-
-# Create an index template
-resource "elasticsearch_index_template" "test_template" {
-  name = "test_template"
-  body = templatefile("${path.module}/resources/local-values.json", {
-    no_of_shards = "1"
-  })
-
-  depends_on = [aws_elasticsearch_domain.test]
-
-}
+# If you need to create a test ES, see https://github.com/ministryofjustice/cloud-platform-terraform-elasticsearch/tree/main/example
 
 module "live_elasticsearch_monitoring" {
   source  = "dubiety/elasticsearch-cloudwatch-sns-alarms/aws"
-  version = "2.1.0"
+  version = "3.0.3"
 
   alarm_name_prefix = "cloud-platform-live-"
   domain_name       = local.live_domain
@@ -385,10 +339,20 @@ module "live_elasticsearch_monitoring" {
 
 module "audit_elasticsearch_monitoring" {
   source  = "dubiety/elasticsearch-cloudwatch-sns-alarms/aws"
-  version = "2.1.0"
+  version = "3.0.3"
 
   alarm_name_prefix = "cloud-platform-audit-"
   domain_name       = local.audit_domain
+  create_sns_topic  = false
+  sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
+}
+
+module "audit_live_elasticsearch_monitoring" {
+  source  = "dubiety/elasticsearch-cloudwatch-sns-alarms/aws"
+  version = "3.0.3"
+
+  alarm_name_prefix = "cloud-platform-audit-live-"
+  domain_name       = local.audit_live_domain
   create_sns_topic  = false
   sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
 }

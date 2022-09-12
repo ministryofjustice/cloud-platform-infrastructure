@@ -1,6 +1,6 @@
 module "concourse" {
   count  = terraform.workspace == "manager" ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.8.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.9.0"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -82,7 +82,7 @@ module "modsec_ingress_controllers" {
 }
 
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.11"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.13"
 
   replica_count       = "6"
   controller_name     = "default"
@@ -93,14 +93,14 @@ module "ingress_controllers_v1" {
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = false
-  depends_on = [
-    module.cert_manager,
-    module.monitoring.prometheus_operator_crds_status
-  ]
+
+  # Dependency on this ingress_controllers module as IC namespace and default certificate created in this module
+  # This dependency will go away once "module.ingress_controllers" is removed. 
+  depends_on = [module.ingress_controllers]
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.11"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.0.13"
 
   replica_count       = "6"
   controller_name     = "modsec"
@@ -123,11 +123,14 @@ module "kuberos" {
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   cluster_address               = data.terraform_remote_state.cluster.outputs.cluster_endpoint
 
-  depends_on = [module.ingress_controllers_v1]
+  depends_on = [
+    module.ingress_controllers_v1,
+    module.modsec_ingress_controllers_v1
+  ]
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.3.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.3.3"
 
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
@@ -136,7 +139,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.6"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   pagerduty_config                           = var.pagerduty_config
@@ -153,14 +156,15 @@ module "monitoring" {
   enable_thanos_helm_chart = lookup(local.prod_workspace, terraform.workspace, false)
   enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
 
-  enable_ecr_exporter         = lookup(local.cloudwatch_workspace, terraform.workspace, false)
-  enable_cloudwatch_exporter  = lookup(local.cloudwatch_workspace, terraform.workspace, false)
-  eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+  enable_ecr_exporter           = lookup(local.cloudwatch_workspace, terraform.workspace, false)
+  enable_cloudwatch_exporter    = lookup(local.cloudwatch_workspace, terraform.workspace, false)
+  eks_cluster_oidc_issuer_url   = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+  dependence_ingress_controller = [module.modsec_ingress_controllers_v1.helm_nginx_ingress_status]
 }
 
 module "opa" {
   source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.4.3"
-  depends_on = [module.monitoring.prometheus_operator_crds_status, module.modsec_ingress_controllers, module.modsec_ingress_controllers_v1, module.cert_manager]
+  depends_on = [module.monitoring, module.modsec_ingress_controllers, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
@@ -182,8 +186,9 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.8.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.8.2"
 
+  enable_velero               = lookup(local.prod_workspace, terraform.workspace, false)
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
