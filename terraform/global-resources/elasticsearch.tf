@@ -1,6 +1,6 @@
 provider "elasticsearch" {
-    url         = "https://${aws_elasticsearch_domain.live_1.endpoint}"
-    aws_profile = "moj-cp"
+  url         = "https://${aws_elasticsearch_domain.live_1.endpoint}"
+  aws_profile = "moj-cp"
 }
 
 locals {
@@ -133,8 +133,8 @@ resource "aws_elasticsearch_domain" "live_1" {
 }
 
 resource "elasticsearch_opensearch_ism_policy" "ism-policy" {
-    policy_id   = "hot-warm-cold-delete"
-    body        = data.template_file.ism_policy.rendered
+  policy_id = "hot-warm-cold-delete"
+  body      = data.template_file.ism_policy.rendered
 }
 
 data "template_file" "ism_policy" {

@@ -13,7 +13,7 @@ terraform {
       version = "=2.2.2"
     }
     elasticsearch = {
-      source = "phillbaker/elasticsearch"
+      source  = "phillbaker/elasticsearch"
       version = "2.0.4"
     }
   }
