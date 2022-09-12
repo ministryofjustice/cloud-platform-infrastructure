@@ -1,115 +1,113 @@
 {
-    "index_patterns": [
-        "manager_concourse_new-*"
-    ],
-    "aliases": {
-        "ara-write": {
-            "is_write_index": true
-        },
-        "manager_concourse": {}
+  "index_patterns": ["manager_concourse_new-*"],
+  "aliases": {
+    "ara-write": {
+      "is_write_index": true
     },
-    "mappings": {
-        "_source": {
-            "enabled": true
-        },
-        "dynamic": "false",
-        "properties": {
-            "@timestamp": {
-                "type": "date"
-            },
-            "log": {
-                "type": "text",
-                "fields": {
-                    "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                    }
-                }
-            },
-            "log_processed": {
-                "properties": {
-                    "data": {
-                        "properties": {
-                            "id": {
-                                "type": "text"
-                            },
-                            "name": {
-                                "type": "text",
-                                "fields": {
-                                    "keyword": {
-                                        "type": "keyword",
-                                        "ignore_above": 256
-                                    }
-                                }
-                            },
-                            "build": {
-                                "type": "long"
-                            },
-                            "build-id": {
-                                "type": "long"
-                            },
-                            "session": {
-                                "type": "text",
-                                "fields": {
-                                    "keyword": {
-                                        "type": "keyword",
-                                        "ignore_above": 256
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "level": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword",
-                                "ignore_above": 256
-                            }
-                        }
-                    },
-                    "message": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword",
-                                "ignore_above": 256
-                            }
-                        }
-                    },
-                    "source": {
-                        "type": "text",
-                        "fields": {
-                            "keyword": {
-                                "type": "keyword",
-                                "ignore_above": 256
-                            }
-                        }
-                    },
-                    "timestamp": {
-                        "type": "date"
-                    }
-                }
-            },
-            "stream": {
-                "type": "text",
-                "fields": {
-                    "keyword": {
-                        "type": "keyword",
-                        "ignore_above": 256
-                    }
-                }
-            },
-            "time": {
-                "type": "date"
-            }
+    "manager_concourse": {}
+  },
+  "mappings": {
+    "_source": {
+      "enabled": true
+    },
+    "dynamic": "false",
+    "properties": {
+      "@timestamp": {
+        "type": "date"
+      },
+      "log": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
         }
-    },
-    "settings": {
-        "number_of_shards": "${no_of_shards}",
-        "number_of_replicas": 1,
-        "index.refresh_interval": "2s",
-        "index.mapping.total_fields.limit": 2000,
-        "opendistro.index_state_management.rollover_alias": "ara-write"
+      },
+      "log_processed": {
+        "properties": {
+          "data": {
+            "properties": {
+              "id": {
+                "type": "text"
+              },
+              "name": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  }
+                }
+              },
+              "build": {
+                "type": "long"
+              },
+              "build-id": {
+                "type": "long"
+              },
+              "session": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  }
+                }
+              }
+            }
+          },
+          "level": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "message": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "source": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "timestamp": {
+            "type": "date"
+          }
+        }
+      },
+      "stream": {
+        "type": "text",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "time": {
+        "type": "date"
+      }
     }
+  },
+  "settings": {
+    "number_of_shards": "${no_of_shards}",
+    "number_of_replicas": 1,
+    "index.refresh_interval": "2s",
+    "index.mapping.total_fields.limit": 2000,
+    "opendistro.index_state_management.rollover_alias": "ara-write"
+  }
 }

@@ -1,6 +1,6 @@
 provider "elasticsearch" {
-    url         = "https://${aws_elasticsearch_domain.test.endpoint}"
-    aws_profile = "moj-cp"
+  url         = "https://${aws_elasticsearch_domain.test.endpoint}"
+  aws_profile = "moj-cp"
 }
 
 locals {
