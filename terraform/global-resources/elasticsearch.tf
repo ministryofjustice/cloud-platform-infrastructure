@@ -133,7 +133,7 @@ resource "aws_elasticsearch_domain" "live_1" {
 }
 
 resource "elasticsearch_opensearch_ism_policy" "ism-policy" {
-    policy_id   = "test-hot-warm-cold-delete"
+    policy_id   = "hot-warm-cold-delete"
     body        = data.template_file.ism_policy.rendered
 }
 
@@ -147,7 +147,6 @@ data "template_file" "ism_policy" {
     index_pattern     = jsonencode(var.index_pattern)
   })
 }
-
 
 data "aws_iam_policy_document" "audit_1" {
   statement {

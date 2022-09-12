@@ -1,6 +1,6 @@
 {
     "policy": {
-        "description": "a hot-warm-cold-delete workflow",
+        "description": "hot-warm-cold-delete",
         "default_state": "hot",
         "states": [
             {

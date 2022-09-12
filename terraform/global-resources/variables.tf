@@ -6,26 +6,31 @@ variable "timestamp_field" {
 
 variable "warm_transition" {
   type        = string
-  default     = "7d"
+  default     = "14d"
   description = "Time until transition to warm storage"
 }
 
 variable "cold_transition" {
   type        = string
-  default     = "30d"
+  default     = "60d"
   description = "Time until transition to cold storage"
 }
 
 variable "delete_transition" {
   type        = string
-  default     = "365d"
+  default     = "366d"
   description = "Time until indexes are permanently deleted"
 }
 
 variable "index_pattern" {
   default     = [
-    "test_data*",
-    "test_data_2*"
+    "manager_eventrouter*",
+    "live_kubernetes_cluster*",
+    "live_kubernetes_ingress*",
+    "live_eventrouter*",
+    "manager_kubernetes_cluster-*",
+    "manager_kubernetes_ingress-*",
+    "manager_concourse-*",
   ]
   description = "Pattern created in Kibana, policy will apply to matching new indices"
 }
