@@ -20,20 +20,17 @@ provider "auth0" {
 # default provider
 provider "aws" {
   region  = "eu-west-2"
-  profile = "moj-cp"
 }
 
 # https://cloud-platform-aws.signin.aws.amazon.com/console
 provider "aws" {
   region  = "eu-west-2"
   alias   = "cloud-platform"
-  profile = "moj-cp"
 }
 
 provider "aws" {
   region  = "eu-west-1"
   alias   = "cloud-platform-ireland"
-  profile = "moj-cp"
 }
 
 data "aws_caller_identity" "cloud-platform" {
@@ -50,6 +47,5 @@ data "terraform_remote_state" "account" {
     bucket  = "cloud-platform-terraform-state"
     region  = "eu-west-1"
     key     = "terraform.tfstate"
-    profile = "moj-cp"
   }
 }
