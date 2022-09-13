@@ -40,13 +40,6 @@ data "aws_caller_identity" "cloud-platform" {
   provider = aws.cloud-platform
 }
 
-# https://mojdsd.signin.aws.amazon.com/console
-provider "aws" {
-  region  = "eu-west-1"
-  alias   = "dsd"
-  profile = "moj-dsd"
-}
-
 provider "external" {
 }
 
