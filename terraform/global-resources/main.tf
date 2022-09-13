@@ -3,7 +3,6 @@ terraform {
     bucket         = "cloud-platform-terraform-state"
     region         = "eu-west-1"
     key            = "global-resources/terraform.tfstate"
-    profile        = "moj-cp"
     dynamodb_table = "cloud-platform-terraform-state"
   }
 }
