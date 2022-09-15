@@ -114,6 +114,16 @@ resource "kubernetes_priority_class" "node_critical" {
   global_default = false
 }
 
+resource "kubernetes_priority_class" "default" {
+  metadata {
+    name = "default"
+  }
+
+  value          = 0
+  description    = "Default priority class for all pods."
+  global_default = true
+}
+
 ########
 # RBAC #
 ########
