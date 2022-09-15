@@ -160,6 +160,8 @@ module "monitoring" {
   enable_cloudwatch_exporter    = lookup(local.cloudwatch_workspace, terraform.workspace, false)
   eks_cluster_oidc_issuer_url   = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
   dependence_ingress_controller = [module.modsec_ingress_controllers_v1.helm_nginx_ingress_status]
+
+  depends_on = [module.eks_csi]
 }
 
 module "opa" {
