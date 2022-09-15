@@ -1,4 +1,3 @@
-
 terraform {
   backend "s3" {
     bucket         = "cloud-platform-ephemeral-test-tfstate"
@@ -22,7 +21,7 @@ data "aws_caller_identity" "current" {}
 ###########################
 
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.8"
 
   enable_logging           = true
   enable_slack_integration = true
