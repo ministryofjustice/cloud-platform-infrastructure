@@ -3,7 +3,7 @@
 ########
 
 module "eks_csi" {
-  source      = "github.com/ministryofjustice/cloud-platform-terraform-eks-csi?ref=gp3"
+  source      = "github.com/ministryofjustice/cloud-platform-terraform-eks-csi?ref=1.0.0"
   eks_cluster = terraform.workspace
   depends_on = [helm_release.calico]
 }
