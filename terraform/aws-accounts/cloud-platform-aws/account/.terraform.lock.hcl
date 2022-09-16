@@ -44,7 +44,8 @@ provider "registry.terraform.io/auth0/auth0" {
 }
 
 provider "registry.terraform.io/hashicorp/archive" {
-  version = "2.2.0"
+  version     = "2.2.0"
+  constraints = ">= 2.0.0"
   hashes = [
     "h1:2K5LQkuWRS2YN1/YoNaHn9MAzjuTX8Gaqy6i8Mbfv8Y=",
     "zh:06bd875932288f235c16e2237142b493c2c2b6aba0e82e8c85068332a8d2a29e",
@@ -63,7 +64,7 @@ provider "registry.terraform.io/hashicorp/archive" {
 
 provider "registry.terraform.io/hashicorp/aws" {
   version     = "4.26.0"
-  constraints = ">= 2.23.0, >= 2.50.0, >= 3.0.0, >= 3.61.0, >= 4.5.0, 4.26.0"
+  constraints = ">= 2.23.0, >= 2.50.0, >= 3.0.0, >= 4.0.0, >= 4.5.0, >= 4.8.0, >= 4.9.0, 4.26.0"
   hashes = [
     "h1:q0QTY+O5L//LGGkmlUlEvTLnNSsdV91Tqm7BFqwpSII=",
     "zh:0579b105ae471894846fbd740bc9f10b2bd8a48860d8e640b4a9b53fb7d63ffe",
@@ -142,7 +143,8 @@ provider "registry.terraform.io/hashicorp/null" {
 }
 
 provider "registry.terraform.io/hashicorp/random" {
-  version = "3.3.2"
+  version     = "3.3.2"
+  constraints = ">= 2.0.0"
   hashes = [
     "h1:Fu0IKMy46WsO5Y6KfuH9IFkkuxZjE/gIcgtB7GWkTtc=",
     "zh:038293aebfede983e45ee55c328e3fde82ae2e5719c9bd233c324cfacc437f9c",
@@ -162,7 +164,7 @@ provider "registry.terraform.io/hashicorp/random" {
 
 provider "registry.terraform.io/integrations/github" {
   version     = "4.14.0"
-  constraints = "~> 4.14.0"
+  constraints = ">= 4.14.0"
   hashes = [
     "h1:CvPZLHgMA4ReLeF0iJc11gsD/r7chkZdW89VkJml0HU=",
     "zh:1c675ce700c0ebfc7ef437443fb25f912a62717b7bca60071bf9733d23db9576",
