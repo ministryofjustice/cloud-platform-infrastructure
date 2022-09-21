@@ -62,7 +62,7 @@ module "ingress_controllers" {
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   # To allow 'live' cluster to create hosts under *.cloud-platform.service.justice..
-  is_live_cluster     = terraform.workspace == "live" ? 1 : 0
+  is_live_cluster     = terraform.workspace == "live" ? true : false
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
   # This module requires prometheus and cert-manager
@@ -89,7 +89,7 @@ module "ingress_controllers_v1" {
   controller_name     = "default"
   enable_latest_tls   = true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = terraform.workspace == "live" ? 1 : 0
+  is_live_cluster     = terraform.workspace == "live" ? true : false
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
   # Enable this when we remove the module "ingress_controllers"
@@ -106,7 +106,7 @@ module "modsec_ingress_controllers_v1" {
   replica_count       = "6"
   controller_name     = "modsec"
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = terraform.workspace == "live" ? 1 : 0
+  is_live_cluster     = terraform.workspace == "live" ? true : false
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
   enable_modsec       = true
   enable_owasp        = true
