@@ -91,7 +91,7 @@ locals {
   # live_workspace refer to all production workspaces which have users workload in it
   live_workspace = {
     live    = true
-    live-1  = true
+    live-2  = true
     default = false
   }
 
