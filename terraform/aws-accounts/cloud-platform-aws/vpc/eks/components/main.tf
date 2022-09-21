@@ -80,14 +80,16 @@ data "aws_route53_zone" "cloud_platform" {
 ##########
 
 locals {
+  # prod_workspace refer to all production workspaces which have active monitoring set and followed
   prod_workspace = {
     manager = true
     live    = true
+    live-2    = true
     default = false
   }
 
-  cloudwatch_workspace = {
-    manager = false
+  # live_workspace refer to all production workspaces which have users workload in it
+  live_workspace = {
     live    = true
     live-1  = true
     default = false
@@ -95,7 +97,6 @@ locals {
 
   manager_workspace = {
     manager = true
-    live    = false
     default = false
   }
 
@@ -106,6 +107,7 @@ locals {
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"
     ]
     live = ["arn:aws:route53:::hostedzone/*"]
+    live-2 = ["arn:aws:route53:::hostedzone/*"]
     default = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"

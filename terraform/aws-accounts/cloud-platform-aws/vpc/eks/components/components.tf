@@ -1,5 +1,5 @@
 module "concourse" {
-  count  = terraform.workspace == "manager" ? 1 : 0
+  count  = lookup(local.manager_workspace, terraform.workspace, false)
   source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.10.2"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -61,7 +61,8 @@ module "ingress_controllers" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.3.5"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
+  # To allow 'live' cluster to create hosts under *.cloud-platform.service.justice..
+  is_live_cluster     = terraform.workspace == "live" ? 1 : 0
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
   # This module requires prometheus and cert-manager
@@ -88,7 +89,7 @@ module "ingress_controllers_v1" {
   controller_name     = "default"
   enable_latest_tls   = true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
+  is_live_cluster     = terraform.workspace == "live" ? 1 : 0
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
   # Enable this when we remove the module "ingress_controllers"
@@ -105,7 +106,7 @@ module "modsec_ingress_controllers_v1" {
   replica_count       = "6"
   controller_name     = "modsec"
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
+  is_live_cluster     = terraform.workspace == "live" ? 1 : 0
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
   enable_modsec       = true
   enable_owasp        = true
@@ -148,7 +149,7 @@ module "monitoring" {
   oidc_components_client_secret              = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url                            = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   enable_thanos_sidecar                      = lookup(local.prod_workspace, terraform.workspace, false)
-  enable_large_nodesgroup                    = terraform.workspace == "live" ? true : false
+  enable_large_nodesgroup                    = lookup(local.live_workspace, terraform.workspace, false)
   enable_prometheus_affinity_and_tolerations = true
   enable_kibana_audit_proxy                  = terraform.workspace == "live" ? true : false
   enable_kibana_proxy                        = terraform.workspace == "live" ? true : false
@@ -156,8 +157,8 @@ module "monitoring" {
   enable_thanos_helm_chart = lookup(local.prod_workspace, terraform.workspace, false)
   enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
 
-  enable_ecr_exporter           = lookup(local.cloudwatch_workspace, terraform.workspace, false)
-  enable_cloudwatch_exporter    = lookup(local.cloudwatch_workspace, terraform.workspace, false)
+  enable_ecr_exporter           = lookup(local.live_workspace, terraform.workspace, false)
+  enable_cloudwatch_exporter    = lookup(local.live_workspace, terraform.workspace, false)
   eks_cluster_oidc_issuer_url   = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
   dependence_ingress_controller = [module.modsec_ingress_controllers_v1.helm_nginx_ingress_status]
 
