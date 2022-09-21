@@ -1,5 +1,5 @@
 module "concourse" {
-  count  = lookup(local.manager_workspace, terraform.workspace, false)
+  count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
   source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.10.2"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
