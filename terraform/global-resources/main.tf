@@ -49,7 +49,7 @@ data "terraform_remote_state" "account" {
   config = {
     bucket  = "cloud-platform-terraform-state"
     region  = "eu-west-1"
-    key    = "aws-accounts/cloud-platform-aws/account/terraform.tfstate"
+    key     = "aws-accounts/cloud-platform-aws/account/terraform.tfstate"
     profile = "moj-cp"
   }
 }
