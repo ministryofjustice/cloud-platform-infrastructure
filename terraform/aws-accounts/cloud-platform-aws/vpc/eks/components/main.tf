@@ -91,7 +91,7 @@ locals {
   prod_2_workspace = {
     manager = true
     live    = true
-    live-2 = true
+    live-2  = true
     default = false
   }
 
