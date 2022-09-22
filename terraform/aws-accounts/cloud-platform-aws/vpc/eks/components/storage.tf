@@ -44,7 +44,7 @@ resource "kubernetes_storage_class" "io1" {
 
   parameters = {
     type      = "io1"
-    iopsPerGB = "10000"
+    iopsPerGB = "26"
     fsType    = "ext4"
   }
 }
