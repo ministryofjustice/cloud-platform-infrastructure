@@ -78,6 +78,6 @@ module "vpc" {
 ### 
 module "flowlogs" {
   source     = "github.com/ministryofjustice/cloud-platform-terraform-flow-logs?ref=1.3.2"
-  is_enabled = lookup(local.prod_workspace, terraform.workspace, false)
+  is_enabled = terraform.workspace == "live-1" ? true : false
   vpc_id     = module.vpc.vpc_id
 }
