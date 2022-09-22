@@ -87,7 +87,8 @@ locals {
     default = false
   }
 
-  # prod_2_workspace is a temporary workspace covering all prod std clusters until live-2 is build
+  # prod_2_workspace is a temporary workspace to include live-2 on the modules that are tested.
+  # Once all the modules are tested, this list will replace the prod_workspace
   prod_2_workspace = {
     manager = true
     live    = true
