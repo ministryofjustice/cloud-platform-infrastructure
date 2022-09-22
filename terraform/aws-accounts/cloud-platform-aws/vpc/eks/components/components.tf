@@ -148,13 +148,13 @@ module "monitoring" {
   oidc_components_client_id                  = data.terraform_remote_state.cluster.outputs.oidc_components_client_id
   oidc_components_client_secret              = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url                            = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
-  enable_thanos_sidecar                      = lookup(local.prod_workspace, terraform.workspace, false)
+  enable_thanos_sidecar                      = lookup(local.prod_2_workspace, terraform.workspace, false)
   enable_large_nodesgroup                    = lookup(local.live_workspace, terraform.workspace, false)
   enable_prometheus_affinity_and_tolerations = true
   enable_kibana_audit_proxy                  = terraform.workspace == "live" ? true : false
   enable_kibana_proxy                        = terraform.workspace == "live" ? true : false
 
-  enable_thanos_helm_chart = lookup(local.prod_workspace, terraform.workspace, false)
+  enable_thanos_helm_chart = lookup(local.prod_2_workspace, terraform.workspace, false)
   enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
 
   enable_ecr_exporter           = lookup(local.live_workspace, terraform.workspace, false)
@@ -170,7 +170,7 @@ module "opa" {
   depends_on = [module.monitoring, module.modsec_ingress_controllers, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  enable_invalid_hostname_policy = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
+  enable_invalid_hostname_policy = lookup(local.prod_2_workspace, terraform.workspace, false) ? false : true
   enable_external_dns_weight     = lookup(local.live_workspace, terraform.workspace, false)
   cluster_color                  = lookup(local.live_cluster_colors, terraform.workspace, "black")
   integration_test_zone          = data.aws_route53_zone.integrationtest.name
@@ -179,7 +179,7 @@ module "opa" {
 module "starter_pack" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.1.7"
 
-  enable_starter_pack = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
+  enable_starter_pack = lookup(local.prod_2_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
 
   depends_on = [
@@ -191,7 +191,7 @@ module "starter_pack" {
 module "velero" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.8.2"
 
-  enable_velero               = lookup(local.prod_workspace, terraform.workspace, false)
+  enable_velero               = lookup(local.prod_2_workspace, terraform.workspace, false)
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url

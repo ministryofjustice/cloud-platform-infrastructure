@@ -87,6 +87,14 @@ locals {
     default = false
   }
 
+  # prod_2_workspace is a temporary workspace covering all prod std clusters until live-2 is build
+  prod_2_workspace = {
+    manager = true
+    live    = true
+    live-2 = true
+    default = false
+  }
+
   # live_workspace refer to all production workspaces which have users workload in it
   live_workspace = {
     live    = true
