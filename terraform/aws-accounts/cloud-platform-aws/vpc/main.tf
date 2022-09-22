@@ -31,6 +31,12 @@ locals {
   vpc_tags = merge({
     "kubernetes.io/cluster/${local.vpc_name}" = "shared"
   }, local.cluster_tags)
+
+  prod_workspace = {
+    live-1  = true
+    live-2  = true
+    default = false
+  }
 }
 
 #######

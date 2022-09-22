@@ -38,7 +38,6 @@ locals {
 
   # Some clusters (like manager) need extra callbacks URLs in auth0
   auth0_extra_callbacks = {
-    manager = ["https://sonarqube.cloud-platform.service.justice.gov.uk/oauth2/callback/oidc"]
     live = concat([for i in ["prometheus", "alertmanager", "thanos"] : "https://${i}.${local.fqdn}/oauth2/callback"],
     ["https://grafana.${local.fqdn}/login/generic_oauth"])
   }

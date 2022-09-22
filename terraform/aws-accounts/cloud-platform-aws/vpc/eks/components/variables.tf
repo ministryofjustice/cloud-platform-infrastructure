@@ -20,11 +20,13 @@ variable "elasticsearch_hosts_maps" {
   default = {
     manager = "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
     live    = "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
+    live-2  = "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
   }
 
   type = object({
     manager = string
     live    = string
+    live-2  = string
   })
 }
 
@@ -34,11 +36,13 @@ variable "elasticsearch_audit_hosts_maps" {
   default = {
     manager = "search-cloud-platform-audit-live-hfclvgaq73cul7ku362rvigti4.eu-west-2.es.amazonaws.com"
     live    = "search-cloud-platform-audit-live-hfclvgaq73cul7ku362rvigti4.eu-west-2.es.amazonaws.com"
+    live-2  = "search-cloud-platform-audit-live-hfclvgaq73cul7ku362rvigti4.eu-west-2.es.amazonaws.com"
   }
 
   type = object({
     manager = string
     live    = string
+    live-2  = string
   })
 }
 

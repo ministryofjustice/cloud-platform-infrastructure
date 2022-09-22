@@ -80,22 +80,31 @@ data "aws_route53_zone" "cloud_platform" {
 ##########
 
 locals {
+  # prod_workspace refer to all production workspaces which have active monitoring set and followed
   prod_workspace = {
     manager = true
     live    = true
     default = false
   }
 
-  cloudwatch_workspace = {
-    manager = false
+  # prod_2_workspace is a temporary workspace to include live-2 on the modules that are tested.
+  # Once all the modules are tested, this list will replace the prod_workspace
+  prod_2_workspace = {
+    manager = true
     live    = true
-    live-1  = true
+    live-2  = true
+    default = false
+  }
+
+  # live_workspace refer to all production workspaces which have users workload in it
+  live_workspace = {
+    live    = true
+    live-2  = true
     default = false
   }
 
   manager_workspace = {
     manager = true
-    live    = false
     default = false
   }
 
@@ -114,6 +123,16 @@ locals {
   live1_cert_dns_name = {
     live = format("- '*.apps.%s'", var.live1_domain)
   }
+
+  # live_cluster_colors refer to the color for external-dns set-identifier annotation 
+  # set on all production cluster which have users workload in it
+  live_cluster_colors = {
+    live    = "green"
+    live-2  = "blue"
+    default = "black"
+  }
+
+
 }
 
 #####################################
