@@ -84,14 +84,13 @@ locals {
   prod_workspace = {
     manager = true
     live    = true
-    live-2  = true
     default = false
   }
 
   # live_workspace refer to all production workspaces which have users workload in it
   live_workspace = {
     live    = true
-    live-2  = true
+    live-2 = true
     default = false
   }
 
@@ -107,7 +106,6 @@ locals {
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"
     ]
     live   = ["arn:aws:route53:::hostedzone/*"]
-    live-2 = ["arn:aws:route53:::hostedzone/*"]
     default = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"
@@ -116,6 +114,17 @@ locals {
   live1_cert_dns_name = {
     live = format("- '*.apps.%s'", var.live1_domain)
   }
+
+
+  # live_cluster_colors refer to the color for external-dns set-identifier annotation 
+  set on all production cluster which have users workload in it
+  live_cluster_colors = {
+    live    = green
+    live-2 = blue
+    default = black
+  }
+
+  
 }
 
 #####################################

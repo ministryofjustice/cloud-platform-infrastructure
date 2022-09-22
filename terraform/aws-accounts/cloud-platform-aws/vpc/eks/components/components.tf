@@ -62,7 +62,7 @@ module "ingress_controllers" {
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   # To allow 'live' cluster to create hosts under *.cloud-platform.service.justice..
-  is_live_cluster     = terraform.workspace == "live" ? true : false
+  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
   # This module requires prometheus and cert-manager
@@ -89,7 +89,7 @@ module "ingress_controllers_v1" {
   controller_name     = "default"
   enable_latest_tls   = true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = terraform.workspace == "live" ? true : false
+  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
   # Enable this when we remove the module "ingress_controllers"
@@ -106,7 +106,7 @@ module "modsec_ingress_controllers_v1" {
   replica_count       = "6"
   controller_name     = "modsec"
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = terraform.workspace == "live" ? true : false
+  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
   enable_modsec       = true
   enable_owasp        = true
@@ -171,8 +171,8 @@ module "opa" {
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = lookup(local.prod_workspace, terraform.workspace, false) ? false : true
-  enable_external_dns_weight     = terraform.workspace == "live" ? true : false
-  cluster_color                  = terraform.workspace == "live" ? "green" : "black"
+  enable_external_dns_weight     = lookup(local.live_workspace, terraform.workspace, false)
+  cluster_color                  = lookup(local.live_cluster_colors, terraform.workspace, "black")
   integration_test_zone          = data.aws_route53_zone.integrationtest.name
 }
 
