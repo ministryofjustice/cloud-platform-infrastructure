@@ -40,13 +40,6 @@ data "aws_caller_identity" "cloud-platform" {
   provider = aws.cloud-platform
 }
 
-# https://mojdsd.signin.aws.amazon.com/console
-provider "aws" {
-  region  = "eu-west-1"
-  alias   = "dsd"
-  profile = "moj-dsd"
-}
-
 provider "external" {
 }
 
@@ -56,7 +49,7 @@ data "terraform_remote_state" "account" {
   config = {
     bucket  = "cloud-platform-terraform-state"
     region  = "eu-west-1"
-    key     = "terraform.tfstate"
+    key     = "aws-accounts/cloud-platform-aws/account/terraform.tfstate"
     profile = "moj-cp"
   }
 }
