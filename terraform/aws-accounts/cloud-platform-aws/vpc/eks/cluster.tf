@@ -50,7 +50,7 @@ locals {
   default_ng = {
     desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_capacity         = 60
-    min_capacity         = 1
+    min_capacity         = 2
     subnets              = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
     kubelet_extra_args   = "--max-pods=110"
@@ -76,7 +76,7 @@ locals {
   monitoring_ng = {
     desired_capacity = 2
     max_capacity     = 3
-    min_capacity     = 1
+    min_capacity     = 2
     subnets          = data.aws_subnets.private_zone_2b.ids
 
     create_launch_template = true
