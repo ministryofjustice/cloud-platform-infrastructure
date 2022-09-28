@@ -32,7 +32,7 @@ var _ = Describe("logging", func() {
 		)
 
 		BeforeEach(func() {
-			if !strings.HasPrefix(c.ClusterName, "live") {
+			if !strings.Contains(strings.ToLower(c.ClusterName), "live") {
 				Skip("Only live logs go to the Elasticsearch cluster")
 			}
 
