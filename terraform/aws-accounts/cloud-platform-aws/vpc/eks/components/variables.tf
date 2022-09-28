@@ -25,7 +25,6 @@ variable "elasticsearch_hosts_maps" {
   type = object({
     manager = string
     live    = string
-    live-2  = string
   })
 }
 
@@ -40,7 +39,6 @@ variable "elasticsearch_audit_hosts_maps" {
   type = object({
     manager = string
     live    = string
-    live-2  = string
   })
 }
 
