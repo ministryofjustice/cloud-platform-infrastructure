@@ -26,6 +26,13 @@ locals {
     manager = "4"
     default = "3"
   }
+  # Default node group minimum capacity 
+  default_ng_min_count = {
+    live    = "40"
+    live-2  = "7"
+    manager = "4"
+    default = "2"
+  }
   # To manage different cluster versions
   cluster_version = {
     live    = "1.21"
@@ -50,7 +57,7 @@ locals {
   default_ng = {
     desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_capacity         = 60
-    min_capacity         = 2
+    min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
     subnets              = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
     kubelet_extra_args   = "--max-pods=110"
