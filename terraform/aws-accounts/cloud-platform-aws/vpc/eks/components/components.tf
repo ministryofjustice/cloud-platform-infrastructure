@@ -179,9 +179,10 @@ module "opa" {
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   enable_invalid_hostname_policy = lookup(local.prod_2_workspace, terraform.workspace, false) ? false : true
-  enable_external_dns_weight     = lookup(local.live_workspace, terraform.workspace, false)
-  cluster_color                  = lookup(local.live_cluster_colors, terraform.workspace, "black")
-  integration_test_zone          = data.aws_route53_zone.integrationtest.name
+  # Validation for external_dns_weight annotation is enabled only on the "live" cluster
+  enable_external_dns_weight = terraform.workspace == "live" ? true : false
+  cluster_color              = terraform.workspace == "live" ? "green" : "black"
+  integration_test_zone      = data.aws_route53_zone.integrationtest.name
 }
 
 module "starter_pack" {
