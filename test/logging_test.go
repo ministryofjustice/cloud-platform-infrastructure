@@ -28,12 +28,12 @@ var _ = Describe("logging", func() {
 		var (
 			elasticSearch = "https://search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
 			date          = time.Now().Format("2006.01.02")
-			search        = elasticSearch + "/live_kubernetes_cluster" + "-" + date + "/_search"
+			search        = elasticSearch + "/" + c.ClusterName + "_kubernetes_cluster" + "-" + date + "/_search"
 		)
 
 		BeforeEach(func() {
-			if !strings.HasPrefix(c.ClusterName, "live") {
-				Skip("Only live logs go to the Elasticsearch cluster")
+			if !(c.ClusterName == "live") && !(c.ClusterName == "manager") {
+				Skip(fmt.Sprintf("Logs don't go to elasticsearch for cluster: %s", c.ClusterName))
 			}
 
 			// Create a helloworld app
