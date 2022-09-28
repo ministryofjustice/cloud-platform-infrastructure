@@ -98,7 +98,7 @@ var _ = Describe("logging", func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		FIt("should be able to retrieve the log message", func() {
+		It("should be able to retrieve the log message", func() {
 			var podName string
 
 			// To get the pod name, we need to first get all pods in the namespace.
