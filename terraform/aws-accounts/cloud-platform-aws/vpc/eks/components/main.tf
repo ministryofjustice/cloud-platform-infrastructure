@@ -123,16 +123,6 @@ locals {
   live1_cert_dns_name = {
     live = format("- '*.apps.%s'", var.live1_domain)
   }
-
-  # live_cluster_colors refer to the color for external-dns set-identifier annotation 
-  # set on all production cluster which have users workload in it
-  live_cluster_colors = {
-    live    = "green"
-    live-2  = "blue"
-    default = "black"
-  }
-
-
 }
 
 #####################################
