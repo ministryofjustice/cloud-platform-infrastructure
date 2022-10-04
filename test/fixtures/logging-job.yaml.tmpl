@@ -9,5 +9,5 @@ spec:
       restartPolicy: Never
       containers:
       - name: smoketest-logging
-        image: bitnami/nginx
+        image: nginxinc/nginx-unprivileged
         command: ["curl", "-s", "-XGET", "{{ .searchTerm }}", "-H", 'Content-Type: application/json', "-d", '{ "query": { "bool": { "must": [ { "match": { "kubernetes.namespace_name.keyword": "{{ .namespace }}" } } ] } } }']
