@@ -85,7 +85,7 @@ module "modsec_ingress_controllers" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.3.3"
 
   controller_name = "modsec01"
-  replica_count   = "6"
+  replica_count   = terraform.workspace == "live" ? "6" : "2"
 
   depends_on = [module.ingress_controllers]
 }
