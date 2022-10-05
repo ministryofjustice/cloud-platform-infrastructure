@@ -23,7 +23,7 @@ variable "availability_zones" {
 }
 
 variable "cluster_names" {
-  description = "List of Clusters within Live-1 VPC"
+  description = "List of Clusters within Live-1 VPC test"
   default = {
     live-1 = ["live-1.cloud-platform.service.justice.gov.uk", "manager", "live"]
   }
