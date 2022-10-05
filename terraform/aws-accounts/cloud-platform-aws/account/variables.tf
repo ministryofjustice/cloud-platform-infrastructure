@@ -10,6 +10,6 @@ variable "aws_region" {
 }
 
 variable "kubeconfig_clusters" {
-  description = "Cluster(s) credentials used by concourse pipelines to run terraform plan and apply"
+  description = "Cluster(s) credentials used by concourse pipelines to run terraform"
   type        = any
 }
