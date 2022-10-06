@@ -40,6 +40,10 @@ module "cluster_autoscaler" {
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_id              = data.terraform_remote_state.cluster.outputs.cluster_id
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+
+  depends_on = [
+    module.monitoring.prometheus_operator_crds_status
+  ]
 }
 module "cert_manager" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.1"
@@ -208,4 +212,8 @@ module "velero" {
 
 module "kuberhealthy" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.0.4"
+
+  depends_on = [
+    module.monitoring.prometheus_operator_crds_status
+  ]
 }
