@@ -123,13 +123,13 @@ locals {
   }
   domain_filters = {
     default = [
-      "${data.aws_route53_zone.selected.name}",
-      "${data.aws_route53_zone.integrationtest.name}"
+      data.aws_route53_zone.selected.name,
+      data.aws_route53_zone.integrationtest.name
     ]
     manager = [
-      "${data.aws_route53_zone.selected.name}",
-      "${data.aws_route53_zone.cloud_platform.name}",
-      "${data.aws_route53_zone.integrationtest.name}"
+      data.aws_route53_zone.selected.name,
+      data.aws_route53_zone.cloud_platform.name,
+      data.aws_route53_zone.integrationtest.name
     ]
     live   = [""]
     live-2 = [""]
