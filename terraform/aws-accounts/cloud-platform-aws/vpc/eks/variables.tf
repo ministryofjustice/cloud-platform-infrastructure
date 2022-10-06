@@ -10,8 +10,8 @@ variable "dockerhub_token" {
 
 variable "enable_oidc_associate" {
   description = "Enable OIDC associate provider. This takes approximately 30 minutes to complete, so be prepared to wait."
-  default = true
-  type = bool
+  default     = true
+  type        = bool
 }
 
 variable "auth0_issuerUrl" {
