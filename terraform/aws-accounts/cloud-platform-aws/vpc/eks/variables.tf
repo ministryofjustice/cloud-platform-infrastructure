@@ -8,6 +8,12 @@ variable "dockerhub_token" {
   type        = string
 }
 
+variable "enable_oidc_associate" {
+  description = "Enable OIDC associate provider. This takes approximately 30 minutes to complete, so be prepared to wait."
+  default = true
+  type = bool
+}
+
 variable "auth0_issuerUrl" {
   description = "Domain issuer URL by which Auth0 can find the OpenID Provider Configuration Document"
   default     = "https://justice-cloud-platform.eu.auth0.com/"
