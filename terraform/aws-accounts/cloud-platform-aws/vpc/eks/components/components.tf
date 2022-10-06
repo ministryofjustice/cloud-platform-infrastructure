@@ -208,4 +208,8 @@ module "velero" {
 
 module "kuberhealthy" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.0.4"
+
+  depends_on = [
+    module.monitoring.prometheus_operator_crds_status
+  ]
 }
