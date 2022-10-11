@@ -28,7 +28,7 @@ locals {
   }
   # Default node group minimum capacity 
   default_ng_min_count = {
-    live    = "40"
+    live    = "42"
     live-2  = "7"
     manager = "4"
     default = "2"
