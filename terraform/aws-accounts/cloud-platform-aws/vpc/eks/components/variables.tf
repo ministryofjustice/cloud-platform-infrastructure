@@ -20,11 +20,13 @@ variable "elasticsearch_hosts_maps" {
   default = {
     manager = "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
     live    = "search-cloud-platform-live-dibidbfud3uww3lpxnhj2jdws4.eu-west-2.es.amazonaws.com"
+    live-2  = "search-cloud-platform-live-2-y3xuoui3qenhfpmiulk4wthw5i.eu-west-2.es.amazonaws.com"
   }
 
   type = object({
     manager = string
     live    = string
+    live-2  = string
   })
 }
 
