@@ -3,13 +3,33 @@
 # Calico #
 ##########
 
-data "kubectl_file_documents" "calico_crds" {
-  content = file("${path.module}/resources/calico-crds.yaml")
+# stopgap before switching to the tigera operator installation (disruptive)
+locals {
+  calico_crds = {
+    bgpconfigurations     = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_bgpconfigurations.yaml"
+    bgppeers              = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_bgppeers.yaml"
+    blockaffinities       = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_blockaffinities.yaml"
+    clusterinformations   = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_clusterinformations.yaml"
+    felixconfigurations   = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_felixconfigurations.yaml"
+    globalnetworkpolicies = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_globalnetworkpolicies.yaml"
+    globalnetworksets     = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_globalnetworksets.yaml"
+    hostendpoints         = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_hostendpoints.yaml"
+    ipamblocks            = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_ipamblocks.yaml"
+    ippools               = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_ippools.yaml"
+    networkpolicies       = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_networkpolicies.yaml"
+    networksets           = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_networksets.yaml"
+  }
+}
+
+data "http" "calico_crds" {
+  for_each = local.calico_crds
+  url      = each.value
 }
 
 resource "kubectl_manifest" "calico_crds" {
-  count     = length(data.kubectl_file_documents.calico_crds.documents)
-  yaml_body = element(data.kubectl_file_documents.calico_crds.documents, count.index)
+  server_side_apply = true
+  for_each          = data.http.calico_crds
+  yaml_body         = each.value["body"]
 }
 
 resource "helm_release" "calico" {
