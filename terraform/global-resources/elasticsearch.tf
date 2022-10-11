@@ -3,6 +3,12 @@ provider "elasticsearch" {
   aws_profile = "moj-cp"
 }
 
+provider "elasticsearch" {
+  url         = "https://${aws_elasticsearch_domain.live-2.endpoint}"
+  aws_profile = "moj-cp"
+  alias       = "live-2"
+}
+
 locals {
   live_domain = "cloud-platform-live"
 
@@ -462,4 +468,22 @@ resource "aws_elasticsearch_domain" "live-2" {
   tags = {
     Domain = local.live_2_domain
   }
+}
+
+resource "elasticsearch_opensearch_ism_policy" "ism-policy_live_2" {
+  policy_id = "hot-warm-cold-delete"
+  body      = data.template_file.ism_policy_live_2.rendered
+
+  provider = elasticsearch.live-2
+}
+
+data "template_file" "ism_policy_live_2" {
+  template = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
+
+    timestamp_field   = var.timestamp_field
+    warm_transition   = var.warm_transition
+    cold_transition   = var.cold_transition
+    delete_transition = var.delete_transition
+    index_pattern     = jsonencode(var.index_pattern_live_2)
+  })
 }
