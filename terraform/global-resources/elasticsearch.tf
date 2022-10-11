@@ -6,10 +6,18 @@ provider "elasticsearch" {
 locals {
   live_domain = "cloud-platform-live"
 
+  live_2_domain = "cloud-platform-live-2"
+
   allowed_live_1_ips = {
     "35.177.252.54/32"  = "live-1-b"
     "35.178.209.113/32" = "live-1-a"
     "3.8.51.207/32"     = "live-1-c"
+  }
+
+  allowed_live_2_ips = {
+    "8.134.190.194" = "live-2-b"
+    "35.176.15.151" = "live-2-a"
+    "35.178.11.229" = "live-2-c"
   }
 
   audit_domain = "cloud-platform-audit"
@@ -370,4 +378,68 @@ module "audit_live_elasticsearch_monitoring" {
   domain_name       = local.audit_live_domain
   create_sns_topic  = false
   sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
+}
+
+# This is the OpenSearch cluster for live-2
+data "aws_iam_policy_document" "live-2" {
+  statement {
+    actions = [
+      "es:Describe*",
+      "es:List*",
+      "es:ESHttpGet",
+      "es:ESHttpHead",
+      "es:ESHttpPost",
+      "es:ESHttpPut",
+      "es:ESHttpPatch"
+    ]
+
+    resources = [
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.live_2_domain}/*",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+
+      values = keys(local.allowed_live_2_ips)
+    }
+  }
+}
+
+resource "aws_elasticsearch_domain" "live-2" {
+  domain_name           = "cloud-platform-live-2"
+  provider              = aws.cloud-platform
+  elasticsearch_version = "OpenSearch_1.3"
+
+  cluster_config {
+    instance_type  = "r5.xlarge.elasticsearch"
+    instance_count = "2"
+  }
+
+  ebs_options {
+    ebs_enabled = "true"
+    volume_type = "gp3"
+    volume_size = "500"
+  }
+
+  advanced_options = {
+    "rest.action.multi.allow_explicit_index" = "true"
+    "indices.query.bool.max_clause_count"    = 3000
+  }
+
+  access_policies = data.aws_iam_policy_document.live-2.json
+
+  tags = {
+    Domain = "cloud-platform-live-2"
+  }
+  log_publishing_options {
+    cloudwatch_log_group_arn = "arn:aws:logs:eu-west-2:754256621582:log-group:/aws/OpenSearchService/domains/cloud-platform-live-2/application-logs"
+    enabled                  = true
+    log_type                 = "ES_APPLICATION_LOGS"
+  }
 }
