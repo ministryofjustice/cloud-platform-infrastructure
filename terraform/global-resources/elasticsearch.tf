@@ -417,29 +417,49 @@ resource "aws_elasticsearch_domain" "live-2" {
   elasticsearch_version = "OpenSearch_1.3"
 
   cluster_config {
-    instance_type  = "r5.xlarge.elasticsearch"
-    instance_count = "2"
+    instance_type            = "r6g.xlarge.elasticsearch"
+    instance_count           = "3"
+    dedicated_master_enabled = true
+    dedicated_master_type    = "m6g.xlarge.elasticsearch"
+    dedicated_master_count   = "3"
+    zone_awareness_enabled   = true
+    zone_awareness_config {
+      availability_zone_count = 3
+    }
+    warm_count   = 3
+    warm_enabled = true
+    warm_type    = "ultrawarm1.medium.elasticsearch"
+    cold_storage_options {
+      enabled = true
+    }
   }
 
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp3"
     volume_size = "500"
+    iops        = "3000"
   }
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
     "indices.query.bool.max_clause_count"    = 3000
+    "override_main_response_version"         = "true"
   }
 
   access_policies = data.aws_iam_policy_document.live-2.json
 
-  tags = {
-    Domain = "cloud-platform-live-2"
+  snapshot_options {
+    automated_snapshot_start_hour = 23
   }
+
   log_publishing_options {
-    cloudwatch_log_group_arn = "arn:aws:logs:eu-west-2:754256621582:log-group:/aws/OpenSearchService/domains/cloud-platform-live-2/application-logs"
-    enabled                  = true
+    cloudwatch_log_group_arn = ""
+    enabled                  = false
     log_type                 = "ES_APPLICATION_LOGS"
+  }
+
+  tags = {
+    Domain = local.live_2_domain
   }
 }
