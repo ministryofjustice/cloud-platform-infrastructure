@@ -4,7 +4,7 @@ provider "elasticsearch" {
 }
 
 provider "elasticsearch" {
-  url         = "https://${aws_elasticsearch_domain.live_1.endpoint}"
+  url         = "https://${aws_elasticsearch_domain.live-2.endpoint}"
   aws_profile = "moj-cp"
   alias       = "live-2"
 }
