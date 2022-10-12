@@ -153,7 +153,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.8"
 
   alertmanager_slack_receivers               = var.alertmanager_slack_receivers
   pagerduty_config                           = var.pagerduty_config
@@ -165,7 +165,9 @@ module "monitoring" {
   enable_large_nodesgroup                    = lookup(local.live_workspace, terraform.workspace, false)
   enable_prometheus_affinity_and_tolerations = true
   enable_kibana_audit_proxy                  = terraform.workspace == "live" ? true : false
-  enable_kibana_proxy                        = terraform.workspace == "live" ? true : false
+  enable_kibana_proxy                        = lookup(local.live_workspace, terraform.workspace, false)
+  kibana_upstream                            = format("%s://%s", "https", lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch"))
+  kibana_audit_upstream                      = format("%s://%s", "https", lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch"))
 
   enable_thanos_helm_chart = lookup(local.prod_2_workspace, terraform.workspace, false)
   enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
