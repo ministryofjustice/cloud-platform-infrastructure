@@ -22,8 +22,8 @@ locals {
 
   allowed_live_2_ips = {
     "18.134.190.194" = "live-2-b"
-    "35.176.15.151" = "live-2-a"
-    "35.178.11.229" = "live-2-c"
+    "35.176.15.151"  = "live-2-a"
+    "35.178.11.229"  = "live-2-c"
   }
 
   audit_domain = "cloud-platform-audit"
