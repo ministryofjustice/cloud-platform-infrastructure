@@ -38,6 +38,7 @@ resource "helm_release" "calico" {
   repository = "https://aws.github.io/eks-charts"
   namespace  = "kube-system"
   version    = "0.3.10"
+  skip_crds  = "true"
 
   depends_on = [kubectl_manifest.calico_crds]
   timeout    = "900"
