@@ -99,7 +99,7 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   cluster_config {
     instance_type            = "r6g.4xlarge.elasticsearch"
-    instance_count           = "6"
+    instance_count           = "4"
     dedicated_master_enabled = true
     dedicated_master_type    = "m6g.xlarge.elasticsearch"
     dedicated_master_count   = "3"
@@ -241,12 +241,8 @@ resource "aws_elasticsearch_domain" "audit_1" {
   elasticsearch_version = "7.10"
 
   cluster_config {
-    instance_type            = "m6g.xlarge.elasticsearch"
+    instance_type            = "m6g.large.elasticsearch"
     instance_count           = "2"
-    dedicated_master_enabled = true
-    dedicated_master_type    = "r6g.large.elasticsearch"
-    dedicated_master_count   = "3"
-    zone_awareness_enabled   = true
     warm_count               = 2
     warm_enabled             = true
     warm_type                = "ultrawarm1.medium.elasticsearch"
@@ -287,12 +283,8 @@ resource "aws_elasticsearch_domain" "audit_live" {
   elasticsearch_version = "OpenSearch_1.0"
 
   cluster_config {
-    instance_type            = "m6g.xlarge.elasticsearch"
+    instance_type            = "m6g.large.elasticsearch"
     instance_count           = "2"
-    dedicated_master_enabled = true
-    dedicated_master_type    = "r6g.large.elasticsearch"
-    dedicated_master_count   = "3"
-    zone_awareness_enabled   = true
     warm_count               = 2
     warm_enabled             = true
     warm_type                = "ultrawarm1.medium.elasticsearch"
@@ -426,7 +418,7 @@ resource "aws_elasticsearch_domain" "live-2" {
     instance_type            = "r6g.xlarge.elasticsearch"
     instance_count           = "3"
     dedicated_master_enabled = true
-    dedicated_master_type    = "m6g.xlarge.elasticsearch"
+    dedicated_master_type    = "m6g.large.elasticsearch"
     dedicated_master_count   = "3"
     zone_awareness_enabled   = true
     zone_awareness_config {
