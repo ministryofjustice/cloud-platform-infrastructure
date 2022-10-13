@@ -241,11 +241,11 @@ resource "aws_elasticsearch_domain" "audit_1" {
   elasticsearch_version = "7.10"
 
   cluster_config {
-    instance_type            = "m6g.large.elasticsearch"
-    instance_count           = "2"
-    warm_count               = 2
-    warm_enabled             = true
-    warm_type                = "ultrawarm1.medium.elasticsearch"
+    instance_type  = "m6g.large.elasticsearch"
+    instance_count = "2"
+    warm_count     = 2
+    warm_enabled   = true
+    warm_type      = "ultrawarm1.medium.elasticsearch"
   }
 
   ebs_options {
@@ -283,11 +283,11 @@ resource "aws_elasticsearch_domain" "audit_live" {
   elasticsearch_version = "OpenSearch_1.0"
 
   cluster_config {
-    instance_type            = "m6g.large.elasticsearch"
-    instance_count           = "2"
-    warm_count               = 2
-    warm_enabled             = true
-    warm_type                = "ultrawarm1.medium.elasticsearch"
+    instance_type  = "m6g.large.elasticsearch"
+    instance_count = "2"
+    warm_count     = 2
+    warm_enabled   = true
+    warm_type      = "ultrawarm1.medium.elasticsearch"
   }
 
   ebs_options {
