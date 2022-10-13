@@ -232,7 +232,7 @@ resource "aws_elasticsearch_domain" "audit_live" {
   }
 
   tags = {
-    Domain = local.audit_domain
+    Domain = local.audit_live_domain
   }
 
   log_publishing_options {
