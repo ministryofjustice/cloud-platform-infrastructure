@@ -96,6 +96,9 @@ locals {
     default = false
   }
 
+  # Disable alerts to test clusters by default
+  enable_alerts = lookup(local.prod_2_workspace, terraform.workspace, false)
+
   # live_workspace refer to all production workspaces which have users workload in it
   live_workspace = {
     live    = true
