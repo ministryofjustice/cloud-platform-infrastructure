@@ -88,6 +88,18 @@ func (c *Config) ExpectedCrds() {
 		"prometheusrules.monitoring.coreos.com",
 		"thanosrulers.monitoring.coreos.com",
 		"servicemonitors.monitoring.coreos.com",
+		"bgpconfigurations.crd.projectcalico.org",
+		"bgppeers.crd.projectcalico.org",
+		"blockaffinities.crd.projectcalico.org",
+		"clusterinformations.crd.projectcalico.org",
+		"felixconfigurations.crd.projectcalico.org",
+		"globalnetworkpolicies.crd.projectcalico.org",
+		"globalnetworksets.crd.projectcalico.org",
+		"hostendpoints.crd.projectcalico.org",
+		"ipamblocks.crd.projectcalico.org",
+		"ippools.crd.projectcalico.org",
+		"networkpolicies.crd.projectcalico.org",
+		"networksets.crd.projectcalico.org",
 	)
 }
 
