@@ -2966,7 +2966,7 @@
             }
           },
           "ts": {
-            "type": "float"
+            "type": "text"
           },
           "type": {
             "type": "text",
