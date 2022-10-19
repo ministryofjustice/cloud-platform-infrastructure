@@ -487,3 +487,21 @@ data "template_file" "ism_policy_live_2" {
     index_pattern     = jsonencode(var.index_pattern_live_2)
   })
 }
+
+# Create an index template	
+
+data "template_file" "template_index_kubernetes" {
+  template = templatefile("${path.module}/resources/opensearch/mapping-template.json.tpl", {
+    no_of_shards = "1"
+  })
+}
+
+resource "elasticsearch_index_template" "template_index_kubernetes" {
+  name = "test_template"
+  body = data.template_file.template_index_kubernetes.rendered
+
+  depends_on = [aws_elasticsearch_domain.live-2]
+
+  provider = elasticsearch.live-2
+
+}
