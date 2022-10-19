@@ -99,7 +99,7 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   cluster_config {
     instance_type            = "r6g.4xlarge.elasticsearch"
-    instance_count           = "4"
+    instance_count           = "5"
     dedicated_master_enabled = true
     dedicated_master_type    = "m6g.xlarge.elasticsearch"
     dedicated_master_count   = "3"
@@ -241,17 +241,20 @@ resource "aws_elasticsearch_domain" "audit_1" {
   elasticsearch_version = "7.10"
 
   cluster_config {
-    instance_type  = "m6g.large.elasticsearch"
-    instance_count = "2"
-    warm_count     = 2
-    warm_enabled   = true
-    warm_type      = "ultrawarm1.medium.elasticsearch"
+    instance_type            = "m6g.large.elasticsearch"
+    instance_count           = "1"
+    dedicated_master_enabled = true
+    dedicated_master_type    = "r6g.large.elasticsearch"
+    dedicated_master_count   = "2"
+    warm_count               = 2
+    warm_enabled             = true
+    warm_type                = "ultrawarm1.medium.elasticsearch"
   }
 
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp3"
-    volume_size = "1536"
+    volume_size = "1024"
     iops        = 4608
   }
 
@@ -283,17 +286,20 @@ resource "aws_elasticsearch_domain" "audit_live" {
   elasticsearch_version = "OpenSearch_1.0"
 
   cluster_config {
-    instance_type  = "m6g.large.elasticsearch"
-    instance_count = "2"
-    warm_count     = 2
-    warm_enabled   = true
-    warm_type      = "ultrawarm1.medium.elasticsearch"
+    instance_type            = "m6g.large.elasticsearch"
+    instance_count           = "1"
+    dedicated_master_enabled = true
+    dedicated_master_type    = "r6g.large.elasticsearch"
+    dedicated_master_count   = "2"
+    warm_count               = 2
+    warm_enabled             = true
+    warm_type                = "ultrawarm1.medium.elasticsearch"
   }
 
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp3"
-    volume_size = "1536"
+    volume_size = "1024"
     iops        = 4608
   }
 
