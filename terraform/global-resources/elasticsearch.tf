@@ -255,7 +255,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
     ebs_enabled = "true"
     volume_type = "gp3"
     volume_size = "1024"
-    iops        = 4608
+    iops        = 3000
   }
 
   advanced_options = {
@@ -300,7 +300,7 @@ resource "aws_elasticsearch_domain" "audit_live" {
     ebs_enabled = "true"
     volume_type = "gp3"
     volume_size = "1024"
-    iops        = 4608
+    iops        = 3000
   }
 
   advanced_options = {
