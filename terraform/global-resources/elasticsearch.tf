@@ -242,7 +242,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
 
   cluster_config {
     instance_type            = "m6g.large.elasticsearch"
-    instance_count           = "1"
+    instance_count           = "2"
     dedicated_master_enabled = true
     dedicated_master_type    = "r6g.large.elasticsearch"
     dedicated_master_count   = "2"
@@ -287,7 +287,7 @@ resource "aws_elasticsearch_domain" "audit_live" {
 
   cluster_config {
     instance_type            = "m6g.large.elasticsearch"
-    instance_count           = "1"
+    instance_count           = "2"
     dedicated_master_enabled = true
     dedicated_master_type    = "r6g.large.elasticsearch"
     dedicated_master_count   = "2"
