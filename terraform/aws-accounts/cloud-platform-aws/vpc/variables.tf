@@ -19,7 +19,7 @@ variable "external_subnets" {
 variable "availability_zones" {
   type        = list(string)
   description = "List of EC2 availability zones"
-  default     = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
+  default     = ["us-east-1a", "us-east-1b", "us-east-1c"]
 }
 
 variable "cluster_names" {
