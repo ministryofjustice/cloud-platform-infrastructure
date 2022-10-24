@@ -14,21 +14,21 @@ provider "aws" {
   skip_requesting_account_id  = true
 
   endpoints {
-    cloudformation = "http://localhost:4566"
-    cloudwatch     = "http://localhost:4566"
-    dynamodb       = "http://localhost:4566"
-    ec2            = "http://localhost:4566"
-    es             = "http://localhost:4566"
-    elasticache    = "http://localhost:4566"
-    iam            = "http://localhost:4566"
-    rds            = "http://localhost:4566"
-    route53        = "http://localhost:4566"
-    s3             = "http://localhost:4566"
-    secretsmanager = "http://localhost:4566"
-    sns            = "http://localhost:4566"
-    sqs            = "http://localhost:4566"
-    ssm            = "http://localhost:4566"
-    sts            = "http://localhost:4566"
+    cloudformation = "http://host.docker.internal:4566"
+    cloudwatch     = "http://host.docker.internal:4566"
+    dynamodb       = "http://host.docker.internal:4566"
+    ec2            = "http://host.docker.internal:4566"
+    es             = "http://host.docker.internal:4566"
+    elasticache    = "http://host.docker.internal:4566"
+    iam            = "http://host.docker.internal:4566"
+    rds            = "http://host.docker.internal:4566"
+    route53        = "http://host.docker.internal:4566"
+    s3             = "http://host.docker.internal:4566"
+    secretsmanager = "http://host.docker.internal:4566"
+    sns            = "http://host.docker.internal:4566"
+    sqs            = "http://host.docker.internal:4566"
+    ssm            = "http://host.docker.internal:4566"
+    sts            = "http://host.docker.internal:4566"
   }
 }
 
