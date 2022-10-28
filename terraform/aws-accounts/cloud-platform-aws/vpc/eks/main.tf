@@ -8,7 +8,7 @@ provider "aws" {
   access_key                  = "test"
   secret_key                  = "test"
   region                      = "us-east-1"
-  s3_use_path_style           = true
+  s3_force_path_style           = true
   skip_credentials_validation = true
   skip_metadata_api_check     = true
   skip_requesting_account_id  = true
@@ -16,8 +16,10 @@ provider "aws" {
   endpoints {
     cloudformation = "http://host.docker.internal:4566"
     cloudwatch     = "http://host.docker.internal:4566"
+    cloudwatchlogs = "http://host.docker.internal:4566"
     dynamodb       = "http://host.docker.internal:4566"
     ec2            = "http://host.docker.internal:4566"
+    eks            = "http://host.docker.internal:4566"
     es             = "http://host.docker.internal:4566"
     elasticache    = "http://host.docker.internal:4566"
     iam            = "http://host.docker.internal:4566"
@@ -33,7 +35,7 @@ provider "aws" {
 }
 
 provider "auth0" {
-  domain = "justice-cloud-platform.eu.auth0.com"
+  domain = "moj-cloud-platforms-dev.eu.auth0.com"
 }
 
 ###########################
@@ -89,7 +91,7 @@ data "aws_subnets" "private_zone_2b" {
 
   filter {
     name   = "availability-zone"
-    values = ["eu-west-2b"]
+    values = ["us-east1-1b"]
   }
 
   tags = {

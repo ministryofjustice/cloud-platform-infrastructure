@@ -21,24 +21,24 @@ locals {
   # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler)
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/835
   node_groups_count = {
-    live    = "54"
-    live-2  = "7"
-    manager = "4"
-    default = "3"
+    live    = "1"
+    live-2  = "1"
+    manager = "1"
+    default = "1"
   }
   # Default node group minimum capacity 
   default_ng_min_count = {
-    live    = "42"
-    live-2  = "7"
-    manager = "4"
-    default = "2"
+    live    = "1"
+    live-2  = "1"
+    manager = "1"
+    default = "1"
   }
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.21"
-    live-2  = "1.21"
-    manager = "1.21"
-    default = "1.21"
+    live    = "1.22"
+    live-2  = "1.22"
+    manager = "1.22"
+    default = "1.22"
   }
   node_size = {
     live    = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
@@ -56,9 +56,9 @@ locals {
 
   default_ng = {
     desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_capacity         = 60
+    max_capacity         = 1
     min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
-    subnets              = data.aws_subnets.private.ids
+    subnets              = ["subnet-23459843", "subnet-13b030c7", "subnet-23459843"]
     bootstrap_extra_args = "--use-max-pods false"
     kubelet_extra_args   = "--max-pods=110"
 
@@ -81,10 +81,10 @@ locals {
   }
 
   monitoring_ng = {
-    desired_capacity = 2
-    max_capacity     = 3
-    min_capacity     = 2
-    subnets          = data.aws_subnets.private_zone_2b.ids
+    desired_capacity = 1
+    max_capacity     = 1
+    min_capacity     = 1
+    subnets          = ["subnet-23459843"]
 
     create_launch_template = true
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
@@ -125,11 +125,11 @@ module "eks" {
   version = "17.24.0"
 
   cluster_name                  = terraform.workspace
-  subnets                       = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
+  subnets                       = ["subnet-23459843", "subnet-13b030c7", "subnet-23459843"]
   vpc_id                        = data.aws_vpc.selected.id
   write_kubeconfig              = false
   cluster_version               = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
-  enable_irsa                   = true
+  enable_irsa                   = false
   cluster_enabled_log_types     = var.cluster_enabled_log_types
   cluster_log_retention_in_days = var.cluster_log_retention_in_days
   wait_for_cluster_timeout      = "900"
@@ -146,64 +146,8 @@ module "eks" {
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
   map_users = [
     {
-      userarn  = "arn:aws:iam::754256621582:user/PoornimaKrishnasamy"
-      username = "PoornimaKrishnasamy"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/paulWyborn"
-      username = "paulWyborn"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/SabluMiah"
-      username = "SabluMiah"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/jasonBirchall"
-      username = "jasonBirchall"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/RazvanCosma"
+      userarn  = "arn:aws:iam::000000000000:user/RazvanCosma"
       username = "RazvanCosma"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/SteveMarshall"
-      username = "SteveMarshall"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
-      username = "VijayVeeranki"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/JackStockley"
-      username = "JackStockley"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/JakeMulley"
-      username = "JakeMulley"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/SteveWilliams"
-      username = "SteveWilliams"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/cloud-platform/manager-concourse"
-      username = "manager-concourse"
-      groups   = ["system:masters"]
-    },
-    # Manager-concourse-cloud-platform-admin used by the cloud-platform-cli
-    {
-      userarn  = "arn:aws:iam::754256621582:user/cloud-platform/manager-concourse-cloud-platform-admin"
-      username = "manager-concourse-cloud-platform-admin"
       groups   = ["system:masters"]
     }
   ]
@@ -215,6 +159,7 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
+  count                   = 0
   source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.2.1"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
