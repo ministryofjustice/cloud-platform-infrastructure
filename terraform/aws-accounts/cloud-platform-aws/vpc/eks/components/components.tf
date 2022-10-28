@@ -45,6 +45,7 @@ module "cluster_autoscaler" {
     module.monitoring.prometheus_operator_crds_status
   ]
 }
+
 module "cert_manager" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.1"
 
