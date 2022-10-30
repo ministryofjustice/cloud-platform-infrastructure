@@ -12,7 +12,7 @@ variable "warm_transition" {
 
 variable "cold_transition" {
   type        = string
-  default     = "60d"
+  default     = "30d"
   description = "Time until transition to cold storage"
 }
 
