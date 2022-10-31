@@ -268,7 +268,6 @@ resource "aws_elasticsearch_domain" "audit_1" {
   snapshot_options {
     automated_snapshot_start_hour = 23
   }
-
   tags = {
     Domain = local.audit_domain
   }
