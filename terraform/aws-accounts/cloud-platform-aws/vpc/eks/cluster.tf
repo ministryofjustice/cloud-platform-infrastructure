@@ -125,7 +125,7 @@ module "eks" {
   version = "18.24.1"
 
   cluster_name                  = terraform.workspace
-  subnet_ids                       = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
+  subnet_ids                    = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
   vpc_id                        = data.aws_vpc.selected.id
   cluster_version               = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
   enable_irsa                   = true
@@ -144,7 +144,7 @@ module "eks" {
 
   # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
   iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
-
+  manage_aws_auth_configmap = true
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
   aws_auth_users = [
