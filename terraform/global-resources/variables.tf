@@ -1,6 +1,6 @@
 variable "timestamp_field" {
   type        = string
-  default     = "last_updated"
+  default     = "@timestamp"
   description = "Field Kibana identifies as Time field, when creating the index pattern"
 }
 
