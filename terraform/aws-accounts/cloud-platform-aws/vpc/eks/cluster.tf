@@ -38,7 +38,7 @@ locals {
     live    = "1.21"
     live-2  = "1.21"
     manager = "1.21"
-    default = "1.21"
+    default = "1.22"
   }
   node_size = {
     live    = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
@@ -55,6 +55,32 @@ locals {
   }
 
   default_ng = {
+    desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
+    max_capacity         = 60
+    min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+    subnets              = data.aws_subnets.private.ids
+    bootstrap_extra_args = "--use-max-pods false"
+    kubelet_extra_args   = "--max-pods=110"
+
+    create_launch_template = true
+    pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
+      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
+    })
+
+    instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
+    k8s_labels = {
+      Terraform = "true"
+      Cluster   = terraform.workspace
+      Domain    = local.fqdn
+    }
+    additional_tags = {
+      default_ng    = "true"
+      application   = "moj-cloud-platform"
+      business-unit = "platforms"
+    }
+  }
+
+  default_ng_12_22 = {
     desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_capacity         = 60
     min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
@@ -112,6 +138,38 @@ locals {
     ]
   }
 
+  monitoring_ng_12_22 = {
+    desired_capacity = 2
+    max_capacity     = 3
+    min_capacity     = 2
+    subnets          = data.aws_subnets.private_zone_2b.ids
+
+    create_launch_template = true
+    pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
+      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
+    })
+
+    instance_types = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
+    k8s_labels = {
+      Terraform                                     = "true"
+      "cloud-platform.justice.gov.uk/monitoring-ng" = "true"
+      Cluster                                       = terraform.workspace
+      Domain                                        = local.fqdn
+    }
+    additional_tags = {
+      monitoring_ng = "true"
+      application   = "moj-cloud-platform"
+      business-unit = "platforms"
+    }
+    taints = [
+      {
+        key    = "monitoring-node"
+        value  = true
+        effect = "NO_SCHEDULE"
+      }
+    ]
+  }
+
   tags = {
     Terraform = "true"
     Cluster   = terraform.workspace
@@ -137,6 +195,8 @@ module "eks" {
   node_groups = {
     default_ng    = local.default_ng
     monitoring_ng = local.monitoring_ng
+    default_ng_12_22 = local.default_ng_12_22
+    monitoring_ng_12_22 = local.monitoring_ng_12_22
   }
 
   # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
