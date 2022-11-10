@@ -45,6 +45,14 @@ module "cluster_autoscaler" {
     module.monitoring.prometheus_operator_crds_status
   ]
 }
+
+module "descheduler" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.0.2"
+
+  depends_on = [
+    module.monitoring.prometheus_operator_crds_status
+  ]
+}
 module "cert_manager" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.1"
 
