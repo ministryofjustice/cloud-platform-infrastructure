@@ -161,8 +161,8 @@ module "eks" {
   wait_for_cluster_timeout      = "900"
 
   node_groups = {
-    default_ng    = local.default_ng
-    monitoring_ng = local.monitoring_ng
+    default_ng       = local.default_ng
+    monitoring_ng    = local.monitoring_ng
     default_ng_12_22 = local.default_ng_12_22
   }
 
