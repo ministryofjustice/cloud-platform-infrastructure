@@ -115,7 +115,6 @@ func (c *Config) ExpectedPromRules() {
 		"prometheus-operator-kube-p-kube-apiserver-burnrate.rules",
 		"prometheus-operator-kube-p-kube-apiserver-histogram.rules",
 		"prometheus-operator-kube-p-kube-apiserver-slos",
-		"prometheus-operator-kube-p-kube-apiserver.rules",
 		"prometheus-operator-kube-p-kube-prometheus-general.rules",
 		"prometheus-operator-kube-p-kube-prometheus-node-recording.rules",
 		"prometheus-operator-kube-p-kube-state-metrics",
@@ -168,7 +167,7 @@ func (c *Config) ExpectedServiceMonitors() {
 
 		"logging": {"fluent-bit"},
 
-		"monitoring": {"prometheus-operator-prometheus-node-exporter", "prometheus-operator-kube-p-alertmanager", "prometheus-operator-kube-p-apiserver", "prometheus-operator-kube-p-coredns", "prometheus-operator-kube-p-grafana", "prometheus-operator-kube-state-metrics", "prometheus-operator-kube-p-kubelet", "prometheus-operator-kube-p-prometheus", "prometheus-operator-kube-p-operator", "prometheus-operator-prometheus-node-exporter"},
+		"monitoring": {"prometheus-operator-prometheus-node-exporter", "prometheus-operator-kube-p-alertmanager", "prometheus-operator-kube-p-apiserver", "prometheus-operator-kube-p-coredns", "prometheus-operator-grafana", "prometheus-operator-kube-state-metrics", "prometheus-operator-kube-p-kubelet", "prometheus-operator-kube-p-prometheus", "prometheus-operator-kube-p-operator", "prometheus-operator-prometheus-node-exporter"},
 	}
 
 	// Manager cluster contains a concourse service. This service doesn't exist on any other cluster (including test)
