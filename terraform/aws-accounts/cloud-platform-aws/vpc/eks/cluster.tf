@@ -138,38 +138,6 @@ locals {
     ]
   }
 
-  monitoring_ng_12_22 = {
-    desired_capacity = 2
-    max_capacity     = 3
-    min_capacity     = 2
-    subnets          = data.aws_subnets.private_zone_2b.ids
-
-    create_launch_template = true
-    pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
-      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
-    })
-
-    instance_types = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
-    k8s_labels = {
-      Terraform                                     = "true"
-      "cloud-platform.justice.gov.uk/monitoring-ng" = "true"
-      Cluster                                       = terraform.workspace
-      Domain                                        = local.fqdn
-    }
-    additional_tags = {
-      monitoring_ng = "true"
-      application   = "moj-cloud-platform"
-      business-unit = "platforms"
-    }
-    taints = [
-      {
-        key    = "monitoring-node"
-        value  = true
-        effect = "NO_SCHEDULE"
-      }
-    ]
-  }
-
   tags = {
     Terraform = "true"
     Cluster   = terraform.workspace
@@ -196,7 +164,6 @@ module "eks" {
     default_ng    = local.default_ng
     monitoring_ng = local.monitoring_ng
     default_ng_12_22 = local.default_ng_12_22
-    monitoring_ng_12_22 = local.monitoring_ng_12_22
   }
 
   # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
