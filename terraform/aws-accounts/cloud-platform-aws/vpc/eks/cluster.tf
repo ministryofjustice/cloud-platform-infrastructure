@@ -135,8 +135,8 @@ module "eks" {
   wait_for_cluster_timeout      = "900"
 
   node_groups = {
-    monitoring_ng    = local.monitoring_ng
     default_ng_12_22 = local.default_ng_12_22
+    monitoring_ng    = local.monitoring_ng
   }
 
   # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
