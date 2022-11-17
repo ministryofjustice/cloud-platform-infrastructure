@@ -77,7 +77,7 @@ var _ = Describe("cert-manager", FlakeAttempts(2), func() {
 			k8s.CreateNamespace(GinkgoT(), options, namespace)
 			app := helpers.HelloworldOpt{
 				Hostname:   host,
-				Class:      "nginx",
+				Class:      "default",
 				Identifier: "integration-test-app-ing-" + namespace + "-green",
 				Namespace:  namespace,
 				Weight:     "\"100\"",
