@@ -35,7 +35,7 @@ locals {
   }
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.21"
+    live    = "1.22"
     live-2  = "1.22"
     manager = "1.22"
     default = "1.21"
@@ -52,6 +52,32 @@ locals {
     live-2  = ["r4.2xlarge", "r5.2xlarge"]
     manager = ["t3.medium", "t2.medium"]
     default = ["t3.medium", "t2.medium"]
+  }
+
+  default_ng = {
+    desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
+    max_capacity         = 60
+    min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+    subnets              = data.aws_subnets.private.ids
+    bootstrap_extra_args = "--use-max-pods false"
+    kubelet_extra_args   = "--max-pods=110"
+
+    create_launch_template = true
+    pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
+      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
+    })
+
+    instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
+    k8s_labels = {
+      Terraform = "true"
+      Cluster   = terraform.workspace
+      Domain    = local.fqdn
+    }
+    additional_tags = {
+      default_ng    = "true"
+      application   = "moj-cloud-platform"
+      business-unit = "platforms"
+    }
   }
 
   default_ng_12_22 = {
@@ -135,6 +161,7 @@ module "eks" {
   wait_for_cluster_timeout      = "900"
 
   node_groups = {
+    default_ng = local.default_ng
     default_ng_12_22 = local.default_ng_12_22
     monitoring_ng    = local.monitoring_ng
   }
