@@ -41,48 +41,6 @@ var _ = Describe("modsec-ingress-controller", func() {
 		defer k8s.DeleteNamespace(GinkgoT(), options, namespaceName)
 	})
 
-	Context("when ingress resource is deployed using 'modsec01' ingress controller and modsec enabled", func() {
-		It("should block the request if the url is malicious", func() {
-			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
-
-			TemplateVars := map[string]interface{}{
-				"ingress_annotations": map[string]string{
-					"kubernetes.io/ingress.class":                     "modsec01",
-					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
-					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
-					"nginx.ingress.kubernetes.io/enable-modsecurity":  "\"true\"",
-					"nginx.ingress.kubernetes.io/modsecurity-snippet": "|\n     SecRuleEngine On",
-				},
-				"host":      host,
-				"namespace": namespaceName,
-			}
-
-			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", TemplateVars)
-			if err != nil {
-				Fail(err.Error())
-			}
-
-			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
-			Expect(err).ToNot(HaveOccurred())
-
-			k8s.WaitUntilIngressAvailable(GinkgoT(), options, "integration-test-app-ing", 6, 20*time.Second)
-
-			By("Checking that the request is blocked")
-			Eventually(func() int {
-				resp, err := helpers.HttpStatusCode(badUrl)
-				Expect(err).ToNot(HaveOccurred())
-				return resp
-			}, "8m", "30s").Should(Equal(403))
-
-			By("Checking the request is allowed")
-			Eventually(func() int {
-				resp, err := helpers.HttpStatusCode(goodUrl)
-				Expect(err).ToNot(HaveOccurred())
-				return resp
-			}, "30m", "30s").Should(Equal(200))
-		})
-	})
-
 	Context("when ingress resource is deployed using 'modsec' ingress controller and modsec enabled", func() {
 		It("should block the request if the url is malicious", func() {
 			class := "modsec"
