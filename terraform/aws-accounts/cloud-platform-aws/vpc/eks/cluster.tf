@@ -38,7 +38,7 @@ locals {
     live    = "1.22"
     live-2  = "1.22"
     manager = "1.22"
-    default = "1.21"
+    default = "1.22"
   }
   node_size = {
     live    = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
