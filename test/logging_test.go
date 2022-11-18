@@ -19,7 +19,7 @@ import (
 // Logging tests define the ability for Cloud Platform to perform aggregated logging
 // on the platform. The tests are designed to be run in a Kubernetes cluster, with a logging agent installed.
 var _ = Describe("logging", func() {
-	Context("when an app generates a log message", func() {
+	FContext("when an app generates a log message", func() {
 		var (
 			namespace string
 			options   *k8s.KubectlOptions
@@ -42,19 +42,20 @@ var _ = Describe("logging", func() {
 			host := fmt.Sprintf("%s.%s", namespace, testDomain)
 			err := k8s.CreateNamespaceE(GinkgoT(), options, namespace)
 			Expect(err).ToNot(HaveOccurred())
+			class := "default"
 
 			setIdentifier := "integration-test-app-ing-" + namespace + "-green"
 			helloVar := map[string]interface{}{
 				"namespace": namespace,
 				"host":      host,
+				"class":     class,
 				"ingress_annotations": map[string]string{
-					"kubernetes.io/ingress.class":                     "nginx",
 					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
 					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
 				},
 			}
 
-			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", helloVar)
+			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", helloVar)
 			Expect(err).ToNot(HaveOccurred())
 
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
