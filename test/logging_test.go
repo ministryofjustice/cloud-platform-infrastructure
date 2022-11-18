@@ -42,19 +42,20 @@ var _ = Describe("logging", func() {
 			host := fmt.Sprintf("%s.%s", namespace, testDomain)
 			err := k8s.CreateNamespaceE(GinkgoT(), options, namespace)
 			Expect(err).ToNot(HaveOccurred())
+			class := "default"
 
 			setIdentifier := "integration-test-app-ing-" + namespace + "-green"
 			helloVar := map[string]interface{}{
 				"namespace": namespace,
 				"host":      host,
+				"class":     class,
 				"ingress_annotations": map[string]string{
-					"kubernetes.io/ingress.class":                     "nginx",
 					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
 					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
 				},
 			}
 
-			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", helloVar)
+			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", helloVar)
 			Expect(err).ToNot(HaveOccurred())
 
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
