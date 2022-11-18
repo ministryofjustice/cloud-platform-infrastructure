@@ -19,7 +19,7 @@ import (
 // Logging tests define the ability for Cloud Platform to perform aggregated logging
 // on the platform. The tests are designed to be run in a Kubernetes cluster, with a logging agent installed.
 var _ = Describe("logging", func() {
-	FContext("when an app generates a log message", func() {
+	Context("when an app generates a log message", func() {
 		var (
 			namespace string
 			options   *k8s.KubectlOptions
