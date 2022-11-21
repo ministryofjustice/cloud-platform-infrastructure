@@ -164,7 +164,7 @@ func (c *Config) ExpectedServiceMonitors() {
 		// NamespaceName: []Services
 		"cert-manager": {"cert-manager"},
 
-		"ingress-controllers": {"nginx-ingress-modsec-controller", "modsec01-nx-controller", "nginx-ingress-acme-ingress-nginx-controller", "nginx-ingress-default-controller"},
+		"ingress-controllers": {"nginx-ingress-modsec-controller", "nginx-ingress-default-controller"},
 
 		"logging": {"fluent-bit"},
 
