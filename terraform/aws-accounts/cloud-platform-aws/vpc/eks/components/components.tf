@@ -78,30 +78,6 @@ module "external_dns" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 
-# module "ingress_controllers" {
-#   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=0.3.5"
-
-#   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-#   # To allow 'live' cluster to create hosts under *.cloud-platform.service.justice..
-#   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
-#   live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
-
-#   # This module requires prometheus and cert-manager
-#   dependence_prometheus  = "ignore"
-#   dependence_certmanager = module.cert_manager.helm_cert_manager_status
-#   dependence_opa         = "ignore"
-#   # It depends on complete cert-manager module
-#   # depends_on = [module.cert_manager]
-# }
-
-# module "modsec_ingress_controllers" {
-#   source = "github.com/ministryofjustice/cloud-platform-terraform-modsec-ingress-controller?ref=0.3.3"
-
-#   controller_name = "modsec01"
-#   replica_count   = terraform.workspace == "live" ? "6" : "2"
-
-#   depends_on = [module.ingress_controllers]
-# }
 
 module "ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=remove-old-ic"
@@ -124,16 +100,16 @@ module "ingress_controllers_v1" {
 module "modsec_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=remove-old-ic"
 
-  replica_count       = "6"
-  controller_name     = "modsec"
-  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
-  live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
-  enable_modsec       = true
-  enable_owasp        = true
-  enable_latest_tls   = true
+  replica_count          = "6"
+  controller_name        = "modsec"
+  cluster_domain_name    = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster        = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name    = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+  enable_modsec          = true
+  enable_owasp           = true
+  enable_latest_tls      = true
   dependence_certmanager = "ignore"
-  depends_on = [module.ingress_controllers_v1]
+  depends_on             = [module.ingress_controllers_v1]
 }
 
 module "kuberos" {
