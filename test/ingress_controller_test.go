@@ -35,40 +35,6 @@ var _ = Describe("ingress-controllers", func() {
 		Expect(err).ToNot(HaveOccurred())
 	})
 
-	Context("when an ingress resource is deployed using the 'nginx' ingress controller", func() {
-		It("should expose the service to the internet", func() {
-			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
-
-			TemplateVars := map[string]interface{}{
-				"ingress_annotations": map[string]string{
-					"kubernetes.io/ingress.class":                     "nginx",
-					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
-					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
-				},
-				"host":      host,
-				"namespace": namespaceName,
-			}
-
-			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", TemplateVars)
-			if err != nil {
-				Fail(fmt.Sprintf("Failed to perform GET request, do you have a connection to the Internet? Error: %s", err.Error()))
-			}
-
-			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
-			Expect(err).ToNot(HaveOccurred())
-
-			k8s.WaitUntilIngressAvailable(GinkgoT(), options, "integration-test-app-ing", 6, 20*time.Second)
-
-			GinkgoWriter.Printf("Checking that the ingress is available at https://%s\n", host)
-			Eventually(func() int {
-				s, err := helpers.HttpStatusCode(url)
-				Expect(err).To(BeNil())
-
-				return s
-			}, "8m", "30s").Should(Equal(200))
-		})
-	})
-
 	Context("when an ingress resource is deployed using 'default' ingress controller", func() {
 		It("should expose the service to the internet", func() {
 			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"

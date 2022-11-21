@@ -35,10 +35,10 @@ locals {
   }
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.21"
-    live-2  = "1.21"
-    manager = "1.21"
-    default = "1.21"
+    live    = "1.22"
+    live-2  = "1.22"
+    manager = "1.22"
+    default = "1.22"
   }
   node_size = {
     live    = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
@@ -54,7 +54,7 @@ locals {
     default = ["t3.medium", "t2.medium"]
   }
 
-  default_ng = {
+  default_ng_12_22 = {
     desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_capacity         = 60
     min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
@@ -135,8 +135,8 @@ module "eks" {
   wait_for_cluster_timeout      = "900"
 
   node_groups = {
-    default_ng    = local.default_ng
-    monitoring_ng = local.monitoring_ng
+    default_ng_12_22 = local.default_ng_12_22
+    monitoring_ng    = local.monitoring_ng
   }
 
   # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager

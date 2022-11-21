@@ -11,7 +11,7 @@ import (
 // HellowoldOpt type allows you to specify options for
 // deploying a helloworld app template in a cluster.
 type HelloworldOpt struct {
-	Class      string `default:"nginx"`
+	Class      string `default:"default"`
 	Identifier string `default:"integration-test-green"`
 	Weight     string `default:"\"100\""`
 	Hostname   string `example:"hostname.cloud-platform...."`
@@ -27,15 +27,15 @@ func CreateHelloWorldApp(app *HelloworldOpt, opt *k8s.KubectlOptions) error {
 
 	templateVars := map[string]interface{}{
 		"ingress_annotations": map[string]string{
-			"kubernetes.io/ingress.class":                     app.Class,
 			"external-dns.alpha.kubernetes.io/aws-weight":     app.Weight,
 			"external-dns.alpha.kubernetes.io/set-identifier": app.Identifier,
 		},
 		"host":      app.Hostname,
+		"class":     app.Class,
 		"namespace": app.Namespace,
 	}
 
-	tpl, err := TemplateFile("./fixtures/helloworld-deployment.yaml.tmpl", "helloworld-deployment.yaml.tmpl", templateVars)
+	tpl, err := TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", templateVars)
 	if err != nil {
 		return fmt.Errorf("failed to create the helloworld template: %s", err)
 	}
