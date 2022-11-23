@@ -1,19 +1,21 @@
-variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
-  default     = "172.20.0.0/16"
-  type        = string
+variable "vpc_cidr_name" {
+  description = "CIDR block range names for the Cloud Platform VPCs e.g cidr-range-172 or cidr-range-10"
+  default = "cidr-range-live-1"
+  type = string
 }
 
 variable "internal_subnets" {
   type        = list(string)
   description = "List of subnet CIDR blocks that are not publicly accessible"
-  default     = ["172.20.32.0/19", "172.20.64.0/19", "172.20.96.0/19"]
+  default     = []
+  # ["172.20.32.0/19", "172.20.64.0/19", "172.20.96.0/19"]
 }
 
 variable "external_subnets" {
   type        = list(string)
   description = "List of subnet CIDR blocks that are publicly accessible"
-  default     = ["172.20.0.0/22", "172.20.4.0/22", "172.20.8.0/22"]
+  default     = []
+  # ["172.20.0.0/22", "172.20.4.0/22", "172.20.8.0/22"]
 }
 
 variable "availability_zones" {
