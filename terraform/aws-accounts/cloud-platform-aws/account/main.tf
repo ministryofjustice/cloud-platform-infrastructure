@@ -24,7 +24,7 @@ data "aws_caller_identity" "current" {}
 
 # IAM configuration for cloud-platform. Users, groups, etc
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.13"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.14"
 
   aws_account_name = "cloud-platform-aws"
 }
