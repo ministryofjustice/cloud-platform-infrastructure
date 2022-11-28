@@ -1,9 +1,3 @@
-variable "vpc_cidr_name" {
-  description = "CIDR block range names for the Cloud Platform VPCs e.g cidr-range-172 or cidr-range-10"
-  default = "cidr-range-live-1"
-  type = string
-}
-
 variable "internal_subnets" {
   type        = list(string)
   description = "List of subnet CIDR blocks that are not publicly accessible"
