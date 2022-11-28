@@ -47,7 +47,7 @@ module "cluster_autoscaler" {
 }
 
 module "descheduler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.0.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.0.3"
 
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
@@ -137,7 +137,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.3.9"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.4.2"
 
   alertmanager_slack_receivers               = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config                           = local.enable_alerts ? var.pagerduty_config : "dummy"
