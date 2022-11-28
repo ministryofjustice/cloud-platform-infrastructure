@@ -29,7 +29,7 @@ output "vpc_id" {
 }
 
 output "internal_subnets" {
-  value       = var.internal_subnets
+  value       = module.vpc.private_subnets_cidr_blocks
   description = "List of subnet CIDR blocks that are not publicly accessible"
 }
 
@@ -40,7 +40,7 @@ output "internal_subnets_ids" {
 
 output "external_subnets" {
   description = "List of subnet CIDR blocks that are publicly accessible"
-  value       = var.external_subnets
+  value       = module.vpc.public_subnets_cidr_blocks
 }
 
 output "external_subnets_ids" {
