@@ -21,7 +21,7 @@ updates:
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-aws/account"
-    open-pull-requests-limit: 0
+    # open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
