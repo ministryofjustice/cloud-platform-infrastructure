@@ -2,20 +2,20 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.terraform.io/gavinbunney/kubectl" {
-  version     = "1.13.2"
-  constraints = "1.13.2"
+  version     = "1.14.0"
+  constraints = "1.14.0"
   hashes = [
-    "h1:Z7Ha2zn/X7h+kxfwN3DFt8f8pIMufIfZ85YWRGfyrag=",
-    "h1:sRIlBdu+VXYv/Uo+NVunMdH+dcCFjHssEKyH/zKCwpY=",
-    "zh:0785bee7057808a708238f287ce1a4e2c694d44514da619586be5e970fb36771",
-    "zh:3948ecfa95a49925fea869f7780598f41a777e46bfc9348d18751bfaafcf1b44",
-    "zh:3e6c6cb301a0b8033fae8e3357df36c0f1f5baaa96320cb4bf11174ab176874f",
-    "zh:563faab38272c6448aa1ec2f6e791b20aff9890563eab2e164399023fc745d85",
-    "zh:7315c5a1e7ed8599a066c7080d6013d002aa040f0b39306319080e968a0659e9",
-    "zh:7aa03cdf3a17082a36af3268f5dbf2692e28f76749093365b10f9d3b035fdc78",
-    "zh:b365eb5cac7e4024a6cf155996b25e8a60fd6385888e3331a3382d8f40129afd",
-    "zh:e0c56271fee4590af4361facfcb51e38c6311aecd1253b1c18cd7a32fcc16bee",
-    "zh:e9a188bae3e76ef0716b0310589e46ba93979fd363a214c756a1aed70f402046",
+    "h1:gLFn+RvP37sVzp9qnFCwngRjjFV649r6apjxvJ1E/SE=",
+    "h1:mX2AOFIMIxJmW5kM8DT51gloIOKCr9iT6W8yodnUyfs=",
+    "zh:0350f3122ff711984bbc36f6093c1fe19043173fad5a904bce27f86afe3cc858",
+    "zh:07ca36c7aa7533e8325b38232c77c04d6ef1081cb0bac9d56e8ccd51f12f2030",
+    "zh:0c351afd91d9e994a71fe64bbd1662d0024006b3493bb61d46c23ea3e42a7cf5",
+    "zh:39f1a0aa1d589a7e815b62b5aa11041040903b061672c4cfc7de38622866cbc4",
+    "zh:428d3a321043b78e23c91a8d641f2d08d6b97f74c195c654f04d2c455e017de5",
+    "zh:4baf5b1de2dfe9968cc0f57fd4be5a741deb5b34ee0989519267697af5f3eee5",
+    "zh:6131a927f9dffa014ab5ca5364ac965fe9b19830d2bbf916a5b2865b956fdfcf",
+    "zh:c62e0c9fd052cbf68c5c2612af4f6408c61c7e37b615dc347918d2442dd05e93",
+    "zh:f0beffd7ce78f49ead612e4b1aefb7cb6a461d040428f514f4f9cc4e5698ac65",
   ]
 }
 
