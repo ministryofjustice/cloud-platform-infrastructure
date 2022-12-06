@@ -25,23 +25,26 @@ provider "registry.terraform.io/auth0/auth0" {
 }
 
 provider "registry.terraform.io/hashicorp/aws" {
-  version     = "4.27.0"
-  constraints = "4.27.0"
+  version     = "4.45.0"
+  constraints = "4.45.0"
   hashes = [
-    "h1:JjDRnFkYnMTgW1OJclVkE7ucHPFXwhNzrdexhtj97Lo=",
-    "h1:w3j7YomUQ9IfRp3MUuY0+hFX1T1cawZoj0Xsc1a46bU=",
-    "zh:0f5ade3801fec487641e4f7d81e28075b716c787772f9709cc2378d20f325791",
-    "zh:19ffa83be6b6765a4f821a17b8d260dd0f192a6c40765fa53ac65fd042cb1f65",
-    "zh:3ac89d33ff8ca75bdc42f31c63ce0018ffc66aa69917c18713e824e381950e4e",
-    "zh:81a199724e74992c8a029a968d211cb45277d95a2e88d0f07ec85127b6c6849b",
+    "h1:J/XjRsEJIpxi+mczXQfnH3nvfACv3LRDtrthQJCIibY=",
+    "h1:ZFb6RqY48Fe+18sOC62wiE38XYPaTg98RJZO+EnsvCU=",
+    "zh:22da03786f25658a000d1bcc28c780816a97e7e8a1f59fff6eee7d452830e95e",
+    "zh:2543be56eee0491eb0c79ca1c901dcbf71da26625961fe719f088263fef062f4",
+    "zh:31a1da1e3beedfd88c3c152ab505bdcf330427f26b75835885526f7bb75c4857",
+    "zh:4409afe50f225659d5f378fe9303a45052953a1219f7f1acc82b69d07528b7ba",
+    "zh:4dadec3b783f10d2f8eef3dab5e817baae9c932a7967d45fe3d77fcbcbdaa438",
+    "zh:55be80d6e24828dcb0db7a0226fb275415c1c0ad63dd2f33b76f3ac0cd64e6a6",
+    "zh:560bba29efb7dbe0bfcc937369d88817aa31a8d18aa25395b1afe2576cb04495",
+    "zh:6caacc202e83438ff63d5d96733e283f44e349668d96c6b1c5c7df463ebf85cc",
+    "zh:6cabab83a61d5b4ac801c5a5d57556a0e76ec8dc879d28cf777509db5f6a657e",
+    "zh:96c4528bf9c16edb8841b68479ec51c499ed7fa680462fa28caeab3fc168bb43",
     "zh:9b12af85486a96aedd8d7984b0ff811a4b42e3d88dad1a3fb4c0b580d04fa425",
-    "zh:a2e2c851a37ef97bbccccd2e686b4d016abe207a7f56bff70b10bfdf8ed1cbfd",
-    "zh:baf844def338d77f8a3106b1411a1fe22e93a82e3dc51e5d33b766f741c4a6a3",
-    "zh:bc33137fae808f91da0a9de7031cbea77d0ee4eefb4d2ad6ab7f58cc2111a7ff",
-    "zh:c960ae2b33c8d3327f67a3db5ce1952315146d69dfc3f1b0922242e2b218eec8",
-    "zh:f3ea1a25797c79c035463a1188a6a42e131f391f3cb714975ce49ccd301cda07",
-    "zh:f7e77c871d38236e5fedee0086ff77ff396e88964348c794cf38e578fcc00293",
-    "zh:fb338d5dfafab907b8608bd66cad8ca9ae4679f8c62c2435c2056a38b719baa2",
+    "zh:cdc0b47ff840d708fbf75abfe86d23dc7f1dffdd233a771822a17b5c637f4769",
+    "zh:d9a9583e82776d1ebb6cf6c3d47acc2b302f8778f470ceffe7579dc794eb1feb",
+    "zh:e9367ca9f6f6418a23cdf8d01f29dd0c4f614e78499f52a767a422e4c334b915",
+    "zh:f6d355a2fb3bcebb597f68bbca4fa2aaa364efd29240236c582375e219d77656",
   ]
 }
 
