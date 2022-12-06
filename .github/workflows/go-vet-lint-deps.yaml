@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "**.go"
+      - ".github/workflows/go-vet-lint-deps.yaml"
 
 jobs:
   build:
