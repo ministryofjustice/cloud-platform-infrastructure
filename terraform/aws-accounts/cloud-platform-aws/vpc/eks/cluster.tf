@@ -56,25 +56,25 @@ locals {
 
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
   default_ng_12_22 = {
-    desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_capacity         = 85
-    min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
-    subnets              = data.aws_subnets.private.ids
+    desired_size         = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
+    max_size             = 85
+    min_size             = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+    subnet_ids           = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
     kubelet_extra_args   = "--max-pods=110"
 
     create_launch_template = true
-    pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
-    k8s_labels = {
+    labels = {
       Terraform = "true"
       Cluster   = terraform.workspace
       Domain    = local.fqdn
     }
-    additional_tags = {
+    tags = {
       default_ng    = "true"
       application   = "moj-cloud-platform"
       business-unit = "platforms"
@@ -82,13 +82,13 @@ locals {
   }
 
   monitoring_ng = {
-    desired_capacity = 2
-    max_capacity     = 3
-    min_capacity     = 2
-    subnets          = data.aws_subnets.private_zone_2b.ids
+    desired_size = 2
+    max_size     = 3
+    min_size     = 2
+    subnet_ids   = data.aws_subnets.private_zone_2b.ids
 
     create_launch_template = true
-    pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
@@ -123,29 +123,31 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "17.24.0"
+  version = "18.24.1"
 
-  cluster_name                  = terraform.workspace
-  subnets                       = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
-  vpc_id                        = data.aws_vpc.selected.id
-  write_kubeconfig              = false
-  cluster_version               = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
-  enable_irsa                   = true
-  cluster_enabled_log_types     = var.cluster_enabled_log_types
-  cluster_log_retention_in_days = var.cluster_log_retention_in_days
-  wait_for_cluster_timeout      = "900"
+  cluster_name                           = terraform.workspace
+  subnet_ids                             = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
+  vpc_id                                 = data.aws_vpc.selected.id
+  cluster_version                        = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
+  enable_irsa                            = true
+  cluster_enabled_log_types              = var.cluster_enabled_log_types
+  cloudwatch_log_group_retention_in_days = var.cluster_log_retention_in_days
+  cluster_security_group_description     = "EKS cluster security group."
+  cluster_security_group_name            = "cp-1512-1632-eks_cluster_sg"
+  iam_role_name                          = "cp-1512-163220221215163521347300000001"
+  prefix_separator                       = ""
 
-  node_groups = {
+  eks_managed_node_groups = {
     default_ng_12_22 = local.default_ng_12_22
     monitoring_ng    = local.monitoring_ng
   }
 
   # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
-  workers_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+  iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
 
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
-  map_users = [
+  aws_auth_users = [
     {
       userarn  = "arn:aws:iam::754256621582:user/PoornimaKrishnasamy"
       username = "PoornimaKrishnasamy"
