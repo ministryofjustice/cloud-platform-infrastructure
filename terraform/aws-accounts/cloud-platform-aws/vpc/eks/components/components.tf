@@ -113,7 +113,7 @@ module "modsec_ingress_controllers_v1" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.9"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
