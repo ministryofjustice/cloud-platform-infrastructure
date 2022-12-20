@@ -144,7 +144,7 @@ module "eks" {
   prefix_separator                       = ""
 =======
   cluster_security_group_name            = terraform.workspace
-  iam_role_name                          = "cp-1612-1200"
+  iam_role_name                          = terraform.workspace
   prefix_separator                       = ""
 
   node_security_group_tags = {
@@ -191,11 +191,11 @@ module "eks" {
       username = "SteveMarshall"
       groups   = ["system:masters"]
     },
-    # {
-    #   userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
-    #   username = "VijayVeeranki"
-    #   groups   = ["system:masters"]
-    # },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
+      username = "VijayVeeranki"
+      groups   = ["system:masters"]
+    },
     {
       userarn  = "arn:aws:iam::754256621582:user/JackStockley"
       username = "JackStockley"
