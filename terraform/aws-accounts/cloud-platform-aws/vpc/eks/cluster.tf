@@ -2,22 +2,27 @@
 # EKS Cluster #
 ###############
 
-data "aws_eks_cluster" "cluster" {
+data "aws_eks_cluster" "this" {
   name = module.eks.cluster_id
+  depends_on = [
+    module.eks.eks_managed_node_groups,
+  ]
 }
 
+data "aws_eks_cluster_auth" "this" {
+  name = module.eks.cluster_id
+  depends_on = [
+    module.eks.eks_managed_node_groups,
+  ]
+}
 
 provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.cluster.name]
-    command     = "aws"
-  }
+  host                   = data.aws_eks_cluster.this.endpoint
+  token                  = data.aws_eks_cluster_auth.this.token
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority.0.data)
 }
-
 locals {
+  cluster_name = terraform.workspace
   # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler)
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/835
   node_groups_count = {
@@ -123,7 +128,7 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "18.24.1"
+  version = "18.26.2"
 
   cluster_name                           = terraform.workspace
   subnet_ids                             = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
@@ -133,9 +138,20 @@ module "eks" {
   cluster_enabled_log_types              = var.cluster_enabled_log_types
   cloudwatch_log_group_retention_in_days = var.cluster_log_retention_in_days
   cluster_security_group_description     = "EKS cluster security group."
+<<<<<<< HEAD
   cluster_security_group_name            = "cp-1512-1632-eks_cluster_sg"
   iam_role_name                          = "cp-1512-163220221215163521347300000001"
   prefix_separator                       = ""
+=======
+  cluster_security_group_name            = terraform.workspace
+  iam_role_name                          = "cp-1612-1200"
+  prefix_separator                       = ""
+
+  node_security_group_tags = {
+    "kubernetes.io/cluster/${terraform.workspace}" = null
+  }
+
+>>>>>>> c19a7e82 (Update with latest changes)
 
   eks_managed_node_groups = {
     default_ng_12_22 = local.default_ng_12_22
@@ -144,6 +160,8 @@ module "eks" {
 
   # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
   iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+
+  create_aws_auth_configmap = true
 
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
@@ -173,11 +191,11 @@ module "eks" {
       username = "SteveMarshall"
       groups   = ["system:masters"]
     },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
-      username = "VijayVeeranki"
-      groups   = ["system:masters"]
-    },
+    # {
+    #   userarn  = "arn:aws:iam::754256621582:user/VijayVeeranki"
+    #   username = "VijayVeeranki"
+    #   groups   = ["system:masters"]
+    # },
     {
       userarn  = "arn:aws:iam::754256621582:user/JackStockley"
       username = "JackStockley"
