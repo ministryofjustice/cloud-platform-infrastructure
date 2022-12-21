@@ -2,25 +2,20 @@
 # EKS Cluster #
 ###############
 
-data "aws_eks_cluster" "this" {
+data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
-  depends_on = [
-    module.eks.eks_managed_node_groups,
-  ]
-}
-
-data "aws_eks_cluster_auth" "this" {
-  name = module.eks.cluster_id
-  depends_on = [
-    module.eks.eks_managed_node_groups,
-  ]
 }
 
 provider "kubernetes" {
-  host                   = data.aws_eks_cluster.this.endpoint
-  token                  = data.aws_eks_cluster_auth.this.token
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.this.certificate_authority.0.data)
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.cluster.name]
+    command     = "aws"
+  }
 }
+
 locals {
   cluster_name = terraform.workspace
   # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler)
