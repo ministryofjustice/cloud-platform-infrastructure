@@ -9,7 +9,7 @@ module "eks_csi" {
 }
 
 module "efs_csi" {
-  source      = "github.com/ministryofjustice/cloud-platform-terraform-efs-csi?ref=1.0.1"
+  source      = "github.com/ministryofjustice/cloud-platform-terraform-efs-csi?ref=1.0.2"
   eks_cluster = terraform.workspace
   depends_on  = [helm_release.calico]
 }
