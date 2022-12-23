@@ -189,7 +189,7 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.9.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.9.3"
 
   enable_velero               = lookup(local.prod_2_workspace, terraform.workspace, false)
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
