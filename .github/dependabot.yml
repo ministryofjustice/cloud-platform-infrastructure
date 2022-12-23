@@ -7,56 +7,56 @@ version: 2
 updates:
   - package-ecosystem: "github-actions" # See documentation for possible values
     directory: "/" # Location of package manifests
-    # open-pull-requests-limit: 0
+    open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
       time: "09:00" # UTC
   - package-ecosystem: "gomod"
     directory: "/"
-    # open-pull-requests-limit: 0
+    open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-aws/account"
-    # open-pull-requests-limit: 0
+    open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc"
-    # open-pull-requests-limit: 0
+    open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/eks"
-    # open-pull-requests-limit: 0
+    open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/eks/components"
-    # open-pull-requests-limit: 0
+    open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/kops"
-    # open-pull-requests-limit: 0
+    open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-dsd"
-    # open-pull-requests-limit: 0
+    open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
@@ -91,7 +91,7 @@ updates:
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/global-resources"
-    # open-pull-requests-limit: 0
+    open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
