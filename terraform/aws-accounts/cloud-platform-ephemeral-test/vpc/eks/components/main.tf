@@ -21,7 +21,7 @@ provider "aws" {
 
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
     args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.cluster.name]
@@ -32,7 +32,7 @@ provider "kubernetes" {
 provider "helm" {
   kubernetes {
     host                   = data.aws_eks_cluster.cluster.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
       args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.cluster.name]
@@ -64,14 +64,6 @@ data "terraform_remote_state" "cluster" {
 
 data "aws_eks_cluster" "cluster" {
   name = terraform.workspace
-}
-
-data "aws_eks_cluster_auth" "cluster" {
-  name = terraform.workspace
-}
-
-data "aws_iam_role" "nodes" {
-  name = data.terraform_remote_state.cluster.outputs.eks_worker_iam_role_name
 }
 
 data "aws_route53_zone" "selected" {
