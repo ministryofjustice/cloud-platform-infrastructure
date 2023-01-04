@@ -39,13 +39,6 @@ locals {
   cluster_name               = terraform.workspace
   cluster_base_domain_name   = "${local.cluster_name}.${local.account_root_hostzone_name}"
   vpc                        = var.vpc_name == "" ? terraform.workspace : var.vpc_name
-  auth0_tenant_domain        = "justice-cloud-platform.eu.auth0.com"
-  services_base_domain       = "apps.${local.cluster_base_domain_name}"
-  services_eks_domain        = "apps.${local.cluster_base_domain_name}"
-}
-
-data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
-  name = "et.cloud-platform.service.justice.gov.uk."
 }
 
 data "aws_vpc" "selected" {
@@ -110,10 +103,10 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
   ttl     = "30"
 
   records = [
-    aws_route53_zone.cluster.name_servers.0,
-    aws_route53_zone.cluster.name_servers.1,
-    aws_route53_zone.cluster.name_servers.2,
-    aws_route53_zone.cluster.name_servers.3,
+    aws_route53_zone.cluster.name_servers[0],
+    aws_route53_zone.cluster.name_servers[1],
+    aws_route53_zone.cluster.name_servers[2],
+    aws_route53_zone.cluster.name_servers[3],
   ]
 }
 
