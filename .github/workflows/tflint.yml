@@ -23,7 +23,7 @@ jobs:
       - run: find . -type f -name "*.tfvars" -delete # remove terraform variable files before linting
       - run: tflint --version
       - run: tflint --init
-      - run: tflint -f sarif --recursive -c $(realpath .tflint.hcl) > results.sarif
+      - run: tflint -f sarif --recursive -c $(realpath .tflint.hcl) --force > results.sarif
       - uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: results.sarif
