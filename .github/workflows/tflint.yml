@@ -9,6 +9,8 @@ on:
 jobs:
   tflint:
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v2
@@ -21,4 +23,7 @@ jobs:
       - run: find . -type f -name "*.tfvars" -delete # remove terraform variable files before linting
       - run: tflint --version
       - run: tflint --init
-      - run: tflint -f compact --recursive -c $(realpath .tflint.hcl)
+      - run: tflint -f sarif --recursive -c $(realpath .tflint.hcl) > results.sarif
+      - uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: results.sarif
