@@ -22,3 +22,16 @@ jobs:
       - run: tflint --version
       - run: tflint --init
       - run: tflint -f compact --recursive -c $(realpath .tflint.hcl)
+  tfsec:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: actions/checkout@v3
+      - uses: aquasecurity/tfsec-sarif-action@v0.1.4
+        with:
+          tfsec_args: --force-all-dirs --soft-fail -m=CRITICAL --no-module-downloads --exclude-path=terraform/aws-accounts/cloud-platform-ephemeral-test --exclude-path=terraform/aws-accounts/cloud-platform-dsd --exclude-path=terraform/aws-accounts/cloud-platform-aws/vpc/kops --exclude-path=terraform/modules
+          sarif_file: tfsec.sarif
+      - uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: tfsec.sarif
