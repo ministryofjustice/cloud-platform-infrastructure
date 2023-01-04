@@ -1,0 +1,24 @@
+name: terraform-tools
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  tflint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/cache@v2
+        with:
+          path: ~/.tflint.d/plugins
+          key: tflint-${{ hashFiles('.tflint.hcl') }}
+      - uses: terraform-linters/setup-tflint@v3
+        with:
+          tflint_version: v0.44.1
+      - run: find . -type f -name "*.tfvars" -delete # remove terraform variable files before linting
+      - run: tflint --version
+      - run: tflint --init
+      - run: tflint -f compact --recursive -c $(realpath .tflint.hcl) --force
