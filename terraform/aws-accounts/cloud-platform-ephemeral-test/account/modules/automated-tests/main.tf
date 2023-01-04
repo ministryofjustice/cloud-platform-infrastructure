@@ -1,4 +1,3 @@
-
 ##################
 # Terratest user #
 ##################
@@ -500,4 +499,3 @@ resource "github_actions_secret" "secret_key" {
   secret_name     = "AWS_SECRET_ACCESS_KEY"
   plaintext_value = aws_iam_access_key.terratest.secret
 }
-
