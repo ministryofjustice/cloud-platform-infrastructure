@@ -325,7 +325,8 @@ resource "aws_elasticsearch_domain" "audit_live" {
   }
 }
 
-
+# This is ignored as it provides a convenient IAM policy document for test ElasticSearch clusters
+# tflint-ignore: terraform_unused_declarations
 data "aws_iam_policy_document" "test" {
   statement {
     actions = [

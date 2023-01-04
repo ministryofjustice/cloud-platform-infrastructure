@@ -16,6 +16,10 @@ terraform {
       source  = "phillbaker/elasticsearch"
       version = "2.0.7"
     }
+    template = {
+      source  = "hashicorp/template"
+      version = "2.2.0"
+    }
   }
   required_version = ">= 0.14"
 }
