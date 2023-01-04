@@ -33,6 +33,7 @@ variable "index_pattern" {
     "manager_concourse-*",
   ]
   description = "Pattern created in Kibana, policy will apply to matching new indices"
+  type        = list(string)
 }
 
 variable "index_pattern_live_2" {
@@ -42,4 +43,5 @@ variable "index_pattern_live_2" {
     "live-2_eventrouter*",
   ]
   description = "Pattern created in Kibana, policy will apply to matching new indices"
+  type        = list(string)
 }
