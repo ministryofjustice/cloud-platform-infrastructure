@@ -1,6 +1,7 @@
 variable "vpc_cidr" {
   description = "CIDR block for the VPC"
   default     = "172.20.0.0/16"
+  type        = string
 }
 
 variable "internal_subnets" {
@@ -19,16 +20,6 @@ variable "availability_zones" {
   type        = list(string)
   description = "a list of EC2 availability zones"
   default     = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
-}
-
-variable "cluster_node_count" {
-  description = "The number of worker node in the cluster"
-  default     = "21"
-}
-
-variable "worker_node_machine_type" {
-  description = "The AWS EC2 instance types to use for worker nodes"
-  default     = "r5.2xlarge"
 }
 
 variable "cluster_names" {
