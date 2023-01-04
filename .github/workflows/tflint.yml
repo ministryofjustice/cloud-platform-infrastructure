@@ -21,4 +21,4 @@ jobs:
       - run: find . -type f -name "*.tfvars" -delete # remove terraform variable files before linting
       - run: tflint --version
       - run: tflint --init
-      - run: tflint -f compact --recursive -c $(realpath .tflint.hcl) --force
+      - run: tflint -f compact --recursive -c $(realpath .tflint.hcl)
