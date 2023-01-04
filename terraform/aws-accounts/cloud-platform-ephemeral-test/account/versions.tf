@@ -9,7 +9,8 @@ terraform {
       version = "~> 4.26.0"
     }
     github = {
-      source = "integrations/github"
+      source  = "integrations/github"
+      version = "~> 4.27.0"
     }
     curl = {
       source  = "anschoewe/curl"
