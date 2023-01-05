@@ -199,3 +199,4 @@ module "aws_scheduler" {
   rds_target_tag_key            = "cloud-platform-rds-auto-shutdown"
   rds_target_tag_value          = "Schedule RDS Stop/Start during non-business hours for cost saving"
 }
+
