@@ -21,6 +21,16 @@ provider "auth0" {
 provider "aws" {
   region  = "eu-west-2"
   profile = "moj-cp"
+
+  default_tags {
+    tags = {
+      business-unit = "Platforms"
+      application   = "global-resources"
+      is-production = "true"
+      owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+    }
+  }
 }
 
 # https://cloud-platform-aws.signin.aws.amazon.com/console
@@ -28,12 +38,32 @@ provider "aws" {
   region  = "eu-west-2"
   alias   = "cloud-platform"
   profile = "moj-cp"
+
+  default_tags {
+    tags = {
+      business-unit = "Platforms"
+      application   = "global-resources"
+      is-production = "true"
+      owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+    }
+  }
 }
 
 provider "aws" {
   region  = "eu-west-1"
   alias   = "cloud-platform-ireland"
   profile = "moj-cp"
+
+  default_tags {
+    tags = {
+      business-unit = "Platforms"
+      application   = "global-resources"
+      is-production = "true"
+      owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+    }
+  }
 }
 
 data "aws_caller_identity" "cloud-platform" {
