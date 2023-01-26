@@ -181,6 +181,12 @@ resource "kubernetes_cluster_role_binding" "privileged" {
     name      = "efs-csi-node-sa"
     namespace = "kube-system"
   }
+  subject {
+    kind      = "Group"
+    name      = "system:serviceaccounts:trivy-system"
+    api_group = "rbac.authorization.k8s.io"
+    namespace = "trivy-system"
+  }
 }
 
 ## Pod Security Policy: restricted

@@ -202,3 +202,10 @@ module "kuberhealthy" {
 
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
 }
+
+module "trivy-operator" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator"
+
+  severity_list = "MEDIUM,HIGH,CRITICAL"
+}
+
