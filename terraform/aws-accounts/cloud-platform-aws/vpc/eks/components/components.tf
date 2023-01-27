@@ -204,7 +204,7 @@ module "kuberhealthy" {
 }
 
 module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.1"
 
   severity_list = "MEDIUM,HIGH,CRITICAL"
 }
