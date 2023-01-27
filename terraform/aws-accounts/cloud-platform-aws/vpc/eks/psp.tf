@@ -185,7 +185,6 @@ resource "kubernetes_cluster_role_binding" "privileged" {
     kind      = "Group"
     name      = "system:serviceaccounts:trivy-system"
     api_group = "rbac.authorization.k8s.io"
-    namespace = "trivy-system"
   }
 }
 
