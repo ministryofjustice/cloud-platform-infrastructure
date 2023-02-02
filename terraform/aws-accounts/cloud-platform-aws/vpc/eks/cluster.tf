@@ -21,14 +21,14 @@ locals {
   # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler)
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/835
   node_groups_count = {
-    live    = "54"
+    live    = "60"
     live-2  = "7"
     manager = "4"
     default = "3"
   }
   # Default node group minimum capacity 
   default_ng_min_count = {
-    live    = "42"
+    live    = "60"
     live-2  = "7"
     manager = "4"
     default = "2"
@@ -56,7 +56,7 @@ locals {
 
   default_ng_12_22 = {
     desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_capacity         = 60
+    max_capacity         = 80
     min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
     subnets              = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
