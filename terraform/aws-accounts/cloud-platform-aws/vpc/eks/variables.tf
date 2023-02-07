@@ -8,6 +8,16 @@ variable "dockerhub_token" {
   type        = string
 }
 
+variable "cp_dockerhub_user" {
+  description = "DockerHub user for the Cloud Platform. This is required to avoid hitting limits when pulling images."
+  type        = string
+}
+
+variable "cp_dockerhub_token" {
+  description = "DockerHub token for the Cloud Platform user"
+  type        = string
+}
+
 variable "enable_oidc_associate" {
   description = "Enable OIDC associate provider. This takes approximately 30 minutes to complete, so be prepared to wait."
   default     = true
