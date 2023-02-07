@@ -59,7 +59,7 @@ module "cert_manager" {
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
 
-  # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade, 
+  # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade,
   # but cluster creation fails without, so will have to be temporarily disabled when upgrading
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
   dependence_opa        = "ignore"
@@ -93,7 +93,7 @@ module "ingress_controllers_v1" {
   enable_external_dns_annotation = true
 
   # Dependency on this ingress_controllers module as IC namespace and default certificate created in this module
-  # This dependency will go away once "module.ingress_controllers" is removed. 
+  # This dependency will go away once "module.ingress_controllers" is removed.
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
 }
 
@@ -204,7 +204,14 @@ module "kuberhealthy" {
 }
 
 module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.2.0"
+
+  cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+
+  dockerhub_username          = var.dockerhub_username
+  dockerhub_password          = var.dockerhub_password
+  github_token                = var.github_token
 
   severity_list = "MEDIUM,HIGH,CRITICAL"
 }
