@@ -209,9 +209,9 @@ module "trivy-operator" {
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
-  dockerhub_username          = var.dockerhub_username
-  dockerhub_password          = var.dockerhub_password
-  github_token                = var.github_token
+  dockerhub_username = var.dockerhub_username
+  dockerhub_password = var.dockerhub_password
+  github_token       = var.github_token
 
   severity_list = "MEDIUM,HIGH,CRITICAL"
 }
