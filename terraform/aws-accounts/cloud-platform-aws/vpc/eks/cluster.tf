@@ -54,7 +54,7 @@ locals {
     default = ["t3.medium", "t2.medium"]
   }
 
-  dockerhub_credentials = terraform.workspace == "live" ? base64encode("${var.dockerhub_user}:${var.dockerhub_token}") : base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
+  dockerhub_credentials = terraform.workspace == "live-2" ? base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}") : base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
   default_ng_12_22 = {
     desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_capacity         = 80
