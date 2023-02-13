@@ -57,7 +57,7 @@ locals {
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
   default_ng_12_22 = {
     desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_capacity         = 80
+    max_capacity         = 85
     min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
     subnets              = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
