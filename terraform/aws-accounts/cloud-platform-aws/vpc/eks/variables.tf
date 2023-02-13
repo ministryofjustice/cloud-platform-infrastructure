@@ -1,5 +1,5 @@
-variable "dockerhub_user" {
-  description = "DockerHub user for the Cloud Platform (see LastPass). This is required to avoid hitting limits when pulling images."
+variable "cp_dockerhub_user" {
+  description = "DockerHub user for the Cloud Platform. This is required to avoid hitting limits when pulling images."
   type        = string
 }
 
