@@ -3,16 +3,6 @@ variable "dockerhub_user" {
   type        = string
 }
 
-variable "dockerhub_token" {
-  description = "DockerHub token for the Cloud Platform user"
-  type        = string
-}
-
-variable "cp_dockerhub_user" {
-  description = "DockerHub user for the Cloud Platform. This is required to avoid hitting limits when pulling images."
-  type        = string
-}
-
 variable "cp_dockerhub_token" {
   description = "DockerHub token for the Cloud Platform user"
   type        = string
