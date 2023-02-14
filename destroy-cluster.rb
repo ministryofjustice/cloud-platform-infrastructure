@@ -16,6 +16,7 @@ EKS_SYSTEM_NAMESPACES = %w[
   opa
   velero
   kuberhealthy
+  trivy-system
 ] + (0..9).map { |i| "starter-pack-#{i}" }
 
 MAX_CLUSTER_NAME_LENGTH = 12

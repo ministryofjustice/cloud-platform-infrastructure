@@ -11,6 +11,16 @@ terraform {
 provider "aws" {
   region  = "eu-west-2"
   profile = "moj-cp"
+
+  default_tags {
+    tags = {
+      business-unit = "Platforms"
+      application   = "cloud-platform-aws/account"
+      is-production = "true"
+      owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+    }
+  }
 }
 
 # Because we are managining kops state in Ireland
@@ -18,6 +28,16 @@ provider "aws" {
   alias   = "ireland"
   region  = "eu-west-1"
   profile = "moj-cp"
+
+  default_tags {
+    tags = {
+      business-unit = "Platforms"
+      application   = "cloud-platform-aws/account"
+      is-production = "true"
+      owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+    }
+  }
 }
 
 # IAM configuration for cloud-platform. Users, groups, etc
@@ -29,7 +49,7 @@ module "iam" {
 
 # Github SSO
 module "sso" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.2.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.2.3"
 
   auth0_tenant_domain = "justice-cloud-platform.eu.auth0.com"
 }
