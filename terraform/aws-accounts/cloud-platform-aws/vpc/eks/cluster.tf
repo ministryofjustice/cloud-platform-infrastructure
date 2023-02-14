@@ -54,9 +54,10 @@ locals {
     default = ["t3.medium", "t2.medium"]
   }
 
+  dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
   default_ng_12_22 = {
     desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_capacity         = 60
+    max_capacity         = 85
     min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
     subnets              = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
@@ -64,7 +65,7 @@ locals {
 
     create_launch_template = true
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
-      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
+      dockerhub_credentials = local.dockerhub_credentials
     })
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
@@ -88,7 +89,7 @@ locals {
 
     create_launch_template = true
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
-      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
+      dockerhub_credentials = local.dockerhub_credentials
     })
 
     instance_types = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
