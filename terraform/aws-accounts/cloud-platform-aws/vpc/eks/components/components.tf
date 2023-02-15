@@ -207,7 +207,7 @@ module "trivy-operator" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.2.1"
 
   depends_on = [
-    module.monitoring.prometheus.operator_crds_status
+    module.monitoring.prometheus_operator_crds_status
   ]
 
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
