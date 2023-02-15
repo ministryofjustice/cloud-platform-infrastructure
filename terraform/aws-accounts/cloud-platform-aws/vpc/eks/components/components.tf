@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.10.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.10.7"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -54,7 +54,7 @@ module "descheduler" {
   ]
 }
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.2"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
