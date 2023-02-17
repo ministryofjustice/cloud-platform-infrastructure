@@ -5,8 +5,6 @@ This README describes how to provision networking components required by a Kuber
 ## Contents
 
   - [Requirements](#Requirements)
-  - 
-
 
 ## Requirements
 
