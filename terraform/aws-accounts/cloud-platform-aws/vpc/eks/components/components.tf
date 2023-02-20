@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.10.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.10.7"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -54,12 +54,12 @@ module "descheduler" {
   ]
 }
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.2"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
 
-  # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade, 
+  # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade,
   # but cluster creation fails without, so will have to be temporarily disabled when upgrading
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
   dependence_opa        = "ignore"
@@ -93,7 +93,7 @@ module "ingress_controllers_v1" {
   enable_external_dns_annotation = true
 
   # Dependency on this ingress_controllers module as IC namespace and default certificate created in this module
-  # This dependency will go away once "module.ingress_controllers" is removed. 
+  # This dependency will go away once "module.ingress_controllers" is removed.
   dependence_certmanager = module.cert_manager.helm_cert_manager_status
 }
 
@@ -202,3 +202,21 @@ module "kuberhealthy" {
 
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
 }
+
+module "trivy-operator" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.2.1"
+
+  depends_on = [
+    module.monitoring.prometheus_operator_crds_status
+  ]
+
+  cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+
+  dockerhub_username = var.dockerhub_username
+  dockerhub_password = var.dockerhub_password
+  github_token       = var.github_token
+
+  severity_list = "MEDIUM,HIGH,CRITICAL"
+}
+
