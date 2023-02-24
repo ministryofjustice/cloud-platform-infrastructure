@@ -204,7 +204,7 @@ module "kuberhealthy" {
 }
 
 module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.2.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.2.4"
 
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
