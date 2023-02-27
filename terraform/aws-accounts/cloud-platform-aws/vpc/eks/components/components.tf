@@ -204,7 +204,7 @@ module "kuberhealthy" {
 }
 
 module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.2.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.2.5"
 
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
@@ -217,6 +217,9 @@ module "trivy-operator" {
   dockerhub_password = var.dockerhub_password
   github_token       = var.github_token
 
-  severity_list = "MEDIUM,HIGH,CRITICAL"
+  job_concurrency_limit = 5
+  scan_job_timeout      = "10m"
+  trivy_timeout         = "10m0s"
+  severity_list         = "HIGH,CRITICAL"
 }
 
