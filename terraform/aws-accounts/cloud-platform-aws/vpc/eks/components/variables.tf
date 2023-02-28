@@ -62,7 +62,7 @@ variable "github_org" {
 
 variable "github_teams" {
   type        = string
-  description = "GitHub teams with member access to Concourse (should be org:team e.g. ministryofjustice:webops)"
+  description = "GitHub teams with member access to Concourse (should be org:team e.g. ministryofjustice:cp-webops)"
 }
 
 variable "tf_provider_auth0_client_id" {

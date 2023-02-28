@@ -15,7 +15,7 @@ variable "enable_oidc_associate" {
 }
 
 variable "auth0_issuerUrl" {
-  description = "Domain issuer URL by which Auth0 can find the OpenID Provider Configuration Document"
+  description = "Domain issuer URL by which Auth0 can find the OpenID Provider Configuration Document."
   default     = "https://justice-cloud-platform.eu.auth0.com/"
   type        = string
 }
