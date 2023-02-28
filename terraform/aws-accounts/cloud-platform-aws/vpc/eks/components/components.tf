@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.10.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.10.7"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -54,7 +54,7 @@ module "descheduler" {
   ]
 }
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.2"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
@@ -137,7 +137,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.5.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.5.3"
 
   alertmanager_slack_receivers               = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config                           = local.enable_alerts ? var.pagerduty_config : "dummy"
@@ -204,7 +204,11 @@ module "kuberhealthy" {
 }
 
 module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.2.5"
+
+  depends_on = [
+    module.monitoring.prometheus_operator_crds_status
+  ]
 
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
@@ -213,6 +217,9 @@ module "trivy-operator" {
   dockerhub_password = var.dockerhub_password
   github_token       = var.github_token
 
-  severity_list = "MEDIUM,HIGH,CRITICAL"
+  job_concurrency_limit = 5
+  scan_job_timeout      = "10m"
+  trivy_timeout         = "10m0s"
+  severity_list         = "HIGH,CRITICAL"
 }
 
