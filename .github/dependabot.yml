@@ -13,7 +13,7 @@ updates:
       time: "09:00" # UTC
   - package-ecosystem: "gomod"
     directory: "/"
-    open-pull-requests-limit: 0
+    open-pull-requests-limit: 10
     schedule:
       interval: "weekly"
       day: "wednesday"
