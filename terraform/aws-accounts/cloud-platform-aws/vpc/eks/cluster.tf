@@ -133,11 +133,6 @@ module "eks" {
   cluster_enabled_log_types              = var.cluster_enabled_log_types
   cloudwatch_log_group_retention_in_days = var.cluster_log_retention_in_days
   cluster_security_group_description     = "EKS cluster security group."
-<<<<<<< HEAD
-  cluster_security_group_name            = "cp-1512-1632-eks_cluster_sg"
-  iam_role_name                          = "cp-1512-163220221215163521347300000001"
-  prefix_separator                       = ""
-=======
   cluster_security_group_name            = terraform.workspace
   iam_role_name                          = terraform.workspace
   prefix_separator                       = ""
@@ -146,7 +141,6 @@ module "eks" {
     "kubernetes.io/cluster/${terraform.workspace}" = null
   }
 
->>>>>>> c19a7e82 (Update with latest changes)
 
   eks_managed_node_groups = {
     default_ng_12_22 = local.default_ng_12_22
