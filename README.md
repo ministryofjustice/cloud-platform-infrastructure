@@ -19,7 +19,7 @@ Here you'll also find instruction on how to operate a MoJ Cloud Platform cluster
 ## How to run Go tests
 
 To run the integration tests on a MoJ Cloud Platform cluster you must have the following tools installed:
-(Tool versioning is very important. I find it best to refer to the official MoJ Cloud Platform tools docker [image](https://github.com/ministryofjustice/cloud-platform-tools-image/blob/main/Dockerfile))
+(Tool versioning is very important. I find it best to refer to the official MoJ Cloud Platform tools docker [image](https://github.com/ministryofjustice/cloud-platform-tools-image/blob/main/Dockerfile.cp-infrastructure))
 
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
