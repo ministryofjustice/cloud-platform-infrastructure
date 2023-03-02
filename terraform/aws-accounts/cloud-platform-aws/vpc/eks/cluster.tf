@@ -216,7 +216,7 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.3.0"
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=update-tf-action"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
