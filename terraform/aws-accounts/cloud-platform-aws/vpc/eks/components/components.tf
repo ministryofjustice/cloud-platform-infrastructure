@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.10.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.11.0"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -34,7 +34,7 @@ module "concourse" {
 }
 
 module "cluster_autoscaler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.1.0"
 
   enable_overprovision        = lookup(local.prod_workspace, terraform.workspace, false)
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -47,14 +47,14 @@ module "cluster_autoscaler" {
 }
 
 module "descheduler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.0.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.1.0"
 
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
   ]
 }
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.5.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.6.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
@@ -68,7 +68,7 @@ module "cert_manager" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.9.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.10.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzones           = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
@@ -80,7 +80,7 @@ module "external_dns" {
 
 
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.2.0"
 
   replica_count       = "6"
   controller_name     = "default"
@@ -98,7 +98,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.2.0"
 
   replica_count          = "6"
   controller_name        = "modsec"
@@ -113,7 +113,7 @@ module "modsec_ingress_controllers_v1" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.4.9"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.5.0"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
@@ -128,7 +128,7 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.3.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.4.0"
 
   elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
@@ -137,7 +137,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.5.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.6.0"
 
   alertmanager_slack_receivers               = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config                           = local.enable_alerts ? var.pagerduty_config : "dummy"
@@ -165,7 +165,7 @@ module "monitoring" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.4.5"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.5.0"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -177,7 +177,7 @@ module "opa" {
 }
 
 module "starter_pack" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.1.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.2.0"
 
   enable_starter_pack = lookup(local.prod_2_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -189,7 +189,7 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.9.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.10.0"
 
   enable_velero               = lookup(local.prod_2_workspace, terraform.workspace, false)
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
@@ -198,13 +198,13 @@ module "velero" {
 }
 
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.0.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.1.0"
 
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
 }
 
 module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.2.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.3.0"
 
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
