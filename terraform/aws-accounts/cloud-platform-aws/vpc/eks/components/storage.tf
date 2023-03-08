@@ -5,13 +5,13 @@
 module "eks_csi" {
   source      = "github.com/ministryofjustice/cloud-platform-terraform-eks-csi?ref=1.1.0"
   eks_cluster = terraform.workspace
-  depends_on = [module.tigera_calico]
+  depends_on  = [module.tigera_calico]
 }
 
 module "efs_csi" {
   source      = "github.com/ministryofjustice/cloud-platform-terraform-efs-csi?ref=1.1.0"
   eks_cluster = terraform.workspace
-  depends_on = [module.tigera_calico]
+  depends_on  = [module.tigera_calico]
 }
 
 ###################
