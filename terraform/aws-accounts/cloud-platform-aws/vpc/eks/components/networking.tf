@@ -1,23 +1,31 @@
 
 ##########
-# Calico #
+# Calico 
 ##########
 
-# stopgap before switching to the tigera operator installation (disruptive)
 locals {
   calico_crds = {
-    bgpconfigurations     = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_bgpconfigurations.yaml"
-    bgppeers              = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_bgppeers.yaml"
-    blockaffinities       = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_blockaffinities.yaml"
-    clusterinformations   = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_clusterinformations.yaml"
-    felixconfigurations   = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_felixconfigurations.yaml"
-    globalnetworkpolicies = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_globalnetworkpolicies.yaml"
-    globalnetworksets     = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_globalnetworksets.yaml"
-    hostendpoints         = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_hostendpoints.yaml"
-    ipamblocks            = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_ipamblocks.yaml"
-    ippools               = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_ippools.yaml"
-    networkpolicies       = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_networkpolicies.yaml"
-    networksets           = "https://raw.githubusercontent.com/aws/eks-charts/v0.0.108/stable/aws-calico/templates/crds/crd.projectcalico.org_networksets.yaml"
+    tigera_apiserver              = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/charts/tigera-operator/crds/operator.tigera.io_apiservers_crd.yaml"
+    tigera_imagesets              = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/charts/tigera-operator/crds/operator.tigera.io_imagesets_crd.yaml"
+    tigera_installations          = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/charts/tigera-operator/crds/operator.tigera.io_installations_crd.yaml"
+    tigera_statues                = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/charts/tigera-operator/crds/operator.tigera.io_tigerastatuses_crd.yaml"
+    caliconodestatues             = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_caliconodestatuses.yaml"
+    bgpconfigurations             = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_bgpconfigurations.yaml"
+    bgppeers                      = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_bgppeers.yaml"
+    blockaffinities               = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_blockaffinities.yaml"
+    clusterinformations           = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_clusterinformations.yaml"
+    felixconfigurations           = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_felixconfigurations.yaml"
+    globalnetworkpolicies         = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_globalnetworkpolicies.yaml"
+    globalnetworksets             = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_globalnetworksets.yaml"
+    hostendpoints                 = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_hostendpoints.yaml"
+    ipamblocks                    = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_ipamblocks.yaml"
+    ipamconfigs                   = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_ipamconfigs.yaml"
+    ipamhandles                   = "https://raw.githubusercontent.com/projectcalico/calico/master/libcalico-go/config/crd/crd.projectcalico.org_ipamhandles.yaml"
+    ippools                       = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_ippools.yaml"
+    ipreservations                = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_ipreservations.yaml"
+    kubecontrollersconfigurations = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_kubecontrollersconfigurations.yaml"
+    networkpolicies               = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_networkpolicies.yaml"
+    networksets                   = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_networksets.yaml"
   }
 }
 
@@ -32,42 +40,11 @@ resource "kubectl_manifest" "calico_crds" {
   yaml_body         = each.value["body"]
 }
 
-resource "helm_release" "calico" {
-  name       = "calico"
-  chart      = "aws-calico"
-  repository = "https://aws.github.io/eks-charts"
-  namespace  = "kube-system"
-  version    = "0.3.10"
-  skip_crds  = "true"
+module "tigera_calico" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-tigera-calico?ref=0.1.0"
 
-  depends_on = [kubectl_manifest.calico_crds]
-  timeout    = "900"
-
-  set {
-    name  = "calico.typha.resources.limits.memory"
-    value = "256Mi"
-  }
-  set {
-    name  = "calico.typha.resources.limits.cpu"
-    value = "200m"
-  }
-  set {
-    name  = "calico.node.resources.limits.memory"
-    value = "128Mi"
-  }
-  set {
-    name  = "calico.node.resources.limits.cpu"
-    value = "200m"
-  }
+  depends_on = [
+    kubectl_manifest.calico_crds
+  ]
 }
 
-data "kubectl_file_documents" "calico_global_policies" {
-  content = file("${path.module}/resources/calico-global-policies.yaml")
-}
-
-resource "kubectl_manifest" "calico_global_policies" {
-  count     = length(data.kubectl_file_documents.calico_global_policies.documents)
-  yaml_body = element(data.kubectl_file_documents.calico_global_policies.documents, count.index)
-
-  depends_on = [helm_release.calico]
-}

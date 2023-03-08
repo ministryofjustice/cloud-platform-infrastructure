@@ -100,8 +100,8 @@ resource "kubernetes_cluster_role_binding" "privileged" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = "sonarqube-sonarqube"
-    namespace = "sonarqube"
+    name      = "tigera-operator"
+    namespace = "tigera-operator"
   }
   subject {
     kind      = "ServiceAccount"
