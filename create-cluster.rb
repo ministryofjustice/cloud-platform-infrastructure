@@ -168,7 +168,7 @@ def execute(cmd, can_fail: false)
 end
 
 def run_and_output(cmd, opts = {})
-  puts execute(cmd, opts)
+  puts execute(cmd, **opts)
 end
 
 def usage
