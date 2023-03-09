@@ -100,6 +100,15 @@ func (c *Config) ExpectedCrds() {
 		"ippools.crd.projectcalico.org",
 		"networkpolicies.crd.projectcalico.org",
 		"networksets.crd.projectcalico.org",
+		"tigerastatuses.operator.tigera.io",
+		"kubecontrollersconfigurations.crd.projectcalico.org",
+		"ipreservations.crd.projectcalico.org",
+		"ipamconfigs.crd.projectcalico.org",
+		"installations.operator.tigera.io",
+		"imagesets.operator.tigera.io",
+		"caliconodestatuses.crd.projectcalico.org",
+		"apiservers.operator.tigera.io",
+		"ipamhandles.crd.projectcalico.org",
 	)
 }
 

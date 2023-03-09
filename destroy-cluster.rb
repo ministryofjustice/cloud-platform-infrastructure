@@ -17,6 +17,9 @@ EKS_SYSTEM_NAMESPACES = %w[
   velero
   kuberhealthy
   trivy-system
+  calico-apiserver
+  calico-system
+  tigera-operator
 ] + (0..9).map { |i| "starter-pack-#{i}" }
 
 MAX_CLUSTER_NAME_LENGTH = 12
