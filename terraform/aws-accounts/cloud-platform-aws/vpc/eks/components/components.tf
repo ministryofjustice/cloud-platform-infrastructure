@@ -47,8 +47,8 @@ module "cluster_autoscaler" {
 }
 
 module "descheduler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.1.1"
-
+  source = "/Users/paulwyborn/projects/cloud-platform-terraform-descheduler"
+  disable_removeduplicates = lookup(local.manager_workspace, terraform.workspace, true) ? 0 : 1
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
   ]
