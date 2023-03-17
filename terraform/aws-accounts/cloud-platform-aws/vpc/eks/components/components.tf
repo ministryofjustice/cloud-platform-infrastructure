@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.11.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.11.1"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -47,8 +47,8 @@ module "cluster_autoscaler" {
 }
 
 module "descheduler" {
-  source = "/Users/paulwyborn/projects/cloud-platform-terraform-descheduler"
-  disable_removeduplicates = lookup(local.manager_workspace, terraform.workspace, true) ? 0 : 1
+  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=Fix-ProcessNotFoundError"
+  enable_removeduplicates = lookup(local.manager_workspace, terraform.workspace, false) ? false : true
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
   ]
