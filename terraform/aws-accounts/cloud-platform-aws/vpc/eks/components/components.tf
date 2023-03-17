@@ -47,7 +47,7 @@ module "cluster_autoscaler" {
 }
 
 module "descheduler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=Fix-ProcessNotFoundError"
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=Fix-ProcessNotFoundError"
   enable_removeduplicates = lookup(local.manager_workspace, terraform.workspace, false) ? false : true
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
