@@ -482,7 +482,7 @@ resource "aws_elasticsearch_domain" "live_modsec" {
   }
 }
 
-resource "elasticsearch_opensearch_ism_policy" "ism-policy_live_modsec" {
+resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec" {
   policy_id = "hot-warm-cold-delete"
   body      = data.template_file.ism_policy_live_modsec.rendered
 
