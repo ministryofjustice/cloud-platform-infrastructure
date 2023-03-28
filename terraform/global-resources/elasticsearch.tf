@@ -17,6 +17,7 @@ provider "elasticsearch" {
 
 locals {
   live_domain = "cloud-platform-live"
+  live_modsec_domain = "cloud-platform-live-modsec"
 
   live_2_domain = "cloud-platform-live-2"
 
@@ -407,7 +408,7 @@ data "aws_iam_policy_document" "live_modsec" {
     ]
 
     resources = [
-      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.live_domain}/*",
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.live_modsec_domain}/*",
     ]
 
     principals {
@@ -478,7 +479,7 @@ resource "aws_elasticsearch_domain" "live_modsec" {
   }
 
   tags = {
-    Domain = local.live_domain
+    Domain = local.live_modsec_domain
   }
 }
 
