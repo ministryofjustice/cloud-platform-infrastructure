@@ -37,9 +37,9 @@ variable "index_pattern" {
 }
 
 
-variable "index_pattern_live_modsec" {
+variable "index_pattern_live_modsec_audit" {
   default = [
-    "live_modsec_kubernetes_ingress*",
+    "live_modsec_audit_kubernetes_ingress*",
   ]
   description = "Pattern created in Kibana, policy will apply to matching new indices"
   type        = list(string)

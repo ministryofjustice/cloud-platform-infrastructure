@@ -4,9 +4,9 @@ provider "elasticsearch" {
 }
 
 provider "elasticsearch" {
-  url         = "https://${aws_elasticsearch_domain.live_modsec.endpoint}"
+  url         = "https://${aws_elasticsearch_domain.live_modsec_audit.endpoint}"
   aws_profile = "moj-cp"
-  alias       = "live-modsec"
+  alias       = "live-modsec-audit"
 }
 
 provider "elasticsearch" {
@@ -17,7 +17,7 @@ provider "elasticsearch" {
 
 locals {
   live_domain = "cloud-platform-live"
-  live_modsec_domain = "cloud-platform-live-modsec"
+  live_modsec_audit_domain = "cloud-platform-live-modsec-audit"
 
   live_2_domain = "cloud-platform-live-2"
 
@@ -395,7 +395,7 @@ module "audit_live_elasticsearch_monitoring" {
 
 
 # This is the OpenSearch cluster for live modsec logs
-data "aws_iam_policy_document" "live_modsec" {
+data "aws_iam_policy_document" "live_modsec_audit" {
   statement {
     actions = [
       "es:Describe*",
@@ -408,7 +408,7 @@ data "aws_iam_policy_document" "live_modsec" {
     ]
 
     resources = [
-      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.live_modsec_domain}/*",
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.live_modsec_audit_domain}/*",
     ]
 
     principals {
@@ -425,8 +425,8 @@ data "aws_iam_policy_document" "live_modsec" {
   }
 }
 
-resource "aws_elasticsearch_domain" "live_modsec" {
-  domain_name           = "cloud-platform-live-modsec"
+resource "aws_elasticsearch_domain" "live_modsec_audit" {
+  domain_name           = "cloud-platform-live-modsec-audit"
   provider              = aws.cloud-platform
   elasticsearch_version = "OpenSearch_2.5"
 
@@ -466,7 +466,7 @@ resource "aws_elasticsearch_domain" "live_modsec" {
     "override_main_response_version"         = "true"
   }
 
-  access_policies = data.aws_iam_policy_document.live_modsec.json
+  access_policies = data.aws_iam_policy_document.live_modsec_audit.json
 
   snapshot_options {
     automated_snapshot_start_hour = 23
@@ -479,25 +479,25 @@ resource "aws_elasticsearch_domain" "live_modsec" {
   }
 
   tags = {
-    Domain = local.live_modsec_domain
+    Domain = local.live_modsec_audit_domain
   }
 }
 
-resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec" {
+resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec_audit" {
   policy_id = "hot-warm-cold-delete"
-  body      = data.template_file.ism_policy_live_modsec.rendered
+  body      = data.template_file.ism_policy_live_modsec_audit.rendered
 
-  provider = elasticsearch.live-modsec
+  provider = elasticsearch.live-modsec-audit
 }
 
-data "template_file" "ism_policy_live_modsec" {
+data "template_file" "ism_policy_live_modsec_audit" {
   template = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
 
     timestamp_field   = var.timestamp_field
     warm_transition   = var.warm_transition
     cold_transition   = var.cold_transition
     delete_transition = var.delete_transition
-    index_pattern     = jsonencode(var.index_pattern_live_modsec)
+    index_pattern     = jsonencode(var.index_pattern_live_modsec_audit)
   })
 }
 
