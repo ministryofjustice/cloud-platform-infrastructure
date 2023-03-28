@@ -17,7 +17,7 @@ provider "elasticsearch" {
 
 locals {
   live_domain              = "cloud-platform-live"
-  live_modsec_audit_domain = "cloud-platform-live-modsec-audit"
+  live_modsec_audit_domain = "cp-live-modsec-audit"
 
   live_2_domain = "cloud-platform-live-2"
 
@@ -426,7 +426,7 @@ data "aws_iam_policy_document" "live_modsec_audit" {
 }
 
 resource "aws_elasticsearch_domain" "live_modsec_audit" {
-  domain_name           = "cloud-platform-live-modsec-audit"
+  domain_name           = "cp-live-modsec-audit"
   provider              = aws.cloud-platform
   elasticsearch_version = "OpenSearch_2.5"
 
