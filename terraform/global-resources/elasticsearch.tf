@@ -424,7 +424,7 @@ resource "aws_elasticsearch_domain" "live_modsec" {
   elasticsearch_version = "OpenSearch_2.5"
 
   cluster_config {
-    instance_type            = "r6g.xlarge.elasticsearch"
+    instance_type            = "r6g.large.elasticsearch"
     instance_count           = "3"
     dedicated_master_enabled = true
     dedicated_master_type    = "m6g.large.elasticsearch"
@@ -439,6 +439,11 @@ resource "aws_elasticsearch_domain" "live_modsec" {
     cold_storage_options {
       enabled = true
     }
+  }
+
+  domain_endpoint_options {
+    enforce_https       = true
+    tls_security_policy = "Policy-Min-TLS-1-2-2019-07"
   }
 
   ebs_options {
