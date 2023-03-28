@@ -279,6 +279,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
   }
 }
 
+
 # audit cluster for live
 resource "aws_elasticsearch_domain" "audit_live" {
   domain_name           = local.audit_live_domain
@@ -383,6 +384,109 @@ module "audit_live_elasticsearch_monitoring" {
   domain_name       = local.audit_live_domain
   create_sns_topic  = false
   sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
+}
+
+
+# This is the OpenSearch cluster for live modsec logs
+data "aws_iam_policy_document" "live_modsec" {
+  statement {
+    actions = [
+      "es:Describe*",
+      "es:List*",
+      "es:ESHttpGet",
+      "es:ESHttpHead",
+      "es:ESHttpPost",
+      "es:ESHttpPut",
+      "es:ESHttpPatch"
+    ]
+
+    resources = [
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.live_domain}/*",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+
+      values = keys(local.allowed_live_1_ips)
+    }
+  }
+}
+
+resource "aws_elasticsearch_domain" "live_modsec" {
+  domain_name           = "cloud-platform-live-modsec"
+  provider              = aws.cloud-platform
+  elasticsearch_version = "OpenSearch_2.5"
+
+  cluster_config {
+    instance_type            = "r6g.xlarge.elasticsearch"
+    instance_count           = "3"
+    dedicated_master_enabled = true
+    dedicated_master_type    = "m6g.large.elasticsearch"
+    dedicated_master_count   = "3"
+    zone_awareness_enabled   = true
+    zone_awareness_config {
+      availability_zone_count = 3
+    }
+    warm_count   = 3
+    warm_enabled = true
+    warm_type    = "ultrawarm1.medium.elasticsearch"
+    cold_storage_options {
+      enabled = true
+    }
+  }
+
+  ebs_options {
+    ebs_enabled = "true"
+    volume_type = "gp3"
+    volume_size = "500"
+    iops        = "3000"
+  }
+
+  advanced_options = {
+    "rest.action.multi.allow_explicit_index" = "true"
+    "indices.query.bool.max_clause_count"    = 3000
+    "override_main_response_version"         = "true"
+  }
+
+  access_policies = data.aws_iam_policy_document.live_modsec.json
+
+  snapshot_options {
+    automated_snapshot_start_hour = 23
+  }
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = ""
+    enabled                  = false
+    log_type                 = "ES_APPLICATION_LOGS"
+  }
+
+  tags = {
+    Domain = local.live_domain
+  }
+}
+
+resource "elasticsearch_opensearch_ism_policy" "ism-policy_live_modsec" {
+  policy_id = "hot-warm-cold-delete"
+  body      = data.template_file.ism_policy_live_modsec.rendered
+
+  provider = elasticsearch.live-modsec
+}
+
+data "template_file" "ism_policy_live_modsec" {
+  template = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
+
+    timestamp_field   = var.timestamp_field
+    warm_transition   = var.warm_transition
+    cold_transition   = var.cold_transition
+    delete_transition = var.delete_transition
+    index_pattern     = jsonencode(var.index_pattern_live_modsec)
+  })
 }
 
 # This is the OpenSearch cluster for live-2
