@@ -16,7 +16,7 @@ provider "elasticsearch" {
 }
 
 locals {
-  live_domain = "cloud-platform-live"
+  live_domain              = "cloud-platform-live"
   live_modsec_audit_domain = "cloud-platform-live-modsec-audit"
 
   live_2_domain = "cloud-platform-live-2"
