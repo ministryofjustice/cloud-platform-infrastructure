@@ -426,7 +426,7 @@ data "aws_iam_policy_document" "live_modsec_audit" {
 }
 
 resource "aws_kms_key" "live_modsec_audit" {
-  description = "Used for OpenSearch: "cp-live-modsec-audit"
+  description = "Used for OpenSearch: cp-live-modsec-audit"
   key_usage   = "ENCRYPT_DECRYPT"
   # policy = TBD if one needed for console access
   bypass_policy_lockout_safety_check = false
