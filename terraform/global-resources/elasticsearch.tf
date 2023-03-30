@@ -437,7 +437,7 @@ resource "aws_kms_key" "live_modsec_audit" {
 }
 
 resource "aws_opensearch_domain" "live_modsec_audit" {
-  domain_name           = "cp-live-modsec-audit"
+  domain_name    = "cp-live-modsec-audit"
   engine_version = "OpenSearch_2.5"
 
   advanced_options = {
