@@ -438,7 +438,7 @@ resource "aws_kms_key" "live_modsec_audit" {
 
 resource "aws_opensearch_domain" "live_modsec_audit" {
   domain_name           = "cp-live-modsec-audit"
-  elasticsearch_version = "OpenSearch_1.3"
+  elasticsearch_version = "OpenSearch_2.5"
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
