@@ -425,13 +425,32 @@ data "aws_iam_policy_document" "live_modsec_audit" {
   }
 }
 
-resource "aws_elasticsearch_domain" "live_modsec_audit" {
+resource "aws_kms_key" "live_modsec_audit" {
+  description = "Used for OpenSearch: "cp-live-modsec-audit"
+  key_usage   = "ENCRYPT_DECRYPT"
+  # policy = TBD if one needed for console access
+  bypass_policy_lockout_safety_check = false
+  deletion_window_in_days            = 30
+  is_enabled                         = true
+  enable_key_rotation                = false
+  multi_region                       = false
+}
+
+resource "aws_opensearch_domain" "live_modsec_audit" {
   domain_name           = "cp-live-modsec-audit"
-  provider              = aws.cloud-platform
-  elasticsearch_version = "OpenSearch_2.5"
+   elasticsearch_version = "OpenSearch_1.3"
+
+  advanced_options = {
+    "rest.action.multi.allow_explicit_index" = "true"
+    "indices.query.bool.max_clause_count"    = 3000
+    "override_main_response_version"         = "true"
+  }
+
+  # advanced_security_options = ""
+  # auto_tune_options = ""
 
   cluster_config {
-    instance_type            = "r6g.large.elasticsearch"
+    instance_type            = "r6g.xlarge.elasticsearch"
     instance_count           = "3"
     dedicated_master_enabled = true
     dedicated_master_type    = "m6g.large.elasticsearch"
@@ -448,11 +467,6 @@ resource "aws_elasticsearch_domain" "live_modsec_audit" {
     }
   }
 
-  domain_endpoint_options {
-    enforce_https       = true
-    tls_security_policy = "Policy-Min-TLS-1-2-2019-07"
-  }
-
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp3"
@@ -460,10 +474,9 @@ resource "aws_elasticsearch_domain" "live_modsec_audit" {
     iops        = "3000"
   }
 
-  advanced_options = {
-    "rest.action.multi.allow_explicit_index" = "true"
-    "indices.query.bool.max_clause_count"    = 3000
-    "override_main_response_version"         = "true"
+  domain_endpoint_options {
+    enforce_https       = true
+    tls_security_policy = "Policy-Min-TLS-1-2-2019-07" # default to TLS 1.2
   }
 
   access_policies = data.aws_iam_policy_document.live_modsec_audit.json
@@ -477,7 +490,15 @@ resource "aws_elasticsearch_domain" "live_modsec_audit" {
     enabled                  = false
     log_type                 = "ES_APPLICATION_LOGS"
   }
+  encrypt_at_rest {
+    enabled    = true
+    kms_key_id = aws_kms_key.live_modsec_audit.key_id
+  }
 
+  node_to_node_encryption {
+    enabled = true
+  }
+  
   tags = {
     Domain = local.live_modsec_audit_domain
   }
