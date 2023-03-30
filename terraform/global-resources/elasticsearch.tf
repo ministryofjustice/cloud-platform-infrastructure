@@ -438,7 +438,7 @@ resource "aws_kms_key" "live_modsec_audit" {
 
 resource "aws_opensearch_domain" "live_modsec_audit" {
   domain_name           = "cp-live-modsec-audit"
-   elasticsearch_version = "OpenSearch_1.3"
+  elasticsearch_version = "OpenSearch_1.3"
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
@@ -498,7 +498,7 @@ resource "aws_opensearch_domain" "live_modsec_audit" {
   node_to_node_encryption {
     enabled = true
   }
-  
+
   tags = {
     Domain = local.live_modsec_audit_domain
   }
