@@ -485,11 +485,6 @@ resource "aws_opensearch_domain" "live_modsec_audit" {
     automated_snapshot_start_hour = 23
   }
 
-  log_publishing_options {
-    cloudwatch_log_group_arn = ""
-    enabled                  = false
-    log_type                 = "ES_APPLICATION_LOGS"
-  }
   encrypt_at_rest {
     enabled    = true
     kms_key_id = aws_kms_key.live_modsec_audit.key_id
