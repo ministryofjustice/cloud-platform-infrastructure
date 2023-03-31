@@ -4,13 +4,20 @@ provider "elasticsearch" {
 }
 
 provider "elasticsearch" {
+  url         = "https://${aws_opensearch_domain.live_modsec_audit.endpoint}"
+  aws_profile = "moj-cp"
+  alias       = "live-modsec-audit"
+}
+
+provider "elasticsearch" {
   url         = "https://${aws_elasticsearch_domain.live-2.endpoint}"
   aws_profile = "moj-cp"
   alias       = "live-2"
 }
 
 locals {
-  live_domain = "cloud-platform-live"
+  live_domain              = "cloud-platform-live"
+  live_modsec_audit_domain = "cp-live-modsec-audit"
 
   live_2_domain = "cloud-platform-live-2"
 
@@ -279,6 +286,7 @@ resource "aws_elasticsearch_domain" "audit_1" {
   }
 }
 
+
 # audit cluster for live
 resource "aws_elasticsearch_domain" "audit_live" {
   domain_name           = local.audit_live_domain
@@ -383,6 +391,135 @@ module "audit_live_elasticsearch_monitoring" {
   domain_name       = local.audit_live_domain
   create_sns_topic  = false
   sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
+}
+
+
+# This is the OpenSearch cluster for live modsec logs
+data "aws_iam_policy_document" "live_modsec_audit" {
+  statement {
+    actions = [
+      "es:Describe*",
+      "es:List*",
+      "es:ESHttpGet",
+      "es:ESHttpHead",
+      "es:ESHttpPost",
+      "es:ESHttpPut",
+      "es:ESHttpPatch"
+    ]
+
+    resources = [
+      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.live_modsec_audit_domain}/*",
+    ]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+
+    condition {
+      test     = "IpAddress"
+      variable = "aws:SourceIp"
+
+      values = keys(local.allowed_live_1_ips)
+    }
+  }
+}
+
+resource "aws_kms_key" "live_modsec_audit" {
+  description = "Used for OpenSearch: cp-live-modsec-audit"
+  key_usage   = "ENCRYPT_DECRYPT"
+  # policy = TBD if one needed for console access
+  bypass_policy_lockout_safety_check = false
+  deletion_window_in_days            = 30
+  is_enabled                         = true
+  enable_key_rotation                = false
+  multi_region                       = false
+}
+
+resource "aws_opensearch_domain" "live_modsec_audit" {
+  domain_name    = "cp-live-modsec-audit"
+  engine_version = "OpenSearch_2.5"
+
+  advanced_options = {
+    "rest.action.multi.allow_explicit_index" = "true"
+    "indices.query.bool.max_clause_count"    = 3000
+    "override_main_response_version"         = "true"
+  }
+
+  # advanced_security_options = ""
+  # auto_tune_options = ""
+
+  cluster_config {
+    instance_type            = "r6g.xlarge.search"
+    instance_count           = "3"
+    dedicated_master_enabled = true
+    dedicated_master_type    = "m6g.large.search"
+    dedicated_master_count   = "3"
+    zone_awareness_enabled   = true
+    zone_awareness_config {
+      availability_zone_count = 3
+    }
+    warm_count   = 3
+    warm_enabled = true
+    warm_type    = "ultrawarm1.medium.search"
+    cold_storage_options {
+      enabled = true
+    }
+  }
+
+  ebs_options {
+    ebs_enabled = "true"
+    volume_type = "gp3"
+    volume_size = "500"
+    iops        = "3000"
+  }
+
+  domain_endpoint_options {
+    enforce_https       = true
+    tls_security_policy = "Policy-Min-TLS-1-2-2019-07" # default to TLS 1.2
+  }
+
+  access_policies = data.aws_iam_policy_document.live_modsec_audit.json
+
+  snapshot_options {
+    automated_snapshot_start_hour = 23
+  }
+
+  log_publishing_options {
+    cloudwatch_log_group_arn = ""
+    enabled                  = false
+    log_type                 = "ES_APPLICATION_LOGS"
+  }
+  encrypt_at_rest {
+    enabled    = true
+    kms_key_id = aws_kms_key.live_modsec_audit.key_id
+  }
+
+  node_to_node_encryption {
+    enabled = true
+  }
+
+  tags = {
+    Domain = local.live_modsec_audit_domain
+  }
+}
+
+resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec_audit" {
+  policy_id = "hot-warm-cold-delete"
+  body      = data.template_file.ism_policy_live_modsec_audit.rendered
+
+  provider = elasticsearch.live-modsec-audit
+}
+
+data "template_file" "ism_policy_live_modsec_audit" {
+  template = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
+
+    timestamp_field   = var.timestamp_field
+    warm_transition   = var.warm_transition
+    cold_transition   = var.cold_transition
+    delete_transition = var.delete_transition
+    index_pattern     = jsonencode(var.index_pattern_live_modsec_audit)
+  })
 }
 
 # This is the OpenSearch cluster for live-2
