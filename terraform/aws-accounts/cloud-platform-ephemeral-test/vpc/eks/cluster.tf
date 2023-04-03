@@ -150,11 +150,6 @@ module "eks" {
       groups   = ["system:masters"]
     },
     {
-      userarn  = "arn:aws:iam::754256621582:user/jasonBirchall"
-      username = "jasonBirchall"
-      groups   = ["system:masters"]
-    },
-    {
       userarn  = "arn:aws:iam::754256621582:user/SteveMarshall"
       username = "SteveMarshall"
       groups   = ["system:masters"]
@@ -177,6 +172,11 @@ module "eks" {
     {
       userarn  = "arn:aws:iam::754256621582:user/SteveWilliams"
       username = "SteveWilliams"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/JaskaranSarkaria"
+      username = "JaskaranSarkaria"
       groups   = ["system:masters"]
     }
   ]
