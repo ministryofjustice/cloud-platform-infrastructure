@@ -216,7 +216,6 @@ module "trivy-operator" {
 
   dockerhub_username = var.dockerhub_username
   dockerhub_password = var.dockerhub_password
-  github_token       = var.github_token
 
   job_concurrency_limit = 1
   scan_job_timeout      = "10m"
