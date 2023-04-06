@@ -79,9 +79,6 @@ data "aws_route53_zone" "selected" {
   name = "${terraform.workspace}.et.cloud-platform.service.justice.gov.uk"
 }
 
-data "aws_route53_zone" "cloud_platform_ephemeral_test" {
-  name = "et.cloud-platform.service.justice.gov.uk"
-}
 
 ##########
 # Locals #
@@ -101,13 +98,6 @@ locals {
   prod_workspace = {
     manager = true
     live    = true
-    default = false
-  }
-
-  cloudwatch_workspace = {
-    manager = false
-    live    = true
-    live-1  = true
     default = false
   }
 
