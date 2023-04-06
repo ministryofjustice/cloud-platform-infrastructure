@@ -28,7 +28,7 @@ provider "aws" {
     tags = {
       business-unit = "Platforms"
       application   = "cloud-platform-aws/vpc/eks"
-      is-production = "true"
+      is-production = "false"
       owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
       source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
     }

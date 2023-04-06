@@ -17,7 +17,8 @@ module "external_dns" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.10.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
+  hostzones           = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
+  domain_filters      = lookup(local.domain_filters, terraform.workspace, local.domain_filters["default"])
 
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
