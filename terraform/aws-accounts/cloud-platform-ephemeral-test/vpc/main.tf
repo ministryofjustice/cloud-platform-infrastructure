@@ -3,7 +3,6 @@
 ################################
 
 terraform {
-  required_version = ">= 0.14"
 
   backend "s3" {
     bucket               = "cloud-platform-ephemeral-test-tfstate"
@@ -33,6 +32,9 @@ locals {
   vpc_tags = merge({
     "kubernetes.io/cluster/${local.vpc_name}" = "shared"
   }, local.cluster_tags)
+    vpc_cidr = {
+    default = "172.20.0.0/16"
+  }
 }
 
 #######
@@ -40,14 +42,22 @@ locals {
 #######
 
 module "vpc" {
-  version = "3.14.2"
+version = "3.18.1"
   source  = "terraform-aws-modules/vpc/aws"
 
-  name                 = local.vpc_name
-  cidr                 = var.vpc_cidr
-  azs                  = var.availability_zones
-  private_subnets      = var.internal_subnets
-  public_subnets       = var.external_subnets
+  name = local.vpc_name
+  cidr = lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"])
+  azs  = var.availability_zones
+  private_subnets = [
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 1),
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 2),
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 3)
+  ]
+  public_subnets = [
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 6, 0),
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 6, 1),
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 6, 2)
+  ]
   enable_nat_gateway   = true
   enable_vpn_gateway   = false
   enable_dns_hostnames = true
