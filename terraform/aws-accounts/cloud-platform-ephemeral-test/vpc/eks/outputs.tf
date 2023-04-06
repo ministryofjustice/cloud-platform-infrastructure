@@ -23,7 +23,7 @@ output "cluster_domain_name" {
 }
 
 output "oidc_issuer_url" {
-  value = "https://justice-cloud-platform.eu.auth0.com/"
+  value = "https://moj-cloud-platforms-dev.eu.auth0.com/"
 }
 
 output "oidc_kubernetes_client_id" {

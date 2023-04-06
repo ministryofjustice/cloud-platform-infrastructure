@@ -1,11 +1,17 @@
-variable "dockerhub_user" {
-  description = "Cloud platform user (see lastpass). This is required to avoid hitting limits when pulling images."
+variable "cp_dockerhub_user" {
+  description = "DockerHub user for the Cloud Platform. This is required to avoid hitting limits when pulling images."
   type        = string
 }
 
-variable "dockerhub_token" {
-  description = "Token for the above"
+variable "cp_dockerhub_token" {
+  description = "DockerHub token for the Cloud Platform user"
   type        = string
+}
+
+variable "enable_oidc_associate" {
+  description = "Enable OIDC associate provider. This takes approximately 30 minutes to complete, so be prepared to wait."
+  default     = true
+  type        = bool
 }
 
 variable "vpc_name" {
@@ -13,10 +19,15 @@ variable "vpc_name" {
   default     = ""
   type        = string
 }
-
 variable "auth0_issuerUrl" {
-  description = "domain IssuerURL by which Auth0 can find the OpenID Provider Configuration Document"
-  default     = "https://justice-cloud-platform.eu.auth0.com/"
+  description = "Domain issuer URL by which Auth0 can find the OpenID Provider Configuration Document"
+  default     = "https://moj-cloud-platforms-dev.eu.auth0.com/"
+  type        = string
+}
+
+variable "auth0_tenant_domain" {
+  description = "This is the auth0 tenant domain"
+  default     = "moj-cloud-platforms-dev.eu.auth0.com"
   type        = string
 }
 
@@ -27,12 +38,6 @@ variable "auth0_groupsClaim" {
   type        = string
 }
 
-variable "auth0_tenant_domain" {
-  description = "This is the auth0 tenant domain"
-  default     = "justice-cloud-platform.eu.auth0.com"
-  type        = string
-}
-
 variable "cluster_enabled_log_types" {
   default     = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
   description = "A list of the desired control plane logging to enable."
@@ -40,7 +45,7 @@ variable "cluster_enabled_log_types" {
 }
 
 variable "cluster_log_retention_in_days" {
-  default     = 3
-  description = "Number of days to retain log events. Default retention - 3 days."
+  default     = 400 # Slightly over three months as per security advice https://security-guidance.service.justice.gov.uk/logging-and-monitoring/#log-retention
+  description = "Number of days to retain log events. Default retention - 90 days."
   type        = number
 }
