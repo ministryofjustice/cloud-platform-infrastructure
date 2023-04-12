@@ -17,7 +17,7 @@ variable "kubeconfig_clusters" {
 variable "auth0_tenant_domain" {
   description = "Auth0 domain"
   type        = string
-  default     = "moj-cloud-platforms.eu.auth0.com"
+  default     = "justice-cloud-platform.eu.auth0.com"
 }
 
 variable "timestamp_field" {
