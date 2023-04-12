@@ -63,7 +63,6 @@ data "aws_iam_policy_document" "live_modsec_audit" {
     resources = [
       "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${local.live_modsec_audit_domain}/*",
     ]
-
     principals {
       type        = "AWS"
       identifiers = ["*"]
@@ -75,7 +74,6 @@ data "aws_iam_policy_document" "live_modsec_audit" {
 resource "aws_kms_key" "live_modsec_audit" {
   description = "Used for OpenSearch: cp-live-modsec-audit"
   key_usage   = "ENCRYPT_DECRYPT"
-  # policy = TBD if one needed for console access
   bypass_policy_lockout_safety_check = false
   deletion_window_in_days            = 30
   is_enabled                         = true
@@ -241,15 +239,37 @@ resource "aws_opensearch_domain_saml_options" "live_modsec_audit" {
   }
 }
 
+data "aws_eks_node_groups" "current" {
+  cluster_name = "pk-test-01" // change to the cluster you need -- note there is no terraform.workspace at the account level
+}
+
+data "aws_eks_node_group" "current" {
+  for_each = data.aws_eks_node_groups.current.names
+
+  cluster_name    = "pk-test-01"
+  node_group_name = each.value
+}
+
 # Create a role mapping
-resource "elasticsearch_opensearch_roles_mapping" "webops" {
+resource "elasticsearch_opensearch_roles_mapping" "all_access" {
   role_name   = "all_access"
-  description = "Mapping AWS IAM roles to ES role"
-  backend_roles = [
+  description = "Mapping AWS IAM roles to ES role all_access"
+  backend_roles = concat([
     "webops",
     aws_iam_role.os_access_role.arn,
-    "arn:aws:iam::418216798584:role/pk-test-012023040612074410120000000c"
+  ], values(data.aws_eks_node_group.current)[*].node_role_arn)
+  depends_on = [
+    aws_opensearch_domain_saml_options.live_modsec_audit,
   ]
+}
+
+resource "elasticsearch_opensearch_roles_mapping" "security_manager" {
+  role_name   = "security_manager"
+  description = "Mapping AWS IAM roles to ES role security_manager"
+  backend_roles = concat([
+    "webops",
+    aws_iam_role.os_access_role.arn,
+  ], values(data.aws_eks_node_group.current)[*].node_role_arn)
   depends_on = [
     aws_opensearch_domain_saml_options.live_modsec_audit,
   ]
