@@ -72,8 +72,8 @@ data "aws_iam_policy_document" "live_modsec_audit" {
 
 
 resource "aws_kms_key" "live_modsec_audit" {
-  description = "Used for OpenSearch: cp-live-modsec-audit"
-  key_usage   = "ENCRYPT_DECRYPT"
+  description                        = "Used for OpenSearch: cp-live-modsec-audit"
+  key_usage                          = "ENCRYPT_DECRYPT"
   bypass_policy_lockout_safety_check = false
   deletion_window_in_days            = 30
   is_enabled                         = true
