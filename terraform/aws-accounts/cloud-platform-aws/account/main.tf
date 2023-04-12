@@ -40,6 +40,10 @@ provider "aws" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+data "aws_iam_account_alias" "current" {}
+data "aws_region" "current" {}
+
 # IAM configuration for cloud-platform. Users, groups, etc
 module "iam" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.20"
