@@ -44,6 +44,22 @@ variable "elasticsearch_audit_hosts_maps" {
   })
 }
 
+
+variable "elasticsearch_modsec_audit_hosts_maps" {
+  description = "Cloud Platform ModSec audit Opensearch hosts for each Terraform workspace"
+
+  default = {
+    manager = "search-cp-live-modsec-audit-nuhzlrjwxrmdd6op3mvj2k5mye.eu-west-2.es.amazonaws.com"
+    live    = "search-cp-live-modsec-audit-nuhzlrjwxrmdd6op3mvj2k5mye.eu-west-2.es.amazonaws.com"
+  }
+
+  type = object({
+    manager = string
+    live    = string
+  })
+}
+
+
 # Concourse vars
 variable "github_auth_client_id" {
   type        = string
