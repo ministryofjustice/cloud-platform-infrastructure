@@ -6,15 +6,27 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.26.0"
+      version = "4.48.0"
     }
-    github = {
-      source  = "integrations/github"
-      version = "~> 4.27.0"
+    external = {
+      source  = "hashicorp/external"
+      version = "2.2.3"
+    }
+    elasticsearch = {
+      source  = "phillbaker/elasticsearch"
+      version = "2.0.7"
+    }
+    template = {
+      source  = "hashicorp/template"
+      version = "2.2.0"
     }
     curl = {
       source  = "anschoewe/curl"
-      version = "~> 1.0.2"
+      version = ">= 1.0.2"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = ">=2.0.0"
     }
   }
   required_version = ">= 1.2.5"
