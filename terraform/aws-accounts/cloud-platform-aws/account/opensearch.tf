@@ -261,12 +261,48 @@ resource "elasticsearch_opensearch_roles_mapping" "all_access" {
 resource "elasticsearch_opensearch_roles_mapping" "security_manager" {
   role_name   = "security_manager"
   description = "Mapping AWS IAM roles to ES role security_manager"
-  backend_roles = concat([
+  backend_roles = [
     "webops",
     aws_iam_role.os_access_role.arn,
-  ], values(data.aws_eks_node_group.current)[*].node_role_arn)
+  ]
+
   depends_on = [
     aws_opensearch_domain_saml_options.live_modsec_audit,
+  ]
+}
+
+# Create a role that restricts users from viewing documents for teams they are not members of
+resource "elasticsearch_opensearch_role" "all_org_members" {
+  role_name   = "all_org_members"
+  description = "role for all moj github users"
+
+  cluster_permissions = ["search", "data_access", "read", "opensearch_dashboards_all_read", "get"]
+
+  index_permissions {
+    index_patterns  = ["*"]
+    allowed_actions = ["read", "search", "data_access"]
+  }
+
+  index_permissions {
+    index_patterns  = ["live_k8s_modsec_ingress-*"]
+    allowed_actions = ["read", "search", "data_access"]
+
+    document_level_security = "{\"terms\": { \"github_teams\": [$${user.roles}]}}"
+  }
+
+  tenant_permissions {
+    tenant_patterns = ["global_tenant"]
+    allowed_actions = ["kibana_all_read"]
+  }
+}
+
+resource "elasticsearch_opensearch_roles_mapping" "all_org_members" {
+  role_name     = "all_org_members"
+  description   = "Mapping AWS IAM roles to ES role all_org_members"
+  backend_roles = ["all-org-members"]
+  depends_on = [
+    aws_opensearch_domain_saml_options.live_modsec_audit,
+    elasticsearch_opensearch_role.all_org_members
   ]
 }
 
