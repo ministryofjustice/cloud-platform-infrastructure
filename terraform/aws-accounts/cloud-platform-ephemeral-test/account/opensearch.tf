@@ -156,21 +156,17 @@ resource "aws_opensearch_domain_policy" "live_modsec_audit" {
 
 resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec_audit" {
   policy_id = "hot-warm-cold-delete"
-  body      = data.template_file.ism_policy_live_modsec_audit.rendered
-  depends_on = [
-    aws_opensearch_domain_saml_options.live_modsec_audit,
-  ]
-}
-
-data "template_file" "ism_policy_live_modsec_audit" {
-  template = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
-
+  body = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
     timestamp_field   = var.timestamp_field
     warm_transition   = var.warm_transition
     cold_transition   = var.cold_transition
     delete_transition = var.delete_transition
     index_pattern     = jsonencode(var.index_pattern_live_modsec_audit)
   })
+
+  depends_on = [
+    aws_opensearch_domain_saml_options.live_modsec_audit,
+  ]
 }
 
 ### AWS Opensearch SAML -- client, rule, metadata and configure opensearch
@@ -266,11 +262,47 @@ resource "elasticsearch_opensearch_roles_mapping" "all_access" {
 resource "elasticsearch_opensearch_roles_mapping" "security_manager" {
   role_name   = "security_manager"
   description = "Mapping AWS IAM roles to ES role security_manager"
-  backend_roles = concat([
+  backend_roles = [
     "webops",
     aws_iam_role.os_access_role.arn,
-  ], values(data.aws_eks_node_group.current)[*].node_role_arn)
+  ]
   depends_on = [
     aws_opensearch_domain_saml_options.live_modsec_audit,
   ]
 }
+
+# Create a role that restricts users from viewing documents for teams they are not members of
+resource "elasticsearch_opensearch_role" "all_org_members" {
+  role_name   = "all_org_members"
+  description = "role for all moj github users"
+
+  cluster_permissions = ["search", "data_access", "read", "opensearch_dashboards_all_read", "get"]
+
+  index_permissions {
+    index_patterns  = ["*"]
+    allowed_actions = ["read", "search", "data_access"]
+  }
+
+  index_permissions {
+    index_patterns  = ["live_k8s_modsec_ingress-*"]
+    allowed_actions = ["read", "search", "data_access"]
+
+    document_level_security = "{\"terms\": { \"github_team\": [$${user.roles}]}}"
+  }
+
+  tenant_permissions {
+    tenant_patterns = ["global_tenant"]
+    allowed_actions = ["kibana_all_read"]
+  }
+}
+
+resource "elasticsearch_opensearch_roles_mapping" "all_org_members" {
+  role_name     = "all_org_members"
+  description   = "Mapping AWS IAM roles to ES role all_org_members"
+  backend_roles = ["all-org-members"]
+  depends_on = [
+    aws_opensearch_domain_saml_options.live_modsec_audit,
+    elasticsearch_opensearch_role.all_org_members
+  ]
+}
+
