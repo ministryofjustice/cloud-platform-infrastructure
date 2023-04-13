@@ -271,6 +271,35 @@ resource "elasticsearch_opensearch_roles_mapping" "security_manager" {
   ]
 }
 
+# Prevent document security overriding webops role by explicitly allowing webops to view all
+resource "elasticsearch_opensearch_role" "webops" {
+  role_name   = "webops"
+  description = "role for all webops github users"
+
+  cluster_permissions = ["*"]
+
+  index_permissions {
+    index_patterns          = ["*"]
+    allowed_actions         = ["cluster_all", "indices_all", "unlimited"]
+    document_level_security = "{\"match_all\": {}}"
+  }
+
+  tenant_permissions {
+    tenant_patterns = ["global_tenant"]
+    allowed_actions = ["kibana_all_write"]
+  }
+}
+
+resource "elasticsearch_opensearch_roles_mapping" "webops" {
+  role_name     = "webops"
+  description   = "Mapping AWS IAM roles to ES role webops"
+  backend_roles = ["webops"]
+  depends_on = [
+    aws_opensearch_domain_saml_options.live_modsec_audit,
+    elasticsearch_opensearch_role.webops
+  ]
+}
+
 # Create a role that restricts users from viewing documents for teams they are not members of
 resource "elasticsearch_opensearch_role" "all_org_members" {
   role_name   = "all_org_members"
