@@ -316,7 +316,7 @@ resource "elasticsearch_opensearch_role" "all_org_members" {
     index_patterns  = ["live_k8s_modsec_ingress-*"]
     allowed_actions = ["read", "search", "data_access"]
 
-    document_level_security = "{\"terms\": { \"github_teams\": [$${user.roles}]}}"
+    document_level_security = "{\"terms\": { \"github_teams.keyword\": [$${user.roles}]}}"
   }
 
   tenant_permissions {
