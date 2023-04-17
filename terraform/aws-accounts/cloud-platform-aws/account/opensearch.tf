@@ -81,6 +81,30 @@ resource "aws_kms_key" "live_modsec_audit" {
   multi_region                       = false
 }
 
+data "aws_route53_zone" "et_cloud_platform_justice_gov_uk" {
+  name = "cloud-platform.service.justice.gov.uk."
+}
+
+# needed for load balancer cert
+module "acm" {
+  source  = "terraform-aws-modules/acm/aws"
+  version = "~> 4.0"
+
+  domain_name = data.aws_route53_zone.et_cloud_platform_justice_gov_uk.name
+  zone_id     = data.aws_route53_zone.et_cloud_platform_justice_gov_uk.zone_id
+
+  wait_for_validation = false # for use in an automated pipeline set false to avoid waiting for validation to complete or error after a 45 minute timeout.
+
+  subject_alternative_names = [
+    "logs.${data.aws_route53_zone.et_cloud_platform_justice_gov_uk.name}"
+  ]
+
+  tags = {
+    Domain = local.live_modsec_audit_domain
+  }
+}
+
+
 resource "aws_opensearch_domain" "live_modsec_audit" {
   domain_name    = "cp-live-modsec-audit"
   engine_version = "OpenSearch_2.5"
@@ -129,8 +153,11 @@ resource "aws_opensearch_domain" "live_modsec_audit" {
   }
 
   domain_endpoint_options {
-    enforce_https       = true
-    tls_security_policy = "Policy-Min-TLS-1-2-2019-07" # default to TLS 1.2
+    enforce_https                   = true
+    tls_security_policy             = "Policy-Min-TLS-1-2-2019-07" # default to TLS 1.2
+    custom_endpoint_enabled         = true
+    custom_endpoint_certificate_arn = module.acm.acm_certificate_arn
+    custom_endpoint                 = "logs.${data.aws_route53_zone.et_cloud_platform_justice_gov_uk.name}"
   }
 
   access_policies = null
@@ -147,6 +174,16 @@ resource "aws_opensearch_domain" "live_modsec_audit" {
   tags = {
     Domain = local.live_modsec_audit_domain
   }
+}
+
+# add vanity url to cluster 
+resource "aws_route53_record" "opensearch_custom_domain" {
+  zone_id = data.aws_route53_zone.et_cloud_platform_justice_gov_uk.zone_id
+  name    = "et-logs"
+  type    = "CNAME"
+  ttl     = 600 # 10 mins
+
+  records = [aws_opensearch_domain.live_modsec_audit.endpoint]
 }
 
 resource "aws_opensearch_domain_policy" "live_modsec_audit" {
@@ -177,12 +214,12 @@ resource "auth0_client" "opensearch" {
   is_first_party             = true
   token_endpoint_auth_method = "none"
 
-  callbacks = ["https://${aws_opensearch_domain.live_modsec_audit.endpoint}/_dashboards/_opendistro/_security/saml/acs"]
+  callbacks = ["https://${aws_route53_record.opensearch_custom_domain.fqdn}/_dashboards/_opendistro/_security/saml/acs"]
   logo_uri  = "https://ministryofjustice.github.io/assets/moj-crest.png"
   addons {
     samlp {
-      audience    = "https://${aws_opensearch_domain.live_modsec_audit.endpoint}"
-      destination = "https://${aws_opensearch_domain.live_modsec_audit.endpoint}/_dashboards/_opendistro/_security/saml/acs"
+      audience    = "https://${aws_route53_record.opensearch_custom_domain.fqdn}"
+      destination = "https://${aws_route53_record.opensearch_custom_domain.fqdn}/_dashboards/_opendistro/_security/saml/acs"
       mappings = {
         email  = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
         name   = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
