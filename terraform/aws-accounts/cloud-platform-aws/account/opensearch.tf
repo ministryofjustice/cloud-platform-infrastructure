@@ -90,14 +90,10 @@ module "acm" {
   source  = "terraform-aws-modules/acm/aws"
   version = "~> 4.0"
 
-  domain_name = data.aws_route53_zone.cloud_platform_justice_gov_uk.name
+  domain_name = "logs.${data.aws_route53_zone.cloud_platform_justice_gov_uk.name}"
   zone_id     = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
 
   wait_for_validation = false # for use in an automated pipeline set false to avoid waiting for validation to complete or error after a 45 minute timeout.
-
-  subject_alternative_names = [
-    "logs.${data.aws_route53_zone.cloud_platform_justice_gov_uk.name}"
-  ]
 
   tags = {
     Domain = local.live_modsec_audit_domain
