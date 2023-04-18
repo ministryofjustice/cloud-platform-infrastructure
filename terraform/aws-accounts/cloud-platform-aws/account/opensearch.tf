@@ -179,7 +179,7 @@ resource "aws_opensearch_domain" "live_modsec_audit" {
 # add vanity url to cluster 
 resource "aws_route53_record" "opensearch_custom_domain" {
   zone_id = data.aws_route53_zone.et_cloud_platform_justice_gov_uk.zone_id
-  name    = "et-logs"
+  name    = "logs"
   type    = "CNAME"
   ttl     = 600 # 10 mins
 
