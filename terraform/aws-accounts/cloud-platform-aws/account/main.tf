@@ -53,7 +53,7 @@ module "iam" {
 
 # Github SSO
 module "sso" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.2.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.2.8"
 
   auth0_tenant_domain = "justice-cloud-platform.eu.auth0.com"
 }
