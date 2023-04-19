@@ -175,198 +175,198 @@ resource "aws_opensearch_domain" "live_modsec_audit" {
 }
 
 # add vanity url to cluster 
-resource "aws_route53_record" "opensearch_custom_domain" {
-  zone_id = data.aws_route53_zone.et_cloud_platform_justice_gov_uk.zone_id
-  name    = "et-logs"
-  type    = "CNAME"
-  ttl     = 600 # 10 mins
+# resource "aws_route53_record" "opensearch_custom_domain" {
+#   zone_id = data.aws_route53_zone.et_cloud_platform_justice_gov_uk.zone_id
+#   name    = "et-logs"
+#   type    = "CNAME"
+#   ttl     = 600 # 10 mins
 
-  records = [aws_opensearch_domain.live_modsec_audit.endpoint]
-}
+#   records = [aws_opensearch_domain.live_modsec_audit.endpoint]
+# }
 
-resource "aws_opensearch_domain_policy" "live_modsec_audit" {
-  domain_name     = aws_opensearch_domain.live_modsec_audit.domain_name
-  access_policies = data.aws_iam_policy_document.live_modsec_audit.json
-}
+# resource "aws_opensearch_domain_policy" "live_modsec_audit" {
+#   domain_name     = aws_opensearch_domain.live_modsec_audit.domain_name
+#   access_policies = data.aws_iam_policy_document.live_modsec_audit.json
+# }
 
-resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec_audit" {
-  policy_id = "hot-warm-cold-delete"
-  body = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
-    timestamp_field   = var.timestamp_field
-    warm_transition   = var.warm_transition
-    cold_transition   = var.cold_transition
-    delete_transition = var.delete_transition
-    index_pattern     = jsonencode(var.index_pattern_live_modsec_audit)
-  })
+# resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec_audit" {
+#   policy_id = "hot-warm-cold-delete"
+#   body = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
+#     timestamp_field   = var.timestamp_field
+#     warm_transition   = var.warm_transition
+#     cold_transition   = var.cold_transition
+#     delete_transition = var.delete_transition
+#     index_pattern     = jsonencode(var.index_pattern_live_modsec_audit)
+#   })
 
-  depends_on = [
-    aws_opensearch_domain_saml_options.live_modsec_audit,
-  ]
-}
+#   depends_on = [
+#     aws_opensearch_domain_saml_options.live_modsec_audit,
+#   ]
+# }
 
 ### AWS Opensearch SAML -- client, rule, metadata and configure opensearch
-resource "auth0_client" "opensearch" {
-  name                       = "AWS Opensearch SAML for ${data.aws_iam_account_alias.current.account_alias}"
-  description                = "Github SAML provider for cloud-platform-ephemeral-test"
-  app_type                   = "spa"
-  custom_login_page_on       = true
-  is_first_party             = true
-  token_endpoint_auth_method = "none"
+# resource "auth0_client" "opensearch" {
+#   name                       = "AWS Opensearch SAML for ${data.aws_iam_account_alias.current.account_alias}"
+#   description                = "Github SAML provider for cloud-platform-ephemeral-test"
+#   app_type                   = "spa"
+#   custom_login_page_on       = true
+#   is_first_party             = true
+#   token_endpoint_auth_method = "none"
 
-  callbacks = ["https://${aws_route53_record.opensearch_custom_domain.fqdn}/_dashboards/_opendistro/_security/saml/acs"]
-  logo_uri  = "https://ministryofjustice.github.io/assets/moj-crest.png"
-  addons {
-    samlp {
-      audience    = "https://${aws_route53_record.opensearch_custom_domain.fqdn}"
-      destination = "https://${aws_route53_record.opensearch_custom_domain.fqdn}/_dashboards/_opendistro/_security/saml/acs"
-      mappings = {
-        email  = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-        name   = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-        groups = "http://schemas.xmlsoap.org/claims/Group"
-      }
-      include_attribute_name_format      = false
-      create_upn_claim                   = false
-      passthrough_claims_with_no_mapping = false
-      map_unknown_claims_as_is           = false
-      map_identities                     = false
-      name_identifier_format             = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
-      name_identifier_probes             = ["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]
-      lifetime_in_seconds                = 36000
-    }
-  }
-}
+#   callbacks = ["https://${aws_route53_record.opensearch_custom_domain.fqdn}/_dashboards/_opendistro/_security/saml/acs"]
+#   logo_uri  = "https://ministryofjustice.github.io/assets/moj-crest.png"
+#   addons {
+#     samlp {
+#       audience    = "https://${aws_route53_record.opensearch_custom_domain.fqdn}"
+#       destination = "https://${aws_route53_record.opensearch_custom_domain.fqdn}/_dashboards/_opendistro/_security/saml/acs"
+#       mappings = {
+#         email  = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
+#         name   = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
+#         groups = "http://schemas.xmlsoap.org/claims/Group"
+#       }
+#       include_attribute_name_format      = false
+#       create_upn_claim                   = false
+#       passthrough_claims_with_no_mapping = false
+#       map_unknown_claims_as_is           = false
+#       map_identities                     = false
+#       name_identifier_format             = "urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress"
+#       name_identifier_probes             = ["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"]
+#       lifetime_in_seconds                = 36000
+#     }
+#   }
+# }
 
-resource "auth0_rule" "add-github-teams-to-opensearch-saml" {
-  name = "add-github-teams-to-opensearch-saml"
-  script = file(
-    "${path.module}/resources/auth0-rules/add-github-teams-to-opensearch-saml.js",
-  )
-  order   = 40
-  enabled = true
-}
+# resource "auth0_rule" "add-github-teams-to-opensearch-saml" {
+#   name = "add-github-teams-to-opensearch-saml"
+#   script = file(
+#     "${path.module}/resources/auth0-rules/add-github-teams-to-opensearch-saml.js",
+#   )
+#   order   = 40
+#   enabled = true
+# }
 
-resource "auth0_rule_config" "opensearch-app-client-id" {
-  key   = "OPENSEARCH_APP_CLIENT_ID"
-  value = auth0_client.opensearch.client_id
-}
+# resource "auth0_rule_config" "opensearch-app-client-id" {
+#   key   = "OPENSEARCH_APP_CLIENT_ID"
+#   value = auth0_client.opensearch.client_id
+# }
 
-data "curl" "saml_metadata" {
-  http_method = "GET"
-  uri         = "https://${var.auth0_tenant_domain}/samlp/metadata/${auth0_client.opensearch.client_id}"
-}
+# data "curl" "saml_metadata" {
+#   http_method = "GET"
+#   uri         = "https://${var.auth0_tenant_domain}/samlp/metadata/${auth0_client.opensearch.client_id}"
+# }
 
-resource "aws_opensearch_domain_saml_options" "live_modsec_audit" {
-  domain_name = aws_opensearch_domain.live_modsec_audit.domain_name
-  saml_options {
-    enabled = true
-    idp {
-      entity_id        = "urn:${var.auth0_tenant_domain}"
-      metadata_content = data.curl.saml_metadata.response
+# resource "aws_opensearch_domain_saml_options" "live_modsec_audit" {
+#   domain_name = aws_opensearch_domain.live_modsec_audit.domain_name
+#   saml_options {
+#     enabled = true
+#     idp {
+#       entity_id        = "urn:${var.auth0_tenant_domain}"
+#       metadata_content = data.curl.saml_metadata.response
 
-    }
-    master_backend_role = aws_iam_role.os_access_role.arn
-    master_user_name    = aws_iam_role.os_access_role.arn
-    roles_key           = "http://schemas.xmlsoap.org/claims/Group"
-  }
-}
+#     }
+#     master_backend_role = aws_iam_role.os_access_role.arn
+#     master_user_name    = aws_iam_role.os_access_role.arn
+#     roles_key           = "http://schemas.xmlsoap.org/claims/Group"
+#   }
+# }
 
-data "aws_eks_node_groups" "current" {
-  cluster_name = "pk-test-01" // change to the cluster you need -- note there is no terraform.workspace at the account level
-}
+# data "aws_eks_node_groups" "current" {
+#   cluster_name = "pk-test-01" // change to the cluster you need -- note there is no terraform.workspace at the account level
+# }
 
-data "aws_eks_node_group" "current" {
-  for_each = data.aws_eks_node_groups.current.names
+# data "aws_eks_node_group" "current" {
+#   for_each = data.aws_eks_node_groups.current.names
 
-  cluster_name    = "pk-test-01"
-  node_group_name = each.value
-}
+#   cluster_name    = "pk-test-01"
+#   node_group_name = each.value
+# }
 
-# Create a role mapping
-resource "elasticsearch_opensearch_roles_mapping" "all_access" {
-  role_name   = "all_access"
-  description = "Mapping AWS IAM roles to ES role all_access"
-  backend_roles = concat([
-    "webops",
-    aws_iam_role.os_access_role.arn,
-  ], values(data.aws_eks_node_group.current)[*].node_role_arn)
-  depends_on = [
-    aws_opensearch_domain_saml_options.live_modsec_audit,
-  ]
-}
+# # Create a role mapping
+# resource "elasticsearch_opensearch_roles_mapping" "all_access" {
+#   role_name   = "all_access"
+#   description = "Mapping AWS IAM roles to ES role all_access"
+#   backend_roles = concat([
+#     "webops",
+#     aws_iam_role.os_access_role.arn,
+#   ], values(data.aws_eks_node_group.current)[*].node_role_arn)
+#   depends_on = [
+#     aws_opensearch_domain_saml_options.live_modsec_audit,
+#   ]
+# }
 
-resource "elasticsearch_opensearch_roles_mapping" "security_manager" {
-  role_name   = "security_manager"
-  description = "Mapping AWS IAM roles to ES role security_manager"
-  backend_roles = [
-    "webops",
-    aws_iam_role.os_access_role.arn,
-  ]
-  depends_on = [
-    aws_opensearch_domain_saml_options.live_modsec_audit,
-  ]
-}
+# resource "elasticsearch_opensearch_roles_mapping" "security_manager" {
+#   role_name   = "security_manager"
+#   description = "Mapping AWS IAM roles to ES role security_manager"
+#   backend_roles = [
+#     "webops",
+#     aws_iam_role.os_access_role.arn,
+#   ]
+#   depends_on = [
+#     aws_opensearch_domain_saml_options.live_modsec_audit,
+#   ]
+# }
 
-# Prevent document security overriding webops role by explicitly allowing webops to view all
-resource "elasticsearch_opensearch_role" "webops" {
-  role_name   = "webops"
-  description = "role for all webops github users"
+# # Prevent document security overriding webops role by explicitly allowing webops to view all
+# resource "elasticsearch_opensearch_role" "webops" {
+#   role_name   = "webops"
+#   description = "role for all webops github users"
 
-  cluster_permissions = ["*"]
+#   cluster_permissions = ["*"]
 
-  index_permissions {
-    index_patterns          = ["*"]
-    allowed_actions         = ["cluster_all", "indices_all", "unlimited"]
-    document_level_security = "{\"match_all\": {}}"
-  }
+#   index_permissions {
+#     index_patterns          = ["*"]
+#     allowed_actions         = ["cluster_all", "indices_all", "unlimited"]
+#     document_level_security = "{\"match_all\": {}}"
+#   }
 
-  tenant_permissions {
-    tenant_patterns = ["global_tenant"]
-    allowed_actions = ["kibana_all_write"]
-  }
-}
+#   tenant_permissions {
+#     tenant_patterns = ["global_tenant"]
+#     allowed_actions = ["kibana_all_write"]
+#   }
+# }
 
-resource "elasticsearch_opensearch_roles_mapping" "webops" {
-  role_name     = "webops"
-  description   = "Mapping AWS IAM roles to ES role webops"
-  backend_roles = ["webops"]
-  depends_on = [
-    aws_opensearch_domain_saml_options.live_modsec_audit,
-    elasticsearch_opensearch_role.webops
-  ]
-}
+# resource "elasticsearch_opensearch_roles_mapping" "webops" {
+#   role_name     = "webops"
+#   description   = "Mapping AWS IAM roles to ES role webops"
+#   backend_roles = ["webops"]
+#   depends_on = [
+#     aws_opensearch_domain_saml_options.live_modsec_audit,
+#     elasticsearch_opensearch_role.webops
+#   ]
+# }
 
-# Create a role that restricts users from viewing documents for teams they are not members of
-resource "elasticsearch_opensearch_role" "all_org_members" {
-  role_name   = "all_org_members"
-  description = "role for all moj github users"
+# # Create a role that restricts users from viewing documents for teams they are not members of
+# resource "elasticsearch_opensearch_role" "all_org_members" {
+#   role_name   = "all_org_members"
+#   description = "role for all moj github users"
 
-  cluster_permissions = ["search", "data_access", "read", "opensearch_dashboards_all_read", "get"]
+#   cluster_permissions = ["search", "data_access", "read", "opensearch_dashboards_all_read", "get"]
 
-  index_permissions {
-    index_patterns  = ["*"]
-    allowed_actions = ["read", "search", "data_access"]
-  }
+#   index_permissions {
+#     index_patterns  = ["*"]
+#     allowed_actions = ["read", "search", "data_access"]
+#   }
 
-  index_permissions {
-    index_patterns  = ["live_k8s_modsec_ingress-*"]
-    allowed_actions = ["read", "search", "data_access"]
+#   index_permissions {
+#     index_patterns  = ["live_k8s_modsec_ingress-*"]
+#     allowed_actions = ["read", "search", "data_access"]
 
-    document_level_security = "{\"terms\": { \"github_teams.keyword\": [$${user.roles}]}}"
-  }
+#     document_level_security = "{\"terms\": { \"github_teams.keyword\": [$${user.roles}]}}"
+#   }
 
-  tenant_permissions {
-    tenant_patterns = ["global_tenant"]
-    allowed_actions = ["kibana_all_read"]
-  }
-}
+#   tenant_permissions {
+#     tenant_patterns = ["global_tenant"]
+#     allowed_actions = ["kibana_all_read"]
+#   }
+# }
 
-resource "elasticsearch_opensearch_roles_mapping" "all_org_members" {
-  role_name     = "all_org_members"
-  description   = "Mapping AWS IAM roles to ES role all_org_members"
-  backend_roles = ["all-org-members"]
-  depends_on = [
-    aws_opensearch_domain_saml_options.live_modsec_audit,
-    elasticsearch_opensearch_role.all_org_members
-  ]
-}
+# resource "elasticsearch_opensearch_roles_mapping" "all_org_members" {
+#   role_name     = "all_org_members"
+#   description   = "Mapping AWS IAM roles to ES role all_org_members"
+#   backend_roles = ["all-org-members"]
+#   depends_on = [
+#     aws_opensearch_domain_saml_options.live_modsec_audit,
+#     elasticsearch_opensearch_role.all_org_members
+#   ]
+# }
 
