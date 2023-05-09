@@ -23,6 +23,16 @@ data "terraform_remote_state" "global" {
 
 provider "aws" {
   region = "eu-west-2"
+
+  default_tags {
+    tags = {
+      business-unit = "Platforms"
+      application   = "cloud-platform-aws/vpc/eks"
+      is-production = "false"
+      owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+    }
+  }
 }
 
 # Check module source: https://github.com/ministryofjustice/cloud-platform-terraform-auth0
@@ -124,6 +134,8 @@ module "auth0" {
 }
 
 resource "aws_eks_identity_provider_config" "oidc_associate" {
+  // Install OIDC provider on each cluster but offer the option to disable it.
+  count        = var.enable_oidc_associate ? 1 : 0
   cluster_name = terraform.workspace
   depends_on   = [module.eks.cluster_id]
   oidc {

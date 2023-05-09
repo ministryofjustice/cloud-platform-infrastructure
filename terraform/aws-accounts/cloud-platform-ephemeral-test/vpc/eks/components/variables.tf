@@ -37,3 +37,14 @@ variable "elasticsearch_audit_hosts_maps" {
     live    = string
   })
 }
+
+
+variable "dockerhub_username" {
+  type        = string
+  description = "DockerHub username"
+}
+
+variable "dockerhub_password" {
+  type        = string
+  description = "DockerHub password"
+}

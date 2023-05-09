@@ -6,7 +6,6 @@ data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
 
-
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
@@ -21,46 +20,57 @@ locals {
   # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler)
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/835
   node_groups_count = {
-    live    = "42"
+    live    = "54"
+    live-2  = "7"
     manager = "4"
     default = "3"
   }
+  # Default node group minimum capacity 
+  default_ng_min_count = {
+    live    = "42"
+    live-2  = "7"
+    manager = "4"
+    default = "2"
+  }
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.21"
-    manager = "1.21"
-    default = "1.21"
+    live    = "1.23"
+    live-2  = "1.23"
+    manager = "1.23"
+    default = "1.23"
   }
   node_size = {
     live    = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
+    live-2  = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
     manager = ["m5.xlarge", "m5.2xlarge", "m5a.xlarge"]
     default = ["m5.large", "m5.xlarge", "m5a.large"]
   }
 
   monitoring_node_size = {
     live    = ["r4.2xlarge", "r5.2xlarge"]
+    live-2  = ["r4.2xlarge", "r5.2xlarge"]
     manager = ["t3.medium", "t2.medium"]
     default = ["t3.medium", "t2.medium"]
   }
 
-  default_ng = {
+  dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
+  default_ng_12_22 = {
     desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_capacity         = 60
-    min_capacity         = 1
+    max_capacity         = 85
+    min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
     subnets              = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
     kubelet_extra_args   = "--max-pods=110"
 
     create_launch_template = true
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
-      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
+      dockerhub_credentials = local.dockerhub_credentials
     })
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
     k8s_labels = {
       Terraform = "true"
       Cluster   = terraform.workspace
-      Domain    = local.cluster_base_domain_name
     }
     additional_tags = {
       default_ng    = "true"
@@ -72,12 +82,12 @@ locals {
   monitoring_ng = {
     desired_capacity = 2
     max_capacity     = 3
-    min_capacity     = 1
+    min_capacity     = 2
     subnets          = data.aws_subnets.private_zone_2b.ids
 
     create_launch_template = true
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
-      dockerhub_credentials = base64encode("${var.dockerhub_user}:${var.dockerhub_token}")
+      dockerhub_credentials = local.dockerhub_credentials
     })
 
     instance_types = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
@@ -85,7 +95,6 @@ locals {
       Terraform                                     = "true"
       "cloud-platform.justice.gov.uk/monitoring-ng" = "true"
       Cluster                                       = terraform.workspace
-      Domain                                        = local.cluster_base_domain_name
     }
     additional_tags = {
       monitoring_ng = "true"
@@ -104,7 +113,6 @@ locals {
   tags = {
     Terraform = "true"
     Cluster   = terraform.workspace
-    Domain    = local.cluster_base_domain_name
   }
 
 }
@@ -124,12 +132,12 @@ module "eks" {
   wait_for_cluster_timeout      = "900"
 
   node_groups = {
-    default_ng    = local.default_ng
-    monitoring_ng = local.monitoring_ng
+    default_ng_12_22 = local.default_ng_12_22
+    monitoring_ng    = local.monitoring_ng
   }
 
   # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
-  workers_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+  workers_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore","arn:aws:iam::aws:policy/AmazonOpenSearchServiceFullAccess"]
 
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
@@ -178,6 +186,16 @@ module "eks" {
       userarn  = "arn:aws:iam::754256621582:user/JaskaranSarkaria"
       username = "JaskaranSarkaria"
       groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/TomSmith"
+      username = "TomSmith"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/cloud-platform/manager-concourse"
+      username = "manager-concourse"
+      groups   = ["system:masters"]
     }
   ]
 
@@ -188,7 +206,7 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.2.1"
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.4.0"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
