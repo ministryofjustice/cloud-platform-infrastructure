@@ -23,9 +23,9 @@ provider "aws" {
   }
 }
 
-data "aws_caller_identity" "current" {}
-data "aws_iam_account_alias" "current" {}
-data "aws_region" "current" {}
+# data "aws_caller_identity" "current" {}
+# data "aws_iam_account_alias" "current" {}
+# data "aws_region" "current" {}
 
 ###########################
 # Security Baseguidelines #
@@ -53,7 +53,7 @@ module "iam" {
 }
 
 module "sso" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.2.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.3.0"
 
   auth0_tenant_domain = "moj-cloud-platforms-dev.eu.auth0.com"
 }
