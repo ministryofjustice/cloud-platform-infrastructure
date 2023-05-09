@@ -46,7 +46,7 @@ data "aws_region" "current" {}
 
 # IAM configuration for cloud-platform. Users, groups, OIDC providers etc
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.21"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.22"
 
   aws_account_name = "cloud-platform-aws"
 }
