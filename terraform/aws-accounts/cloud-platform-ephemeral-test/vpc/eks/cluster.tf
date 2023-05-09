@@ -6,7 +6,6 @@ data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
 
-
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
@@ -29,23 +28,27 @@ locals {
   # Default node group minimum capacity 
   default_ng_min_count = {
     live    = "42"
+    live-2  = "7"
     manager = "4"
     default = "2"
   }
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.22"
-    manager = "1.22"
-    default = "1.22"
+    live    = "1.23"
+    live-2  = "1.23"
+    manager = "1.23"
+    default = "1.23"
   }
   node_size = {
     live    = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
+    live-2  = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
     manager = ["m5.xlarge", "m5.2xlarge", "m5a.xlarge"]
     default = ["m5.large", "m5.xlarge", "m5a.large"]
   }
 
   monitoring_node_size = {
     live    = ["r4.2xlarge", "r5.2xlarge"]
+    live-2  = ["r4.2xlarge", "r5.2xlarge"]
     manager = ["t3.medium", "t2.medium"]
     default = ["t3.medium", "t2.medium"]
   }
