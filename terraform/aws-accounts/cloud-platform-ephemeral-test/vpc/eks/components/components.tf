@@ -45,7 +45,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=add-namespace-to-modsec-logs"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.2.4"
 
   replica_count          = "6"
   controller_name        = "modsec"
