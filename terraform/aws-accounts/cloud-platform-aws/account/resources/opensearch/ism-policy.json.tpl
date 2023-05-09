@@ -45,7 +45,6 @@
                             "end_time": null,
                             "ignore": "none",
                             "start_time": null
-
                         },
                         "retry": {
                             "count": 3,
@@ -86,3 +85,4 @@
         ]
     }
 }
+

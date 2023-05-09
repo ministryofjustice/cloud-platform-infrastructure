@@ -8,20 +8,31 @@ terraform {
   }
 }
 
-provider "github" {}
-
 provider "aws" {
-  region = "eu-west-2"
+  region  = "eu-west-2"
+  profile = "moj-et"
+
+  default_tags {
+    tags = {
+      business-unit = "Platforms"
+      application   = "cloud-platform-ephemeral-test/account"
+      is-production = "false"
+      owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+    }
+  }
 }
 
-data "aws_caller_identity" "current" {}
+# data "aws_caller_identity" "current" {}
+# data "aws_iam_account_alias" "current" {}
+# data "aws_region" "current" {}
 
 ###########################
 # Security Baseguidelines #
 ###########################
 
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.12"
 
   enable_logging           = true
   enable_slack_integration = true
@@ -36,15 +47,14 @@ module "baselines" {
 #######
 
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.14"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.20"
 
   aws_account_name = "cloud-platform-ephemeral-test"
 }
 
 module "sso" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.3.0"
 
-  aws_account_id      = data.aws_caller_identity.current.account_id
   auth0_tenant_domain = "moj-cloud-platforms-dev.eu.auth0.com"
 }
 
@@ -55,20 +65,4 @@ module "sso" {
 # New parent DNS zone for clusters
 resource "aws_route53_zone" "aws_account_hostzone_id" {
   name = "et.cloud-platform.service.justice.gov.uk."
-}
-
-###################
-# Automated tests #
-###################
-
-# This module creates an AWS user and injest AWS_* keys within the specified 
-# GH repos in order to be used by the GH actions to execute unit-tests
-module "terratest" {
-  count  = 0
-  source = "./modules/automated-tests"
-
-  github_repositories = [
-    "cloud-platform-terraform-ecr-credentials",
-    "cloud-platform-terraform-sqs",
-  ]
 }

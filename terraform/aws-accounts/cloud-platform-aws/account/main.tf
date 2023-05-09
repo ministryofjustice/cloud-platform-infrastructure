@@ -40,16 +40,20 @@ provider "aws" {
   }
 }
 
-# IAM configuration for cloud-platform. Users, groups, etc
+data "aws_caller_identity" "current" {}
+data "aws_iam_account_alias" "current" {}
+data "aws_region" "current" {}
+
+# IAM configuration for cloud-platform. Users, groups, OIDC providers etc
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.20"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.21"
 
   aws_account_name = "cloud-platform-aws"
 }
 
 # Github SSO
 module "sso" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.2.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.2.8"
 
   auth0_tenant_domain = "justice-cloud-platform.eu.auth0.com"
 }

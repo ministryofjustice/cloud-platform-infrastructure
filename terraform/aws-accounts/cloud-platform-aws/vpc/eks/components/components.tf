@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.11.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.14.0"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -81,7 +81,7 @@ module "external_dns" {
 
 
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.2.4"
 
   replica_count       = "6"
   controller_name     = "default"
@@ -99,7 +99,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.2.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.2.4"
 
   replica_count          = "6"
   controller_name        = "modsec"
@@ -129,16 +129,17 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.4.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.6.6"
 
-  elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
-  elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
-  dependence_prometheus    = module.monitoring.prometheus_operator_crds_status
-  enable_curator_cronjob   = terraform.workspace == "live" ? true : false
+  elasticsearch_host              = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
+  elasticsearch_audit_host        = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
+  elasticsearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
+  dependence_prometheus           = module.monitoring.prometheus_operator_crds_status
+  enable_curator_cronjob          = terraform.workspace == "live" ? true : false
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.6.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.6.1"
 
   alertmanager_slack_receivers               = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config                           = local.enable_alerts ? var.pagerduty_config : "dummy"
