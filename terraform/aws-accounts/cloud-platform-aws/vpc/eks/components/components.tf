@@ -84,7 +84,7 @@ module "external_secrets_operator" {
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
-  secrets_prefix = lookup(local.live_workspace, terraform.workspace, false) ? "live" : "nonlive"
+  secrets_prefix = terraform.workspace
 }
 module "ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.2.4"
