@@ -80,11 +80,11 @@ module "external_dns" {
 }
 
 module "external_secrets_operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-secrets-operator?ref=0.0.1"
+  source                      = "github.com/ministryofjustice/cloud-platform-terraform-external-secrets-operator?ref=0.0.1"
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
-  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
-  secrets_prefix = terraform.workspace
+  secrets_prefix              = terraform.workspace
 }
 module "ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.2.4"
