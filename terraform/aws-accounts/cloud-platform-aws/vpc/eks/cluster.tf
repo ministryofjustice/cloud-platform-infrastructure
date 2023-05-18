@@ -44,14 +44,14 @@ locals {
     live    = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
     live-2  = ["r5.xlarge", "r5.2xlarge", "r5a.xlarge"]
     manager = ["m5.xlarge", "m5.2xlarge", "m5a.xlarge"]
-    default = ["m5.large", "m5.xlarge", "m5a.large"]
+    default = ["m6a.large", "m6a.xlarge", "m6i.large"]
   }
 
   monitoring_node_size = {
     live    = ["r4.2xlarge", "r5.2xlarge"]
     live-2  = ["r4.2xlarge", "r5.2xlarge"]
     manager = ["t3.medium", "t2.medium"]
-    default = ["t3.medium", "t2.medium"]
+    default = ["t3a.medium", "t3.medium"]
   }
 
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
