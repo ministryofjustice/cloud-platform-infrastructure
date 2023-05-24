@@ -20,6 +20,7 @@ locals {
 
   live_2_domain = "cloud-platform-live-2"
 
+  # for tests, use something like merge(local.allowed_live_1_ips, { "88.98.227.149" = "test" })
   allowed_live_1_ips = {
     "35.177.252.54/32"  = "live-1-b"
     "35.178.209.113/32" = "live-1-a"
@@ -33,9 +34,6 @@ locals {
   }
 
   audit_live_domain = "cloud-platform-audit-live"
-
-  allowed_audit_1_ips = local.allowed_live_1_ips
-  # for tests, use something like merge(local.allowed_live_1_ips, { "88.98.227.149" = "test" })
 
   allowed_audit_live_ips = local.allowed_live_1_ips
 
