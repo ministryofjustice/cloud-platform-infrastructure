@@ -30,21 +30,6 @@ variable "elasticsearch_hosts_maps" {
   })
 }
 
-variable "elasticsearch_audit_hosts_maps" {
-  description = "Cloud Platform audit ElasticSearch hosts for each Terraform workspace"
-
-  default = {
-    manager = "search-cloud-platform-audit-live-hfclvgaq73cul7ku362rvigti4.eu-west-2.es.amazonaws.com"
-    live    = "search-cloud-platform-audit-live-hfclvgaq73cul7ku362rvigti4.eu-west-2.es.amazonaws.com"
-  }
-
-  type = object({
-    manager = string
-    live    = string
-  })
-}
-
-
 variable "elasticsearch_modsec_audit_hosts_maps" {
   description = "Cloud Platform ModSec audit Opensearch hosts for each Terraform workspace"
 
