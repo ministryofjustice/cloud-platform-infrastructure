@@ -33,10 +33,6 @@ locals {
     "35.178.11.229"  = "live-2-c"
   }
 
-  audit_live_domain = "cloud-platform-audit-live"
-
-  allowed_audit_live_ips = local.allowed_live_1_ips
-
   test_domain = "cloud-platform-test"
 
   allowed_test_ips = {
@@ -164,88 +160,6 @@ data "template_file" "ism_policy" {
   })
 }
 
-data "aws_iam_policy_document" "audit_live" {
-  statement {
-    actions = [
-      "es:AddTags",
-      "es:ESHttpHead",
-      "es:DescribeElasticsearchDomain",
-      "es:ESHttpPost",
-      "es:ESHttpGet",
-      "es:ESHttpPut",
-      "es:DescribeElasticsearchDomainConfig",
-      "es:ListTags",
-      "es:DescribeElasticsearchDomains",
-      "es:ListDomainNames",
-      "es:ListElasticsearchInstanceTypes",
-      "es:DescribeElasticsearchInstanceTypeLimits",
-      "es:ListElasticsearchVersions"
-    ]
-
-    resources = [
-      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.audit_live_domain}/*",
-    ]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-
-    condition {
-      test     = "IpAddress"
-      variable = "aws:SourceIp"
-
-      values = keys(local.allowed_audit_live_ips)
-    }
-  }
-}
-
-# audit cluster for live
-resource "aws_elasticsearch_domain" "audit_live" {
-  domain_name           = local.audit_live_domain
-  provider              = aws.cloud-platform
-  elasticsearch_version = "OpenSearch_1.0"
-
-  cluster_config {
-    instance_type            = "m6g.large.elasticsearch"
-    instance_count           = "2"
-    dedicated_master_enabled = true
-    dedicated_master_type    = "r6g.large.elasticsearch"
-    dedicated_master_count   = "2"
-    warm_count               = 2
-    warm_enabled             = true
-    warm_type                = "ultrawarm1.medium.elasticsearch"
-  }
-
-  ebs_options {
-    ebs_enabled = "true"
-    volume_type = "gp3"
-    volume_size = "1024"
-    iops        = 3000
-  }
-
-  advanced_options = {
-    "rest.action.multi.allow_explicit_index" = "true"
-    "override_main_response_version"         = "false"
-  }
-
-  access_policies = data.aws_iam_policy_document.audit_live.json
-
-  snapshot_options {
-    automated_snapshot_start_hour = 23
-  }
-
-  tags = {
-    Domain = local.audit_live_domain
-  }
-
-  log_publishing_options {
-    cloudwatch_log_group_arn = "arn:aws:logs:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:log-group:/aws/OpenSearchService/domains/${local.audit_live_domain}/application-logs"
-    enabled                  = true
-    log_type                 = "ES_APPLICATION_LOGS"
-  }
-}
-
 # This is ignored as it provides a convenient IAM policy document for test ElasticSearch clusters
 # tflint-ignore: terraform_unused_declarations
 data "aws_iam_policy_document" "test" {
@@ -284,16 +198,6 @@ module "live_elasticsearch_monitoring" {
   sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
 
   alarm_cluster_status_is_yellow_periods = 10
-}
-
-module "audit_live_elasticsearch_monitoring" {
-  source  = "dubiety/elasticsearch-cloudwatch-sns-alarms/aws"
-  version = "3.0.3"
-
-  alarm_name_prefix = "cloud-platform-audit-live-"
-  domain_name       = local.audit_live_domain
-  create_sns_topic  = false
-  sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
 }
 
 # This is the OpenSearch cluster for live-2
