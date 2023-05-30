@@ -135,13 +135,11 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.6.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.7.0"
 
   elasticsearch_host              = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
-  elasticsearch_audit_host        = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   dependence_prometheus           = module.monitoring.prometheus_operator_crds_status
-  enable_curator_cronjob          = terraform.workspace == "live" ? true : false
 }
 
 module "monitoring" {
