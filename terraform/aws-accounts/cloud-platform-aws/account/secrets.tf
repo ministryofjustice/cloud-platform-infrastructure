@@ -18,3 +18,8 @@ resource "aws_secretsmanager_secret_version" "circleci" {
     ignore_changes = [secret_string]
   }
 }
+
+# Data call to fetch changed value
+data "aws_secretsmanager_secret_version" "circleci" {
+  secret_id = aws_secretsmanager_secret.circleci.id
+}
