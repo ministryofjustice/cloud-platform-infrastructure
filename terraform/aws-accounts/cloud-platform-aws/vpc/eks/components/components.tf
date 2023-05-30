@@ -199,7 +199,7 @@ module "velero" {
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
-  restic_cpu_requests         = "100m"
+  restic_cpu_requests         = "2m"
 }
 
 module "kuberhealthy" {
