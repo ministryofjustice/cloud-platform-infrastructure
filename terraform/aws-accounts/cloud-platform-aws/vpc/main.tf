@@ -54,22 +54,30 @@ locals {
 #######
 
 module "vpc" {
-  version = "3.18.1"
+  version = "5.0.0"
   source  = "terraform-aws-modules/vpc/aws"
 
-  name = local.vpc_name
-  cidr = lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"])
-  azs  = var.availability_zones
+  name                    = local.vpc_name
+  cidr                    = lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"])
+  azs                     = var.availability_zones
+  map_public_ip_on_launch = true
+
   private_subnets = [
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 1),
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 2),
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 3)
   ]
+
   public_subnets = [
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 6, 0),
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 6, 1),
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 6, 2)
   ]
+
+  manage_default_network_acl    = false
+  manage_default_route_table    = false
+  manage_default_security_group = false
+
   enable_nat_gateway   = true
   enable_vpn_gateway   = false
   enable_dns_hostnames = true
