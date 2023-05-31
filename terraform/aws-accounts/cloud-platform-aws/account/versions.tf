@@ -6,7 +6,7 @@ terraform {
     }
     auth0 = {
       source  = "auth0/auth0"
-      version = "~> 0.35.0"
+      version = "~> 0.48.0"
     }
     external = {
       source  = "hashicorp/external"
