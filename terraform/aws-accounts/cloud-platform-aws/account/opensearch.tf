@@ -248,7 +248,7 @@ resource "auth0_rule_config" "opensearch-app-client-id" {
 }
 
 data "http" "saml_metadata" {
-  uri    = "https://${var.auth0_tenant_domain}/samlp/metadata/${auth0_client.opensearch.client_id}"
+  url    = "https://${var.auth0_tenant_domain}/samlp/metadata/${auth0_client.opensearch.client_id}"
   method = "GET"
 }
 
