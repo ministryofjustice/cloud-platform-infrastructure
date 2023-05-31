@@ -247,20 +247,21 @@ resource "auth0_rule_config" "opensearch-app-client-id" {
   value = auth0_client.opensearch.client_id
 }
 
-data "curl" "saml_metadata" {
-  http_method = "GET"
-  uri         = "https://${var.auth0_tenant_domain}/samlp/metadata/${auth0_client.opensearch.client_id}"
+data "http" "saml_metadata" {
+  uri    = "https://${var.auth0_tenant_domain}/samlp/metadata/${auth0_client.opensearch.client_id}"
+  method = "GET"
 }
 
 resource "aws_opensearch_domain_saml_options" "live_modsec_audit" {
   domain_name = aws_opensearch_domain.live_modsec_audit.domain_name
   saml_options {
     enabled = true
+
     idp {
       entity_id        = "urn:${var.auth0_tenant_domain}"
-      metadata_content = data.curl.saml_metadata.response
-
+      metadata_content = data.http.saml_metadata.response_body
     }
+
     master_backend_role = aws_iam_role.os_access_role.arn
     master_user_name    = aws_iam_role.os_access_role.arn
     roles_key           = "http://schemas.xmlsoap.org/claims/Group"
@@ -268,7 +269,7 @@ resource "aws_opensearch_domain_saml_options" "live_modsec_audit" {
 }
 
 data "aws_eks_node_groups" "current" {
-  cluster_name = "live" // change to the cluster you need -- note there is no terraform.workspace at the account level
+  cluster_name = "live" # change to the cluster you need -- note there is no terraform.workspace at the account level
 }
 
 data "aws_eks_node_group" "current" {
@@ -367,4 +368,3 @@ resource "elasticsearch_opensearch_roles_mapping" "all_org_members" {
     elasticsearch_opensearch_role.all_org_members
   ]
 }
-
