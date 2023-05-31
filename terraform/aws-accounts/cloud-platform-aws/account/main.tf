@@ -98,7 +98,7 @@ resource "aws_route53_record" "cloud_platform_justice_gov_uk_TXT" {
 
 module "s3_bucket_thanos" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.6.0"
+  version = "3.11.0"
 
   bucket = "cloud-platform-prometheus-thanos"
   acl    = "private"
@@ -124,7 +124,7 @@ module "s3_bucket_thanos" {
 
 module "s3_bucket_velero" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "2.14.0" # 2.15 pins to terraform-aws-provider <= 4, so this module needs to be upgraded to 3.6.0, which has some resource changes (which may require manual intervention for terraform state imports)
+  version = "3.11.0" # 2.15 pins to terraform-aws-provider <= 4, so this module needs to be upgraded to 3.11.0, which has some resource changes (which may require manual intervention for terraform state imports)
 
   bucket = "cloud-platform-velero-backups"
   acl    = "private"
@@ -150,7 +150,7 @@ module "s3_bucket_velero" {
 
 module "s3_bucket_kubeconfigs" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.6.0"
+  version = "3.11.0"
 
   bucket = "cloud-platform-concourse-kubeconfig"
   acl    = "private"
