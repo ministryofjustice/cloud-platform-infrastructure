@@ -34,7 +34,7 @@ module "concourse" {
 }
 
 module "cluster_autoscaler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.2.0"
 
   enable_overprovision        = lookup(local.prod_workspace, terraform.workspace, false)
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
