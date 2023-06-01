@@ -146,12 +146,7 @@ resource "aws_elasticsearch_domain" "live_1" {
 
 resource "elasticsearch_opensearch_ism_policy" "ism-policy" {
   policy_id = "hot-warm-cold-delete"
-  body      = data.template_file.ism_policy.rendered
-}
-
-data "template_file" "ism_policy" {
-  template = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
-
+  body = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
     timestamp_field   = var.timestamp_field
     warm_transition   = var.warm_transition
     cold_transition   = var.cold_transition
@@ -286,36 +281,25 @@ resource "aws_elasticsearch_domain" "live-2" {
 
 resource "elasticsearch_opensearch_ism_policy" "ism-policy_live_2" {
   policy_id = "hot-warm-cold-delete"
-  body      = data.template_file.ism_policy_live_2.rendered
-
-  provider = elasticsearch.live-2
-}
-
-data "template_file" "ism_policy_live_2" {
-  template = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
-
+  body = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
     timestamp_field   = var.timestamp_field
     warm_transition   = var.warm_transition
     cold_transition   = var.cold_transition
     delete_transition = var.delete_transition
     index_pattern     = jsonencode(var.index_pattern_live_2)
   })
+
+  provider = elasticsearch.live-2
 }
 
 # Create an index template	
-
-data "template_file" "template_index_kubernetes" {
-  template = templatefile("${path.module}/resources/opensearch/mapping-template.json.tpl", {
-    no_of_shards = "1"
-  })
-}
-
 resource "elasticsearch_index_template" "template_index_kubernetes" {
   name = "test_template"
-  body = data.template_file.template_index_kubernetes.rendered
+  body = templatefile("${path.module}/resources/opensearch/mapping-template.json.tpl", {
+    no_of_shards = "1"
+  })
 
   depends_on = [aws_elasticsearch_domain.live-2]
 
   provider = elasticsearch.live-2
-
 }
