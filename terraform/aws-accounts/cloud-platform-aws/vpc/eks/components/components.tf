@@ -209,7 +209,7 @@ module "kuberhealthy" {
 }
 
 module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.6.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.7.0"
 
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
@@ -217,9 +217,6 @@ module "trivy-operator" {
 
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
-
-  dockerhub_username = var.dockerhub_username
-  dockerhub_password = var.dockerhub_password
 
   job_concurrency_limit = 2
   scan_job_timeout      = "10m"
