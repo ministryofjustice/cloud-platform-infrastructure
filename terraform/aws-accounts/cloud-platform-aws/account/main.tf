@@ -46,7 +46,7 @@ data "aws_region" "current" {}
 
 # IAM configuration for cloud-platform. Users, groups, OIDC providers etc
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.23"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.24"
 
   aws_account_name         = "cloud-platform-aws"
   circleci_organisation_id = jsondecode(data.aws_secretsmanager_secret_version.circleci.secret_string)["organisation_id"]
