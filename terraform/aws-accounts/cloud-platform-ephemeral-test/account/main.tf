@@ -32,7 +32,7 @@ provider "aws" {
 ###########################
 
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.0.12"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.1.0"
 
   enable_logging           = true
   enable_slack_integration = true
