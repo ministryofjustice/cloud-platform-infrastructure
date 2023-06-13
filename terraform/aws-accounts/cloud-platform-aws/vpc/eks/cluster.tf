@@ -195,6 +195,11 @@ module "eks" {
       userarn  = "arn:aws:iam::754256621582:user/cloud-platform/manager-concourse"
       username = "manager-concourse"
       groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/KyTruong"
+      username = "KyTruong"
+      groups   = ["system:masters"]
     }
   ]
 
