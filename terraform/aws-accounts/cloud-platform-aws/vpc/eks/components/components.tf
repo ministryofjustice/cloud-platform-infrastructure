@@ -222,10 +222,10 @@ module "trivy-operator" {
   # ensure report completeness across the cluster
   job_concurrency_limit = 2
   scanner_report_ttl    = "48h"
-  
-  scan_job_timeout      = "10m"
-  trivy_timeout         = "10m0s"
-  severity_list         = "HIGH,CRITICAL"
-  enable_trivy_server   = "true"
+
+  scan_job_timeout    = "10m"
+  trivy_timeout       = "10m0s"
+  severity_list       = "HIGH,CRITICAL"
+  enable_trivy_server = "true"
 }
 
