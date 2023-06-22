@@ -42,8 +42,8 @@ module "cluster_autoscaler" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
   # These values are for tuning live cluster overprovisioner memory and CPU requests
-  live_memory_request         = "1800Mi"
-  live_cpu_request            = "200m"
+  live_memory_request = "1800Mi"
+  live_cpu_request    = "200m"
 
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
