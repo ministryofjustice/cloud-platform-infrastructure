@@ -8,6 +8,11 @@ terraform {
   }
 }
 
+provider "github" {
+  token = var.github_token
+  owner = var.github_owner
+}
+
 provider "aws" {
   region  = "eu-west-2"
   profile = "moj-cp"
