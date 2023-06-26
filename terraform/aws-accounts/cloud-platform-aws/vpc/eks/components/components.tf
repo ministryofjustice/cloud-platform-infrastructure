@@ -185,7 +185,7 @@ module "opa" {
 }
 
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.1.1"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   # boolean expression for applying opa valid hostname for test clusters only.
