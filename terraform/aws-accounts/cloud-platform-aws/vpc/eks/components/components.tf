@@ -185,13 +185,21 @@ module "opa" {
 }
 
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.1.2"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   # boolean expression for applying opa valid hostname for test clusters only.
   # enable_invalid_hostname_policy = terraform.workspace == local.live_workspace ? false : true
-  enable_invalid_hostname_policy = false
-  define_constraints             = false
+  enable_invalid_hostname_policy       = false
+  define_constraints                   = false
+  constraint_violations_max_to_display = 25
+  is_production                        = lookup(local.prod_2_workspace, terraform.workspace, false) ? "true" : "false"
+  environment_name                     = lookup(local.prod_2_workspace, terraform.workspace, false) ? "production" : "development"
+  out_of_hours_alert                   = lookup(local.prod_2_workspace, terraform.workspace, false) ? "true" : "false"
+  controller_mem_limit                 = terraform.workspace == "live" ? "4Gi" : "1Gi"
+  controller_mem_req                   = terraform.workspace == "live" ? "1Gi" : "512Mi"
+  audit_mem_limit                      = terraform.workspace == "live" ? "4Gi" : "1Gi"
+  audit_mem_req                        = terraform.workspace == "live" ? "1Gi" : "512Mi"
 }
 
 module "starter_pack" {
