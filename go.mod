@@ -3,7 +3,7 @@ module github.com/ministryofjustice/cloud-platform-infrastructure
 go 1.18
 
 require (
-	github.com/aws/aws-sdk-go v1.44.286
+	github.com/aws/aws-sdk-go v1.44.291
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/gruntwork-io/terratest v0.41.19
 	github.com/ministryofjustice/cloud-platform-go-library v0.0.0-20220803122921-1ca1153b1730
