@@ -41,7 +41,7 @@ variable "aws_region" {
 
 # variable "index_pattern_live_modsec_audit" {
 #   default = [
-#     "live_modsec_audit_kubernetes_ingress*",
+#     "live_k8s_modsec_ingress-*",
 #   ]
 #   description = "Pattern created in Kibana, policy will apply to matching new indices"
 #   type        = list(string)
