@@ -187,7 +187,7 @@ module "opa" {
 module "gatekeeper" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.0"
 
-  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   dryrun_map                           = { service_type = false, snippet_allowlist = true }
   constraint_violations_max_to_display = 25
   is_production                        = lookup(local.prod_2_workspace, terraform.workspace, false) ? "true" : "false"
