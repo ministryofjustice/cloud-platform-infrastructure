@@ -173,7 +173,7 @@ module "monitoring" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.5.2"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.5.4"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -188,7 +188,7 @@ module "gatekeeper" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.0"
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  dryrun_map                           = { service_type = false, snippet_allowlist = true }
+  dryrun_map                           = { service_type = false, snippet_allowlist = false }
   constraint_violations_max_to_display = 25
   is_production                        = lookup(local.prod_2_workspace, terraform.workspace, false) ? "true" : "false"
   environment_name                     = lookup(local.prod_2_workspace, terraform.workspace, false) ? "production" : "development"
