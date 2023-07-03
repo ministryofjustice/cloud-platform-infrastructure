@@ -4,7 +4,7 @@ variable "slack_config_cloudwatch_lp" {
 }
 
 variable "aws_region" {
-  description = "Region where components and resources are going to be deployed"
+  description = "Region where components and resources are going to be deployed."
   default     = "eu-west-2"
   type        = string
 }
