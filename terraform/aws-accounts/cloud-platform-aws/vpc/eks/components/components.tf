@@ -185,18 +185,32 @@ module "opa" {
 }
 
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.1"
 
-  cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  dryrun_map                           = { service_type = false, snippet_allowlist = false }
+  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  dryrun_map = {
+    service_type               = false,
+    snippet_allowlist          = false,
+    modsec_snippet_nginx_class = true,
+    modsec_nginx_class         = true,
+    ingress_clash              = true,
+    hostname_length            = true,
+    external_dns_identifier    = true,
+    external_dns_weight        = true,
+    valid_hostname             = true
+  }
+
+  cluster_color                        = terraform.workspace == "live" ? "green" : "black"
+  integration_test_zone                = data.aws_route53_zone.integrationtest.name
   constraint_violations_max_to_display = 25
-  is_production                        = lookup(local.prod_2_workspace, terraform.workspace, false) ? "true" : "false"
-  environment_name                     = lookup(local.prod_2_workspace, terraform.workspace, false) ? "production" : "development"
-  out_of_hours_alert                   = lookup(local.prod_2_workspace, terraform.workspace, false) ? "true" : "false"
-  controller_mem_limit                 = terraform.workspace == "live" ? "4Gi" : "1Gi"
-  controller_mem_req                   = terraform.workspace == "live" ? "1Gi" : "512Mi"
-  audit_mem_limit                      = terraform.workspace == "live" ? "4Gi" : "1Gi"
-  audit_mem_req                        = terraform.workspace == "live" ? "1Gi" : "512Mi"
+
+  is_production        = lookup(local.prod_2_workspace, terraform.workspace, false) ? "true" : "false"
+  environment_name     = lookup(local.prod_2_workspace, terraform.workspace, false) ? "production" : "development"
+  out_of_hours_alert   = lookup(local.prod_2_workspace, terraform.workspace, false) ? "true" : "false"
+  controller_mem_limit = terraform.workspace == "live" ? "4Gi" : "1Gi"
+  controller_mem_req   = terraform.workspace == "live" ? "1Gi" : "512Mi"
+  audit_mem_limit      = terraform.workspace == "live" ? "4Gi" : "1Gi"
+  audit_mem_req        = terraform.workspace == "live" ? "1Gi" : "512Mi"
 }
 
 module "starter_pack" {
