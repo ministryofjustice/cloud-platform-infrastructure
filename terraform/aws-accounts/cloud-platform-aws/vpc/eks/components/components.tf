@@ -185,7 +185,7 @@ module "opa" {
 }
 
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.2"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   dryrun_map = {
