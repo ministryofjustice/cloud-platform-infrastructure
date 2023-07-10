@@ -173,7 +173,7 @@ module "monitoring" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.5.4"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.5.5"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name            = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -185,19 +185,20 @@ module "opa" {
 }
 
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.2"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.2"
+  depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   dryrun_map = {
     service_type               = false,
     snippet_allowlist          = false,
-    modsec_snippet_nginx_class = true,
+    modsec_snippet_nginx_class = false,
     modsec_nginx_class         = true,
     ingress_clash              = true,
     hostname_length            = true,
     external_dns_identifier    = true,
     external_dns_weight        = true,
-    valid_hostname             = true
+    valid_hostname             = lookup(local.prod_2_workspace, terraform.workspace, false)
   }
 
   cluster_color                        = terraform.workspace == "live" ? "green" : "black"
