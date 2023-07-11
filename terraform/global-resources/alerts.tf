@@ -1,5 +1,8 @@
 provider "elasticstack" {
-  elasticsearch {}
+  elasticsearch {
+    api_key   = module.secret_manager.secret["elasticsearch_api_key"]
+    endpoints = [module.secret_manager.secret["elasticsearch_endpoint"]]
+  }
 }
 
 resource "elasticstack_elasticsearch_watch" "duplicate_uid" {
@@ -67,6 +70,13 @@ resource "elasticstack_elasticsearch_watch" "duplicate_uid" {
   actions = jsonencode({
     "slack" = {
       "throttle_period" = "60m",
+      "webhook" = {
+        "scheme" = "https",
+        "host" = "hooks.slack.com",
+        "port" = 443,
+        "method" = "POST",
+        "path" = module.secret_manager.secret["slack_webhook_url"]
+      },
       "transform" = {
           "script" = {
             "source" = "return [ 'message' : Duplicate UID detected in Kubernetes cluster {{ctx.metadata.name}}. Please check the logs for more information.]"
@@ -74,7 +84,7 @@ resource "elasticstack_elasticsearch_watch" "duplicate_uid" {
       }
       "slack" = {
         "message" = {
-          "from" = "Elastic Cloud",
+          "from" = "Kibana Alert",
           "to" = ["#cloud-platform-test"],
           "text" = "{{ctx.payload.message}}"
         }
@@ -87,15 +97,6 @@ resource "elasticstack_elasticsearch_watch" "duplicate_uid" {
       "type" = "json"
     }
   })
-
-  depends_on = [ ec_deployment_elasticsearch_keystore.slack ]
-}
-
-resource "ec_deployment_elasticsearch_keystore" "slack" {
-  count = terraform.workspace == "live" ? 1 : 0
-  deployment_id = kubernetes_deployment.aws-es-proxy.id
-  setting_name  = "cloud-platform.kibana-alerts"
-  value         = module.secret_manager.secret["slack_webhook_url"]
 
   depends_on = [ module.secret_manager ]
 }
