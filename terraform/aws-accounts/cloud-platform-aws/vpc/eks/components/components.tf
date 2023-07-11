@@ -182,7 +182,7 @@ module "opa" {
 }
 
 module "gatekeeper" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.2"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.3"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
