@@ -173,19 +173,14 @@ module "monitoring" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.5.8"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.5.9"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
-
-  # Validation for external_dns_weight annotation is enabled only on the "live" cluster
-  enable_external_dns_weight = terraform.workspace == "live" ? true : false
-  cluster_color              = terraform.workspace == "live" ? "green" : "black"
 }
 
 module "gatekeeper" {
   source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.2"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
-  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   dryrun_map = {
     service_type               = false,
     snippet_allowlist          = false,
@@ -193,11 +188,12 @@ module "gatekeeper" {
     modsec_nginx_class         = false,
     ingress_clash              = false,
     hostname_length            = false,
-    external_dns_identifier    = true,
-    external_dns_weight        = true,
+    external_dns_identifier    = terraform.workspace == "live" ? false : true,
+    external_dns_weight        = terraform.workspace == "live" ? false : true,
     valid_hostname             = lookup(local.prod_2_workspace, terraform.workspace, false)
   }
 
+  cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   cluster_color                        = terraform.workspace == "live" ? "green" : "black"
   integration_test_zone                = data.aws_route53_zone.integrationtest.name
   constraint_violations_max_to_display = 25
