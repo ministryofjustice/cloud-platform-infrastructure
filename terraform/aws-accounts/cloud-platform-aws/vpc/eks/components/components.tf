@@ -173,7 +173,7 @@ module "monitoring" {
 }
 
 module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.5.6"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.5.7"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   # Validation for external_dns_weight annotation is enabled only on the "live" cluster
@@ -191,7 +191,7 @@ module "gatekeeper" {
     snippet_allowlist          = false,
     modsec_snippet_nginx_class = false,
     modsec_nginx_class         = false,
-    ingress_clash              = true,
+    ingress_clash              = false,
     hostname_length            = true,
     external_dns_identifier    = true,
     external_dns_weight        = true,
