@@ -3,4 +3,6 @@ output "k8s_oidc_group_claim_domain" {
   sensitive = true
 }
 
-
+output "watch" {
+  value = elasticstack_elasticsearch_watch.duplicate_uid.watch_id
+}
