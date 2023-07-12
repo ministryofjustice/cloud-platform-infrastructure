@@ -8,7 +8,7 @@ locals {
 
   test_domain = "cloud-platform-test"
 
-// Add your IP address to access the cluster using kibana
+  // Add your IP address to access the cluster using kibana
   allowed_test_ips = {
     "213.121.161.124/32" = "102PFWifi"
     "81.134.202.29/32"   = "MoJDigital"
@@ -47,7 +47,7 @@ data "aws_iam_policy_document" "et_test" {
 }
 
 resource "aws_elasticsearch_domain" "et_test" {
-  count = 1
+  count                 = 1
   domain_name           = local.test_domain
   elasticsearch_version = "7.10"
 
@@ -101,7 +101,7 @@ resource "aws_elasticsearch_domain" "et_test" {
 }
 
 resource "elasticsearch_opensearch_ism_policy" "ism-policy" {
-  count = 1
+  count     = 1
   policy_id = "hot-warm-cold-delete"
   body = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
     timestamp_field   = var.timestamp_field
