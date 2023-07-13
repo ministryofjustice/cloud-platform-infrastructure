@@ -225,7 +225,7 @@ module "velero" {
 }
 
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.2.0"
 
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
 }
