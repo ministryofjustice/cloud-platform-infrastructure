@@ -51,47 +51,47 @@ variable "index_pattern_live_2" {
 variable "team_name" {
   type        = string
   description = "Name of the team that owns the application"
-  default = "webops"
+  default     = "webops"
 }
 
 variable "application" {
   type        = string
   description = "Name of the application"
-  default = "global-resources"
+  default     = "global-resources"
 }
 
 variable "business_unit" {
   type        = string
   description = "Name of the business unit that owns the application"
-  default = "Platforms"
+  default     = "Platforms"
 }
 
 variable "is_production" {
   type        = string
   description = "Is this a production application?"
-  default = "true"
+  default     = "true"
 }
 
 variable "namespace" {
   type        = string
   description = "Namespace of the application"
-  default = "monitoring"
+  default     = "monitoring"
 }
 
 variable "environment" {
   type        = string
   description = "Environment of the application"
-  default = "Production"
+  default     = "Production"
 }
 
 variable "infrastructure_support" {
   type        = string
   description = "Name of the team that supports the infrastructure"
-  default = "cloud-platform"
+  default     = "cloud-platform"
 }
 
 variable "eks_cluster_name" {
   type        = string
   description = "Name of the EKS cluster"
-  default = "live"
+  default     = "live"
 }

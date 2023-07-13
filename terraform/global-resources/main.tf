@@ -87,20 +87,20 @@ data "terraform_remote_state" "account" {
 module "secret_manager" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-secrets-manager?ref=2.0.0"
 
-  team_name               = var.team_name
-  application             = var.application
-  business_unit           = var.business_unit
-  is_production           = var.is_production
-  namespace               = var.namespace
-  environment             = var.environment
-  infrastructure_support  = var.infrastructure_support
-  eks_cluster_name        = var.eks_cluster_name
+  team_name              = var.team_name
+  application            = var.application
+  business_unit          = var.business_unit
+  is_production          = var.is_production
+  namespace              = var.namespace
+  environment            = var.environment
+  infrastructure_support = var.infrastructure_support
+  eks_cluster_name       = var.eks_cluster_name
 
   secrets = {
     "slack_webhook_url" = {
       description             = "url used for kibana to post alerts to a channel", // Required
-      recovery_window_in_days = 0, // Required
-      k8s_secret_name         = "slack_webhook_url" // The name of the secret in k8s
+      recovery_window_in_days = 0,                                                 // Required
+      k8s_secret_name         = "slack_webhook_url"                                // The name of the secret in k8s
     },
   }
 }
