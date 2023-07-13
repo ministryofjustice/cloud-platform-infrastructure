@@ -172,11 +172,6 @@ module "monitoring" {
   depends_on = [module.eks_csi]
 }
 
-module "opa" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-opa?ref=0.5.9"
-  depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
-}
-
 module "gatekeeper" {
   source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.5"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
