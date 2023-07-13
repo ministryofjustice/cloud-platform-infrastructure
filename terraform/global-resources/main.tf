@@ -103,15 +103,5 @@ module "secret_manager" {
       recovery_window_in_days = 0, // Required
       k8s_secret_name         = "slack_webhook_url" // The name of the secret in k8s
     },
-    "elasticsearch_api_key" = {
-      description = "api key used for kibana to post alerts to elasticsearch", // Required
-      recovery_window_in_days = 0, // Required
-      k8s_secret_name = "elasticsearch_api_key" // The name of the secret in k8s
-    },
-    "elastic_endpoint" = {
-      description = "endpoint used for kibana to post alerts to elasticsearch", // Required
-      recovery_window_in_days = 0, // Required
-      k8s_secret_name = "elastic_endpoint" // The name of the secret in k8s
-    },
   }
 }
