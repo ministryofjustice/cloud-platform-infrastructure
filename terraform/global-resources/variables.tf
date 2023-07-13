@@ -45,3 +45,53 @@ variable "index_pattern_live_2" {
   description = "Pattern created in Kibana, policy will apply to matching new indices"
   type        = list(string)
 }
+
+
+# secrets manager variables
+variable "team_name" {
+  type        = string
+  description = "Name of the team that owns the application"
+  default = "webops"
+}
+
+variable "application" {
+  type        = string
+  description = "Name of the application"
+  default = "global-resources"
+}
+
+variable "business_unit" {
+  type        = string
+  description = "Name of the business unit that owns the application"
+  default = "Platforms"
+}
+
+variable "is_production" {
+  type        = string
+  description = "Is this a production application?"
+  default = "true"
+}
+
+variable "namespace" {
+  type        = string
+  description = "Namespace of the application"
+  default = "monitoring"
+}
+
+variable "environment" {
+  type        = string
+  description = "Environment of the application"
+  default = "Production"
+}
+
+variable "infrastructure_support" {
+  type        = string
+  description = "Name of the team that supports the infrastructure"
+  default = "cloud-platform"
+}
+
+variable "eks_cluster_name" {
+  type        = string
+  description = "Name of the EKS cluster"
+  default = "live"
+}

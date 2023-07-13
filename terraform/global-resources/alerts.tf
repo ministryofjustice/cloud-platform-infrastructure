@@ -94,7 +94,7 @@ resource "elasticsearch_opensearch_destination" "cloud_platform_alerts" {
   "name": "cloud-platform-alerts",
   "type": "slack",
   "slack": {
-    "url": ${module.secret_manager.secret["slack_webhook_url"]}
+    "url": ${data.aws_secretsmanager_secret_version.slack_webhook_url.secret_string}
   }
 }
 EOF

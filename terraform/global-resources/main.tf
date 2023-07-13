@@ -85,7 +85,6 @@ data "terraform_remote_state" "account" {
 }
 
 module "secret_manager" {
-  count = terraform.workspace == "live" ? 0 : 1
   source = "github.com/ministryofjustice/cloud-platform-terraform-secrets-manager?ref=2.0.0"
 
   team_name               = var.team_name
@@ -95,7 +94,7 @@ module "secret_manager" {
   namespace               = var.namespace
   environment             = var.environment
   infrastructure_support  = var.infrastructure_support
-  eks_cluster_name       = var.eks_cluster_name
+  eks_cluster_name        = var.eks_cluster_name
 
   secrets = {
     "slack_webhook_url" = {
@@ -104,4 +103,16 @@ module "secret_manager" {
       k8s_secret_name         = "slack_webhook_url" // The name of the secret in k8s
     },
   }
+}
+
+data "aws_secretsmanager_secret" "slack_webhook_url" {
+  name = "live/global-resources"
+
+  depends_on = [
+    module.secret_manager
+  ]
+}
+
+data "aws_secretsmanager_secret_version" "slack_webhook_url" {
+  secret_id = data.aws_secretsmanager_secret.slack_webhook_url.id
 }
