@@ -97,12 +97,12 @@ Create a PR and merge to main.
 
 ## Terraform and Cloud Platform environment management
 
-Terraform is used to manage all AWS resources, except those managed by [Kops](https://github.com/kubernetes/kops/), with Terraform resources stored in the `terraform/` directory.
+Terraform is used to manage all AWS resources, with Terraform resources stored in the `terraform/` directory.
 
 Terraform resources are split into four directories with matching state objects in S3, `terraform/global-resources`, `terraform/cloud-platform`, `terraform/cloud-platform-account` and `terraform/cloud-platform-components`:
 
 - `global-resources` contains 'global' AWS resources that are not part of specific clusters or platform environments - e.g. elasticsearch and s3.
-- `cloud-platform` contains resources for the Cloud Platform environments - e.g. bastion hosts and kops.
+- `cloud-platform` contains resources for the Cloud Platform environments - e.g. bastion hosts.
 - `cloud-platform-account` contains account specifics like cloud-trail. We decided to seperate account level Terraform and global "run once" as we're currently running from multiple AWS accounts.
 - `cloud-platform-components` contains appications required to bootstrap a cluster i.e. getting a Cloud Platform cluster into a functional state.
 
