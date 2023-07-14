@@ -95,14 +95,14 @@ var _ = Describe("Namespaces", func() {
 	})
 
 	Context("when checking kube-system", func() {
-		It("should contain OPA labels", func() {
-			// Get the kube-system namespace, it should contain an ignore for OPA.
+		It("should contain Gatekeeper labels", func() {
+			// Get the kube-system namespace, it should contain an ignore for Gatekeeper.
 			// If it doesn't, nothing will deploy there.
 			namespace, err := c.Client.Clientset.CoreV1().Namespaces().Get(context.TODO(), "kube-system", metav1.GetOptions{})
 			Expect(err).ToNot(HaveOccurred())
 
 			labels := namespace.GetLabels()
-			Expect(labels).To(HaveKeyWithValue("openpolicyagent.org/webhook", "ignore"))
+			Expect(labels).To(HaveKeyWithValue("admission.gatekeeper.sh/ignore", "true"))
 		})
 	})
 
