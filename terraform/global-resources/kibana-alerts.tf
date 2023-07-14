@@ -4,7 +4,7 @@ resource "elasticsearch_opensearch_monitor" "duplicate_grafana_uid_in_logs" {
 {
   "name": "Grafana UID",
   "type": "monitor",
-  "enabled": false,
+  "enabled": true,
   "schedule": {
     "period": {
       "interval": 10,
@@ -72,7 +72,7 @@ resource "elasticsearch_opensearch_monitor" "duplicate_grafana_uid_in_logs" {
           },
           "message_template" : {
             "source" : "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n- Trigger: {{ctx.trigger.name}}\n- Severity: {{ctx.trigger.severity}}\n- Period start: {{ctx.periodStart}}\n- Period end: {{ctx.periodEnd}}",
-            "lang" : "painless"
+            "lang" : "mustache"
           },
           "subject_template" : {
             "source" : "duplicate grafana uid's found",
