@@ -1,4 +1,5 @@
 resource "elasticsearch_opensearch_monitor" "duplicate_grafana_uid_in_logs" {
+  provider = elasticsearch
   body = <<EOF
 {
   "name": "Grafana UID",
@@ -89,6 +90,7 @@ depends_on = [ elasticsearch_opensearch_destination.cloud_platform_alerts ]
 }
 
 resource "elasticsearch_opensearch_destination" "cloud_platform_alerts" {
+  provider = elasticsearch
   body = <<EOF
 {
   "name" : "cloud-platform-alerts",
