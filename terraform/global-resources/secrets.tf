@@ -20,6 +20,6 @@ resource "aws_secretsmanager_secret_version" "slack_webhook_url" {
 }
 
 # Data call to fetch changed value
-data "aws_secretsmanager_secret_version" "slack_webhook_url" {
-  secret_id = aws_secretsmanager_secret.slack_webhook_url.id
-}
+# data "aws_secretsmanager_secret_version" "slack_webhook_url" {
+#   secret_id = aws_secretsmanager_secret.slack_webhook_url.id
+# }
