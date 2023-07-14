@@ -94,6 +94,7 @@ provider "registry.terraform.io/phillbaker/elasticsearch" {
   constraints = "2.0.7"
   hashes = [
     "h1:PPljWX4s5u8F1SaTZNCoWfsbpHAQF05TRN/YzunLDZk=",
+    "h1:hxBOeQLDPyyOiMI7ITbjECsg9dIflEGTxdlbU/VXln4=",
     "zh:20b6b608d91f3a422d27bcaebeb0db16488b5b8a99bc6a0a02741a6efb3daf9c",
     "zh:3f643252b578a958506a1c254f7311b04e410aac4d9209b0f3bd55d059d64e9c",
     "zh:4c5ce53fb9c3c637bbd64dba85ee4984c137818473f4f5a84d0b4e6685c63392",
