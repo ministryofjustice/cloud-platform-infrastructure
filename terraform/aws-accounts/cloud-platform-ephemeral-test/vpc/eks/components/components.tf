@@ -70,7 +70,7 @@ module "cert_manager" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.10.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.11.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzones           = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
@@ -133,11 +133,11 @@ module "kuberos" {
 module "logging" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=add-namespace-to-modsec-logs"
 
-  elasticsearch_host       = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
-  elasticsearch_audit_host = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
+  elasticsearch_host              = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
+  elasticsearch_audit_host        = lookup(var.elasticsearch_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_modsec_audit_host = "search-cp-live-modsec-audit-ccytydehbz77iow7efkpd743qu.eu-west-2.es.amazonaws.com"
-  dependence_prometheus    = module.monitoring.prometheus_operator_crds_status
-  enable_curator_cronjob   = terraform.workspace == "live" ? true : false
+  dependence_prometheus           = module.monitoring.prometheus_operator_crds_status
+  enable_curator_cronjob          = terraform.workspace == "live" ? true : false
 }
 
 module "monitoring" {
