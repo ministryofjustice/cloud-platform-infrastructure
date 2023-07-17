@@ -19,7 +19,6 @@ tools-shell:
 
 # For CP team-members. List all the clusters which currently exist
 list-clusters:
-	kops get clusters
 	@echo
 	aws eks list-clusters --region=eu-west-2
 
