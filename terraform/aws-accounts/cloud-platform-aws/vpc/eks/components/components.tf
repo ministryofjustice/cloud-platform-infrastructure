@@ -59,7 +59,7 @@ module "descheduler" {
   ]
 }
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.6.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.7.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
@@ -67,7 +67,6 @@ module "cert_manager" {
   # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade,
   # but cluster creation fails without, so will have to be temporarily disabled when upgrading
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
-  dependence_opa        = "ignore"
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
