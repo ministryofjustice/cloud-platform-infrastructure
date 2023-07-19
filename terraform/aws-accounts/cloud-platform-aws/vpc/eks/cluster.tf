@@ -36,9 +36,9 @@ locals {
   # To manage different cluster versions
   cluster_version = {
     live    = "1.23"
-    live-2  = "1.24"
-    manager = "1.24"
-    default = "1.23"
+    live-2  = "1.23"
+    manager = "1.23"
+    default = "1.24"
   }
   node_size = {
     live    = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
@@ -72,6 +72,7 @@ locals {
     pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
+    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
     # k8s_labels = {
@@ -113,6 +114,7 @@ locals {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
+    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
     instance_types = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
     # k8s_labels = {
     #   Terraform                                     = "true"
