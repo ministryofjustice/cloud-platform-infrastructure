@@ -69,7 +69,7 @@ locals {
     name = "${terraform.workspace}-def-ng"
 
     create_launch_template = true
-    pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
@@ -110,7 +110,7 @@ locals {
     
 
     create_launch_template = true
-    pre_userdata = templatefile("${path.module}/templates/user-data.tpl", {
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
@@ -194,7 +194,7 @@ module "eks" {
   iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
-  manage_aws_auth_configmap = true
+  # manage_aws_auth_configmap = true
   # create_aws_auth_configmap = true
   aws_auth_users = [
     {
