@@ -175,6 +175,8 @@ module "eks" {
   # wait_for_cluster_timeout      = "900"
   cluster_security_group_description     = "EKS cluster security group."
   cluster_security_group_name            = terraform.workspace
+
+
   iam_role_name                          = terraform.workspace
   prefix_separator                       = ""
 
@@ -193,7 +195,7 @@ module "eks" {
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
   manage_aws_auth_configmap = true
-  create_aws_auth_configmap = true
+  # create_aws_auth_configmap = true
   aws_auth_users = [
     {
       userarn  = "arn:aws:iam::754256621582:user/PoornimaKrishnasamy"
@@ -259,7 +261,7 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.4.0"
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=bump-core-dns-1-9-2"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
