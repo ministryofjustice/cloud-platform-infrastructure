@@ -302,7 +302,8 @@ resource "kubernetes_pod_security_policy" "aws_node" {
 
     allowed_capabilities = [
       "NET_BIND_SERVICE",
-      "NET_ADMIN"
+      "NET_ADMIN",
+      "NET_RAW"
     ]
 
     volumes = [
