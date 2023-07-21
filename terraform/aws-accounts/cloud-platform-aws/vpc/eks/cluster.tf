@@ -28,7 +28,7 @@ locals {
   }
   # Default node group minimum capacity 
   default_ng_min_count = {
-    live    = "40"
+    live    = "46"
     live-2  = "2"
     manager = "4"
     default = "2"
@@ -210,7 +210,7 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.6.0"
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.7.0"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
