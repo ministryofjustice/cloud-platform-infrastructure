@@ -99,7 +99,7 @@ resource "elasticsearch_opensearch_destination" "cloud_platform_alerts" {
   "name" : "cloud-platform-alerts",
   "type" : "slack",
   "slack" : {
-    "url" : "${jsondecode(data.aws_secretsmanager_secret_version.slack_webhook_url.secret_string)["url"]}"
+    "url" : "https://hooks.slack.com/services/T0GKQH9S8/B01BZQZQZQZ/xxxxxxxxxxxxxxxxxxxxxxxx"
   }
 }
 EOF
