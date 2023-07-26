@@ -35,9 +35,9 @@ locals {
   }
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.23"
-    live-2  = "1.23"
-    manager = "1.23"
+    live    = "1.24"
+    live-2  = "1.24"
+    manager = "1.24"
     default = "1.24"
   }
   node_size = {
@@ -48,7 +48,7 @@ locals {
   }
 
   monitoring_node_size = {
-    live    = ["r6i.2xlarge", "r5a.2xlarge"]
+    live    = ["r6i.4xlarge", "r5a.2xlarge"]
     live-2  = ["r6i.2xlarge", "r5a.2xlarge"]
     manager = ["t3a.medium", "t3.medium"]
     default = ["t3a.medium", "t3.medium"]
@@ -261,7 +261,7 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=bump-core-dns-1-9-2"
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.10.0"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id

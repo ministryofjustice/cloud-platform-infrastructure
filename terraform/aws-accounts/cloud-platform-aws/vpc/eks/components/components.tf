@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.17.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.18.0"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -72,7 +72,7 @@ module "cert_manager" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.11.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.11.1"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzones           = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
@@ -146,7 +146,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.9.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.9.3"
 
   alertmanager_slack_receivers               = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config                           = local.enable_alerts ? var.pagerduty_config : "dummy"
