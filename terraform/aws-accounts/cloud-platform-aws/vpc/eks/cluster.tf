@@ -68,6 +68,7 @@ locals {
     kubelet_extra_args   = "--max-pods=110"
     name = "${terraform.workspace}-def-ng"
 
+    create_security_group = false
     create_launch_template = true
     pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
@@ -108,7 +109,7 @@ locals {
     subnet_ids          = data.aws_subnets.private_zone_2b.ids
     name = "${terraform.workspace}-mon_ng"
     
-
+    create_security_group = false
     create_launch_template = true
     pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
@@ -175,7 +176,7 @@ module "eks" {
   # wait_for_cluster_timeout      = "900"
   cluster_security_group_description     = "EKS cluster security group."
   cluster_security_group_name            = terraform.workspace
-
+  # create_node_security_group             = false
 
   iam_role_name                          = terraform.workspace
   prefix_separator                       = ""
