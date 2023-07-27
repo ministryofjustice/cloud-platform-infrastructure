@@ -176,7 +176,8 @@ module "eks" {
   # wait_for_cluster_timeout      = "900"
   cluster_security_group_description     = "EKS cluster security group."
   cluster_security_group_name            = terraform.workspace
-  # create_node_security_group             = false
+  create_node_security_group             = false
+  node_security_group_id = "sg-0bcca586315d2c5cf" # This is the security group for the worker nodes 
 
   iam_role_name                          = terraform.workspace
   prefix_separator                       = ""
