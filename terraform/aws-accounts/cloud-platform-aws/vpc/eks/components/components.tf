@@ -172,19 +172,20 @@ module "monitoring" {
 }
 
 module "gatekeeper" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.3.5"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.4.0"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   dryrun_map = {
-    service_type               = false,
-    snippet_allowlist          = false,
-    modsec_snippet_nginx_class = false,
-    modsec_nginx_class         = false,
-    ingress_clash              = false,
-    hostname_length            = false,
-    external_dns_identifier    = terraform.workspace == "live" ? false : true,
-    external_dns_weight        = terraform.workspace == "live" ? false : true,
-    valid_hostname             = lookup(local.prod_2_workspace, terraform.workspace, false)
+    service_type                       = false,
+    snippet_allowlist                  = false,
+    modsec_snippet_nginx_class         = false,
+    modsec_nginx_class                 = false,
+    ingress_clash                      = false,
+    hostname_length                    = false,
+    external_dns_identifier            = terraform.workspace == "live" ? false : true,
+    external_dns_weight                = terraform.workspace == "live" ? false : true,
+    valid_hostname                     = lookup(local.prod_2_workspace, terraform.workspace, false),
+    warn_service_account_secret_delete = false
   }
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
