@@ -52,23 +52,49 @@ variable "index_pattern_live_modsec_audit" {
   type        = list(string)
 }
 
-variable "team_name" {
-  default = "webops"
-  type    = string
-}
-
-variable "namespace" {
-  default = "kuberhealthy"
-  type    = string
-}
-
 variable "github_owner" {
   description = "The GitHub organization or individual user account containing the app's code repo. Used by the Github Terraform provider. See: https://user-guide.cloud-platform.service.justice.gov.uk/documentation/getting-started/ecr-setup.html#accessing-the-credentials"
   default     = "ministryofjustice"
   type        = string
 }
+
 variable "github_token" {
   description = "Required by the Github Terraform provider"
   default     = ""
   type        = string
+}
+
+variable "business_unit" {
+  type    = string
+  default = "Platforms"
+}
+
+variable "application" {
+  type    = string
+  default = "cloud-platform-aws/account"
+}
+
+variable "is_production" {
+  type    = string
+  default = "true"
+}
+
+variable "team_name" {
+  type    = string
+  default = "webops"
+}
+
+variable "namespace" {
+  type    = string
+  default = "kuberhealthy"
+}
+
+variable "environment" {
+  type    = string
+  default = "production"
+}
+
+variable "infrastructure_support" {
+  type    = string
+  default = "Cloud Platform: platforms@digital.justice.gov.uk"
 }
