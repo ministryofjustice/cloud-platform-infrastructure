@@ -117,7 +117,7 @@ resource "aws_elasticsearch_domain" "live_1" {
     ebs_enabled = "true"
     volume_type = "gp3"
     volume_size = "3072"
-    iops        = 4608
+    iops        = 9216
   }
 
   advanced_options = {
