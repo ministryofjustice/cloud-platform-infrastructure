@@ -97,15 +97,15 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   cluster_config {
     instance_type            = "r6g.4xlarge.elasticsearch"
-    instance_count           = "7"
+    instance_count           = "12"
     dedicated_master_enabled = true
     dedicated_master_type    = "m6g.xlarge.elasticsearch"
-    dedicated_master_count   = "3"
+    dedicated_master_count   = "5"
     zone_awareness_enabled   = true
     zone_awareness_config {
       availability_zone_count = 3
     }
-    warm_count   = 5
+    warm_count   = 6
     warm_enabled = true
     warm_type    = "ultrawarm1.medium.elasticsearch"
     cold_storage_options {
