@@ -6,13 +6,13 @@ variable "timestamp_field" {
 
 variable "warm_transition" {
   type        = string
-  default     = "5d"
+  default     = "7d"
   description = "Time until transition to warm storage"
 }
 
 variable "cold_transition" {
   type        = string
-  default     = "30d"
+  default     = "14d"
   description = "Time until transition to cold storage"
 }
 
