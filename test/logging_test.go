@@ -63,7 +63,8 @@ var _ = Describe("logging", func() {
 
 			// Create a job that creates a simple log message.
 			jobVar := map[string]interface{}{
-				"jobName": "logging-smoketest",
+				"jobName":   "logging-smoketest",
+				"namespace": namespace,
 			}
 
 			tpl, err = helpers.TemplateFile("./fixtures/helloworld-job.yaml.tmpl", "helloworld-job.yaml.tmpl", jobVar)
@@ -126,7 +127,7 @@ var _ = Describe("logging", func() {
 			Expect(err).ToNot(HaveOccurred())
 
 			// Check the logs for the expected message
-			Expect(buf.String()).To(ContainSubstring("hello world"))
+			Expect(buf.String()).To(ContainSubstring("100"))
 		})
 	})
 })

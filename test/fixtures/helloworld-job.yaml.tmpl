@@ -9,5 +9,5 @@ spec:
       restartPolicy: Never
       containers:
       - name: helloworld
-        image: bitnami/nginx
-        command: ["echo", "hello world"]
+        image: bitnami/nginx:1.25-debian-11
+        command: ["/bin/bash", "-c", "for i in {1..100}; do echo -n 'hello, world {{ .namespace }}' $(date) '\n'; done"]
