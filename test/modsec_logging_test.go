@@ -85,7 +85,8 @@ var _ = Describe("logging", func() {
 
 			sum := 0
 			req, _ := http.NewRequest(http.MethodGet, "http://"+host+"/aphpfilethatdonotexist.php?something=../../etc", nil)
-			time.Sleep(20 * time.Second)
+
+			time.Sleep(20 * time.Second) // // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors
 
 			for i := 0; i < 100; i++ {
 				resp, doErr := getClient.Do(req)
