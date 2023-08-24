@@ -165,9 +165,11 @@ var _ = Describe("logging", func() {
 
 			jsonData, err := json.Marshal(values)
 
-			req, err := http.NewRequest(http.MethodGet, search, bytes.NewBuffer(jsonData))
-
 			Expect(err).ToNot(HaveOccurred())
+
+			req, reqErr := http.NewRequest(http.MethodGet, search, bytes.NewBuffer(jsonData))
+
+			Expect(reqErr).ToNot(HaveOccurred())
 
 			req.Header.Add("Content-Type", "application/json")
 
