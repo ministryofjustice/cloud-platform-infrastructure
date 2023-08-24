@@ -85,7 +85,7 @@ var _ = Describe("logging", func() {
 
 			sum := 0
 			req, _ := http.NewRequest(http.MethodGet, "http://"+host+"/aphpfilethatdonotexist.php?something=../../etc", nil)
-			time.Sleep(40 * time.Second)
+			time.Sleep(20 * time.Second)
 
 			for i := 0; i < 100; i++ {
 				resp, doErr := getClient.Do(req)
@@ -108,7 +108,7 @@ var _ = Describe("logging", func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		It("should be able to retrieve the log message", func() {
+		FIt("should be able to retrieve the log message", func() {
 			type PhraseData struct {
 				Log    string `json:"log,omitempty"`
 				Stream string `json:"stream,omitempty"`
@@ -167,22 +167,31 @@ var _ = Describe("logging", func() {
 
 			req, err := http.NewRequest(http.MethodGet, search, bytes.NewBuffer(jsonData))
 
+			Expect(err).ToNot(HaveOccurred())
+
 			req.Header.Add("Content-Type", "application/json")
 
-			_, err = awsSigner.Sign(req, bytes.NewReader(jsonData), "es", "eu-west-2", time.Now())
+			_, signErr := awsSigner.Sign(req, bytes.NewReader(jsonData), "es", "eu-west-2", time.Now())
+
+			Expect(signErr).ToNot(HaveOccurred())
 
 			time.Sleep(7 * time.Second) // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors
 
-			resp, err := client.Do(req)
+			resp, httpErr := client.Do(req)
 
-			body, err := io.ReadAll(resp.Body)
+			Expect(httpErr).ToNot(HaveOccurred())
+
+			body, bodyErr := io.ReadAll(resp.Body)
+
+			Expect(bodyErr).ToNot(HaveOccurred())
 
 			defer resp.Body.Close()
 
 			var hits Resp
-			err = json.Unmarshal(body, &hits)
 
-			Expect(err).ToNot(HaveOccurred())
+			unmarshalErr := json.Unmarshal(body, &hits)
+
+			Expect(unmarshalErr).ToNot(HaveOccurred())
 
 			// Check the logs for the expected message
 			Expect(hits.Hits.Total.Value).To(Equal(100))
