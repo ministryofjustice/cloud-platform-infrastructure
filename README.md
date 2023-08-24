@@ -20,7 +20,7 @@ Here you'll also find instruction on how to operate a MoJ Cloud Platform cluster
 
 ### Prerequestites
 
-To run `test/modsec_logging_test.go` you need to add your aws user arn to the opensearch. navigate to (opensearch dashboard)[https://logs.cloud-platform.service.justice.gov.uk/_dashboards/app/security-dashboards-plugin#/roles/edit/all_access/mapuser] -> add your user arn under trhe `users` section
+To run `test/modsec_logging_test.go` you need to add your aws user arn to the opensearch. navigate to (opensearch dashboard)[https://logs.cloud-platform.service.justice.gov.uk/_dashboards/app/security-dashboards-plugin#/roles/edit/all_access/mapuser] -> add your user arn under trhe `users` section. Because we need to use aws credentials to sign our requests to open search and we don't use profiles in the pipeline, you need to explicitly set your aws key and secret to minic the pipeline and the run the tests.
 
 ### `test/docker/`
 
