@@ -108,7 +108,7 @@ var _ = Describe("logging", func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		FIt("should be able to retrieve the log message", func() {
+		It("should be able to retrieve the log message", func() {
 			type PhraseData struct {
 				Log    string `json:"log,omitempty"`
 				Stream string `json:"stream,omitempty"`
