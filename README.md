@@ -22,6 +22,10 @@ Here you'll also find instruction on how to operate a MoJ Cloud Platform cluster
 
 To run `test/modsec_logging_test.go` you need to add your aws user arn to the opensearch. navigate to (opensearch dashboard)[https://logs.cloud-platform.service.justice.gov.uk/_dashboards/app/security-dashboards-plugin#/roles/edit/all_access/mapuser] -> add your user arn under trhe `users` section
 
+### `test/docker/`
+
+This dir holds `ministryofjustice` custom dockerfiles needed for testing, if you need to amend the dockerfiles you can locally build and push to (ministryofjustice dockerhub)[https://hub.docker.com/repository/docker/ministryofjustice/curl-jq/general].
+
 ### Running the tests
 
 To run the integration tests on a MoJ Cloud Platform cluster you must have the following tools installed:
