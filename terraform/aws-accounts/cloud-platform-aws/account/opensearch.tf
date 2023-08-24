@@ -300,6 +300,17 @@ resource "elasticsearch_opensearch_roles_mapping" "security_manager" {
     aws_iam_role.os_access_role.arn,
   ]
 
+  users = [
+    "arn:aws:iam::754256621582:user/cloud-platform/manager-concourse",
+    "arn:aws:iam::754256621582:user/JaskaranSarkaria",
+    "arn:aws:iam::754256621582:user/PoornimaKrishnasamy",
+    "arn:aws:iam::754256621582:user/SteveWilliams",
+    "arn:aws:iam::754256621582:user/JakeMulley",
+    "arn:aws:iam::754256621582:user/SabluMiah",
+    "arn:aws:iam::754256621582:user/TomSmith",
+    "arn:aws:iam::754256621582:user/KyTruong"
+  ]
+
   depends_on = [
     aws_opensearch_domain_saml_options.live_modsec_audit,
   ]
