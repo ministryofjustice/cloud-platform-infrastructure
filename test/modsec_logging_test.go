@@ -36,8 +36,8 @@ var _ = Describe("logging", func() {
 		client := &http.Client{}
 
 		BeforeEach(func() {
-			if !(c.ClusterName == "live") && !(c.ClusterName == "manager") {
-				Skip(fmt.Sprintf("Logs don't go to elasticsearch for cluster: %s", c.ClusterName))
+			if !(c.ClusterName == "live") {
+				Skip(fmt.Sprintf("Logs don't go to opensearch for cluster: %s", c.ClusterName))
 			}
 
 			uniqueId = strings.ToLower(random.UniqueId())
