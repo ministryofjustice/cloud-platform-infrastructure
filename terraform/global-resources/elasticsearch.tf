@@ -90,6 +90,44 @@ data "aws_iam_policy_document" "live_1" {
   }
 }
 
+
+# For logging elastic search on cloudwatch
+resource "aws_cloudwatch_log_group" "live_1_log_group" {
+  name              = "/aws/aes/domains/cloud-platform-live/application-logs"
+  retention_in_days = 60
+
+  tags = {
+    Terraform = "true"
+    application = "cloud-platform-live"
+    business-unit = "Platforms"
+    is-production = "true"
+    owner = "Cloud Platform: platforms@digital.justice.gov.uk"
+    source-code = "github.com/ministryofjustice/cloud-platform-infrastructure"
+  }
+}
+
+data "aws_iam_policy_document" "elasticsearch_log_publishing_policy_doc" {
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:PutLogEventsBatch",
+    ]
+
+    resources = [aws_cloudwatch_log_group.live_1_log_group.arn]
+
+    principals {
+      identifiers = ["es.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
+resource "aws_cloudwatch_log_resource_policy" "elasticsearch_log_publishing_policy" {
+  policy_document = data.aws_iam_policy_document.elasticsearch_log_publishing_policy_doc.json
+  policy_name     = "cloud-platform-live-elasticsearch-log-publishing-policy"
+}
+
 resource "aws_elasticsearch_domain" "live_1" {
   domain_name           = local.live_domain
   provider              = aws.cloud-platform
@@ -133,10 +171,13 @@ resource "aws_elasticsearch_domain" "live_1" {
     automated_snapshot_start_hour = 23
   }
 
-  log_publishing_options {
-    cloudwatch_log_group_arn = ""
-    enabled                  = false
+   log_publishing_options {
+    enabled                  = true
     log_type                 = "ES_APPLICATION_LOGS"
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.live_1_log_group.arn
+  }
+  auto_tune_options {
+    desired_state = "ENABLED"
   }
 
 
