@@ -97,12 +97,12 @@ resource "aws_cloudwatch_log_group" "live_1_log_group" {
   retention_in_days = 60
 
   tags = {
-    Terraform = "true"
-    application = "cloud-platform-live"
+    Terraform     = "true"
+    application   = "cloud-platform-live"
     business-unit = "Platforms"
     is-production = "true"
-    owner = "Cloud Platform: platforms@digital.justice.gov.uk"
-    source-code = "github.com/ministryofjustice/cloud-platform-infrastructure"
+    owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+    source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
   }
 }
 
@@ -171,7 +171,7 @@ resource "aws_elasticsearch_domain" "live_1" {
     automated_snapshot_start_hour = 23
   }
 
-   log_publishing_options {
+  log_publishing_options {
     enabled                  = true
     log_type                 = "ES_APPLICATION_LOGS"
     cloudwatch_log_group_arn = aws_cloudwatch_log_group.live_1_log_group.arn
