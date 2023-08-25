@@ -46,6 +46,46 @@ data "aws_iam_policy_document" "et_test" {
   }
 }
 
+# For logging elastic search on cloudwatch
+resource "aws_cloudwatch_log_group" "et_test_log_group" {
+  count             = 1
+  name              = "/aws/aes/domains/cloud-platform-test/application-logs"
+  retention_in_days = 60
+
+  tags = {
+    Terraform     = "true"
+    application   = "cloud-platform-test"
+    business-unit = "Platforms"
+    is-production = "true"
+    owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+    source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+  }
+}
+
+data "aws_iam_policy_document" "elasticsearch_log_publishing_policy_doc" {
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:PutLogEventsBatch",
+    ]
+
+    resources = [aws_cloudwatch_log_group.et_test_log_group[0].arn]
+
+    principals {
+      identifiers = ["es.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
+resource "aws_cloudwatch_log_resource_policy" "elasticsearch_log_publishing_policy" {
+  count           = 1
+  policy_document = data.aws_iam_policy_document.elasticsearch_log_publishing_policy_doc.json
+  policy_name     = "cloud-platform-test-elasticsearch-log-publishing-policy"
+}
+
+
 resource "aws_elasticsearch_domain" "et_test" {
   count                 = 1
   domain_name           = local.test_domain
@@ -89,11 +129,13 @@ resource "aws_elasticsearch_domain" "et_test" {
   }
 
   log_publishing_options {
-    cloudwatch_log_group_arn = ""
-    enabled                  = false
+    enabled                  = true
     log_type                 = "ES_APPLICATION_LOGS"
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.et_test_log_group[count.index].arn
   }
-
+  auto_tune_options {
+    desired_state = "ENABLED"
+  }
 
   tags = {
     Domain = local.test_domain
