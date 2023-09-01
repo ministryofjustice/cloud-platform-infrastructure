@@ -108,18 +108,21 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.4.0"
 
-  replica_count          = "12"
-  controller_name        = "modsec"
-  cluster_domain_name    = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster        = lookup(local.prod_workspace, terraform.workspace, false)
-  live1_cert_dns_name    = lookup(local.live1_cert_dns_name, terraform.workspace, "")
-  enable_modsec          = true
-  enable_owasp           = true
-  enable_latest_tls      = true
-  dependence_certmanager = "ignore"
-  depends_on             = [module.ingress_controllers_v1]
+  replica_count                = "12"
+  controller_name              = "modsec"
+  cluster_domain_name          = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster              = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name          = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+  enable_modsec                = true
+  enable_owasp                 = true
+  enable_latest_tls            = true
+  opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
+  cluster                      = terraform.workspace
+  fluent_bit_version           = "2.1.8-amd64"
+  dependence_certmanager       = "ignore"
+  depends_on                   = [module.ingress_controllers_v1]
 }
 
 module "kuberos" {
