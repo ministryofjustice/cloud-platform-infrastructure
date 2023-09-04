@@ -90,6 +90,44 @@ data "aws_iam_policy_document" "live_1" {
   }
 }
 
+
+# For logging elastic search on cloudwatch
+resource "aws_cloudwatch_log_group" "live_1_log_group" {
+  name              = "/aws/aes/domains/cloud-platform-live/application-logs"
+  retention_in_days = 60
+
+  tags = {
+    Terraform     = "true"
+    application   = "cloud-platform-live"
+    business-unit = "Platforms"
+    is-production = "true"
+    owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+    source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+  }
+}
+
+data "aws_iam_policy_document" "elasticsearch_log_publishing_policy_doc" {
+  statement {
+    actions = [
+      "logs:CreateLogStream",
+      "logs:PutLogEvents",
+      "logs:PutLogEventsBatch",
+    ]
+
+    resources = [aws_cloudwatch_log_group.live_1_log_group.arn]
+
+    principals {
+      identifiers = ["es.amazonaws.com"]
+      type        = "Service"
+    }
+  }
+}
+
+resource "aws_cloudwatch_log_resource_policy" "elasticsearch_log_publishing_policy" {
+  policy_document = data.aws_iam_policy_document.elasticsearch_log_publishing_policy_doc.json
+  policy_name     = "cloud-platform-live-elasticsearch-log-publishing-policy"
+}
+
 resource "aws_elasticsearch_domain" "live_1" {
   domain_name           = local.live_domain
   provider              = aws.cloud-platform
@@ -97,15 +135,15 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   cluster_config {
     instance_type            = "r6g.4xlarge.elasticsearch"
-    instance_count           = "7"
+    instance_count           = "12"
     dedicated_master_enabled = true
     dedicated_master_type    = "m6g.xlarge.elasticsearch"
-    dedicated_master_count   = "3"
+    dedicated_master_count   = "5"
     zone_awareness_enabled   = true
     zone_awareness_config {
       availability_zone_count = 3
     }
-    warm_count   = 5
+    warm_count   = 6
     warm_enabled = true
     warm_type    = "ultrawarm1.medium.elasticsearch"
     cold_storage_options {
@@ -116,8 +154,9 @@ resource "aws_elasticsearch_domain" "live_1" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp3"
-    volume_size = "1536"
-    iops        = 4608
+    volume_size = "3072"
+    iops        = 13000 # limit is 16,000 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
+    throughput  = 500   # limit is 1,000
   }
 
   advanced_options = {
@@ -133,9 +172,12 @@ resource "aws_elasticsearch_domain" "live_1" {
   }
 
   log_publishing_options {
-    cloudwatch_log_group_arn = ""
-    enabled                  = false
+    enabled                  = true
     log_type                 = "ES_APPLICATION_LOGS"
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.live_1_log_group.arn
+  }
+  auto_tune_options {
+    desired_state = "ENABLED"
   }
 
 

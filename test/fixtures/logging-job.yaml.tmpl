@@ -9,5 +9,5 @@ spec:
       restartPolicy: Never
       containers:
       - name: smoketest-logging
-        image: nginxinc/nginx-unprivileged:1.21-alpine
-        command: ["curl", "-s", "-XGET", "{{ .searchTerm }}", "-H", 'Content-Type: application/json', "-d", '{ "query": { "bool": { "must": [ { "match": { "kubernetes.namespace_name.keyword": "{{ .namespace }}" } } ] } } }']
+        image: ministryofjustice/curl-jq:1
+        command: ["/bin/sh", "-c", "curl -s {{ .searchTerm }} -H 'Content-Type: application/json' -d '{ \"query\": { \"bool\": { \"must\": [], \"filter\": [ { \"match_phrase\": { \"log\": \"hello, world {{ .namespace }}\" } } ] } } }' | jq '.hits.total.value'"]
