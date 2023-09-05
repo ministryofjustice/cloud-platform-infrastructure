@@ -44,7 +44,7 @@ locals {
     live    = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
     live-2  = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
     manager = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
-    default = ["m6a.large", "m6a.xlarge", "m6i.large"]
+    default = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
   }
 
   monitoring_node_size = {
@@ -141,7 +141,10 @@ module "eks" {
   }
 
   # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
-  workers_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+  workers_additional_policies = [
+    "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+    ]
 
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77

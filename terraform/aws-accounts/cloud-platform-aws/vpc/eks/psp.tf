@@ -186,6 +186,11 @@ resource "kubernetes_cluster_role_binding" "privileged" {
     name      = "system:serviceaccounts:trivy-system"
     api_group = "rbac.authorization.k8s.io"
   }
+  subject {
+    kind      = "Group"
+    name      = "system:serviceaccounts:aws-otel-eks"
+    api_group = "rbac.authorization.k8s.io"
+  }   
 }
 
 ## Pod Security Policy: restricted
