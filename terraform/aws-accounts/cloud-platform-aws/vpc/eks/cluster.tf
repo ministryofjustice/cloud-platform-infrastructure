@@ -176,8 +176,9 @@ module "eks" {
   # wait_for_cluster_timeout      = "900"
   cluster_security_group_description     = "EKS cluster security group."
   cluster_security_group_name            = terraform.workspace
-  create_node_security_group             = false
-  node_security_group_id = "sg-0bcca586315d2c5cf" # This is the security group for the worker nodes 
+
+  # create_node_security_group             = false
+  # node_security_group_id = "sg-0bcca586315d2c5cf" # This is the security group for the worker nodes 
 
   iam_role_name                          = terraform.workspace
   prefix_separator                       = ""
@@ -197,7 +198,6 @@ module "eks" {
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
   # manage_aws_auth_configmap = true
-  # create_aws_auth_configmap = true
   aws_auth_users = [
     {
       userarn  = "arn:aws:iam::754256621582:user/PoornimaKrishnasamy"
@@ -258,6 +258,28 @@ module "eks" {
 
   tags = local.tags
 }
+
+
+resource "aws_security_group_rule" "workers_egress_internet" {
+  description       = "Allow nodes all egress to the Internet."
+  protocol          = "-1"
+  security_group_id = module.eks.node_security_group_id
+  cidr_blocks       = ["0.0.0.0/0"]
+  from_port         = 0
+  to_port           = 0
+  type              = "egress"
+}
+
+resource "aws_security_group_rule" "workers_ingress_self" {
+  description              = "Allow node to communicate with each other."
+  protocol                 = "-1"
+  security_group_id        = module.eks.node_security_group_id
+  source_security_group_id = module.eks.node_security_group_id
+  from_port                = 0
+  to_port                  = 65535
+  type                     = "ingress"
+}
+
 
 #######################
 # EKS Cluster add-ons #
