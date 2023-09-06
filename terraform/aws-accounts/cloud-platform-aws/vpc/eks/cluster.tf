@@ -135,7 +135,7 @@ module "eks" {
   cluster_log_retention_in_days = var.cluster_log_retention_in_days
   wait_for_cluster_timeout      = "900"
   worker_create_security_group  = false
-  worker_security_group_id      = aws_security_group.workers.id
+  worker_security_group_id      = aws_security_group.node.id
 
   node_groups = {
     default_ng_12_22 = local.default_ng_12_22
