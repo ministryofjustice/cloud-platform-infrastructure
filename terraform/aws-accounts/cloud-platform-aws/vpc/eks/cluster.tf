@@ -137,7 +137,6 @@ module "eks" {
   worker_create_security_group  = false
   worker_security_group_id      = aws_security_group.workers.id
 
-
   node_groups = {
     default_ng_12_22 = local.default_ng_12_22
     monitoring_ng    = local.monitoring_ng
