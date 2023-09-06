@@ -94,7 +94,7 @@ func getSearchResults(values SearchData, search string, awsSigner *signer.Signer
 
 // Logging tests define the ability for Cloud Platform to perform aggregated logging
 // on the platform. The tests are designed to be run in a Kubernetes cluster, with a logging agent installed.
-var _ = Describe("logging", func() {
+var _ = Describe("logging", Ordered, func() {
 	Context("when an app generates a log message", func() {
 		var (
 			namespace string
@@ -106,8 +106,12 @@ var _ = Describe("logging", func() {
 		date := time.Now().Format("2006.01.02")
 		search := openSearchDomain + c.ClusterName + "_k8s_modsec_ingress" + "-" + date + "/_search"
 		client := &http.Client{}
+		awsCreds := creds.NewEnvCredentials()
+		awsSigner := signer.NewSigner(awsCreds)
 
-		BeforeEach(func() {
+		emptySlice := make([]interface{}, 0)
+
+		BeforeAll(func() {
 			if !(c.ClusterName == "live") {
 				Skip(fmt.Sprintf("Logs don't go to opensearch for cluster: %s", c.ClusterName))
 			}
@@ -155,7 +159,6 @@ var _ = Describe("logging", func() {
 			}
 			getClient := &http.Client{Transport: tr}
 
-			sum := 0
 			req, _ := http.NewRequest(http.MethodGet, "http://"+host+"/aphpfilethatdonotexist.php?something=../../etc", nil)
 
 			time.Sleep(40 * time.Second) // // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors
@@ -169,57 +172,56 @@ var _ = Describe("logging", func() {
 				defer resp.Body.Close()
 
 				Expect(resp.Status).To(Equal("403 Forbidden"))
-
-				sum += i
 			}
 
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		AfterEach(func() {
+		AfterAll(func() {
 			err := k8s.DeleteNamespaceE(GinkgoT(), options, namespace)
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		It("should be able to retrieve the log message", func() {
-			awsCreds := creds.NewEnvCredentials()
-			awsSigner := signer.NewSigner(awsCreds)
-
-			emptySlice := make([]interface{}, 0)
-			values := SearchData{
-				Query: BoolData{
-					MustFilterData{
-						Must: emptySlice,
-						Filter: []FilterData{
-							{Match: PhraseData{
-								Log: "github_team=" + uniqueId,
-							}},
-							{Match: PhraseData{
-								Stream: "stderr",
-							}},
+		Describe("check modsec logs have not been dropped", Ordered, func() {
+			It("should be able to retrieve the log messages", func() {
+				values := SearchData{
+					Query: BoolData{
+						MustFilterData{
+							Must: emptySlice,
+							Filter: []FilterData{
+								{Match: PhraseData{
+									Log: "github_team=" + uniqueId,
+								}},
+								{Match: PhraseData{
+									Stream: "stderr",
+								}},
+							},
 						},
 					},
-				},
-			}
+				}
 
-			auditValues := SearchData{
-				Query: BoolData{
-					MustFilterData{
-						Must: emptySlice,
-						Filter: []FilterData{
-							{Match: PhraseData{
-								Log: "github_team=" + uniqueId,
-							}},
-							{Match: PhraseData{
-								HttpCode: 403,
-							}},
+				getSearchResults(values, search, awsSigner, client)
+			})
+
+			It("should be able to retrieve the audit log messages", func() {
+				auditValues := SearchData{
+					Query: BoolData{
+						MustFilterData{
+							Must: emptySlice,
+							Filter: []FilterData{
+								{Match: PhraseData{
+									Log: "github_team=" + uniqueId,
+								}},
+								{Match: PhraseData{
+									HttpCode: 403,
+								}},
+							},
 						},
 					},
-				},
-			}
+				}
 
-			getSearchResults(values, search, awsSigner, client)
-			getSearchResults(auditValues, search, awsSigner, client)
+				getSearchResults(auditValues, search, awsSigner, client)
+			})
 		})
 	})
 })
