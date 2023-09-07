@@ -14,7 +14,7 @@ resource "aws_security_group" "node" {
   tags = merge(
     local.tags,
     {
-      "Name"                                         = "${terraform.workspace}-eks_node_sg"
+      "Name"                                         = "${terraform.workspace}-eks_worker_sg"
       "kubernetes.io/cluster/${terraform.workspace}" = "owned"
     },
   )
