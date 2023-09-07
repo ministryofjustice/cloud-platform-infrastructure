@@ -41,7 +41,7 @@ resource "aws_security_group_rule" "node_ingress_self" {
 }
 
 resource "aws_security_group_rule" "node_ingress_cluster" {
-  description              = "Allow node pods to receive communication from the cluster control plane."
+  description              = "Allow workers pods to receive communication from the cluster control plane."
   protocol                 = "tcp"
   security_group_id        = aws_security_group.node.id
   source_security_group_id = module.eks.cluster_security_group_id
