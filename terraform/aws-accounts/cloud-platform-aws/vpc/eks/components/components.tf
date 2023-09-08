@@ -108,7 +108,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.4.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.4.1"
 
   replica_count                = "12"
   controller_name              = "modsec"
@@ -141,7 +141,7 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.9.12"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.9.14"
 
   elasticsearch_host              = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")

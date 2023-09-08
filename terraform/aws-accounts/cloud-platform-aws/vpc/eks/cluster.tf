@@ -139,6 +139,7 @@ module "eks" {
   cluster_version               = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
   enable_irsa                   = true
   cluster_enabled_log_types     = var.cluster_enabled_log_types
+
   cloudwatch_log_group_retention_in_days = var.cluster_log_retention_in_days
   cluster_security_group_description     = "EKS cluster security group."
   cluster_security_group_name            = terraform.workspace
