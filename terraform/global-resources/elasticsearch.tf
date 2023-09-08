@@ -155,8 +155,8 @@ resource "aws_elasticsearch_domain" "live_1" {
     ebs_enabled = "true"
     volume_type = "gp3"
     volume_size = "3072"
-    iops        = 13000 # limit is 16,000 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
-    throughput  = 500   # limit is 1,000
+    iops        = 16000 # limit is 16,000 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
+    throughput  = 2000  # Throughput scales proportionally up. iops x 0.25 (maximum 4,000) https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/general-purpose.html 
   }
 
   advanced_options = {
