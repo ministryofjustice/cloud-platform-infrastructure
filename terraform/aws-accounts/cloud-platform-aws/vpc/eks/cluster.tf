@@ -56,17 +56,13 @@ locals {
 
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
   default_ng_12_22 = {
-    # desired_capacity     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    # max_capacity         = 85
-    # min_capacity         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
     desired_size     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_size         = 85
     min_size         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
-    # subnets              = data.aws_subnets.private.ids
     subnet_ids             = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
     kubelet_extra_args   = "--max-pods=110"
-    name = "${terraform.workspace}-def-ng"
+    name = "${terraform.workspace}-default-ng"
 
     create_security_group = false
     create_launch_template = true
@@ -76,21 +72,12 @@ locals {
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
-    # k8s_labels = {
-    #   Terraform = "true"
-    #   Cluster   = terraform.workspace
-    #   Domain    = local.fqdn
-    # }
     labels = {
       Terraform = "true"
       Cluster   = terraform.workspace
       Domain    = local.fqdn
     }
-    # additional_tags = {
-    #   default_ng    = "true"
-    #   application   = "moj-cloud-platform"
-    #   business-unit = "platforms"
-    # }
+
     tags = {
       default_ng    = "true"
       application   = "moj-cloud-platform"
@@ -99,15 +86,11 @@ locals {
   }
 
   monitoring_ng = {
-    # desired_capacity = 2
-    # max_capacity     = 3
-    # min_capacity     = 2
-    # subnets          = data.aws_subnets.private_zone_2b.ids
     desired_size = 2
     max_size     = 3
     min_size     = 2
     subnet_ids          = data.aws_subnets.private_zone_2b.ids
-    name = "${terraform.workspace}-mon_ng"
+    name = "${terraform.workspace}-monitoring_ng"
     
     create_security_group = false
     create_launch_template = true
@@ -117,23 +100,12 @@ locals {
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
     instance_types = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
-    # k8s_labels = {
-    #   Terraform                                     = "true"
-    #   "cloud-platform.justice.gov.uk/monitoring-ng" = "true"
-    #   Cluster                                       = terraform.workspace
-    #   Domain                                        = local.fqdn
-    # }
     labels = {
       Terraform                                     = "true"
       "cloud-platform.justice.gov.uk/monitoring-ng" = "true"
       Cluster                                       = terraform.workspace
       Domain                                        = local.fqdn
     }
-    # additional_tags = {
-    #   monitoring_ng = "true"
-    #   application   = "moj-cloud-platform"
-    #   business-unit = "platforms"
-    # }
     tags = {
       monitoring_ng = "true"
       application   = "moj-cloud-platform"
@@ -159,45 +131,32 @@ locals {
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "18.31.2"
-  # version = "17.24.0"
 
 
   cluster_name                  = terraform.workspace
-  # subnets                       = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
   subnet_ids                       = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
   vpc_id                        = data.aws_vpc.selected.id
-  # write_kubeconfig              = false
-  # write_kubeconfig              = false REMOVED
   cluster_version               = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
   enable_irsa                   = true
   cluster_enabled_log_types     = var.cluster_enabled_log_types
-  # cluster_log_retention_in_days = var.cluster_log_retention_in_days
   cloudwatch_log_group_retention_in_days = var.cluster_log_retention_in_days
-  # wait_for_cluster_timeout      = "900"
   cluster_security_group_description     = "EKS cluster security group."
   cluster_security_group_name            = terraform.workspace
 
-  # create_node_security_group             = false
-  # node_security_group_id = "sg-0bcca586315d2c5cf" # This is the security group for the worker nodes 
+  create_node_security_group  = false
+  node_security_group_id      = aws_security_group.node.id
 
   iam_role_name                          = terraform.workspace
   prefix_separator                       = ""
 
-  # node_groups = {
-  #   default_ng_12_22 = local.default_ng_12_22
-  #   monitoring_ng    = local.monitoring_ng
-  # }
   eks_managed_node_groups = {
     default_ng_12_22 = local.default_ng_12_22
     monitoring_ng    = local.monitoring_ng
   }
 
-  # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
-  # workers_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
   iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
-  # manage_aws_auth_configmap = true
   aws_auth_users = [
     {
       userarn  = "arn:aws:iam::754256621582:user/PoornimaKrishnasamy"
