@@ -57,15 +57,15 @@ locals {
 
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
   default_ng_12_22 = {
-    desired_size     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_size         = 85
-    min_size         = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
-    subnet_ids             = data.aws_subnets.private.ids
+    desired_size         = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
+    max_size             = 85
+    min_size             = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+    subnet_ids           = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
     kubelet_extra_args   = "--max-pods=110"
-    name = "${terraform.workspace}-def-ng"
+    name                 = "${terraform.workspace}-def-ng"
 
-    create_security_group = false
+    create_security_group  = false
     create_launch_template = true
     pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
@@ -90,17 +90,17 @@ locals {
     desired_size = 2
     max_size     = 3
     min_size     = 2
-    subnet_ids          = data.aws_subnets.private_zone_2b.ids
-    name = "${terraform.workspace}-mon-ng"
-    
-    create_security_group = false
+    subnet_ids   = data.aws_subnets.private_zone_2b.ids
+    name         = "${terraform.workspace}-mon-ng"
+
+    create_security_group  = false
     create_launch_template = true
     pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
-    instance_types = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
+    instance_types               = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
     labels = {
       Terraform                                     = "true"
       "cloud-platform.justice.gov.uk/monitoring-ng" = "true"
@@ -134,22 +134,22 @@ module "eks" {
   version = "18.31.2"
 
 
-  cluster_name                  = terraform.workspace
-  subnet_ids                       = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
-  vpc_id                        = data.aws_vpc.selected.id
-  cluster_version               = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
-  enable_irsa                   = true
-  cluster_enabled_log_types     = var.cluster_enabled_log_types
+  cluster_name              = terraform.workspace
+  subnet_ids                = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
+  vpc_id                    = data.aws_vpc.selected.id
+  cluster_version           = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
+  enable_irsa               = true
+  cluster_enabled_log_types = var.cluster_enabled_log_types
 
   cloudwatch_log_group_retention_in_days = var.cluster_log_retention_in_days
   cluster_security_group_description     = "EKS cluster security group."
   cluster_security_group_name            = terraform.workspace
 
-  create_node_security_group  = false
-  node_security_group_id      = aws_security_group.node.id
+  create_node_security_group = false
+  node_security_group_id     = aws_security_group.node.id
 
-  iam_role_name                          = terraform.workspace
-  prefix_separator                       = ""
+  iam_role_name    = terraform.workspace
+  prefix_separator = ""
 
   eks_managed_node_groups = {
     default_ng_12_22 = local.default_ng_12_22
