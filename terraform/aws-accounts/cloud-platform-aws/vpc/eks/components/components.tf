@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.18.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.18.1"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -90,7 +90,7 @@ module "external_secrets_operator" {
   secrets_prefix              = terraform.workspace
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.4.2"
 
   replica_count       = "12"
   controller_name     = "default"
@@ -108,7 +108,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.4.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.4.2"
 
   replica_count                = "12"
   controller_name              = "modsec"
