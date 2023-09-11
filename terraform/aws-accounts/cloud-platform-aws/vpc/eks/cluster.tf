@@ -54,6 +54,7 @@ locals {
     default = ["t3a.medium", "t3.medium"]
   }
 
+
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
   default_ng_12_22 = {
     desired_size     = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
@@ -62,7 +63,7 @@ locals {
     subnet_ids             = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
     kubelet_extra_args   = "--max-pods=110"
-    name = "${terraform.workspace}-default-ng"
+    name = "${terraform.workspace}-def-ng"
 
     create_security_group = false
     create_launch_template = true
@@ -90,7 +91,7 @@ locals {
     max_size     = 3
     min_size     = 2
     subnet_ids          = data.aws_subnets.private_zone_2b.ids
-    name = "${terraform.workspace}-monitoring_ng"
+    name = "${terraform.workspace}-mon-ng"
     
     create_security_group = false
     create_launch_template = true
@@ -219,26 +220,6 @@ module "eks" {
   tags = local.tags
 }
 
-
-resource "aws_security_group_rule" "workers_egress_internet" {
-  description       = "Allow nodes all egress to the Internet."
-  protocol          = "-1"
-  security_group_id = module.eks.node_security_group_id
-  cidr_blocks       = ["0.0.0.0/0"]
-  from_port         = 0
-  to_port           = 0
-  type              = "egress"
-}
-
-resource "aws_security_group_rule" "workers_ingress_self" {
-  description              = "Allow node to communicate with each other."
-  protocol                 = "-1"
-  security_group_id        = module.eks.node_security_group_id
-  source_security_group_id = module.eks.node_security_group_id
-  from_port                = 0
-  to_port                  = 65535
-  type                     = "ingress"
-}
 
 
 #######################
