@@ -21,14 +21,14 @@ locals {
   # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler)
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/835
   node_groups_count = {
-    live    = "54"
+    live    = "4"
     live-2  = "7"
     manager = "4"
     default = "3"
   }
   # Default node group minimum capacity 
   default_ng_min_count = {
-    live    = "45"
+    live    = "2"
     live-2  = "2"
     manager = "4"
     default = "2"
@@ -67,8 +67,8 @@ locals {
         ebs = {
           volume_size           = 100
           volume_type           = "gp2"
-          iops                  = 300
-          throughput            = 0
+          iops                  = 0
+          #throughput            = 125
           encrypted             = false
           kms_key_id            = ""
           delete_on_termination = true
@@ -112,8 +112,8 @@ locals {
         ebs = {
           volume_size           = 100
           volume_type           = "gp2"
-          iops                  = 300
-          throughput            = 0
+          iops                  = 0
+          #throughput            = 125
           encrypted             = false
           kms_key_id            = ""
           delete_on_termination = true
@@ -191,7 +191,7 @@ module "eks" {
   iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
-  # manage_aws_auth_configmap = true
+  manage_aws_auth_configmap = true
   aws_auth_users = [
     {
       userarn  = "arn:aws:iam::754256621582:user/PoornimaKrishnasamy"
