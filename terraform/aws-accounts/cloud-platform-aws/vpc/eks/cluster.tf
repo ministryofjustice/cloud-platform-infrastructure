@@ -60,6 +60,22 @@ locals {
     desired_size         = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_size             = 85
     min_size             = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+
+    block_device_mappings = {
+      xvda = {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = 100
+          volume_type           = "gp2"
+          iops                  = 300
+          throughput            = 0
+          encrypted             = false
+          kms_key_id            = ""
+          delete_on_termination = true
+        }
+      }
+    }
+
     subnet_ids           = data.aws_subnets.private.ids
     bootstrap_extra_args = "--use-max-pods false"
     kubelet_extra_args   = "--max-pods=110"
@@ -90,6 +106,22 @@ locals {
     desired_size = 2
     max_size     = 3
     min_size     = 2
+    block_device_mappings = {
+      xvda = {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = 100
+          volume_type           = "gp2"
+          iops                  = 300
+          throughput            = 0
+          encrypted             = false
+          kms_key_id            = ""
+          delete_on_termination = true
+        }
+      }
+    }
+
+
     subnet_ids   = data.aws_subnets.private_zone_2b.ids
     name         = "${terraform.workspace}-mon-ng"
 
