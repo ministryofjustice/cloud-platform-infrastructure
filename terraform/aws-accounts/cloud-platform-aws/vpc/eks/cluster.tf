@@ -57,9 +57,9 @@ locals {
 
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
   default_ng_12_22 = {
-    desired_size         = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_size             = 85
-    min_size             = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+    desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
+    max_size     = 85
+    min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
 
     block_device_mappings = {
       xvda = {
@@ -122,8 +122,8 @@ locals {
     }
 
 
-    subnet_ids   = data.aws_subnets.private_zone_2b.ids
-    name         = "${terraform.workspace}-mon-ng"
+    subnet_ids = data.aws_subnets.private_zone_2b.ids
+    name       = "${terraform.workspace}-mon-ng"
 
     create_security_group  = false
     create_launch_template = true
