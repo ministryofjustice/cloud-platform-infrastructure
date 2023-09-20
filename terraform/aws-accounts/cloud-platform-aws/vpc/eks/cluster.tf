@@ -28,7 +28,7 @@ locals {
   }
   # Default node group minimum capacity 
   default_ng_min_count = {
-    live    = "2"
+    live    = "3"
     live-2  = "2"
     manager = "4"
     default = "2"
@@ -68,7 +68,6 @@ locals {
           volume_size = 100
           volume_type = "gp2"
           iops        = 0
-          #throughput            = 125
           encrypted             = false
           kms_key_id            = ""
           delete_on_termination = true
@@ -113,7 +112,6 @@ locals {
           volume_size = 100
           volume_type = "gp2"
           iops        = 0
-          #throughput            = 125
           encrypted             = false
           kms_key_id            = ""
           delete_on_termination = true
