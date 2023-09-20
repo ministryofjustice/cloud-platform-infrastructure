@@ -65,9 +65,9 @@ locals {
       xvda = {
         device_name = "/dev/xvda"
         ebs = {
-          volume_size = 100
-          volume_type = "gp2"
-          iops        = 0
+          volume_size           = 100
+          volume_type           = "gp2"
+          iops                  = 0
           encrypted             = false
           kms_key_id            = ""
           delete_on_termination = true
@@ -109,9 +109,9 @@ locals {
       xvda = {
         device_name = "/dev/xvda"
         ebs = {
-          volume_size = 100
-          volume_type = "gp2"
-          iops        = 0
+          volume_size           = 100
+          volume_type           = "gp2"
+          iops                  = 0
           encrypted             = false
           kms_key_id            = ""
           delete_on_termination = true
