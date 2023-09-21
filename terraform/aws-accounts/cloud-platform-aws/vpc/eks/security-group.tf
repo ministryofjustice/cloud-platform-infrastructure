@@ -70,3 +70,14 @@ resource "aws_security_group_rule" "cluster_https_node_ingress" {
   to_port                  = 443
   type                     = "ingress"
 }
+
+# cluster security group rule for cluster egress to internet
+resource "aws_security_group_rule" "cluster_egress_internet" {
+  description       = "Allow cluster egress access to the Internet."
+  protocol          = "-1"
+  security_group_id = module.eks.cluster_security_group_id
+  cidr_blocks       = ["0.0.0.0/0"]
+  from_port         = 0
+  to_port           = 0
+  type              = "egress"
+}
