@@ -19,8 +19,10 @@ resource "aws_waf_ipset" "prisoner_content_hub" {
       k => strcontains(v, "/") ? v : "${v}/32"
     }
 
-    type  = "IPV4"
-    value = each.value
+    content {
+      type  = "IPV4"
+      value = ip_set_descriptors.each.value
+    }
   }
 }
 
