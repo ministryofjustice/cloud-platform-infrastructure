@@ -15,7 +15,7 @@ resource "aws_waf_ipset" "prisoner_content_hub" {
 
   dynamic "ip_set_descriptors" {
     for_each = {
-      for k, v in data.kubernetes_secret_v1.prisoner_content_hub.data:
+      for k, v in data.kubernetes_secret_v1.prisoner_content_hub.data :
       k => strcontains(v, "/") ? v : "${v}/32"
     }
 
@@ -36,7 +36,7 @@ resource "aws_waf_rule" "prisoner_content_hub" {
 }
 
 resource "aws_waf_web_acl" "prisoner_content_hub" {
-  name = "prisoner_content_hub"
+  name        = "prisoner_content_hub"
   metric_name = "prisoner_content_hub"
 
   default_action {
