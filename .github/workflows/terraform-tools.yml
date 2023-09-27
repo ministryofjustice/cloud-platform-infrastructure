@@ -15,7 +15,7 @@ jobs:
         with:
           path: ~/.tflint.d/plugins
           key: tflint-${{ hashFiles('.tflint.hcl') }}
-      - uses: terraform-linters/setup-tflint@v3
+      - uses: terraform-linters/setup-tflint@v4
         with:
           tflint_version: v0.44.1
       - run: find . -type f -name "*.tfvars" -delete # remove terraform variable files before linting
