@@ -28,7 +28,7 @@ resource "aws_waf_ipset" "prisoner_content_hub" {
 
 resource "aws_waf_rule" "prisoner_content_hub" {
   name        = "prisoner_content_hub"
-  metric_name = "prisoner_content_hub"
+  metric_name = "prisonerContentHub"
 
   predicates {
     data_id = aws_waf_ipset.prisoner_content_hub.id
@@ -39,7 +39,7 @@ resource "aws_waf_rule" "prisoner_content_hub" {
 
 resource "aws_waf_web_acl" "prisoner_content_hub" {
   name        = "prisoner_content_hub"
-  metric_name = "prisoner_content_hub"
+  metric_name = "prisonerContentHub"
 
   default_action {
     type = "BLOCK"
