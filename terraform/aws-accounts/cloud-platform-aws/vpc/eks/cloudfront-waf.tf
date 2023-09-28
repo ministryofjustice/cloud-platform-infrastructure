@@ -16,7 +16,7 @@ resource "aws_waf_ipset" "prisoner_content_hub" {
   dynamic "ip_set_descriptors" {
     for_each = tomap({
       for k, v in data.kubernetes_secret_v1.prisoner_content_hub.data :
-      k => (length(split("/", v)) > 1) ? nonsensitive(v) : "${nonsensitive(v)}/32" # when we update to terraform 1.5.0, we can use strcontains()
+      k => (length(split("/", v)) > 1) ? v : "${v}/32" # when we update to terraform 1.5.0, we can use strcontains()
     })
 
     content {
