@@ -34,7 +34,7 @@ module "concourse" {
 }
 
 module "cluster_autoscaler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.4.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.4.1"
 
   enable_overprovision        = lookup(local.prod_workspace, terraform.workspace, false)
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -83,7 +83,7 @@ module "external_dns" {
 }
 
 module "external_secrets_operator" {
-  source                      = "github.com/ministryofjustice/cloud-platform-terraform-external-secrets-operator?ref=0.0.1"
+  source                      = "github.com/ministryofjustice/cloud-platform-terraform-external-secrets-operator?ref=0.0.2"
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
@@ -228,7 +228,7 @@ module "velero" {
 }
 
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.2.1"
 
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
 }
