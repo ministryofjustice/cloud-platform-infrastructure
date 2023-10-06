@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.18.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.18.2"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -228,7 +228,7 @@ module "velero" {
 }
 
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.2.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.2."
 
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
 }
