@@ -218,13 +218,13 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=1.11.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=2.0.0"
 
   enable_velero               = lookup(local.prod_2_workspace, terraform.workspace, false)
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
-  restic_cpu_requests         = "2m"
+  node_agent_cpu_requests     = "2m"
 }
 
 module "kuberhealthy" {
