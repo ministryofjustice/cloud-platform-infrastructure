@@ -20,7 +20,7 @@ locals {
     hostendpoints                 = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_hostendpoints.yaml"
     ipamblocks                    = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_ipamblocks.yaml"
     ipamconfigs                   = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_ipamconfigs.yaml"
-    ipamhandles                   = "https://raw.githubusercontent.com/projectcalico/calico/master/libcalico-go/config/crd/crd.projectcalico.org_ipamhandles.yaml"
+    ipamhandles                   = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_ipamhandles.yaml"
     ippools                       = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_ippools.yaml"
     ipreservations                = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_ipreservations.yaml"
     kubecontrollersconfigurations = "https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/libcalico-go/config/crd/crd.projectcalico.org_kubecontrollersconfigurations.yaml"
