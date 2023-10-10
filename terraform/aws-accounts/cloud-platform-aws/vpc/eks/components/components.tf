@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.18.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.18.4"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -59,7 +59,7 @@ module "descheduler" {
   ]
 }
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.7.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.7.1"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
@@ -90,7 +90,7 @@ module "external_secrets_operator" {
   secrets_prefix              = terraform.workspace
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.4.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.4.3"
 
   replica_count       = "12"
   controller_name     = "default"
@@ -108,7 +108,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.4.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.4.3"
 
   replica_count                = "12"
   controller_name              = "modsec"
@@ -126,7 +126,7 @@ module "modsec_ingress_controllers_v1" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.5.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.5.3"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
@@ -141,7 +141,7 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.9.15"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.9.16"
 
   elasticsearch_host              = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
@@ -149,7 +149,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.10.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.10.2"
 
   alertmanager_slack_receivers               = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config                           = local.enable_alerts ? var.pagerduty_config : "dummy"
@@ -175,7 +175,7 @@ module "monitoring" {
 }
 
 module "gatekeeper" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.6.1"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.6.2"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   dryrun_map = {
@@ -218,7 +218,7 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=2.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=2.0.1"
 
   enable_velero               = lookup(local.prod_2_workspace, terraform.workspace, false)
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
@@ -234,7 +234,7 @@ module "kuberhealthy" {
 }
 
 module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.7.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.7.3"
 
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
