@@ -10,6 +10,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
 	. "github.com/onsi/gomega"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
@@ -32,7 +33,14 @@ var _ = Describe("modsec-ingress-controller", func() {
 		goodUrl = fmt.Sprintf("https://%s", host)
 		badUrl = fmt.Sprintf("%s?exec=/bin/bash", url)
 
-		err := k8s.CreateNamespaceE(GinkgoT(), options, namespaceName)
+		nsObject := metav1.ObjectMeta{
+			Name: namespaceName,
+			Labels: map[string]string{
+				"pod-security.kubernetes.io/audit": "restricted",
+			},
+		}
+
+		err := k8s.CreateNamespaceWithMetadataE(GinkgoT(), options, nsObject)
 		Expect(err).ToNot(HaveOccurred())
 	})
 

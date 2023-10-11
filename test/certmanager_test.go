@@ -12,6 +12,7 @@ import (
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // DefaultCert is the struct of the default certificate used
@@ -74,7 +75,17 @@ var _ = Describe("cert-manager", FlakeAttempts(2), func() {
 			namespace = fmt.Sprintf("%s-certman-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 			options = k8s.NewKubectlOptions("", "", namespace)
 			host = fmt.Sprintf("%s.%s", namespace, testDomain)
-			k8s.CreateNamespace(GinkgoT(), options, namespace)
+
+			nsObject := metav1.ObjectMeta{
+				Name: namespace,
+				Labels: map[string]string{
+					"pod-security.kubernetes.io/audit": "restricted",
+				},
+			}
+
+			err := k8s.CreateNamespaceWithMetadataE(GinkgoT(), options, nsObject)
+			Expect(err).NotTo(HaveOccurred())
+
 			app := helpers.HelloworldOpt{
 				Hostname:   host,
 				Class:      "default",

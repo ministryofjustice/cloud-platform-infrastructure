@@ -12,6 +12,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var _ = Describe("ingress-controllers", func() {
@@ -26,7 +27,14 @@ var _ = Describe("ingress-controllers", func() {
 		options = k8s.NewKubectlOptions("", "", namespaceName)
 		url = fmt.Sprintf("https://%s", host)
 
-		err := k8s.CreateNamespaceE(GinkgoT(), options, namespaceName)
+		nsObject := metav1.ObjectMeta{
+			Name: namespaceName,
+			Labels: map[string]string{
+				"pod-security.kubernetes.io/audit": "restricted",
+			},
+		}
+
+		err := k8s.CreateNamespaceWithMetadataE(GinkgoT(), options, nsObject)
 		Expect(err).ToNot(HaveOccurred())
 	})
 

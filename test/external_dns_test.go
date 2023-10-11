@@ -13,6 +13,7 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // External DNS tests the external-dns function in a cluster can create
@@ -33,7 +34,14 @@ var _ = Describe("external-dns", func() {
 		options = k8s.NewKubectlOptions("", "", namespaceName)
 		domain = fmt.Sprintf("%s.%s", namespaceName, testDomain)
 
-		err := k8s.CreateNamespaceE(GinkgoT(), options, namespaceName)
+		nsObject := metav1.ObjectMeta{
+			Name: namespaceName,
+			Labels: map[string]string{
+				"pod-security.kubernetes.io/audit": "restricted",
+			},
+		}
+
+		err := k8s.CreateNamespaceWithMetadataE(GinkgoT(), options, nsObject)
 		Expect(err).ToNot(HaveOccurred())
 
 		tpl, err := helpers.TemplateFile("./fixtures/external-dns-ingress.yaml.tmpl", "external-dns-ingress.yaml.tmpl", template.FuncMap{

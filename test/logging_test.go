@@ -40,7 +40,15 @@ var _ = Describe("logging", func() {
 			namespace = fmt.Sprintf("%s-logs-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 			options = k8s.NewKubectlOptions("", "", namespace)
 			host := fmt.Sprintf("%s.%s", namespace, testDomain)
-			err := k8s.CreateNamespaceE(GinkgoT(), options, namespace)
+
+			nsObject := metav1.ObjectMeta{
+				Name: namespace,
+				Labels: map[string]string{
+					"pod-security.kubernetes.io/audit": "restricted",
+				},
+			}
+
+			err := k8s.CreateNamespaceWithMetadataE(GinkgoT(), options, nsObject)
 			Expect(err).ToNot(HaveOccurred())
 			class := "default"
 

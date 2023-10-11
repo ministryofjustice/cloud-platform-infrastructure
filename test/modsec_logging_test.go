@@ -18,6 +18,7 @@ import (
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type PhraseData struct {
@@ -122,7 +123,15 @@ var _ = Describe("logging", Ordered, func() {
 			namespace = fmt.Sprintf("%s-logs-%s", c.Prefix, uniqueId)
 			options = k8s.NewKubectlOptions("", "", namespace)
 			host := fmt.Sprintf("%s.%s", namespace, testDomain)
-			err := k8s.CreateNamespaceE(GinkgoT(), options, namespace)
+
+			nsObject := metav1.ObjectMeta{
+				Name: namespace,
+				Labels: map[string]string{
+					"pod-security.kubernetes.io/audit": "restricted",
+				},
+			}
+
+			err := k8s.CreateNamespaceWithMetadataE(GinkgoT(), options, nsObject)
 			Expect(err).ToNot(HaveOccurred())
 			class := "modsec"
 
