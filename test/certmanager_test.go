@@ -84,6 +84,8 @@ var _ = Describe("cert-manager", FlakeAttempts(2), func() {
 			}
 
 			err := k8s.CreateNamespaceWithMetadataE(GinkgoT(), options, nsObject)
+			Expect(err).NotTo(HaveOccurred())
+
 			app := helpers.HelloworldOpt{
 				Hostname:   host,
 				Class:      "default",
