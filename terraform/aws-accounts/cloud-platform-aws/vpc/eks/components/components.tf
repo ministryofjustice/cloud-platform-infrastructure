@@ -175,7 +175,7 @@ module "monitoring" {
 }
 
 module "gatekeeper" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.6.2"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.7.0"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   dryrun_map = {
@@ -188,7 +188,8 @@ module "gatekeeper" {
     external_dns_identifier            = terraform.workspace == "live" ? false : true,
     external_dns_weight                = terraform.workspace == "live" ? false : true,
     valid_hostname                     = lookup(local.prod_2_workspace, terraform.workspace, false),
-    warn_service_account_secret_delete = false
+    warn_service_account_secret_delete = false,
+    user_ns_requires_psa_label         = false
   }
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
