@@ -27,48 +27,57 @@ data "aws_ssm_parameter" "test" {
   name = "/prisoner-content-hub-test/ip-allow-list"
 }
 
-resource "aws_waf_ipset" "prisoner_content_hub" {
-  name = "prisoner-content-hub-production"
+resource "aws_wafv2_ip_set" "prisoner_content_hub" {
+  provider = aws.northvirginia
 
-  dynamic "ip_set_descriptors" {
-    for_each = tomap({
-      for k, v in tomap(jsondecode(nonsensitive(data.aws_ssm_parameter.test.value))) :
-      k => (length(split("/", v)) > 1) ? v : "${v}/32" # when we update to terraform 1.5.0, we can use strcontains()
-    })
-
-    content {
-      type  = "IPV4"
-      value = sensitive(ip_set_descriptors.value)
-    }
-  }
+  name               = "prisoner-content-hub-production"
+  scope              = "CLOUDFRONT"
+  ip_address_version = "IPV4"
+  addresses = toset([
+    for k, v in tomap(jsondecode(nonsensitive(data.aws_ssm_parameter.test.value))) :
+    (length(split("/", v)) > 1) ? v : "${v}/32" # when we update to terraform 1.5.0, we can use strcontains()
+  ])
 }
 
-resource "aws_waf_rule" "prisoner_content_hub" {
-  name        = "prisoner_content_hub"
-  metric_name = "prisonerContentHub"
+resource "aws_wafv2_web_acl" "prisoner_content_hub" {
+  provider = aws.northvirginia
 
-  predicates {
-    data_id = aws_waf_ipset.prisoner_content_hub.id
-    negated = false
-    type    = "IPMatch"
-  }
-}
-
-resource "aws_waf_web_acl" "prisoner_content_hub" {
-  name        = "prisoner_content_hub"
-  metric_name = "prisonerContentHub"
+  name  = "prisoner-content-hub-production"
+  scope = "CLOUDFRONT"
 
   default_action {
-    type = "BLOCK"
+    allow {
+    }
   }
 
-  rules {
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    sampled_requests_enabled   = true
+    metric_name                = "prisoner-content-hub-production"
+  }
+
+  rule {
+    name     = "ip_block"
+    priority = 1
+
     action {
-      type = "ALLOW"
+      block {
+        custom_response {
+          response_code = 403
+        }
+      }
     }
 
-    priority = 1
-    rule_id  = aws_waf_rule.prisoner_content_hub.id
-    type     = "REGULAR"
+    statement {
+      ip_set_reference_statement {
+        arn = aws_wafv2_ip_set.prisoner_content_hub.arn
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "prisoner-content-hub-production-blocked-ips"
+      sampled_requests_enabled   = true
+    }
   }
 }

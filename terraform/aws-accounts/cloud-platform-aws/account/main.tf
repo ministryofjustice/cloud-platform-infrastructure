@@ -45,6 +45,22 @@ provider "aws" {
   }
 }
 
+# used for cloudfront/waf
+provider "aws" {
+  alias  = "northvirginia"
+  region = "us-east-1"
+
+  default_tags {
+    tags = {
+      business-unit = "Platforms"
+      application   = "cloud-platform-aws/account"
+      is-production = "true"
+      owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+      source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+    }
+  }
+}
+
 data "aws_caller_identity" "current" {}
 data "aws_iam_account_alias" "current" {}
 data "aws_region" "current" {}
