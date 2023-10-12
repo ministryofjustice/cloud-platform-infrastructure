@@ -5,78 +5,73 @@
 # Using AWS WAF is/was the only way to IP allowlist with CloudFront (as at 2023-10-12).
 # We should explore alternatives as they become available.
 
-# resource "aws_ssm_parameter" "prisoner_content_hub_production" {
-#   name  = "/prisoner-content-hub-production/ip-allow-list"
-#   type  = "String"
-#   value = "bar"
-# }
+locals {
+  prisoner_content_hub_environments = toset(["production", "staging", "development"])
+}
 
-# resource "aws_ssm_parameter" "prisoner_content_hub_staging" {
-#   name  = "/prisoner-content-hub-staging/ip-allow-list"
-#   type  = "String"
-#   value = "bar"
-# }
+resource "aws_ssm_parameter" "prisoner_content_hub" {
+  for_each = local.prisoner_content_hub_environments
 
-# resource "aws_ssm_parameter" "prisoner_content_hub_development" {
-#   name  = "/prisoner-content-hub-development/ip-allow-list"
-#   type  = "String"
-#   value = "bar"
-# }
+  name  = "/prisoner-content-hub-${each.value}/ip-allow-list"
+  type  = "String"
+  value = "{}"
 
-data "aws_ssm_parameter" "test" {
-  name = "/prisoner-content-hub-test/ip-allow-list"
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
 
 resource "aws_wafv2_ip_set" "prisoner_content_hub" {
+  for_each = local.prisoner_content_hub_environments
   provider = aws.northvirginia
 
-  name               = "prisoner-content-hub-production"
+  name               = "prisoner-content-hub-${each.value}"
   scope              = "CLOUDFRONT"
   ip_address_version = "IPV4"
   addresses = toset([
-    for k, v in tomap(jsondecode(nonsensitive(data.aws_ssm_parameter.test.value))) :
+    for k, v in tomap(jsondecode(nonsensitive(aws_ssm_parameter.prisoner_content_hub[each.value].value))) :
     (length(split("/", v)) > 1) ? v : "${v}/32" # when we update to terraform 1.5.0, we can use strcontains()
   ])
 }
 
 resource "aws_wafv2_web_acl" "prisoner_content_hub" {
+  for_each = local.prisoner_content_hub_environments
   provider = aws.northvirginia
 
-  name  = "prisoner-content-hub-production"
+  name  = "prisoner-content-hub-${each.value}"
   scope = "CLOUDFRONT"
 
   default_action {
-    allow {
+    block {
+      custom_response {
+        response_code = 403
+      }
     }
   }
 
   visibility_config {
     cloudwatch_metrics_enabled = true
     sampled_requests_enabled   = true
-    metric_name                = "prisoner-content-hub-production"
+    metric_name                = "prisoner-content-hub-${each.value}"
   }
 
   rule {
-    name     = "ip_block"
-    priority = 1
+    name     = "ip_allow"
+    priority = 0
 
     action {
-      block {
-        custom_response {
-          response_code = 403
-        }
-      }
+      allow {}
     }
 
     statement {
       ip_set_reference_statement {
-        arn = aws_wafv2_ip_set.prisoner_content_hub.arn
+        arn = aws_wafv2_ip_set.prisoner_content_hub[each.value].arn
       }
     }
 
     visibility_config {
       cloudwatch_metrics_enabled = true
-      metric_name                = "prisoner-content-hub-production-blocked-ips"
+      metric_name                = "prisoner-content-hub-${each.value}-allowed-ips"
       sampled_requests_enabled   = true
     }
   }
