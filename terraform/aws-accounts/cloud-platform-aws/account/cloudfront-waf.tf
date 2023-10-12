@@ -76,3 +76,11 @@ resource "aws_wafv2_web_acl" "prisoner_content_hub" {
     }
   }
 }
+
+resource "aws_ssm_parameter" "prisoner_content_hub_web_acl_arn" {
+  for_each = local.prisoner_content_hub_environments
+
+  name  = "/prisoner-content-hub-${each.value}/web-acl-arn"
+  type  = "String"
+  value = aws_wafv2_web_acl.prisoner_content_hub[each.value].arn
+}
