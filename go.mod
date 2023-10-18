@@ -5,8 +5,8 @@ go 1.21
 toolchain go1.21.1
 
 require (
-	github.com/aws/aws-sdk-go v1.45.24
-	github.com/go-resty/resty/v2 v2.9.1
+	github.com/aws/aws-sdk-go v1.45.27
+	github.com/go-resty/resty/v2 v2.10.0
 	github.com/gruntwork-io/terratest v0.46.0
 	github.com/ministryofjustice/cloud-platform-go-library v0.0.0-20220803122921-1ca1153b1730
 	github.com/onsi/ginkgo/v2 v2.13.0
