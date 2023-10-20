@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.19.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.19.1"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -34,7 +34,7 @@ module "concourse" {
 }
 
 module "cluster_autoscaler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.5.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.5.3"
 
   enable_overprovision        = lookup(local.prod_workspace, terraform.workspace, false)
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -83,7 +83,7 @@ module "external_dns" {
 }
 
 module "external_secrets_operator" {
-  source                      = "github.com/ministryofjustice/cloud-platform-terraform-external-secrets-operator?ref=0.0.2"
+  source                      = "github.com/ministryofjustice/cloud-platform-terraform-external-secrets-operator?ref=0.0.3"
   dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
@@ -207,7 +207,7 @@ module "gatekeeper" {
 }
 
 module "starter_pack" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.2.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.2.3"
 
   enable_starter_pack = lookup(local.prod_2_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -229,7 +229,7 @@ module "velero" {
 }
 
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.2.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.2.4"
 
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
 }
