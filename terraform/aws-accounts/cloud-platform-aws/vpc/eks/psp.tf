@@ -1,4 +1,71 @@
 
+## Pod Security Policy: 0-super-privileged
+resource "kubernetes_pod_security_policy" "super_privileged" {
+  metadata {
+    name = "0-super-privileged"
+    annotations = {
+      "seccomp.security.alpha.kubernetes.io/allowedProfileNames" = "*"
+    }
+    labels = {
+      "kubernetes.io/cluster-service" = "true"
+    }
+  }
+
+  spec {
+    privileged                         = true
+    allow_privilege_escalation         = true
+    default_allow_privilege_escalation = true
+
+    allowed_capabilities = ["*"]
+
+    volumes = [
+      "*",
+    ]
+
+    host_ports {
+      min = 0
+      max = 65535
+    }
+
+    host_network = true
+    host_ipc     = true
+    host_pid     = true
+
+    run_as_user {
+      rule = "RunAsAny"
+    }
+
+    se_linux {
+      rule = "RunAsAny"
+    }
+
+    supplemental_groups {
+      rule = "RunAsAny"
+    }
+
+    fs_group {
+      rule = "RunAsAny"
+    }
+  }
+}
+
+
+## ClusterRole: 0-super-privileged
+resource "kubernetes_cluster_role" "super-privileged" {
+  metadata {
+    name = "psp:0-super-privileged"
+  }
+
+  rule {
+    api_groups     = ["policy"]
+    resources      = ["podsecuritypolicies"]
+    verbs          = ["use"]
+    resource_names = ["0-super-privileged"]
+  }
+
+}
+
+
 ## Pod Security Policy: privileged
 resource "kubernetes_pod_security_policy" "privileged" {
   metadata {
