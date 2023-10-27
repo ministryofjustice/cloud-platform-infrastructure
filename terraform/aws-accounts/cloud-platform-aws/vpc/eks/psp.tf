@@ -1,4 +1,3 @@
-
 ## Pod Security Policy: 0-super-privileged
 resource "kubernetes_pod_security_policy" "super_privileged" {
   metadata {
@@ -123,6 +122,24 @@ resource "kubernetes_pod_security_policy" "privileged" {
     }
   }
 }
+
+## ClusterRoleBinding: super-privileged
+resource "kubernetes_cluster_role_binding" "super_privileged" {
+  metadata {
+    name = "default:0-super-privileged"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "psp:0-super-privileged"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "temp-access"
+    namespace = "not-required"
+  }
+}
+
 
 
 ## ClusterRole: privileged
