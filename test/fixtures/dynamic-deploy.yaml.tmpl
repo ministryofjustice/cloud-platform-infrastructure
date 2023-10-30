@@ -1,0 +1,137 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .deploymentName }}
+  namespace: {{ .namespace }}
+  labels:
+    app: {{ .deploymentName }}
+    owner: cloud-platform
+    env: dev
+spec:
+{{ if or .fsGroup .supplementalGroups .seccompProfile .rootRunAsUser (eq .fsGroup 0) (eq .supplementalGroups 0) (eq .rootRunAsUser 0)}}
+  securityContext:
+    {{ if or .fsGroup (eq .fsGroup 0) }}
+      fsGroup: {{ .fsGroup }}
+    {{ end }}
+    {{ if or .supplementalGroups (eq .supplementalGroups 0) }}
+      supplementalGroups: {{ .supplementalGroups }}
+    {{ end }}
+    {{ if .seccompProfile }}
+      seccompProfile:
+        type: {{ .seccompProfile }}
+    {{ end }}
+    {{ if or .rootRunAsUser (eq .rootRunAsUser 0) }}
+      runAsUser: {{ .rootRunAsUser }}
+    {{ end }}
+{{ end }}
+  containers:
+    - name: {{ .deploymentName }}
+      image: nginxinc/nginx-unprivileged:latest
+      imagePullPolicy: IfNotPresent
+      securityContext:  
+      {{ if or .allowPrivilegeEscalation (eq .allowPrivilegeEscalation false) }}
+        allowPrivilegeEscalation: {{ .allowPrivilegeEscalation }} 
+      {{ end }}
+      {{ if or .runAsUser (eq .runAsUser 0) }}
+        runAsUser: {{ .runAsUser }}
+      {{ end }}
+      {{ if or .readOnlyRootFilesystem (eq .readOnlyRootFilesystem false) }}
+        readOnlyRootFilesystem: {{ .readOnlyRootFilesystem }}
+      {{ end }}
+      {{ if or .runAsNonRoot (eq .runAsNonRoot false) }}
+        runAsNonRoot: {{ .runAsNonRoot }}
+      {{ end }}
+      {{ if or .capabilitiesAdd .capabilitiesDrop }}
+        capabilities:
+        {{ if .capabilitiesDrop }}
+          drop: {{ .capabilitiesDrop }}
+        {{ end }}
+        {{ if .capabilitiesAdd }}
+          add: {{ .capabilitiesAdd }}
+        {{ end }}
+      {{ end }}
+      ports:
+      - containerPort: 8080
+      resources:  
+        limits:  
+          cpu: 200m  
+          memory: 20Mi  
+        requests:  
+          cpu: 100m  
+          memory: 10Mi  
+      readinessProbe:
+        tcpSocket:
+          port: 8080
+        initialDelaySeconds: 5
+        periodSeconds: 10
+      livenessProbe:
+        tcpSocket:
+          port: 8080
+        initialDelaySeconds: 15
+        periodSeconds: 20
+      volumeMounts:
+        - mountPath: /tmp
+          name: tmp
+{{ if .initContainers }}
+  initContainers:
+    - name: init-test-{{ .deploymentName }}
+      image: nginxinc/nginx-unprivileged:latest
+      imagePullPolicy: IfNotPresent
+      securityContext:  
+      {{ if or .initAllowPrivilegeEscalation (eq .initAllowPrivilegeEscalation false) }}
+        allowPrivilegeEscalation: {{ .initAllowPrivilegeEscalation }} 
+      {{ end }}
+      {{ if or .initRunAsUser (eq .initRunAsUser 0) }}
+        runAsUser: {{ .initRunAsUser }}
+      {{ end }}
+      {{ if or .initReadOnlyRootFilesystem (eq .initReadOnlyRootFilesystem false) }}
+        readOnlyRootFilesystem: {{ .initReadOnlyRootFilesystem }}
+      {{ end }}
+      {{ if or .initRunAsNonRoot (eq .initRunAsNonRoot false) }}
+        runAsNonRoot: {{ .initRunAsNonRoot }}
+      {{ end }}
+      {{ if or .initCapabilitiesAdd .initCapabilitiesDrop }}
+        capabilities:
+        {{ if .initCapabilitiesDrop }}
+          drop: {{ .initCapabilitiesDrop }}
+        {{ end }}
+        {{ if .initCapabilitiesAdd }}
+          add: {{ .initCapabilitiesAdd }}
+        {{ end }}
+      {{ end }}
+      command: ['sh', '-c', 'echo The app is running! && sleep 10']
+  {{ end }}
+{{ if .ephemeralContainers }}
+  ephemeralContainers:
+    - name: ephemeral-test-{{ .deploymentName }}
+      image: nginxinc/nginx-unprivileged:latest
+      imagePullPolicy: IfNotPresent
+      securityContext:  
+      {{ if or .ephemeralAllowPrivilegeEscalation (eq .ephemeralAllowPrivilegeEscalation false) }}
+        allowPrivilegeEscalation: {{ .ephemeralAllowPrivilegeEscalation }} 
+      {{ end }}
+      {{ if or .ephemeralRunAsUser (eq .ephemeralRunAsUser 0) }}
+        runAsUser:  {{.ephemeralRunAsUser }}
+      {{ end }}
+      {{ if or .ephemeralReadOnlyRootFilesystem (eq .ephemeralReadOnlyRootFilesystem false) }}
+        readOnlyRootFilesystem: {{ .ephemeralReadOnlyRootFilesystem }}
+      {{ end }}
+      {{ if or .ephemeralRunAsNonRoot (eq .ephemeralRunAsNonRoot false) }}
+        runAsNonRoot: {{ .ephemeralRunAsNonRoot }}
+      {{ end }}
+      {{ if or .ephemeralCapabilitiesAdd .ephemeralCapabilitiesDrop }}
+        capabilities:
+        {{ if .ephemeralCapabilitiesDrop }}
+          drop: {{ .ephemeralCapabilitiesDrop }}
+        {{ end }}
+        {{ if .ephemeralCapabilitiesAdd }}
+          add: {{ .ephemeralCapabilitiesAdd }}
+        {{ end }}
+      {{ end }}
+      command: ['sh', '-c', 'echo The app is running! && sleep 10']
+{{ end }}
+  volumes:
+  - name: tmp
+    emptyDir: {}
+
+
