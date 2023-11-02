@@ -175,7 +175,7 @@ module "monitoring" {
 }
 
 module "gatekeeper" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.7.1"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.8.0"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   dryrun_map = {
