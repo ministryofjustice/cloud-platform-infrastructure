@@ -74,6 +74,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			runNonRootDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(runNonRootDeploy).To(ContainSubstring("runAsNonRoot: false"))
 		})
 
@@ -90,6 +91,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			runNonRootDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(runNonRootDeploy).To(ContainSubstring("runAsNonRoot: true"))
 		})
 
@@ -106,6 +108,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			allowPrivilegeDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(allowPrivilegeDeploy).To(ContainSubstring("allowPrivilegeEscalation: false"))
 		})
 
@@ -122,6 +125,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			allowPrivilegeDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(allowPrivilegeDeploy).To(ContainSubstring("allowPrivilegeEscalation: true"))
 		})
 
@@ -156,6 +160,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			capabilitiesDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(capabilitiesDeploy).To(MatchRegexp("capabilities:\n.*drop:\n.*- ALL"))
 		})
 
@@ -172,6 +177,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			capabilitiesDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(capabilitiesDeploy).To(MatchRegexp("capabilities:\n.*drop:\n.*- NET_RAW"))
 		})
 
@@ -188,6 +194,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			capabilitiesDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(capabilitiesDeploy).To(MatchRegexp("capabilities:\n.*add:\n.*- SYS_TIME"))
 		})
 
@@ -204,6 +211,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			fsGroupDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(fsGroupDeploy).To(ContainSubstring("fsGroup: 1"))
 		})
 
@@ -220,6 +228,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			fsGroupDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(fsGroupDeploy).To(ContainSubstring("fsGroup: 2"))
 		})
 
@@ -236,6 +245,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			fsGroupDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(fsGroupDeploy).To(ContainSubstring("fsGroup: 0"))
 		})
 
@@ -252,6 +262,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			supplementalGroupDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(supplementalGroupDeploy).To(MatchRegexp("supplementalGroups:\n.*- 1"))
 		})
 
@@ -268,6 +279,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			supplementalGroupDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(supplementalGroupDeploy).To(MatchRegexp("supplementalGroups:\n.*- 2"))
 		})
 
@@ -284,6 +296,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			supplementalGroupDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(supplementalGroupDeploy).To(MatchRegexp("supplementalGroups:\n.*- 0"))
 		})
 
@@ -300,6 +313,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			seccompDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(seccompDeploy).To(ContainSubstring("type: RuntimeDefault"))
 		})
 
@@ -316,6 +330,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			seccompDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(seccompDeploy).To(ContainSubstring("type: Unconfined"))
 		})
 
@@ -332,6 +347,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			readOnlyDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(readOnlyDeploy).To(ContainSubstring("readOnlyRootFilesystem: true"))
 		})
 
@@ -348,6 +364,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			readOnlyDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(readOnlyDeploy).To(ContainSubstring("readOnlyRootFilesystem: false"))
 		})
 
@@ -364,6 +381,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			runAsUserDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(runAsUserDeploy).To(ContainSubstring("runAsUser: 0"))
 		})
 
@@ -380,6 +398,7 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			runAsUserDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
+			Expect(err).NotTo(HaveOccurred())
 			Expect(runAsUserDeploy).To(ContainSubstring("runAsUser: 1001"))
 		})
 	})
