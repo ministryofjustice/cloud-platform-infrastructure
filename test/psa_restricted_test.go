@@ -41,7 +41,7 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		It("THEN have a namespace with the `restricted` psa label", func() {
 			options := k8s.NewKubectlOptions("", "", namespace)
 
-			ns, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "ns", "-n", namespace, "-oyaml")
+			ns, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "ns", namespace, "-oyaml")
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(ns).To(ContainSubstring(`pod-security.kubernetes.io/enforce: restricted`))
