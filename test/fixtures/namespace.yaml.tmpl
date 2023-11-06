@@ -23,9 +23,6 @@ subjects:
   - kind: Group
     name: "system:authenticated"
     apiGroup: rbac.authorization.k8s.io
-  - kind: Group 
-    name: system:serviceaccounts:{{ .namespace }}
-    apiGroup: rbac.authorization.k8s.io
   {{ end }}
 roleRef:
   kind: ClusterRole
