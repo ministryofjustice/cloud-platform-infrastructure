@@ -5,7 +5,7 @@ metadata:
   labels:
     cloud-platform.justice.gov.uk/is-production: "false"
     cloud-platform.justice.gov.uk/environment-name: "staging"
-    pod-security.kubernetes.io/{{ or .psaMode "audit" }}: {{ or .psaLevel "restricted" }}
+    pod-security.kubernetes.io/{{ or .psaMode "enforce" }}: {{ or .psaLevel "restricted" }}
 
 ---
 
