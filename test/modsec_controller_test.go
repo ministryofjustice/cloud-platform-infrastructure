@@ -36,7 +36,7 @@ var _ = Describe("modsec-ingress-controller", func() {
 		nsObject := metav1.ObjectMeta{
 			Name: namespaceName,
 			Labels: map[string]string{
-				"pod-security.kubernetes.io/audit": "restricted",
+				"pod-security.kubernetes.io/enforce": "restricted",
 			},
 		}
 
