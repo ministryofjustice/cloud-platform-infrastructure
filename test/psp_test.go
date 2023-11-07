@@ -48,6 +48,7 @@ var _ = Describe("pod security policies", func() {
 
 			tpl, err := helpers.TemplateFile("./fixtures/namespace.yaml.tmpl", "namespace.yaml.tmpl", template.FuncMap{
 				"namespace": namespace,
+				"psaMode":   "audit",
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -131,6 +132,7 @@ var _ = Describe("pod security policies", func() {
 
 			tpl, err := helpers.TemplateFile("./fixtures/namespace.yaml.tmpl", "namespace.yaml.tmpl", template.FuncMap{
 				"namespace": namespace,
+				"psaMode":   "audit",
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -203,6 +205,8 @@ var _ = Describe("pod security policies", func() {
 func makeNamespacePrivileged(options *k8s.KubectlOptions, namespace string) error {
 	tpl, err := helpers.TemplateFile("./fixtures/namespace.yaml.tmpl", "namespace.yaml.tmpl", template.FuncMap{
 		"namespace": namespace,
+		"psaMode":   "audit",
+		"psaLevel":  "privileged",
 	})
 	if err != nil {
 		return err
