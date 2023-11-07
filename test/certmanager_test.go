@@ -79,7 +79,7 @@ var _ = Describe("cert-manager", FlakeAttempts(2), func() {
 			nsObject := metav1.ObjectMeta{
 				Name: namespace,
 				Labels: map[string]string{
-					"pod-security.kubernetes.io/audit": "restricted",
+					"pod-security.kubernetes.io/enforce": "restricted",
 				},
 			}
 
