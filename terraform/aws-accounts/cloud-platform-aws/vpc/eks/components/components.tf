@@ -34,7 +34,7 @@ module "concourse" {
 }
 
 module "cluster_autoscaler" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.5.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.5.6"
 
   enable_overprovision        = lookup(local.prod_workspace, terraform.workspace, false)
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -52,7 +52,7 @@ module "cluster_autoscaler" {
 
 module "descheduler" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 0 : 1
-  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.4.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.5.0"
 
   depends_on = [
     module.monitoring.prometheus_operator_crds_status
