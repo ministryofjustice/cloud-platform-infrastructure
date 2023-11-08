@@ -106,6 +106,36 @@ resource "aws_cloudwatch_log_group" "live_1_log_group" {
   }
 }
 
+resource "aws_cloudwatch_log_group" "live_1_search_slow_log_group" {
+  name              = "/aws/aes/domains/cloud-platform-live/search-slow-logs"
+  retention_in_days = 60
+
+  tags = {
+    Terraform     = "true"
+    application   = "cloud-platform-live"
+    business-unit = "Platforms"
+    is-production = "true"
+    owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+    source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+  }
+}
+
+
+resource "aws_cloudwatch_log_group" "live_1_index_slow_log_group" {
+  name              = "/aws/aes/domains/cloud-platform-live/index-slow-logs"
+  retention_in_days = 60
+
+  tags = {
+    Terraform     = "true"
+    application   = "cloud-platform-live"
+    business-unit = "Platforms"
+    is-production = "true"
+    owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+    source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+  }
+}
+
+
 data "aws_iam_policy_document" "elasticsearch_log_publishing_policy_doc" {
   statement {
     actions = [
@@ -114,7 +144,9 @@ data "aws_iam_policy_document" "elasticsearch_log_publishing_policy_doc" {
       "logs:PutLogEventsBatch",
     ]
 
-    resources = [aws_cloudwatch_log_group.live_1_log_group.arn]
+    resources = [aws_cloudwatch_log_group.live_1_log_group.arn,
+      aws_cloudwatch_log_group.live_1_search_slow_log_group.arn,
+    aws_cloudwatch_log_group.live_1_index_slow_log_group.arn]
 
     principals {
       identifiers = ["es.amazonaws.com"]
@@ -176,6 +208,20 @@ resource "aws_elasticsearch_domain" "live_1" {
     log_type                 = "ES_APPLICATION_LOGS"
     cloudwatch_log_group_arn = aws_cloudwatch_log_group.live_1_log_group.arn
   }
+
+
+  log_publishing_options {
+    enabled                  = true
+    log_type                 = "INDEX_SLOW_LOGS"
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.live_1_index_slow_log_group.arn
+  }
+
+  log_publishing_options {
+    enabled                  = true
+    log_type                 = "SEARCH_SLOW_LOGS"
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.live_1_search_slow_log_group.arn
+  }
+
   auto_tune_options {
     desired_state = "ENABLED"
   }
