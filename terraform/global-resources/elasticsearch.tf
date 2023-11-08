@@ -144,9 +144,9 @@ data "aws_iam_policy_document" "elasticsearch_log_publishing_policy_doc" {
       "logs:PutLogEventsBatch",
     ]
 
-    resources = [aws_cloudwatch_log_group.live_1_log_group.arn,
-      aws_cloudwatch_log_group.live_1_search_slow_log_group.arn,
-    aws_cloudwatch_log_group.live_1_index_slow_log_group.arn]
+    resources = ["${aws_cloudwatch_log_group.live_1_log_group.arn}:*",
+      "${aws_cloudwatch_log_group.live_1_search_slow_log_group.arn}:*",
+    "${aws_cloudwatch_log_group.live_1_index_slow_log_group.arn}:*"]
 
     principals {
       identifiers = ["es.amazonaws.com"]
