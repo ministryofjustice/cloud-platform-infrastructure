@@ -135,8 +135,111 @@ resource "kubernetes_cluster_role_binding" "super_privileged" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = "temp-access"
-    namespace = "not-required"
+    name      = "metrics-server"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "coredns"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "kube-proxy"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "tigera-operator"
+    namespace = "tigera-operator"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "calico-node"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "cluster-autoscaler-aws-cluster-autoscaler"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "calico-typha-cpha"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "typha-cpha"
+    namespace = "kube-system"
+  }
+
+  subject {
+    kind      = "Group"
+    name      = "system:serviceaccounts:cert-manager"
+    api_group = "rbac.authorization.k8s.io"
+  }
+
+  subject {
+    kind      = "Group"
+    name      = "system:serviceaccounts:concourse"
+    api_group = "rbac.authorization.k8s.io"
+  }
+  subject {
+    kind      = "Group"
+    name      = "system:serviceaccounts:ingress-controllers"
+    api_group = "rbac.authorization.k8s.io"
+  }
+  subject {
+    kind      = "Group"
+    name      = "system:serviceaccounts:kuberos"
+    api_group = "rbac.authorization.k8s.io"
+  }
+  subject {
+    kind      = "Group"
+    name      = "system:serviceaccounts:logging"
+    api_group = "rbac.authorization.k8s.io"
+  }
+  subject {
+    kind      = "Group"
+    name      = "system:serviceaccounts:monitoring"
+    api_group = "rbac.authorization.k8s.io"
+  }
+  subject {
+    kind      = "Group"
+    name      = "system:serviceaccounts:opa"
+    api_group = "rbac.authorization.k8s.io"
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = "ebs-csi-node-sa"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "ebs-csi-controller-sa"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "efs-csi-controller-sa"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "efs-csi-node-sa"
+    namespace = "kube-system"
+  }
+  subject {
+    kind      = "Group"
+    name      = "system:serviceaccounts:trivy-system"
+    api_group = "rbac.authorization.k8s.io"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "aws-node"
+    namespace = "kube-system"
   }
 }
 
@@ -452,6 +555,5 @@ resource "kubernetes_cluster_role_binding" "aws_node" {
     name      = "aws-node"
     namespace = "kube-system"
   }
-
 }
 
