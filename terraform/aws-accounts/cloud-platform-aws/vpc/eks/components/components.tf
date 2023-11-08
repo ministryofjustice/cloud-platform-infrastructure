@@ -91,7 +91,7 @@ module "external_secrets_operator" {
 
   depends_on = [
     module.gatekeeper
-  ]  
+  ]
 }
 module "ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.5.0"
