@@ -243,8 +243,8 @@ resource "kubernetes_cluster_role_binding" "super_privileged" {
   }
   subject {
     kind      = "ServiceAccount"
-    namespace = "external-dns"
-    name      = "kube-system"
+    name      = "external-dns"
+    namespace = "kube-system"
   }
   subject {
     kind      = "ServiceAccount"
