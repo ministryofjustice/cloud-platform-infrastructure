@@ -135,6 +135,11 @@ resource "kubernetes_cluster_role_binding" "super_privileged" {
   }
   subject {
     kind      = "ServiceAccount"
+    namespace = "external-dns"
+    name      = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
     namespace = "gatekeeper-system"
     name      = "gatekeeper-admin"
   }
