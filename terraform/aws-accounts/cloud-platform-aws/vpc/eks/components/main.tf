@@ -164,6 +164,6 @@ resource "null_resource" "kube_system_default_annotations" {
 
 resource "null_resource" "kube_system_default_labels" {
   provisioner "local-exec" {
-    command = "kubectl label --overwrite namespace kube-system 'component=kube-system' 'cloud-platform.justice.gov.uk/slack-channel=cloud-platform' 'cloud-platform.justice.gov.uk/is-production=true' 'cloud-platform.justice.gov.uk/environment-name=production' 'pod-security.kubernetes.io/audit=privileged'"
+    command = "kubectl label --overwrite namespace kube-system 'component=kube-system' 'cloud-platform.justice.gov.uk/slack-channel=cloud-platform' 'cloud-platform.justice.gov.uk/is-production=true' 'cloud-platform.justice.gov.uk/environment-name=production' 'pod-security.kubernetes.io/enforce=privileged'"
   }
 }
