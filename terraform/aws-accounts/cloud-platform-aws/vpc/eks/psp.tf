@@ -135,16 +135,6 @@ resource "kubernetes_cluster_role_binding" "super_privileged" {
   }
   subject {
     kind      = "ServiceAccount"
-    namespace = "external-dns"
-    name      = "kube-system"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    namespace = "gatekeeper-system"
-    name      = "gatekeeper-admin"
-  }
-  subject {
-    kind      = "ServiceAccount"
     name      = "metrics-server"
     namespace = "kube-system"
   }
@@ -250,6 +240,16 @@ resource "kubernetes_cluster_role_binding" "super_privileged" {
     kind      = "ServiceAccount"
     name      = "aws-node"
     namespace = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    namespace = "external-dns"
+    name      = "kube-system"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    namespace = "gatekeeper-system"
+    name      = "gatekeeper-admin"
   }
 }
 
