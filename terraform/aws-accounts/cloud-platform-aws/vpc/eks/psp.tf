@@ -251,6 +251,11 @@ resource "kubernetes_cluster_role_binding" "super_privileged" {
     namespace = "gatekeeper-system"
     name      = "gatekeeper-admin"
   }
+  subject {
+    kind      = "ServiceAccount"
+    namespace = "kube-system"
+    name      = "descheduler"
+  }
 }
 
 
