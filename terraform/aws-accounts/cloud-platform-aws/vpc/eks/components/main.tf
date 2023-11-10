@@ -162,7 +162,6 @@ resource "kubernetes_annotations" "kube_system_ns" {
   metadata {
     name = "kube-system"
   }
-  force = true
   annotations = {
     "cloud-platform.justice.gov.uk/business-unit" = "Platforms"
     "cloud-platform.justice.gov.uk/application"   = "Cloud Platform"
