@@ -156,15 +156,35 @@ locals {
 # Kube-system annotation and labels #
 #####################################
 
-resource "null_resource" "kube_system_default_annotations" {
-  provisioner "local-exec" {
-    command = "kubectl annotate --overwrite namespace kube-system 'cloud-platform.justice.gov.uk/business-unit=Platforms', 'cloud-platform.justice.gov.uk/application=Cloud Platform', 'cloud-platform.justice.gov.uk/owner=Cloud Platform: platforms@digital.justice.gov.uk', 'cloud-platform.justice.gov.uk/source-code= https://github.com/ministryofjustice/cloud-platform-infrastructure', 'cloud-platform.justice.gov.uk/slack-channel=cloud-platform' 'cloud-platform-out-of-hours-alert=true'"
+resource "kubernetes_annotations" "kube_system_ns" {
+  api_version = "v1"
+  kind        = "Namespace"
+  metadata {
+    name = "kube-system"
+  }
+  force = true
+  annotations = {
+    "cloud-platform.justice.gov.uk/business-unit" = "Platforms"
+    "cloud-platform.justice.gov.uk/application"   = "Cloud Platform"
+    "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
+    "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
+    "cloud-platform.justice.gov.uk/slack-channel" = "cloud-platform"
+    "cloud-platform-out-of-hours-alert"           = "true"
   }
 }
 
-resource "null_resource" "kube_system_default_labels" {
-  provisioner "local-exec" {
-    command = "kubectl label --overwrite namespace kube-system 'component=kube-system' 'cloud-platform.justice.gov.uk/slack-channel=cloud-platform' 'cloud-platform.justice.gov.uk/is-production=true' 'cloud-platform.justice.gov.uk/environment-name=production' 'pod-security.kubernetes.io/enforce=privileged'"
+resource "kubernetes_labels" "kube_system_ns" {
+  api_version = "v1"
+  kind        = "Namespace"
+  metadata {
+    name = "kube-system"
+  }
+  labels = {
+    "component"                                      = "kube-system"
+    "cloud-platform.justice.gov.uk/slack-channel"    = "cloud-platform"
+    "cloud-platform.justice.gov.uk/is-production"    = "true"
+    "cloud-platform.justice.gov.uk/environment-name" = "production"
+    "pod-security.kubernetes.io/enforce"             = "privileged"
   }
 }
 
