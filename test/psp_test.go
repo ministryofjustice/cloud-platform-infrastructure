@@ -226,7 +226,7 @@ func makeNamespacePrivileged(options *k8s.KubectlOptions, namespace string) erro
 		RoleRef: rbac.RoleRef{
 			APIGroup: "rbac.authorization.k8s.io",
 			Kind:     "ClusterRole",
-			Name:     "psp:privileged",
+			Name:     "psp:0-super-privileged",
 		},
 		Subjects: []rbac.Subject{
 			{
