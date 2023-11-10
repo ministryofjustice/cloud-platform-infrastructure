@@ -167,3 +167,41 @@ resource "null_resource" "kube_system_default_labels" {
     command = "kubectl label --overwrite namespace kube-system 'component=kube-system' 'cloud-platform.justice.gov.uk/slack-channel=cloud-platform' 'cloud-platform.justice.gov.uk/is-production=true' 'cloud-platform.justice.gov.uk/environment-name=production' 'pod-security.kubernetes.io/enforce=privileged'"
   }
 }
+
+################################
+# Default namespace PSA labels #
+################################
+
+resource "kubernetes_labels" "default_ns" {
+  api_version = "v1"
+  kind        = "Namespace"
+  metadata {
+    name = "default"
+  }
+  labels = {
+    "pod-security.kubernetes.io/enforce" = "restricted"
+  }
+}
+
+resource "kubernetes_labels" "kube_public_ns" {
+  api_version = "v1"
+  kind        = "Namespace"
+  metadata {
+    name = "kube-public"
+  }
+  labels = {
+    "pod-security.kubernetes.io/enforce" = "restricted"
+  }
+}
+
+resource "kubernetes_labels" "kube_node_lease_ns" {
+  api_version = "v1"
+  kind        = "Namespace"
+  metadata {
+    name = "kube-node-lease"
+  }
+  labels = {
+    "pod-security.kubernetes.io/enforce" = "restricted"
+  }
+}
+
