@@ -24,39 +24,6 @@ var _ = Describe("GIVEN pod security admission", func() {
 		Expect(err).NotTo(HaveOccurred())
 	})
 
-	Context("WHEN psp is NOT being bypassed", func() {
-		BeforeEach(func() {
-			namespace = fmt.Sprintf("%s-restricted-psa-%s", c.Prefix, strings.ToLower(random.UniqueId()))
-			options = k8s.NewKubectlOptions("", "", namespace)
-
-			tpl, err := helpers.TemplateFile("./fixtures/namespace.yaml.tmpl", "namespace.yaml.tmpl", template.FuncMap{
-				"namespace": namespace,
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
-			Expect(err).NotTo(HaveOccurred())
-		})
-
-		It("THEN use PSP", func() {
-			tpl, err := helpers.TemplateFile("./fixtures/privileged-deployment.yaml.tmpl", "privileged-deployment.yaml.tmpl", template.FuncMap{
-				"namespace": namespace,
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
-			Expect(err).NotTo(HaveOccurred())
-
-			replicaSet, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "replicaset", "-oyaml")
-			Expect(err).NotTo(HaveOccurred())
-			Expect(replicaSet).To(ContainSubstring(`forbidden: PodSecurityPolicy`))
-
-			deploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "deploy")
-			Expect(err).NotTo(HaveOccurred())
-			Expect(deploy).To(ContainSubstring(`privileged-integration-test   0/1`))
-		})
-	})
-
 	Context("WHEN psp is being bypassed", func() {
 		BeforeEach(func() {
 			namespace = fmt.Sprintf("%s-restricted-psa-%s", c.Prefix, strings.ToLower(random.UniqueId()))

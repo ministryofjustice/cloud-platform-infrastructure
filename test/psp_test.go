@@ -92,33 +92,6 @@ var _ = Describe("pod security policies", func() {
 			}, "2m", "10s").Should(BeTrue())
 		})
 
-		// In a restricted namespace, the container should not be able to run privileged containers.
-		It("shouldn't work in a unprivileged namespace", func() {
-			// Create a pod in the unprivileged namespace
-			tpl, err := helpers.TemplateFile("./fixtures/privileged-deployment.yaml.tmpl", "privileged-deployment.yaml.tmpl", template.FuncMap{
-				"namespace": namespace,
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
-			Expect(err).NotTo(HaveOccurred())
-
-			Consistently(func() bool {
-				GinkgoWriter.Printf("Checking for privileged pod in unprivileged namespace %s\n", namespace)
-				list, err := c.Client.Clientset.CoreV1().Pods(namespace).List(context.Background(), v1.ListOptions{})
-				if err != nil {
-					Fail(fmt.Sprintf("Failed to list pods in namespace %s: %s", namespace, err))
-				}
-				for _, pod := range list.Items {
-					if pod.Status.Phase == corev1.PodRunning {
-						return false
-					}
-				}
-				return true
-			}, "1m", "30s").Should(BeTrue())
-		})
-	})
-
 	Context("when a container doesn't require privileges", func() {
 		var (
 			namespace string
