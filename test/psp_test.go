@@ -91,6 +91,7 @@ var _ = Describe("pod security policies", func() {
 				return false
 			}, "2m", "10s").Should(BeTrue())
 		})
+	})
 
 	Context("when a container doesn't require privileges", func() {
 		var (
