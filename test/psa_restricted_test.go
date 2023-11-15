@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 	. "github.com/onsi/ginkgo/v2"
@@ -17,10 +18,13 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		var (
 			namespace string
 			options   *k8s.KubectlOptions
+			oldLogger *logger.Logger
 		)
 		BeforeEach(func() {
 			namespace = fmt.Sprintf("%s-restricted-psa-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 			options = k8s.NewKubectlOptions("", "", namespace)
+			oldLogger = options.Logger
+			options.Logger = logger.Discard
 
 			tpl, err := helpers.TemplateFile("./fixtures/namespace.yaml.tmpl", "namespace.yaml.tmpl", template.FuncMap{
 				"namespace":         namespace,
@@ -36,11 +40,10 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		AfterEach(func() {
 			err := k8s.DeleteNamespaceE(GinkgoT(), options, namespace)
 			Expect(err).NotTo(HaveOccurred())
+			defer func() { options.Logger = oldLogger }()
 		})
 
 		It("THEN have a namespace with the `restricted` psa label", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
-
 			ns, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "ns", namespace, "-oyaml")
 			Expect(err).NotTo(HaveOccurred())
 
@@ -78,7 +81,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `containers.spec.securityContext.runAsNonRoot: false`, mutation corrects value", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":      namespace,
 				"deploymentName": "app-" + strings.ToLower(random.UniqueId()),
@@ -95,7 +97,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `containers.spec.securityContext.runAsNonRoot: true`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":      namespace,
 				"deploymentName": "app-" + strings.ToLower(random.UniqueId()),
@@ -112,7 +113,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN DENY `spec.containers.securityContext.runAsUser: 0`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":      namespace,
 				"deploymentName": "app-" + strings.ToLower(random.UniqueId()),
@@ -127,7 +127,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `spec.containers.securityContext.runAsUser: 1001`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":      namespace,
 				"deploymentName": "app-" + strings.ToLower(random.UniqueId()),
@@ -144,7 +143,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `spec.containers.securityContext.allowPrivilegeEscalation: false`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":                namespace,
 				"deploymentName":           "app-" + strings.ToLower(random.UniqueId()),
@@ -161,7 +159,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `spec.containers.securityContext.allowPrivilegeEscalation: true`, mutation corrects value", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":                namespace,
 				"deploymentName":           "app-" + strings.ToLower(random.UniqueId()),
@@ -186,8 +183,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
 			Expect(err).NotTo(HaveOccurred())
 
-			options := k8s.NewKubectlOptions("", "", namespace)
-
 			pod, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-l", "app=unprivileged-integration-test", "-oyaml")
 			Expect(err).NotTo(HaveOccurred())
 
@@ -195,7 +190,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `containers.securityContext.capabilities.drop: ['ALL']`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":        namespace,
 				"deploymentName":   "app-" + strings.ToLower(random.UniqueId()),
@@ -212,7 +206,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `containers.securityContext.capabilities.drop: ['NET_RAW']`, mutation corrects value", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":        namespace,
 				"deploymentName":   "app-" + strings.ToLower(random.UniqueId()),
@@ -229,7 +222,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `spec.securityContext.fsGroup: 1`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":      namespace,
 				"deploymentName": "app-" + strings.ToLower(random.UniqueId()),
@@ -246,7 +238,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `spec.securityContext.fsGroup: 2`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":      namespace,
 				"deploymentName": "app-" + strings.ToLower(random.UniqueId()),
@@ -264,7 +255,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 
 		It("THEN DENY `spec.securityContext.fsGroup: 0`", func() {
 			Skip("This case is not restricted by psa, skip until we implement the equivalent constraint in gatekeeper")
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":      namespace,
 				"deploymentName": "app-" + strings.ToLower(random.UniqueId()),
@@ -287,7 +277,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `spec.securityContext.supplementalGroups: 1`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":          namespace,
 				"deploymentName":     "app-" + strings.ToLower(random.UniqueId()),
@@ -304,7 +293,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `spec.securityContext.supplementalGroups: 2`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":          namespace,
 				"deploymentName":     "app-" + strings.ToLower(random.UniqueId()),
@@ -314,7 +302,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
 			Expect(err).NotTo(HaveOccurred())
-
 			supplementalGroupDeploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-oyaml")
 			Expect(err).NotTo(HaveOccurred())
 			Expect(supplementalGroupDeploy).To(MatchRegexp("supplementalGroups:\n.*- 2"))
@@ -322,7 +309,7 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 
 		It("THEN DENY `spec.securityContext.supplementalGroups: 0`", func() {
 			Skip("This case is not restricted by psa, skip until we implement the equivalent constraint in gatekeeper")
-			options := k8s.NewKubectlOptions("", "", namespace)
+
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":          namespace,
 				"deploymentName":     "app-" + strings.ToLower(random.UniqueId()),
@@ -345,7 +332,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `spec.securityContext.seccompProfile.type: RuntimeDefault`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":      namespace,
 				"deploymentName": "app-" + strings.ToLower(random.UniqueId()),
@@ -362,7 +348,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN DENY `spec.securityContext.seccompProfile.type: Unconfined`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":      namespace,
 				"deploymentName": "app-" + strings.ToLower(random.UniqueId()),
@@ -377,7 +362,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `spec.containers.securityContext.readOnlyRootFilesystem: true`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":              namespace,
 				"deploymentName":         "app-" + strings.ToLower(random.UniqueId()),
@@ -394,7 +378,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN ALLOW `spec.containers.securityContext.readOnlyRootFilesystem: false`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":              namespace,
 				"deploymentName":         "app-" + strings.ToLower(random.UniqueId()),
@@ -411,7 +394,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 		})
 
 		It("THEN DENY `containers.securityContext.capabilities.add: ['NET_RAW']`", func() {
-			options := k8s.NewKubectlOptions("", "", namespace)
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":       namespace,
 				"deploymentName":  "app-" + strings.ToLower(random.UniqueId()),
