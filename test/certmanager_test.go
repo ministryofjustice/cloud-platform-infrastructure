@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 	. "github.com/onsi/ginkgo/v2"
@@ -34,6 +35,8 @@ type DefaultCert struct {
 // Check if the default ingress-controller certificate exists
 var _ = Describe("Default ingress-controller certificate", func() {
 	options := k8s.NewKubectlOptions("", "", "ingress-controllers")
+	oldLogger := options.Logger
+	options.Logger = logger.Discard
 
 	// Get the default ingress-controller certificate
 	certificate, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "certificate", "default", "-o", "json")
@@ -51,6 +54,7 @@ var _ = Describe("Default ingress-controller certificate", func() {
 		Expect(cert.Spec.IssuerRef.Kind).To(Equal("ClusterIssuer"))
 		Expect(cert.Spec.IssuerRef.Name).To(Equal("letsencrypt-production"))
 	})
+	options.Logger = oldLogger
 })
 
 // This test checks if a staging let's encrypt cert is assigned to an app

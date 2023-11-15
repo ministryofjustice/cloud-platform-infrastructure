@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gruntwork-io/terratest/modules/k8s"
+	"github.com/gruntwork-io/terratest/modules/logger"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 	. "github.com/onsi/ginkgo/v2"
@@ -17,17 +18,15 @@ var _ = Describe("GIVEN pod security admission", func() {
 	var (
 		namespace string
 		options   *k8s.KubectlOptions
+		oldLogger *logger.Logger
 	)
-
-	AfterEach(func() {
-		err := k8s.DeleteNamespaceE(GinkgoT(), options, namespace)
-		Expect(err).NotTo(HaveOccurred())
-	})
 
 	Context("WHEN psp is being bypassed", func() {
 		BeforeEach(func() {
 			namespace = fmt.Sprintf("%s-restricted-psa-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 			options = k8s.NewKubectlOptions("", "", namespace)
+			oldLogger = options.Logger
+			options.Logger = logger.Discard
 
 			tpl, err := helpers.TemplateFile("./fixtures/namespace.yaml.tmpl", "namespace.yaml.tmpl", template.FuncMap{
 				"namespace":         namespace,
@@ -40,8 +39,13 @@ var _ = Describe("GIVEN pod security admission", func() {
 			Expect(err).NotTo(HaveOccurred())
 		})
 
+		AfterEach(func() {
+			err := k8s.DeleteNamespaceE(GinkgoT(), options, namespace)
+			Expect(err).NotTo(HaveOccurred())
+			defer func() { options.Logger = oldLogger }()
+		})
+
 		It("THEN service accounts are restricted by psa", func() {
-			options = k8s.NewKubectlOptions("", "", namespace)
 			serviceaccountTpl, err := helpers.TemplateFile("./fixtures/serviceaccount.yaml.tmpl", "serviceaccount.yaml.tmpl", template.FuncMap{
 				"namespace": namespace,
 			})
@@ -90,7 +94,6 @@ var _ = Describe("GIVEN pod security admission", func() {
 		})
 
 		It("THEN service accounts haven't got escalated privilege", func() {
-			options = k8s.NewKubectlOptions("", "", namespace)
 			serviceaccountTpl, err := helpers.TemplateFile("./fixtures/serviceaccount.yaml.tmpl", "serviceaccount.yaml.tmpl", template.FuncMap{
 				"namespace": namespace,
 			})
@@ -102,7 +105,6 @@ var _ = Describe("GIVEN pod security admission", func() {
 			token, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "create", "token", namespace)
 			Expect(err).NotTo(HaveOccurred())
 
-			options = k8s.NewKubectlOptions("", "", namespace)
 			permission, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pods", "-n", "kube-system", "--token="+token)
 			Expect(err).To(HaveOccurred())
 
