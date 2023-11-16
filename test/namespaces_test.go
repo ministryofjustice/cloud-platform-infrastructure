@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"context"
+	"fmt"
 	"html/template"
 	"strings"
 
@@ -171,6 +172,30 @@ var _ = Describe("Namespaces", func() {
 					// Handle empty namepsaces by printing the offending namespace and failing the test
 					Fail("Namespace " + namespace.Name + " has no annotations")
 				}
+			}
+		})
+	})
+	Context("when checking current system namespaces", func() {
+		GinkgoWriter.Printf("Getting list of namespaces\n")
+		namespaces, err := c.Client.Clientset.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
+		Expect(err).To(BeNil())
+
+		// All system namespaces must have the appropriate psa labels for things like
+		// monitoring. This test checks all system namespaces for label "pod-security.kubernetes.io/enforce=privileged".
+		//  If the label is missing or wrong, it will fail.
+		It("must have the psa privileged label", func() {
+			for _, namespace := range namespaces.Items {
+				// Get the labels
+				labels := namespace.GetLabels()
+				// Check if the label is present
+				if _, ok := labels["pod-security.kubernetes.io/enforce"]; ok {
+					// Check if the label value is correct
+					Expect(labels["pod-security.kubernetes.io/enforce"]).To(Equal("privileged"))
+				} else {
+					// If the label is missing, fail the test
+					Fail(fmt.Sprintf("Namespace %s missing pod-security.kubernetes.io/enforce label", namespace.GetName()))
+				}
+
 			}
 		})
 	})
