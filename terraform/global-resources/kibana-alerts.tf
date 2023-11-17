@@ -206,11 +206,11 @@ resource "elasticsearch_opensearch_monitor" "psa_violations" {
                   "unit": "MINUTES"
                },
                "message_template": {
-                  "source": "One or more namespaces have PodSecurity Violations. Search \"violates PodSecurity\" on Kibana and investigate the affected namespaces.",
+                  "source": "Search \"violates PodSecurity\" on Kibana and investigate the affected namespaces.\nContact the user to rectify.",
                   "lang": "mustache"
                },
                "subject_template": {
-                  "source": "PodSecurity Violations found",
+                  "source": "One or more namespaces have PodSecurity Violations in the past 10 minutes.",
                   "lang": "mustache"
                }
             }
