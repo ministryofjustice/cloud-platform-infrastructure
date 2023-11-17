@@ -202,7 +202,7 @@ resource "elasticsearch_opensearch_monitor" "psa_violations" {
                "destination_id": "${elasticsearch_opensearch_destination.cloud_platform_alerts.id}",
                "throttle_enabled": true,
                "throttle": {
-                  "value": 60,
+                  "value": 1440,
                   "unit": "MINUTES"
                },
                "message_template": {
