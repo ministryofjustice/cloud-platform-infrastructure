@@ -122,7 +122,7 @@ resource "elasticsearch_opensearch_monitor" "psa_violations" {
       {
          "search": {
             "indices": [
-               "live-kubernetes-*"
+               "live_kubernetes_cluster*"
             ],
             "query": {
                "size": 0,
