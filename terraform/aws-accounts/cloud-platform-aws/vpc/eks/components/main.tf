@@ -162,6 +162,7 @@ resource "kubernetes_annotations" "kube_system_ns" {
   metadata {
     name = "kube-system"
   }
+  field_manager = "TerraformAnnotations"
   annotations = {
     "cloud-platform.justice.gov.uk/business-unit" = "Platforms"
     "cloud-platform.justice.gov.uk/application"   = "Cloud Platform"
@@ -178,6 +179,7 @@ resource "kubernetes_labels" "kube_system_ns" {
   metadata {
     name = "kube-system"
   }
+  field_manager = "TerraformLabels"
   labels = {
     "component"                                      = "kube-system"
     "cloud-platform.justice.gov.uk/slack-channel"    = "cloud-platform"
