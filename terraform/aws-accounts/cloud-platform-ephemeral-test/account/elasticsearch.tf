@@ -70,7 +70,7 @@ data "aws_iam_policy_document" "elasticsearch_log_publishing_policy_doc" {
       "logs:PutLogEventsBatch",
     ]
 
-    resources = [aws_cloudwatch_log_group.et_test_log_group[0].arn]
+    resources = ["${aws_cloudwatch_log_group.et_test_log_group[0].arn}:*"]
 
     principals {
       identifiers = ["es.amazonaws.com"]
@@ -92,7 +92,7 @@ resource "aws_elasticsearch_domain" "et_test" {
   elasticsearch_version = "7.10"
 
   cluster_config {
-    instance_type            = "t3.medium.elasticsearch"
+    instance_type            = "m5.large.elasticsearch"
     instance_count           = "7"
     dedicated_master_enabled = true
     dedicated_master_type    = "t3.small.elasticsearch"
@@ -112,7 +112,7 @@ resource "aws_elasticsearch_domain" "et_test" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp3"
-    volume_size = "1536"
+    volume_size = "1024"
     iops        = 4608
   }
 
@@ -132,9 +132,6 @@ resource "aws_elasticsearch_domain" "et_test" {
     enabled                  = true
     log_type                 = "ES_APPLICATION_LOGS"
     cloudwatch_log_group_arn = aws_cloudwatch_log_group.et_test_log_group[count.index].arn
-  }
-  auto_tune_options {
-    desired_state = "ENABLED"
   }
 
   tags = {
