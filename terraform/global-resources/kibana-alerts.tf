@@ -133,6 +133,18 @@ resource "elasticsearch_opensearch_monitor" "psa_violations" {
                      "boost": 1,
                      "filter": [
                         {
+                           "range": {
+                              "@timestamp": {
+                                 "boost": 1,
+                                 "from": "{{period_end}}||-10m",
+                                 "to": "{{period_end}}",
+                                 "include_lower": true,
+                                 "include_upper": true,
+                                 "format": "epoch_millis"
+                              }
+                           }
+                        },
+                        {
                             "multi_match": {
                               "type": "phrase",
                               "query": "violates PodSecurity",
@@ -194,7 +206,7 @@ resource "elasticsearch_opensearch_monitor" "psa_violations" {
                   "unit": "MINUTES"
                },
                "message_template": {
-                  "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n- Trigger: {{ctx.trigger.name}}\n- Severity: {{ctx.trigger.severity}}\n- Period start: {{ctx.periodStart}}\n- Period end: {{ctx.periodEnd}}\n- Contact the user to rectify.",
+                  "source": "One or more namespaces have PodSecurity Violations. Search \"violates PodSecurity\" on Kibana and investigate the affected namespaces.",
                   "lang": "mustache"
                },
                "subject_template": {
