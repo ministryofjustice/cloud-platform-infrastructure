@@ -122,7 +122,7 @@ resource "elasticsearch_opensearch_monitor" "psa_violations" {
       {
          "search": {
             "indices": [
-               "live-kubernetes-*"
+               "live_kubernetes_cluster*"
             ],
             "query": {
                "size": 0,
@@ -132,6 +132,18 @@ resource "elasticsearch_opensearch_monitor" "psa_violations" {
                      "adjust_pure_negative": true,
                      "boost": 1,
                      "filter": [
+                        {
+                           "range": {
+                              "@timestamp": {
+                                 "boost": 1,
+                                 "from": "{{period_end}}||-10m",
+                                 "to": "{{period_end}}",
+                                 "include_lower": true,
+                                 "include_upper": true,
+                                 "format": "epoch_millis"
+                              }
+                           }
+                        },
                         {
                             "multi_match": {
                               "type": "phrase",
@@ -190,15 +202,15 @@ resource "elasticsearch_opensearch_monitor" "psa_violations" {
                "destination_id": "${elasticsearch_opensearch_destination.cloud_platform_alerts.id}",
                "throttle_enabled": true,
                "throttle": {
-                  "value": 60,
+                  "value": 1440,
                   "unit": "MINUTES"
                },
                "message_template": {
-                  "source": "Monitor {{ctx.monitor.name}} just entered alert status. Please investigate the issue.\n- Trigger: {{ctx.trigger.name}}\n- Severity: {{ctx.trigger.severity}}\n- Period start: {{ctx.periodStart}}\n- Period end: {{ctx.periodEnd}}\n- Contact the user to rectify.",
+                  "source": "Search \"violates PodSecurity\" on Kibana and investigate the affected namespaces.\nContact the user to rectify.",
                   "lang": "mustache"
                },
                "subject_template": {
-                  "source": "PodSecurity Violations found",
+                  "source": "One or more namespaces have PodSecurity Violations in the past 10 minutes.",
                   "lang": "mustache"
                }
             }

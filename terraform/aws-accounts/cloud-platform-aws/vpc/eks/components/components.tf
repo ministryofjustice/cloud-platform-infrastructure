@@ -179,7 +179,7 @@ module "monitoring" {
 }
 
 module "gatekeeper" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.9.1"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.9.2"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   dryrun_map = {
@@ -234,7 +234,7 @@ module "velero" {
 }
 
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.2.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.2.9"
 
   dependence_prometheus = module.monitoring.prometheus_operator_crds_status
 }
