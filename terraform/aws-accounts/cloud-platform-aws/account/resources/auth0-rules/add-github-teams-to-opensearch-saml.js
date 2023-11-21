@@ -1,7 +1,9 @@
 function(user, context, callback) {
   var request = require("request");
+  var modsecClientId = context.clientID === configuration.OPENSEARCH_APP_CLIENT_ID == context.connection === "github"
+  var appClientId = context.clientID === configuration.OPENSEARCH_APP_CLIENT_ID_APP_LOGS == context.connection === "github"
 
-  if(context.clientID === configuration.OPENSEARCH_APP_CLIENT_ID && context.connection === "github"){
+  if (modsecClientId || appClientId) {
     // Get user"s Github profile and API access key
     var github_identity = user.identities.find(id => id.connection === "github");
 
@@ -15,12 +17,12 @@ function(user, context, callback) {
     };
 
     // make the request to github
-    request(teams_req, function (err, resp, body) {
+    request(teams_req, function(err, resp, body) {
       if (resp.statusCode !== 200) {
         return callback(new Error("Error retrieving teams from Github: " + body || err));
       }
 
-      var git_teams = JSON.parse(body).map(function (team) {
+      var git_teams = JSON.parse(body).map(function(team) {
         if (team.organization.login === "ministryofjustice") {
           return team.slug;
         }
@@ -30,7 +32,7 @@ function(user, context, callback) {
 
       // map the teams to saml
       context.samlConfiguration.mappings = {
-          "http://schemas.xmlsoap.org/claims/Group": "GithubTeam"
+        "http://schemas.xmlsoap.org/claims/Group": "GithubTeam"
       };
 
       return callback(null, user, context);
