@@ -47,6 +47,12 @@ locals {
     live-2  = "10.195.0.0/16"
     default = "172.20.0.0/16"
   }
+
+  vpc_cidr_eks_prefix = [
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 4),
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 5),
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 6)
+  ]
 }
 
 #######
@@ -62,11 +68,13 @@ module "vpc" {
   azs                     = var.availability_zones
   map_public_ip_on_launch = true
 
-  private_subnets = [
+  private_subnets = concat([
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 1),
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 2),
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 3)
-  ]
+  ],
+   local.vpc_cidr_eks_prefix
+  )
 
   public_subnets = [
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 6, 0),
@@ -106,4 +114,23 @@ module "flowlogs" {
   source     = "github.com/ministryofjustice/cloud-platform-terraform-flow-logs?ref=1.3.3"
   is_enabled = terraform.workspace == "live-1" ? true : false
   vpc_id     = module.vpc.vpc_id
+}
+
+### Provides a subnet CIDR reservation resource.
+resource "aws_ec2_subnet_cidr_reservation" "workers" {
+  count = length(local.vpc_cidr_eks_prefix)
+
+  cidr_block       = local.vpc_cidr_eks_prefix[count.index]
+  reservation_type = "prefix"
+  subnet_id        = data.aws_subnet.selected[count.index].id
+
+  depends_on = [ module.vpc ]
+}
+
+
+data "aws_subnet" "selected" {
+  count = length(local.vpc_cidr_eks_prefix)
+
+  cidr_block = local.vpc_cidr_eks_prefix[count.index]
+  depends_on = [ module.vpc ]
 }
