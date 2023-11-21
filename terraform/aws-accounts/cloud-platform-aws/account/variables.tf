@@ -98,3 +98,17 @@ variable "infrastructure_support" {
   type    = string
   default = "Cloud Platform: platforms@digital.justice.gov.uk"
 }
+
+variable "index_pattern_live_app_logs" {
+  default = [
+    "manager_eventrouter*",
+    "live_kubernetes_cluster*",
+    "live_kubernetes_ingress*",
+    "live_eventrouter*",
+    "manager_kubernetes_cluster-*",
+    "manager_kubernetes_ingress-*",
+    "manager_concourse-*",
+  ]
+  description = "Pattern created in Kibana, policy will apply to matching new indices"
+  type        = list(string)
+}
