@@ -339,12 +339,12 @@ resource "auth0_client" "opensearch_app_logs" {
   is_first_party             = true
   token_endpoint_auth_method = "none"
 
-  callbacks = ["https://${aws_route53_record.opensearch_custom_domain.fqdn}/_dashboards/_opendistro/_security/saml/acs"]
+  callbacks = ["https://${aws_route53_record.opensearch_custom_domain_app_logs.fqdn}/_dashboards/_opendistro/_security/saml/acs"]
   logo_uri  = "https://ministryofjustice.github.io/assets/moj-crest.png"
   addons {
     samlp {
-      audience    = "https://${aws_route53_record.opensearch_custom_domain.fqdn}"
-      destination = "https://${aws_route53_record.opensearch_custom_domain.fqdn}/_dashboards/_opendistro/_security/saml/acs"
+      audience    = "https://${aws_route53_record.opensearch_custom_domain_app_logs.fqdn}"
+      destination = "https://${aws_route53_record.opensearch_custom_domain_app_logs.fqdn}/_dashboards/_opendistro/_security/saml/acs"
       mappings = {
         email  = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
         name   = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
