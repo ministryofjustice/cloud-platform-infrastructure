@@ -82,7 +82,7 @@ module "sso" {
 
 # Baselines: cloudtrail, cloudwatch, lambda. Everything that our accounts should have
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.2.1"
 
   enable_logging           = true
   enable_slack_integration = true
@@ -240,7 +240,7 @@ module "aws_scheduler" {
 
 # ECR creation for Kuberhealthy checks image
 module "ecr" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=6.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=6.1.0"
 
   # REQUIRED: Repository configuration
   repo_name = "cloud-platform-kuberhealthy-checks"
