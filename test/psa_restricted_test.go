@@ -358,7 +358,7 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
 			Expect(err).To(HaveOccurred())
 
-			Expect(err.Error()).To(ContainSubstring(`is forbidden: violates PodSecurity "restricted:latest": seccompProfile (pod must not set securityContext.seccompProfile.type to "Unconfined")`))
+			Expect(err.Error()).To(ContainSubstring(`spec.securityContext.seccompProfile.type: Forbidden`))
 		})
 
 		It("THEN ALLOW `spec.containers.securityContext.readOnlyRootFilesystem: true`", func() {
