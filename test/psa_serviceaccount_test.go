@@ -21,7 +21,7 @@ var _ = Describe("GIVEN pod security admission", func() {
 		oldLogger *logger.Logger
 	)
 
-	Context("WHEN psp is being bypassed", func() {
+	Context("WHEN psa mode is enforce:restricted", func() {
 		BeforeEach(func() {
 			namespace = fmt.Sprintf("%s-restricted-psa-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 			options = k8s.NewKubectlOptions("", "", namespace)
@@ -29,9 +29,8 @@ var _ = Describe("GIVEN pod security admission", func() {
 			options.Logger = logger.Discard
 
 			tpl, err := helpers.TemplateFile("./fixtures/namespace.yaml.tmpl", "namespace.yaml.tmpl", template.FuncMap{
-				"namespace":         namespace,
-				"psaMode":           "enforce",
-				"bypassPspRoleName": "psp:0-super-privileged",
+				"namespace": namespace,
+				"psaMode":   "enforce",
 			})
 			Expect(err).NotTo(HaveOccurred())
 
