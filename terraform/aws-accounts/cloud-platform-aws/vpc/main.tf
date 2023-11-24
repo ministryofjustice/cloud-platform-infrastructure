@@ -72,8 +72,8 @@ module "vpc" {
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 1),
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 2),
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 3)
-  ],
-   local.vpc_cidr_eks_prefix
+    ],
+    local.vpc_cidr_eks_prefix
   )
 
   public_subnets = [
@@ -124,7 +124,7 @@ resource "aws_ec2_subnet_cidr_reservation" "workers" {
   reservation_type = "prefix"
   subnet_id        = data.aws_subnet.selected[count.index].id
 
-  depends_on = [ module.vpc ]
+  depends_on = [module.vpc]
 }
 
 
@@ -132,5 +132,5 @@ data "aws_subnet" "selected" {
   count = length(local.vpc_cidr_eks_prefix)
 
   cidr_block = local.vpc_cidr_eks_prefix[count.index]
-  depends_on = [ module.vpc ]
+  depends_on = [module.vpc]
 }
