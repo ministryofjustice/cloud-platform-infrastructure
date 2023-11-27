@@ -1,7 +1,7 @@
 function(user, context, callback) {
   var request = require("request");
-  var modsecClientId = context.clientID === configuration.OPENSEARCH_APP_CLIENT_ID == context.connection === "github"
-  var appClientId = context.clientID === configuration.OPENSEARCH_APP_CLIENT_ID_APP_LOGS == context.connection === "github"
+  var modsecClientId = context.clientID === configuration.OPENSEARCH_APP_CLIENT_ID && context.connection === "github";
+  var appClientId = context.clientID === configuration.OPENSEARCH_APP_CLIENT_ID_APP_LOGS && context.connection === "github";
 
   if (modsecClientId || appClientId) {
     // Get user"s Github profile and API access key

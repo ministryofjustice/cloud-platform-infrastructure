@@ -145,8 +145,9 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.9.18"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.9.19"
 
+  opensearch_app_host             = lookup(var.opensearch_app_hosts_maps, terraform.workspace, "placeholder-opensearch")
   elasticsearch_host              = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   elasticsearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   dependence_prometheus           = module.monitoring.prometheus_operator_crds_status
