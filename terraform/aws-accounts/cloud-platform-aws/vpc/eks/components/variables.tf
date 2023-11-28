@@ -30,19 +30,6 @@ variable "elasticsearch_hosts_maps" {
   })
 }
 
-variable "opensearch_app_hosts_maps" {
-  description = "Cloud Platform user logs Opensearch hosts for each Terraform workspace"
-
-  default = {
-    live = "search-cp-live-app-logs-jywwr7het3xzoh5t7ajar4ho3m.eu-west-2.es.amazonaws.com"
-  }
-
-  type = object({
-    live = string
-  })
-}
-
-
 variable "elasticsearch_modsec_audit_hosts_maps" {
   description = "Cloud Platform ModSec audit Opensearch hosts for each Terraform workspace"
 
