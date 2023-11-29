@@ -15,7 +15,7 @@ resource "elasticsearch_opensearch_monitor" "duplicate_grafana_uid_in_logs" {
       {
          "search": {
             "indices": [
-               "live-kubernetes-*"
+               "live_kubernetes_cluster*"
             ],
             "query": {
                "size": 0,
