@@ -245,6 +245,11 @@ module "eks" {
       userarn  = "arn:aws:iam::754256621582:user/KyTruong"
       username = "KyTruong"
       groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/MikeBell"
+      username = "MikeBell"
+      groups   = ["system:masters"]
     }
   ]
 
