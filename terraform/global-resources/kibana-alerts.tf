@@ -206,11 +206,11 @@ resource "elasticsearch_opensearch_monitor" "psa_violations" {
                   "unit": "MINUTES"
                },
                "message_template": {
-                  "source": "Search \"violates PodSecurity\" on Kibana and investigate the affected namespaces.\nContact the user to rectify.",
+                  "source": "Follow <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-3h,to:now))&_a=(columns:!(_source),filters:!(),index:'167701b0-f8c0-11ec-b95c-1d65c3682287',interval:auto,query:(language:kuery,query:'%22violates%20PodSecurity%22%20AND%20NOT%20%22smoketest-restricted%22%20AND%20NOT%20%22smoketest-privileged%22'),sort:!())|this link> to check recent PodSecurity violation logs or search \"violates PodSecurity\" and investigate the affected namespaces. Contact the user to rectify.\n\nFurther guidance can be found on the <https://runbooks.cloud-platform.service.justice.gov.uk//kibana-podsecurity-violations-alert.html|Kibana PodSecurity Violations Alert runbook>.\n\nThis has been triggered by the <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/opendistro-alerting#/monitors/jR-J3YsBP8PE0GofcRIF|PodSecurity Violations Monitor> on Kibana.",
                   "lang": "mustache"
                },
                "subject_template": {
-                  "source": "One or more namespaces have PodSecurity Violations in the past 10 minutes.",
+                  "source": "<b>One or more namespaces have PodSecurity Violations in the past 10 minutes.</b>",
                   "lang": "mustache"
                }
             }
