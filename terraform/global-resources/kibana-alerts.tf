@@ -210,7 +210,7 @@ resource "elasticsearch_opensearch_monitor" "psa_violations" {
                   "lang": "mustache"
                },
                "subject_template": {
-                  "source": "<b>One or more namespaces have PodSecurity Violations in the past 10 minutes.</b>",
+                  "source": "*One or more namespaces have PodSecurity Violations*",
                   "lang": "mustache"
                }
             }
