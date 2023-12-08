@@ -260,3 +260,13 @@ module "trivy-operator" {
   severity_list       = "HIGH,CRITICAL"
   enable_trivy_server = "true"
 }
+
+module "kubernetes-dashboard" {
+  source = "./dashboard"
+
+  oidc_issuer_url = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
+  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  oidc_components_client_id = data.terraform_remote_state.cluster.outputs.oidc_components_client_id
+  oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
+  dependence_ingress_controller = [module.modsec_ingress_controllers_v1.helm_nginx_ingress_status]
+}
