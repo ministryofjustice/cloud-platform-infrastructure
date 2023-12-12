@@ -58,9 +58,11 @@ locals {
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
 
   default_ng_12_12_23 = {
-    desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
+    desired_size = 5 // this is hard coded until we are ready to sort flipping workloads over 
+    # desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_size     = 85
-    min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+    # min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+    min_size     = 2 
 
     block_device_mappings = {
       xvda = {
