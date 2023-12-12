@@ -60,9 +60,9 @@ locals {
   default_ng_12_12_23 = {
     desired_size = 5 // this is hard coded until we are ready to sort flipping workloads over 
     # desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_size     = 85
+    max_size = 85
     # min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
-    min_size     = 2 
+    min_size = 2
 
     block_device_mappings = {
       xvda = {
@@ -92,10 +92,10 @@ locals {
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
     labels = {
-      Terraform = "true"
+      Terraform                                  = "true"
       "cloud-platform.justice.gov.uk/default-ng" = "true"
-      Cluster   = terraform.workspace
-      Domain    = local.fqdn
+      Cluster                                    = terraform.workspace
+      Domain                                     = local.fqdn
     }
 
     tags = {
@@ -281,9 +281,9 @@ module "eks" {
   prefix_separator = ""
 
   eks_managed_node_groups = {
-    default_ng_12_22 = local.default_ng_12_22
-    monitoring_ng    = local.monitoring_ng
-    default_ng_12_12_23 = local.default_ng_12_12_23
+    default_ng_12_22       = local.default_ng_12_22
+    monitoring_ng          = local.monitoring_ng
+    default_ng_12_12_23    = local.default_ng_12_12_23
     monitoring_ng_12_12_23 = local.monitoring_ng_12_12_23
   }
 
