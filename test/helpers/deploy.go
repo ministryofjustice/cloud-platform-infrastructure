@@ -11,11 +11,12 @@ import (
 // HellowoldOpt type allows you to specify options for
 // deploying a helloworld app template in a cluster.
 type HelloworldOpt struct {
-	Class      string `default:"default"`
-	Identifier string `default:"integration-test-green"`
-	Weight     string `default:"\"100\""`
-	Hostname   string `example:"hostname.cloud-platform...."`
-	Namespace  string `default:"default"`
+	Class             string `default:"default"`
+	Identifier        string `default:"integration-test-green"`
+	Weight            string `default:"\"100\""`
+	Hostname          string `example:"hostname.cloud-platform...."`
+	Namespace         string `default:"default"`
+	IngressRetryCount int    `default:"5"`
 }
 
 // CreateHelloWorldApp takes a HelloworldOpt type and KubectlOptions arguments
@@ -45,7 +46,6 @@ func CreateHelloWorldApp(app *HelloworldOpt, opt *k8s.KubectlOptions) error {
 		return fmt.Errorf("failed to apply the helloworld template: %s", err)
 	}
 
-	k8s.WaitUntilIngressAvailable(GinkgoT(), opt, "integration-test-app-ing", 60, 5*time.Second)
-
+	k8s.WaitUntilIngressAvailable(GinkgoT(), opt, "integration-test-app-ing", app.IngressRetryCount, 20*time.Second)
 	return nil
 }
