@@ -91,11 +91,12 @@ var _ = Describe("cert-manager", FlakeAttempts(2), func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			app := helpers.HelloworldOpt{
-				Hostname:   host,
-				Class:      "default",
-				Identifier: "integration-test-app-ing-" + namespace + "-green",
-				Namespace:  namespace,
-				Weight:     "\"100\"",
+				Hostname:          host,
+				Class:             "default",
+				Identifier:        "integration-test-app-ing-" + namespace + "-green",
+				Namespace:         namespace,
+				Weight:            "\"100\"",
+				IngressRetryCount: 20,
 			}
 
 			err = helpers.CreateHelloWorldApp(&app, options)
@@ -107,6 +108,7 @@ var _ = Describe("cert-manager", FlakeAttempts(2), func() {
 
 		AfterEach(func() {
 			k8s.DeleteNamespace(GinkgoT(), options, namespace)
+			Expect(err).ToNot(HaveOccurred())
 		})
 
 		It("should succeed and present a staging certificate", func() {

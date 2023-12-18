@@ -28,9 +28,8 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 			options.Logger = logger.Discard
 
 			tpl, err := helpers.TemplateFile("./fixtures/namespace.yaml.tmpl", "namespace.yaml.tmpl", template.FuncMap{
-				"namespace":         namespace,
-				"psaMode":           "enforce",
-				"bypassPspRoleName": "psp:0-super-privileged",
+				"namespace": namespace,
+				"psaMode":   "enforce",
 			})
 			Expect(err).NotTo(HaveOccurred())
 

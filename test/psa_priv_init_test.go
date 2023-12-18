@@ -27,10 +27,9 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			options.Logger = logger.Discard
 
 			tpl, err := helpers.TemplateFile("./fixtures/namespace.yaml.tmpl", "namespace.yaml.tmpl", template.FuncMap{
-				"namespace":         namespace,
-				"psaMode":           "enforce",
-				"psaLevel":          "privileged",
-				"bypassPspRoleName": "psp:0-super-privileged",
+				"namespace": namespace,
+				"psaMode":   "enforce",
+				"psaLevel":  "privileged",
 			})
 			Expect(err).NotTo(HaveOccurred())
 
