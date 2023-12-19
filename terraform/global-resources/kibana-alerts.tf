@@ -1,8 +1,21 @@
-resource "elasticsearch_opensearch_monitor" "duplicate_grafana_uid_in_logs" {
+resource "elasticsearch_opensearch_destination" "cloud_platform_alerts" {
   provider = elasticsearch
   body     = <<EOF
 {
-   "name": "Grafana UID",
+  "name" : "cloud-platform-alerts",
+  "type" : "slack",
+  "slack" : {
+    "url" : "${jsondecode(data.aws_secretsmanager_secret_version.slack_webhook_url.secret_string)["url"]}"
+  }
+}
+EOF
+}
+
+resource "elasticsearch_opensearch_monitor" "duplicate_grafana_uid_monitor" {
+  provider = elasticsearch
+  body     = <<EOF
+{
+   "name": "Grafana duplcate UID",
    "type": "monitor",
    "enabled": true,
    "schedule": {
@@ -22,32 +35,48 @@ resource "elasticsearch_opensearch_monitor" "duplicate_grafana_uid_in_logs" {
                "aggregations": {},
                "query": {
                   "bool": {
-                     "adjust_pure_negative": true,
-                     "boost": 1,
+                     "must": [],
                      "filter": [
-                        {
-                           "range": {
-                              "@timestamp": {
-                                 "boost": 1,
-                                 "from": "{{period_end}}||-1m",
-                                 "to": "{{period_end}}",
-                                 "include_lower": true,
-                                 "include_upper": true,
-                                 "format": "epoch_millis"
+                     {
+                        "bool": {
+                           "filter": [
+                           {
+                              "multi_match": {
+                                 "type": "phrase",
+                                 "query": "the same UID is used more than once",
+                                 "lenient": true
+                              }
+                           },
+                           {
+                              "bool": {
+                                 "should": [
+                                 {
+                                    "match": {
+                                       "kubernetes.container_name": "grafana"
+                                    }
+                                 }
+                                 ],
+                                 "minimum_should_match": 1
                               }
                            }
-                        },
-                        {
-                           "match_phrase": {
-                              "message": {
-                                 "query": "the same UID is used more than once",
-                                 "slop": 0,
-                                 "zero_terms_query": "NONE",
-                                 "boost": 1
-                              }
+                           ]
+                        }
+                     },
+                     {
+                        "range": {
+                           "@timestamp": {
+                              "boost": 1,
+                              "from": "{{period_end}}||-10m",
+                              "to": "{{period_end}}",
+                              "include_lower": true,
+                              "include_upper": true,
+                              "format": "epoch_millis"
                            }
                         }
-                     ]
+                     }
+                     ],
+                     "should": [],
+                     "must_not": []
                   }
                }
             }
@@ -56,7 +85,7 @@ resource "elasticsearch_opensearch_monitor" "duplicate_grafana_uid_in_logs" {
    ],
    "triggers": [
       {
-         "name": "Duplicate Grafana UID in logs",
+         "name": "Duplicate Grafana dashboard UIDs detected",
          "severity": "5",
          "condition": {
             "script": {
@@ -78,7 +107,7 @@ resource "elasticsearch_opensearch_monitor" "duplicate_grafana_uid_in_logs" {
                   "lang": "mustache"
                },
                "subject_template": {
-                  "source": "duplicate grafana uid's found",
+                  "source": "*Duplicate Grafana dashboard UID's found*",
                   "lang": "mustache"
                }
             }
@@ -90,19 +119,6 @@ EOF
 
   depends_on = [elasticsearch_opensearch_destination.cloud_platform_alerts]
 
-}
-
-resource "elasticsearch_opensearch_destination" "cloud_platform_alerts" {
-  provider = elasticsearch
-  body     = <<EOF
-{
-  "name" : "cloud-platform-alerts",
-  "type" : "slack",
-  "slack" : {
-    "url" : "${jsondecode(data.aws_secretsmanager_secret_version.slack_webhook_url.secret_string)["url"]}"
-  }
-}
-EOF
 }
 
 resource "elasticsearch_opensearch_monitor" "psa_violations" {
