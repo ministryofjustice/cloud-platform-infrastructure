@@ -119,17 +119,17 @@ resource "aws_opensearch_domain" "live_app_logs" {
 
   cluster_config {
     instance_type            = "r6g.xlarge.search"
-    instance_count           = "3"
+    instance_count           = "12"
     dedicated_master_enabled = true
     dedicated_master_type    = "m6g.large.search"
-    dedicated_master_count   = "3"
+    dedicated_master_count   = "5"
     zone_awareness_enabled   = true
 
     zone_awareness_config {
       availability_zone_count = 3
     }
 
-    warm_count   = 3
+    warm_count   = 6
     warm_enabled = true
     warm_type    = "ultrawarm1.medium.search"
 
