@@ -41,7 +41,9 @@ metadata:
    {{ $key }}: {{ $value }}
 {{- end }}
 spec:
+  {{ if .class }}
   ingressClassName: {{ .class }}
+  {{ end }}
   tls:
   - hosts:
     - {{ .host }}
