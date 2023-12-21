@@ -28,9 +28,9 @@ var _ = Describe("logging", Ordered, func() {
 			uniqueId  string
 		)
 
-		openSearchDomain := "https://search-cp-live-modsec-audit-nuhzlrjwxrmdd6op3mvj2k5mye.eu-west-2.es.amazonaws.com/"
+		openSearchDomain := "https://search-cp-live-app-logs-jywwr7het3xzoh5t7ajar4ho3m.eu-west-2.es.amazonaws.com/"
 		date := time.Now().Format("2006.01.02")
-		search := openSearchDomain + c.ClusterName + "_k8s_modsec_ingress" + "-" + date + "/_search"
+		search := openSearchDomain + c.ClusterName + "_kubernetes_cluster" + "-" + date + "/_search"
 		client := &http.Client{}
 		awsCreds := creds.NewEnvCredentials()
 		awsSigner := signer.NewSigner(awsCreds)
@@ -58,25 +58,15 @@ var _ = Describe("logging", Ordered, func() {
 
 			err := k8s.CreateNamespaceWithMetadataE(GinkgoT(), options, nsObject)
 			Expect(err).ToNot(HaveOccurred())
-			class := "modsec"
 
 			setIdentifier := "integration-test-app-ing-" + namespace + "-green"
-
-			modsecStr := []byte(`|
-             SecRuleEngine On
-             SecDefaultAction "phase:2,pass,log,tag:github_team=%s"`)
-
-			formattedModsecStr := fmt.Sprintf(string(modsecStr), uniqueId)
 
 			helloVar := map[string]interface{}{
 				"namespace": namespace,
 				"host":      host,
-				"class":     class,
 				"ingress_annotations": map[string]string{
 					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
 					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
-					"nginx.ingress.kubernetes.io/enable-modsecurity":  "\"true\"",
-					"nginx.ingress.kubernetes.io/modsecurity-snippet": formattedModsecStr,
 				},
 			}
 
@@ -88,12 +78,28 @@ var _ = Describe("logging", Ordered, func() {
 
 			k8s.WaitUntilIngressAvailable(GinkgoT(), options, "integration-test-app-ing", 8, 20*time.Second)
 
+			// Create a job that creates a simple log message.
+			jobVar := map[string]interface{}{
+				"jobName":   "logging-smoketest",
+				"namespace": namespace,
+			}
+
+			tpl, err = helpers.TemplateFile("./fixtures/helloworld-job.yaml.tmpl", "helloworld-job.yaml.tmpl", jobVar)
+			Expect(err).ToNot(HaveOccurred())
+
+			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
+			Expect(err).ToNot(HaveOccurred())
+
+			// Wait for the job to complete
+			err = k8s.WaitUntilJobSucceedE(GinkgoT(), options, "logging-smoketest", 10, 20*time.Second)
+			Expect(err).ToNot(HaveOccurred())
+
 			tr := &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			}
 			getClient := &http.Client{Transport: tr}
 
-			req, _ := http.NewRequest(http.MethodGet, "http://"+host+"/aphpfilethatdonotexist.php?something=../../etc", nil)
+			req, _ := http.NewRequest(http.MethodGet, "http://"+host, nil)
 
 			time.Sleep(40 * time.Second) // // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors
 
@@ -104,8 +110,6 @@ var _ = Describe("logging", Ordered, func() {
 				}
 
 				defer resp.Body.Close()
-
-				Expect(resp.Status).To(Equal("403 Forbidden"))
 			}
 
 			Expect(err).ToNot(HaveOccurred())
@@ -116,7 +120,7 @@ var _ = Describe("logging", Ordered, func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		Describe("check modsec logs have not been dropped", Ordered, func() {
+		Describe("check app logs have not been dropped", Ordered, func() {
 			It("should be able to retrieve the log messages", func() {
 				values := helpers.SearchData{
 					Query: helpers.BoolData{
@@ -124,10 +128,10 @@ var _ = Describe("logging", Ordered, func() {
 							Must: emptySlice,
 							Filter: []helpers.FilterData{
 								{Match: helpers.PhraseData{
-									Log: "github_team=" + uniqueId,
+									Namespace: namespace,
 								}},
 								{Match: helpers.PhraseData{
-									Stream: "stderr",
+									Stream: "stdout",
 								}},
 							},
 						},
@@ -135,26 +139,6 @@ var _ = Describe("logging", Ordered, func() {
 				}
 
 				helpers.GetSearchResults(values, search, awsSigner, client)
-			})
-
-			It("should be able to retrieve the audit log messages", func() {
-				auditValues := helpers.SearchData{
-					Query: helpers.BoolData{
-						Bool: helpers.MustFilterData{
-							Must: emptySlice,
-							Filter: []helpers.FilterData{
-								{Match: helpers.PhraseData{
-									Log: "github_team=" + uniqueId,
-								}},
-								{Match: helpers.PhraseData{
-									HttpCode: 403,
-								}},
-							},
-						},
-					},
-				}
-
-				helpers.GetSearchResults(auditValues, search, awsSigner, client)
 			})
 		})
 	})
