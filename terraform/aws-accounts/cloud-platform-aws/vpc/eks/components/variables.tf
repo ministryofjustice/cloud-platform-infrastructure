@@ -34,7 +34,8 @@ variable "opensearch_app_host_map" {
   description = "Cloud Platform User application logs Opensearch host for each Terraform workspace"
 
   default = {
-    live = "search-cp-live-app-logs-jywwr7het3xzoh5t7ajar4ho3m.eu-west-2.es.amazonaws.com"
+    manager = "search-cp-live-app-logs-jywwr7het3xzoh5t7ajar4ho3m.eu-west-2.es.amazonaws.com"
+    live    = "search-cp-live-app-logs-jywwr7het3xzoh5t7ajar4ho3m.eu-west-2.es.amazonaws.com"
   }
 
   type = object({

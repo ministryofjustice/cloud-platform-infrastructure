@@ -12,6 +12,17 @@ locals {
   live_app_logs_domain = "cp-live-app-logs"
 }
 
+data "aws_eks_node_groups" "manager" {
+  cluster_name = "manager" # change to the cluster you need -- note there is no terraform.workspace at the account level
+}
+
+data "aws_eks_node_group" "manager" {
+  for_each = data.aws_eks_node_groups.manager.names
+
+  cluster_name    = "manager"
+  node_group_name = each.value
+}
+
 resource "aws_iam_role" "os_access_role_app_logs" {
   name               = "opensearch-access-role-app-logs"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy_app_logs.json
@@ -226,7 +237,7 @@ resource "elasticsearch_opensearch_roles_mapping" "all_access_app_logs" {
   backend_roles = concat([
     "webops",
     aws_iam_role.os_access_role_app_logs.arn,
-  ], values(data.aws_eks_node_group.current)[*].node_role_arn)
+  ], values(data.aws_eks_node_group.current)[*].node_role_arn, values(data.aws_eks_node_group.manager)[*].node_role_arn)
 
   // Permissions to manager-concourse in order to run logging tests
   users = ["arn:aws:iam::754256621582:user/cloud-platform/manager-concourse"]
