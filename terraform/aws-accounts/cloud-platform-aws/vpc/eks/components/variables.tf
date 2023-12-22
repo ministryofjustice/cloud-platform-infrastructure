@@ -35,7 +35,7 @@ variable "opensearch_app_host_map" {
 
   default = {
     manager = "search-cp-live-app-logs-jywwr7het3xzoh5t7ajar4ho3m.eu-west-2.es.amazonaws.com"
-    live = "search-cp-live-app-logs-jywwr7het3xzoh5t7ajar4ho3m.eu-west-2.es.amazonaws.com"
+    live    = "search-cp-live-app-logs-jywwr7het3xzoh5t7ajar4ho3m.eu-west-2.es.amazonaws.com"
   }
 
   type = object({
