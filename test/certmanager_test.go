@@ -96,7 +96,7 @@ var _ = Describe("cert-manager", FlakeAttempts(2), func() {
 				Identifier:        "integration-test-app-ing-" + namespace + "-green",
 				Namespace:         namespace,
 				Weight:            "\"100\"",
-				IngressRetryCount: 20,
+				IngressRetryCount: 30,
 			}
 
 			err = helpers.CreateHelloWorldApp(&app, options)
