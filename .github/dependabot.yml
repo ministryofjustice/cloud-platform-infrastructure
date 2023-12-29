@@ -43,18 +43,24 @@ updates:
           - "*"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/eks"
-    open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
       time: "09:00"
+    groups:
+      cloud-platform-aws-vpc-eks:
+        patterns:
+          - "*"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/eks/components"
-    open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
       day: "wednesday"
       time: "09:00"
+    groups:
+      cloud-platform-aws-vpc-eks-components:
+        patterns:
+          - "*"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/kops"
     open-pull-requests-limit: 0
