@@ -32,6 +32,6 @@ jobs:
         with:
           tfsec_args: --force-all-dirs --soft-fail -m=CRITICAL --no-module-downloads --exclude-path=terraform/aws-accounts/cloud-platform-ephemeral-test --exclude-path=terraform/aws-accounts/cloud-platform-dsd --exclude-path=terraform/aws-accounts/cloud-platform-aws/vpc/kops --exclude-path=terraform/modules
           sarif_file: tfsec.sarif
-      - uses: github/codeql-action/upload-sarif@v2
+      - uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: tfsec.sarif
