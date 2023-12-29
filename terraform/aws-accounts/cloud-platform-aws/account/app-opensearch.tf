@@ -96,7 +96,7 @@ resource "aws_kms_key" "live_app_logs" {
 # needed for load balancer cert
 module "acm_app_logs" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "~> 4.0"
+  version = "4.5.0"
 
   domain_name = "app-logs.${data.aws_route53_zone.cloud_platform_justice_gov_uk.name}"
   zone_id     = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
@@ -154,7 +154,7 @@ resource "aws_opensearch_domain" "live_app_logs" {
     volume_type = "gp3"
     volume_size = "3072"
     iops        = "16000" # limit is 16,000 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
-    throughput  = "593"   # Throughput scales proportionally up. iops x 0.25 (maximum 4,000) https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/general-purpose.html 
+    throughput  = "593"   # Throughput scales proportionally up. iops x 0.25 (maximum 4,000) https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/general-purpose.html
   }
 
   domain_endpoint_options {
@@ -181,7 +181,7 @@ resource "aws_opensearch_domain" "live_app_logs" {
   }
 }
 
-# add vanity url to cluster 
+# add vanity url to cluster
 resource "aws_route53_record" "opensearch_custom_domain_app_logs" {
   zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
   name    = "app-logs"
@@ -377,4 +377,3 @@ resource "auth0_rule_config" "opensearch_app_logs_client_id" {
   key   = "OPENSEARCH_APP_CLIENT_ID_APP_LOGS"
   value = auth0_client.opensearch_app_logs.client_id
 }
-

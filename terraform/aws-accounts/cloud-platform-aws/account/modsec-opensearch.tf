@@ -88,7 +88,7 @@ data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
 # needed for load balancer cert
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "~> 4.0"
+  version = "4.5.0"
 
   domain_name = "logs.${data.aws_route53_zone.cloud_platform_justice_gov_uk.name}"
   zone_id     = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
@@ -172,7 +172,7 @@ resource "aws_opensearch_domain" "live_modsec_audit" {
   }
 }
 
-# add vanity url to cluster 
+# add vanity url to cluster
 resource "aws_route53_record" "opensearch_custom_domain" {
   zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
   name    = "logs"
