@@ -88,11 +88,12 @@ data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
 # needed for load balancer cert
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "4.5.0"
+  version = "5.0.0"
 
   domain_name = "logs.${data.aws_route53_zone.cloud_platform_justice_gov_uk.name}"
   zone_id     = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
 
+  validation_method   = "DNS"
   wait_for_validation = false # for use in an automated pipeline set false to avoid waiting for validation to complete or error after a 45 minute timeout.
 
   tags = {
