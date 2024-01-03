@@ -60,7 +60,7 @@ module "descheduler" {
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.8.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.8.3"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
