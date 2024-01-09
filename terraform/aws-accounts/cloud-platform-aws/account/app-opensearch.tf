@@ -12,6 +12,17 @@ locals {
   live_app_logs_domain = "cp-live-app-logs"
 }
 
+data "aws_eks_node_groups" "manager" {
+  cluster_name = "manager" # change to the cluster you need -- note there is no terraform.workspace at the account level
+}
+
+data "aws_eks_node_group" "manager" {
+  for_each = data.aws_eks_node_groups.manager.names
+
+  cluster_name    = "manager"
+  node_group_name = each.value
+}
+
 resource "aws_iam_role" "os_access_role_app_logs" {
   name               = "opensearch-access-role-app-logs"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy_app_logs.json
@@ -85,18 +96,18 @@ resource "aws_kms_key" "live_app_logs" {
 # needed for load balancer cert
 module "acm_app_logs" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "~> 4.0"
+  version = "5.0.0"
 
   domain_name = "app-logs.${data.aws_route53_zone.cloud_platform_justice_gov_uk.name}"
   zone_id     = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
 
+  validation_method   = "DNS"
   wait_for_validation = false # for use in an automated pipeline set false to avoid waiting for validation to complete or error after a 45 minute timeout.
 
   tags = {
     Domain = local.live_modsec_audit_domain
   }
 }
-
 
 resource "aws_opensearch_domain" "live_app_logs" {
   domain_name    = "cp-live-app-logs"
@@ -143,7 +154,7 @@ resource "aws_opensearch_domain" "live_app_logs" {
     volume_type = "gp3"
     volume_size = "3072"
     iops        = "16000" # limit is 16,000 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
-    throughput  = "593"   # Throughput scales proportionally up. iops x 0.25 (maximum 4,000) https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/general-purpose.html 
+    throughput  = "593"   # Throughput scales proportionally up. iops x 0.25 (maximum 4,000) https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/general-purpose.html
   }
 
   domain_endpoint_options {
@@ -170,7 +181,7 @@ resource "aws_opensearch_domain" "live_app_logs" {
   }
 }
 
-# add vanity url to cluster 
+# add vanity url to cluster
 resource "aws_route53_record" "opensearch_custom_domain_app_logs" {
   zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
   name    = "app-logs"
@@ -226,7 +237,7 @@ resource "elasticsearch_opensearch_roles_mapping" "all_access_app_logs" {
   backend_roles = concat([
     "webops",
     aws_iam_role.os_access_role_app_logs.arn,
-  ], values(data.aws_eks_node_group.current)[*].node_role_arn)
+  ], values(data.aws_eks_node_group.current)[*].node_role_arn, values(data.aws_eks_node_group.manager)[*].node_role_arn)
 
   // Permissions to manager-concourse in order to run logging tests
   users = ["arn:aws:iam::754256621582:user/cloud-platform/manager-concourse"]
@@ -366,4 +377,3 @@ resource "auth0_rule_config" "opensearch_app_logs_client_id" {
   key   = "OPENSEARCH_APP_CLIENT_ID_APP_LOGS"
   value = auth0_client.opensearch_app_logs.client_id
 }
-

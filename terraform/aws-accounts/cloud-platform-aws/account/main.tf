@@ -67,7 +67,7 @@ data "aws_region" "current" {}
 
 # IAM configuration for cloud-platform. Users, groups, OIDC providers etc
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.28"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.29"
 
   aws_account_name         = "cloud-platform-aws"
   circleci_organisation_id = jsondecode(data.aws_secretsmanager_secret_version.circleci.secret_string)["organisation_id"]
@@ -119,7 +119,7 @@ resource "aws_route53_record" "cloud_platform_justice_gov_uk_TXT" {
 
 module "s3_bucket_thanos" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.6.0"
+  version = "3.15.1"
 
   bucket = "cloud-platform-prometheus-thanos"
   acl    = "private"
@@ -171,7 +171,7 @@ module "s3_bucket_velero" {
 
 module "s3_bucket_kubeconfigs" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.6.0"
+  version = "3.15.1"
 
   bucket = "cloud-platform-concourse-kubeconfig"
   acl    = "private"
