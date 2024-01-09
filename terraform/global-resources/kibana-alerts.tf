@@ -295,7 +295,7 @@ resource "elasticsearch_opensearch_monitor" "grafana_dashboard_fail" {
                         "range": {
                            "@timestamp": {
                               "boost": 1,
-                              "from": "{{period_end}}||-20m",
+                              "from": "{{period_end}}||-65m",
                               "to": "{{period_end}}",
                               "include_lower": true,
                               "include_upper": true,
