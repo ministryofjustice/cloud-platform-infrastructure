@@ -125,7 +125,7 @@ module "modsec_ingress_controllers_v1" {
   enable_latest_tls            = true
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   cluster                      = terraform.workspace
-  fluent_bit_version           = "2.1.8-amd64"
+  fluent_bit_version           = "2.2.1-amd64"
   dependence_certmanager       = "ignore"
   depends_on                   = [module.ingress_controllers_v1]
 }
