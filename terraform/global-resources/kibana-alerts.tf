@@ -269,25 +269,39 @@ resource "elasticsearch_opensearch_monitor" "grafana_dashboard_fail" {
                      {
                         "bool": {
                            "filter": [
-                           {
-                              "multi_match": {
-                                 "type": "phrase",
-                                 "query": "failed to load dashboard",
-                                 "lenient": true
-                              }
-                           },
-                           {
-                              "bool": {
-                                 "should": [
-                                 {
-                                    "match": {
-                                       "kubernetes.container_name": "grafana"
+                              {
+                                 "bool": {
+                                    "should": [
+                                    {
+                                       "multi_match": {
+                                          "type": "phrase",
+                                          "query": "failed to load dashboard",
+                                          "lenient": true
+                                       }
+                                    },
+                                    {
+                                       "multi_match": {
+                                          "type": "phrase",
+                                          "query": "failed to save dashboard",
+                                          "lenient": true
+                                       }
                                     }
+                                    ],
+                                    "minimum_should_match": 1
                                  }
-                                 ],
-                                 "minimum_should_match": 1
+                              },
+                              {
+                                 "bool": {
+                                    "should": [
+                                    {
+                                       "match": {
+                                          "kubernetes.container_name": "grafana"
+                                       }
+                                    }
+                                    ],
+                                    "minimum_should_match": 1
+                                 }
                               }
-                           }
                            ]
                         }
                      },
