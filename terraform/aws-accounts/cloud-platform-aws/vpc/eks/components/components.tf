@@ -200,7 +200,7 @@ module "gatekeeper" {
     deprecated_apis_1_29               = true,
     # There are violations on system namespaces and until that is cleared, this 
     # constraint will be in dryrun mode
-    lock_priv_capabilities            = true
+    lock_priv_capabilities = true
   }
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
