@@ -195,8 +195,8 @@ module "gatekeeper" {
     valid_hostname                     = lookup(local.prod_2_workspace, terraform.workspace, false),
     warn_service_account_secret_delete = false,
     user_ns_requires_psa_label         = false,
-    deprecated_apis_1_26               = true,
-    deprecated_apis_1_27               = true,
+    deprecated_apis_1_26               = false,
+    deprecated_apis_1_27               = false,
     deprecated_apis_1_29               = true,
     # There are violations on system namespaces and until that is cleared, this 
     # constraint will be in dryrun mode
