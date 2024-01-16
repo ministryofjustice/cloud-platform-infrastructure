@@ -95,7 +95,7 @@ module "external_secrets_operator" {
   ]
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.6.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.6.3"
 
   replica_count       = "12"
   controller_name     = "default"
@@ -113,7 +113,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.6.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.6.3"
 
   replica_count                = "12"
   controller_name              = "modsec"
@@ -146,7 +146,7 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.9.21"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.10.0"
 
   opensearch_app_host   = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
   elasticsearch_host    = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
