@@ -180,7 +180,7 @@ module "monitoring" {
 }
 
 module "gatekeeper" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.10.1"
+  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.10.2"
   depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
 
   dryrun_map = {
@@ -200,7 +200,8 @@ module "gatekeeper" {
     deprecated_apis_1_29               = true,
     # There are violations on system namespaces and until that is cleared, this 
     # constraint will be in dryrun mode
-    lock_priv_capabilities = true
+    lock_priv_capabilities = true,
+    deny_kubectl_create_sa = false,
   }
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
