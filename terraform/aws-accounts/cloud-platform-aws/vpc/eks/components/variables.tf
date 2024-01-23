@@ -39,7 +39,8 @@ variable "opensearch_app_host_map" {
   }
 
   type = object({
-    live = string
+    manager = string
+    live    = string
   })
 }
 
