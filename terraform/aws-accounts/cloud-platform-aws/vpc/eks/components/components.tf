@@ -201,7 +201,7 @@ module "gatekeeper" {
     # There are violations on system namespaces and until that is cleared, this 
     # constraint will be in dryrun mode
     lock_priv_capabilities = true,
-    deny_kubectl_create_sa = false,
+    deny_kubectl_create_sa = true,
   }
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
