@@ -2,12 +2,13 @@
 
 This code defines the Cloud Platform configuration to use the Transit Gateway.
 
-## Requirements 
+## Requirements
 
-To run the terraform code, you must have on your local machine : 
- - `moj-transit` AWS Profile
- - `moj-cp` AWS Profile
- - `terraform v1.2.5`
+To run the terraform code, you must have on your local machine :
+
+- `moj-transit` AWS Profile
+- `moj-cp` AWS Profile
+- `terraform v1.2.5`
 
 ## How to add a new route on live-1 VPC
 
@@ -17,7 +18,7 @@ For two VPCs attached to a Transit Gateway to be connected, two new routes need 
 
 The Cloud Platform team can only create one of this route (from CP to VPC B)
 
-This repo has access to the Cloud Platform terraform state (aws-accounts/cloud-platform-aws/vpc/live-1).  
+This repo has access to the Cloud Platform terraform state (aws-accounts/cloud-platform-aws/vpc/live-1).
 
 it is fetching the route tables of the live-1 VPC, and storing it in a local variable:
 
