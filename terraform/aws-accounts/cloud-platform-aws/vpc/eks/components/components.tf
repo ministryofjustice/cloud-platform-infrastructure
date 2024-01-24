@@ -198,7 +198,7 @@ module "gatekeeper" {
     deprecated_apis_1_26               = false,
     deprecated_apis_1_27               = false,
     deprecated_apis_1_29               = true,
-    deny_kubectl_create_sa             = false,
+    deny_kubectl_create_sa             = true,
     # There are violations on system namespaces and until that is cleared, this 
     # constraint will be in dryrun mode
     lock_priv_capabilities = true,
