@@ -1,5 +1,3 @@
-data "aws_caller_identity" "receiver" {}
-
 resource "aws_ec2_transit_gateway_vpc_attachment" "cp-live-pttp" {
   transit_gateway_id = "tgw-026162f1ba39ce704" # eu-west-2 TGW
   subnet_ids         = ["subnet-07fa62f055b2bcfce", "subnet-042d27892b9d249dc", "subnet-008096de384cdb660"]
