@@ -17,7 +17,7 @@ For two VPCs attached to a Transit Gateway to be connected, two new routes need 
 
 The Cloud Platform team can only create one of this route (from CP to VPC B)
 
-This repo has access to the Cloud Platform terraform state (aws-accounts/cloud-platform-aws/vpc/live-1).
+This folder has access to the Cloud Platform terraform state (aws-accounts/cloud-platform-aws/vpc/live-1).
 
 it is fetching the route tables of the live-1 VPC, and storing it in a local variable:
 
@@ -35,7 +35,7 @@ resource "aws_route" "example" {
   count = length(local.route_tables)
   route_table_id            = local.route_tables[count.index]
   destination_cidr_block    = "10.x.x.x/16"
-  transit_gateway_id = "tgw-05acb84d26b244813"
+  transit_gateway_id = "tgw-xxxxxxxxxxxxxxxx"
 }
 ```
 
