@@ -6,7 +6,6 @@ This code defines the Cloud Platform configuration to use the Transit Gateway.
 
 To run the terraform code, you must have on your local machine :
 
-- `moj-transit` AWS Profile
 - `moj-cp` AWS Profile
 - `terraform v1.2.5`
 
