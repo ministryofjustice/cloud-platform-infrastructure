@@ -363,3 +363,297 @@ EOF
   depends_on = [elasticsearch_opensearch_destination.cloud_platform_alerts]
 
 }
+
+resource "elasticsearch_opensearch_monitor" "external_dns_throttling" {
+  provider = elasticsearch
+  body     = <<EOF
+{
+   "name": "Throttling Errors in External DNS",
+   "type": "monitor",
+   "enabled": true,
+   "schedule": {
+      "period": {
+         "interval": 1,
+         "unit": "MINUTES"
+      }
+   },
+   "inputs": [
+      {
+         "search": {
+            "indices": [
+               "live_kubernetes_cluster*"
+            ],
+            "query": {
+              "bool": {
+                "must": [],
+                "filter": [
+                  {
+                    "bool": {
+                      "filter": [
+                        {
+                          "bool": {
+                            "should": [
+                              {
+                                "match_phrase": {
+                                  "kubernetes.namespace_name": "kube-system"
+                                }
+                              }
+                            ],
+                            "minimum_should_match": 1
+                          }
+                        },
+                        {
+                          "bool": {
+                            "filter": [
+                              {
+                                "bool": {
+                                  "should": [
+                                    {
+                                      "match_phrase": {
+                                        "kubernetes.pod_name": "external-dns-*"
+                                      }
+                                    }
+                                  ],
+                                  "minimum_should_match": 1
+                                }
+                              },
+                              {
+                                "bool": {
+                                  "filter": [
+                                    {
+                                      "bool": {
+                                        "should": [
+                                          {
+                                            "match_phrase": {
+                                              "log": "level=error"
+                                            }
+                                          }
+                                        ],
+                                        "minimum_should_match": 1
+                                      }
+                                    },
+                                    {
+                                      "bool": {
+                                        "should": [
+                                          {
+                                            "match_phrase": {
+                                              "log": "Throttling: Rate exceeded"
+                                            }
+                                          }
+                                        ],
+                                        "minimum_should_match": 1
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "range": {
+                      "@timestamp": {
+                         "boost": 1,
+                         "from": "{{period_end}}||-10m",
+                         "to": "{{period_end}}",
+                         "include_lower": true,
+                         "include_upper": true,
+                         "format": "epoch_millis"
+                      }
+                    }
+                  }
+                ],
+                "should": [],
+                "must_not": []
+              }
+            }
+         }
+      }
+   ],
+   "triggers": [
+      {
+         "name": "Throttling Errors in External DNS",
+         "severity": "5",
+         "condition": {
+            "script": {
+               "source": "ctx.results[0].hits.total.value > 1",
+               "lang": "painless"
+            }
+         },
+         "actions": [
+            {
+               "name": "Notify Cloud Platform lower-priority-alarms Slack Channel",
+               "destination_id": "${elasticsearch_opensearch_destination.cloud_platform_alerts.id}",
+               "throttle_enabled": true,
+               "throttle": {
+                  "value": 1440,
+                  "unit": "MINUTES"
+               },
+               "message_template": {
+                  "source": "Follow <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_a=(columns:!(_source),filters:!(),index:'167701b0-f8c0-11ec-b95c-1d65c3682287',interval:auto,query:(language:kuery,query:'kubernetes.namespace_name:%20%22kube-system%22%20AND%20kubernetes.pod_name:%20%22external-dns-*%22%20AND%20log:%20%22level%3Derror%22%20AND%20log:%20%22Throttling:%20Rate%20exceeded%22'),sort:!())|this link> to check recent Throttling Errors in External DNS.\n\nFurther guidance can be found on the <https://runbooks.cloud-platform.service.justice.gov.uk/external-dns-error.html#invalid-change-batch|External DNS Alert runbook>.\n\nThis has been triggered by the <https://runbooks.cloud-platform.service.justice.gov.uk/external-dns-error.html#rate-limited-throttled|Throttling External DNS Errors Monitor> on Kibana.",
+                  "lang": "mustache"
+               },
+               "subject_template": {
+                  "source": "*Throttling Errors in External DNS*",
+                  "lang": "mustache"
+               }
+            }
+         ]
+      }
+   ]
+}
+EOF
+
+  depends_on = [elasticsearch_opensearch_destination.cloud_platform_alerts]
+
+}
+
+resource "elasticsearch_opensearch_monitor" "external_dns_invalid_batch_change" {
+  provider = elasticsearch
+  body     = <<EOF
+{
+   "name": "Invalid Change Batch Errors in External DNS",
+   "type": "monitor",
+   "enabled": true,
+   "schedule": {
+      "period": {
+         "interval": 1,
+         "unit": "MINUTES"
+      }
+   },
+   "inputs": [
+      {
+         "search": {
+            "indices": [
+               "live_kubernetes_cluster*"
+            ],
+            "query": {
+              "bool": {
+                "must": [],
+                "filter": [
+                  {
+                    "bool": {
+                      "filter": [
+                        {
+                          "bool": {
+                            "should": [
+                              {
+                                "match_phrase": {
+                                  "kubernetes.namespace_name": "kube-system"
+                                }
+                              }
+                            ],
+                            "minimum_should_match": 1
+                          }
+                        },
+                        {
+                          "bool": {
+                            "filter": [
+                              {
+                                "bool": {
+                                  "should": [
+                                    {
+                                      "match_phrase": {
+                                        "kubernetes.pod_name": "external-dns-*"
+                                      }
+                                    }
+                                  ],
+                                  "minimum_should_match": 1
+                                }
+                              },
+                              {
+                                "bool": {
+                                  "filter": [
+                                    {
+                                      "bool": {
+                                        "should": [
+                                          {
+                                            "match_phrase": {
+                                              "log": "level=error"
+                                            }
+                                          }
+                                        ],
+                                        "minimum_should_match": 1
+                                      }
+                                    },
+                                    {
+                                      "bool": {
+                                        "should": [
+                                          {
+                                            "match_phrase": {
+                                              "log": "InvalidChangeBatch"
+                                            }
+                                          }
+                                        ],
+                                        "minimum_should_match": 1
+                                      }
+                                    }
+                                  ]
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "range": {
+                      "@timestamp": {
+                         "boost": 1,
+                         "from": "{{period_end}}||-10m",
+                         "to": "{{period_end}}",
+                         "include_lower": true,
+                         "include_upper": true,
+                         "format": "epoch_millis"
+                      }
+                    }
+                  }
+                ],
+                "should": [],
+                "must_not": []
+              }
+            }
+         }
+      }
+   ],
+   "triggers": [
+      {
+         "name": "Invalid Change Batch Errors in External DNS",
+         "severity": "5",
+         "condition": {
+            "script": {
+               "source": "ctx.results[0].hits.total.value > 1",
+               "lang": "painless"
+            }
+         },
+         "actions": [
+            {
+               "name": "Notify Cloud Platform lower-priority-alarms Slack Channel",
+               "destination_id": "${elasticsearch_opensearch_destination.cloud_platform_alerts.id}",
+               "throttle_enabled": true,
+               "throttle": {
+                  "value": 1440,
+                  "unit": "MINUTES"
+               },
+               "message_template": {
+                  "source": "Follow <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_a=(columns:!(_source),filters:!(),index:'167701b0-f8c0-11ec-b95c-1d65c3682287',interval:auto,query:(language:kuery,query:'kubernetes.namespace_name:%20%22kube-system%22%20AND%20kubernetes.pod_name:%20%22external-dns-*%22%20AND%20log:%20%22level%3Derror%22%20AND%20log:%20%22InvalidChangeBatch%22'),sort:!())|this link> to check recent Invalid Change Batch Errors in External DNS.\n\nFurther guidance can be found on the <https://runbooks.cloud-platform.service.justice.gov.uk/external-dns-error.html#invalid-change-batch|External DNS Alert runbook>.\n\nThis has been triggered by the <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/opendistro-alerting|Invalid Change Batch External DNS Errors Monitor> on Kibana.\n\n ```{{ctx.results[0].log}}```",
+                  "lang": "mustache"
+               },
+               "subject_template": {
+                  "source": "*Invalid Change Batch Errors in External DNS*",
+                  "lang": "mustache"
+               }
+            }
+         ]
+      }
+   ]
+}
+EOF
+
+  depends_on = [elasticsearch_opensearch_destination.cloud_platform_alerts]
+
+}
