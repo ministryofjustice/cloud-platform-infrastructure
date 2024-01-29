@@ -383,6 +383,9 @@ resource "elasticsearch_opensearch_monitor" "external_dns_throttling" {
             "indices": [
                "live_kubernetes_cluster*"
             ],
+          "query": {
+             "size": 0,
+             "aggregations": {},
             "query": {
               "bool": {
                 "must": [],
@@ -471,6 +474,7 @@ resource "elasticsearch_opensearch_monitor" "external_dns_throttling" {
               }
             }
          }
+        }
       }
    ],
    "triggers": [
@@ -530,6 +534,9 @@ resource "elasticsearch_opensearch_monitor" "external_dns_invalid_batch_change" 
             "indices": [
                "live_kubernetes_cluster*"
             ],
+            "query": {
+               "size": 0,
+               "aggregations": {},
             "query": {
               "bool": {
                 "must": [],
@@ -618,6 +625,7 @@ resource "elasticsearch_opensearch_monitor" "external_dns_invalid_batch_change" 
               }
             }
          }
+        }
       }
    ],
    "triggers": [
