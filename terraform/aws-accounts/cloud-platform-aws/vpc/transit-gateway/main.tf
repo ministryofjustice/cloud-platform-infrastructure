@@ -23,5 +23,5 @@ data "terraform_remote_state" "cluster-network" {
 }
 
 provider "aws" {
-  region  = "eu-west-2"
+  region = "eu-west-2"
 }
