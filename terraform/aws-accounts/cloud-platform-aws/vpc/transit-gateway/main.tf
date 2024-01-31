@@ -22,6 +22,16 @@ data "terraform_remote_state" "cluster-network" {
   }
 }
 
+data "terraform_remote_state" "cluster-network-live-2" {
+  backend = "s3"
+
+  config = {
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "aws-accounts/cloud-platform-aws/vpc/live-2/terraform.tfstate"
+    profile = "moj-cp"
+  }
+}
 provider "aws" {
   region = "eu-west-2"
 }
