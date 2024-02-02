@@ -483,7 +483,7 @@ resource "elasticsearch_opensearch_monitor" "external_dns_throttling" {
          "severity": "5",
          "condition": {
             "script": {
-               "source": "ctx.results[0].hits.total.value > 1",
+               "source": "ctx.results[0].hits.total.value > 2",
                "lang": "painless"
             }
          },
