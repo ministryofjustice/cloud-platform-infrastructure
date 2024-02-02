@@ -260,7 +260,6 @@ resource "elasticsearch_opensearch_roles_mapping" "security_manager_app_logs" {
     "arn:aws:iam::754256621582:user/JaskaranSarkaria",
     "arn:aws:iam::754256621582:user/PoornimaKrishnasamy",
     "arn:aws:iam::754256621582:user/SteveWilliams",
-    "arn:aws:iam::754256621582:user/JakeMulley",
     "arn:aws:iam::754256621582:user/SabluMiah",
     "arn:aws:iam::754256621582:user/TomSmith",
     "arn:aws:iam::754256621582:user/KyTruong"

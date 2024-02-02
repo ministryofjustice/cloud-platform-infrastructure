@@ -137,7 +137,7 @@ module "eks" {
   }
 
   # add System Manager permissions to the worker nodes. This will enable access to worker nodes using session manager
-  workers_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore","arn:aws:iam::aws:policy/AmazonOpenSearchServiceFullAccess"]
+  workers_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore", "arn:aws:iam::aws:policy/AmazonOpenSearchServiceFullAccess"]
 
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
@@ -165,11 +165,6 @@ module "eks" {
     {
       userarn  = "arn:aws:iam::754256621582:user/JackStockley"
       username = "JackStockley"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/JakeMulley"
-      username = "JakeMulley"
       groups   = ["system:masters"]
     },
     {
