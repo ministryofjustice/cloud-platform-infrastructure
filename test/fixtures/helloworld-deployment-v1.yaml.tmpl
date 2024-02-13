@@ -17,6 +17,14 @@ spec:
         image: bitnami/nginx
         ports:
         - containerPort: 8080
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
 ---
 kind: Service
 apiVersion: v1
