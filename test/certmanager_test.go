@@ -116,7 +116,7 @@ var _ = Describe("cert-manager", FlakeAttempts(2), func() {
 			Expect(err).NotTo(HaveOccurred())
 			cert = conn.ConnectionState().PeerCertificates[0].Issuer.Organization
 
-			Eventually(cert[0]).WithTimeout(20 * time.Minute).WithPolling(2 * time.Minute).Should(Equal("(STAGING) Let's Encrypt"))
+			Eventually(cert[0]).WithTimeout(5 * time.Minute).WithPolling(30 * time.Second).Should(Equal("(STAGING) Let's Encrypt"))
 		})
 	})
 })
