@@ -242,9 +242,15 @@ module "velero" {
 }
 
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.2.10"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.3.0"
 
-  dependence_prometheus = module.monitoring.prometheus_operator_crds_status
+  cluster_env = terraform.workspace
+
+  depends_on = [
+    module.monitoring.prometheus_operator_crds_status,
+    module.velero,
+    module.gatekeeper
+  ]
 }
 
 module "trivy-operator" {
