@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.20.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.21.0"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -25,12 +25,12 @@ module "concourse" {
   authorized_keys_github_token                      = var.authorized_keys_github_token
   sonarqube_token                                   = var.sonarqube_token
   sonarqube_host                                    = var.sonarqube_host
-  dependence_prometheus                             = module.monitoring.prometheus_operator_crds_status
-  hoodaw_host                                       = var.hoodaw_host
-  hoodaw_api_key                                    = var.hoodaw_api_key
-  github_actions_secrets_token                      = var.github_actions_secrets_token
 
-  depends_on = [module.ingress_controllers_v1]
+  hoodaw_host                  = var.hoodaw_host
+  hoodaw_api_key               = var.hoodaw_api_key
+  github_actions_secrets_token = var.github_actions_secrets_token
+
+  depends_on = [module.monitoring, module.ingress_controllers_v1]
 }
 
 module "cluster_autoscaler" {
@@ -46,7 +46,7 @@ module "cluster_autoscaler" {
   live_cpu_request    = "200m"
 
   depends_on = [
-    module.monitoring.prometheus_operator_crds_status
+    module.monitoring
   ]
 }
 
@@ -55,47 +55,46 @@ module "descheduler" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.6.0"
 
   depends_on = [
-    module.monitoring.prometheus_operator_crds_status
+    module.monitoring
   ]
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.8.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.9.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
 
-  # Requiring Prometheus taints the default cert null_resource on any monitoring upgrade,
-  # but cluster creation fails without, so will have to be temporarily disabled when upgrading
-  dependence_prometheus = module.monitoring.prometheus_operator_crds_status
-
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+
+  depends_on = [module.monitoring.prometheus_operator_crds_status]
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.11.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.12.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzones           = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
   domain_filters      = lookup(local.domain_filters, terraform.workspace, local.domain_filters["default"])
 
-  dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+
+  depends_on = [module.monitoring.prometheus_operator_crds_status]
 }
 
 module "external_secrets_operator" {
-  source                      = "github.com/ministryofjustice/cloud-platform-terraform-external-secrets-operator?ref=0.0.7"
-  dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
+  source                      = "github.com/ministryofjustice/cloud-platform-terraform-external-secrets-operator?ref=0.1.0"
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
   secrets_prefix              = terraform.workspace
 
   depends_on = [
-    module.gatekeeper
+    module.gatekeeper,
+    module.monitoring.prometheus_operator_crds_status
   ]
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.6.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.0"
 
   replica_count       = "12"
   controller_name     = "default"
@@ -107,13 +106,11 @@ module "ingress_controllers_v1" {
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
 
-  # Dependency on this ingress_controllers module as IC namespace and default certificate created in this module
-  # This dependency will go away once "module.ingress_controllers" is removed.
-  dependence_certmanager = module.cert_manager.helm_cert_manager_status
+  depends_on = [module.cert_manager.helm_cert_manager_status]
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.6.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.0"
 
   replica_count                = "12"
   controller_name              = "modsec"
@@ -126,8 +123,8 @@ module "modsec_ingress_controllers_v1" {
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   cluster                      = terraform.workspace
   fluent_bit_version           = "2.2.1-amd64"
-  dependence_certmanager       = "ignore"
-  depends_on                   = [module.ingress_controllers_v1]
+
+  depends_on = [module.ingress_controllers_v1]
 }
 
 module "kuberos" {
@@ -146,15 +143,16 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.10.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.11.0"
 
-  opensearch_app_host   = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
-  elasticsearch_host    = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
-  dependence_prometheus = module.monitoring.prometheus_operator_crds_status
+  opensearch_app_host = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
+  elasticsearch_host  = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
+
+  depends_on = [module.monitoring.prometheus_operator_crds_status]
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.10.22"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=2.11.0"
 
   alertmanager_slack_receivers               = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config                           = local.enable_alerts ? var.pagerduty_config : "dummy"
@@ -171,17 +169,15 @@ module "monitoring" {
   enable_thanos_helm_chart = lookup(local.prod_2_workspace, terraform.workspace, false)
   enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
 
-  enable_ecr_exporter           = lookup(local.live_workspace, terraform.workspace, false)
-  enable_cloudwatch_exporter    = lookup(local.live_workspace, terraform.workspace, false)
-  eks_cluster_oidc_issuer_url   = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
-  dependence_ingress_controller = [module.modsec_ingress_controllers_v1.helm_nginx_ingress_status]
+  enable_ecr_exporter         = lookup(local.live_workspace, terraform.workspace, false)
+  enable_cloudwatch_exporter  = lookup(local.live_workspace, terraform.workspace, false)
+  eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
   depends_on = [module.eks_csi]
 }
 
 module "gatekeeper" {
-  source     = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.10.5"
-  depends_on = [module.monitoring, module.modsec_ingress_controllers_v1, module.cert_manager]
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.10.5"
 
   dryrun_map = {
     service_type                       = false,
@@ -232,13 +228,14 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=2.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=2.2.0"
 
   enable_velero               = lookup(local.prod_2_workspace, terraform.workspace, false)
-  dependence_prometheus       = module.monitoring.prometheus_operator_crds_status
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
   node_agent_cpu_requests     = "2m"
+
+  depends_on = [module.monitoring.prometheus_operator_crds_status]
 }
 
 module "kuberhealthy" {
