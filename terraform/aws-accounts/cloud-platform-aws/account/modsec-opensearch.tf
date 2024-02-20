@@ -243,6 +243,30 @@ resource "auth0_rule" "add-github-teams-to-opensearch-saml" {
   enabled = true
 }
 
+resource "auth0_action" "add-github-teams-to-opensearch-saml" {
+  name = "add-github-teams-to-opensearch-saml"
+  code = file(
+    "${path.module}/resources/auth0-actions/add-github-teams-to-opensearch-saml.js",
+  )
+  deploy  = false
+  runtime = "node18"
+
+  supported_triggers {
+    id      = "post-login"
+    version = "v3"
+  }
+
+  secrets {
+    name  = "OPENSEARCH_APP_CLIENT_ID"
+    value = auth0_client.opensearch.client_id
+  }
+
+  secrets {
+    name  = "OPENSEARCH_APP_CLIENT_ID_APP_LOGS"
+    value = auth0_client.opensearch_app_logs.client_id
+  }
+}
+
 resource "auth0_rule_config" "opensearch-app-client-id" {
   key   = "OPENSEARCH_APP_CLIENT_ID"
   value = auth0_client.opensearch.client_id
