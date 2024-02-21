@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.1
 
 require (
-	github.com/aws/aws-sdk-go v1.50.17
+	github.com/aws/aws-sdk-go v1.50.22
 	github.com/go-resty/resty/v2 v2.11.0
 	github.com/gruntwork-io/terratest v0.46.11
 	github.com/ministryofjustice/cloud-platform-go-library v0.0.0-20220803122921-1ca1153b1730
@@ -15,9 +15,9 @@ require (
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.71.2
 	github.com/prometheus-operator/prometheus-operator/pkg/client v0.71.2
 	github.com/stretchr/testify v1.8.4
-	k8s.io/api v0.29.1
-	k8s.io/apimachinery v0.29.1
-	k8s.io/client-go v0.29.1
+	k8s.io/api v0.29.2
+	k8s.io/apimachinery v0.29.2
+	k8s.io/client-go v0.29.2
 )
 
 require (
