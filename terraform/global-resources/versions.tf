@@ -7,11 +7,11 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "5.35.0"
+      version = "5.37.0"
     }
     external = {
       source  = "hashicorp/external"
-      version = "2.3.2"
+      version = "2.3.3"
     }
     elasticsearch = {
       source  = "phillbaker/elasticsearch"
