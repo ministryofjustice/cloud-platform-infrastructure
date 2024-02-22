@@ -7,6 +7,25 @@ resource "auth0_rule" "allow-github-orgs" {
   enabled = true
 }
 
+resource "auth0_action" "allow-github-orgs" {
+  name = "allow-github-orgs"
+  code = file(
+    "${path.module}/resources/auth0-actions/allow-github-orgs.js",
+  )
+  deploy  = false
+  runtime = "node18"
+
+  supported_triggers {
+    id      = "post-login"
+    version = "v3"
+  }
+
+  dependencies {
+    name    = "node-fetch"
+    version = "@2"
+  }
+}
+
 resource "auth0_rule" "add-github-teams-to-oidc-group-claim" {
   name = "add-github-teams-to-oidc-group-claim"
   script = file(
@@ -14,6 +33,29 @@ resource "auth0_rule" "add-github-teams-to-oidc-group-claim" {
   )
   order   = 30
   enabled = false
+}
+
+resource "auth0_action" "add-github-teams-to-oidc-group-claim" {
+  name = "add-github-teams-to-oidc-group-claim"
+  code = file(
+    "${path.module}/resources/auth0-actions/add-github-teams-to-oidc-group-claim.js",
+  )
+  deploy  = false
+  runtime = "node18"
+
+  supported_triggers {
+    id      = "post-login"
+    version = "v3"
+  }
+
+  dependencies {
+    name    = "node-fetch"
+    version = "@2"
+  }
+  secrets {
+    name  = "K8S_OIDC_GROUP_CLAIM_DOMAIN"
+    value = "https://k8s.integration.dsd.io/groups"
+  }
 }
 
 resource "auth0_rule_config" "aws-account-id" {

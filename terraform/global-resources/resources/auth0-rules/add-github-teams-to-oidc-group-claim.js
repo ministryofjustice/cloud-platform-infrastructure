@@ -2,7 +2,7 @@ function (user, context, callback) {
   var request = require('request');
 
   // Apply to 'github' connections only
-  if(context.connection === 'github'){
+  if (context.connection === 'github') {
     // Get user's Github profile and API access key
     var github_identity = _.find(user.identities, { connection: 'github' });
 
@@ -15,14 +15,14 @@ function (user, context, callback) {
       }
     };
 
-    request(teams_req, function (err, resp, body) {
+    request(teams_req, function(err, resp, body) {
       if (resp.statusCode !== 200) {
         return callback(new Error('Error retrieving teams from github: ' + body || err));
       }
 
       // Construct list of user's Github teams
       // The team slug is used, to normalise whitespace, capitalisation etc.
-      var git_teams = JSON.parse(body).map(function (team) {
+      var git_teams = JSON.parse(body).map(function(team) {
         if (team.organization.login === "ministryofjustice") {
           return "github:" + team.slug;
         }
