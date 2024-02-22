@@ -10,7 +10,7 @@ exports.onExecutePostLogin = async (event, api) => {
     //
     // Github user profile will also contain a Github API access token
     // which we can use to look up teams etc.
-    const github_identity = user.identities.find(id => id.connection === "github");
+    const github_identity = event.user.identities.find(id => id.connection === "github");
 
     // Get list of user"s Github teams
     const teams_req = {

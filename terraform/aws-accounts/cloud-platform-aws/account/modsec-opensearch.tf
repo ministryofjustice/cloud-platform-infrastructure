@@ -256,6 +256,11 @@ resource "auth0_action" "add-github-teams-to-opensearch-saml" {
     version = "v3"
   }
 
+  dependencies {
+    name    = "node-fetch"
+    version = "2"
+  }
+
   secrets {
     name  = "OPENSEARCH_APP_CLIENT_ID"
     value = auth0_client.opensearch.client_id

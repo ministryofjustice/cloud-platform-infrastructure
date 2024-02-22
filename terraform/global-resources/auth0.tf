@@ -22,7 +22,7 @@ resource "auth0_action" "allow-github-orgs" {
 
   dependencies {
     name    = "node-fetch"
-    version = "@2"
+    version = "2"
   }
 }
 
@@ -50,7 +50,7 @@ resource "auth0_action" "add-github-teams-to-oidc-group-claim" {
 
   dependencies {
     name    = "node-fetch"
-    version = "@2"
+    version = "2"
   }
   secrets {
     name  = "K8S_OIDC_GROUP_CLAIM_DOMAIN"
