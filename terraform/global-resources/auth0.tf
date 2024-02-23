@@ -36,7 +36,7 @@ resource "auth0_rule" "add-github-teams-to-oidc-group-claim" {
 }
 
 resource "auth0_action" "add-github-teams-to-oidc-group-claim" {
-  name = "add-github-teams-to-oidc-group-claim"
+  name = "add-github-teams-to-oidc-group-claim-global-resources"
   code = file(
     "${path.module}/resources/auth0-actions/add-github-teams-to-oidc-group-claim.js",
   )
