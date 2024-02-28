@@ -94,7 +94,7 @@ module "external_secrets_operator" {
   ]
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.2"
 
   replica_count       = "12"
   controller_name     = "default"
@@ -110,7 +110,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.2"
 
   replica_count                = "12"
   controller_name              = "modsec"
