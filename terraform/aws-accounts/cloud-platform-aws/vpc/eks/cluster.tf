@@ -44,7 +44,7 @@ locals {
     live    = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
     live-2  = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
     manager = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
-    default = ["m6a.large", "m6a.xlarge", "m6i.large"]
+    default = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
   }
 
   monitoring_node_size = {
