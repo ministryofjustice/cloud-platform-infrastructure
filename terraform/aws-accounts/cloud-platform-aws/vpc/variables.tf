@@ -16,7 +16,7 @@ variable "cluster_names" {
 
 
 variable "profile_name" {
-  type = string
+  type        = string
   description = "profile name used to generate new sso credentials"
-  default = "moj-cp"
+  default     = "moj-cp"
 }
