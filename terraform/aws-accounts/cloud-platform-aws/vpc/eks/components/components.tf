@@ -71,11 +71,15 @@ module "cert_manager" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.13.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.14.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzones           = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
   domain_filters      = lookup(local.domain_filters, terraform.workspace, local.domain_filters["default"])
+
+
+  # For live* and manager clusters, filter out test cluster domains
+  enable_test_cluster_filters = lookup(local.prod_workspace, terraform.workspace, false) || terraform.workspace == "live-2"
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
@@ -94,7 +98,7 @@ module "external_secrets_operator" {
   ]
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.3"
 
   replica_count       = "12"
   controller_name     = "default"
@@ -110,7 +114,7 @@ module "ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.3"
 
   replica_count                = "12"
   controller_name              = "modsec"
@@ -143,7 +147,7 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.12.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.12.4"
 
   opensearch_app_host = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
   elasticsearch_host  = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
