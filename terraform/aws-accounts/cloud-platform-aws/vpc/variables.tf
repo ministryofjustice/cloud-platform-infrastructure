@@ -13,3 +13,10 @@ variable "cluster_names" {
     live-1 = list(string)
   })
 }
+
+
+variable "profile_name" {
+  type = string
+  description = "profile name used to generate new sso credentials"
+  default = "moj-cp"
+}

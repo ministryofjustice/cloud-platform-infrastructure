@@ -15,7 +15,8 @@ terraform {
 
 provider "aws" {
   region = "eu-west-2"
-
+  
+  profile = var.profile_name
   default_tags {
     tags = {
       business-unit = "Platforms"
