@@ -131,6 +131,23 @@ module "modsec_ingress_controllers_v1" {
   depends_on = [module.ingress_controllers_v1]
 }
 
+module "ingress_controllers_v1_test" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.4"
+
+  replica_count       = "3"
+  controller_name     = "testing"
+  enable_latest_tls   = true
+  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+
+  # Enable this when we remove the module "ingress_controllers"
+  enable_external_dns_annotation = true
+
+  depends_on = [module.cert_manager.helm_cert_manager_status]
+}
+
+
 module "kuberos" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.5.5"
 
