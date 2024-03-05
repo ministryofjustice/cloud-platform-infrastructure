@@ -98,7 +98,7 @@ module "external_secrets_operator" {
   ]
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.5"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
   controller_name     = "default"
@@ -110,11 +110,14 @@ module "ingress_controllers_v1" {
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
 
+  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "5Gi" : "512Mi"
+  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
+
   depends_on = [module.cert_manager.helm_cert_manager_status]
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.5"
 
   replica_count                = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
   controller_name              = "modsec"
@@ -124,6 +127,9 @@ module "modsec_ingress_controllers_v1" {
   enable_modsec                = true
   enable_owasp                 = true
   enable_latest_tls            = true
+  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "3Gi" : "512Mi"
+  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
+
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   cluster                      = terraform.workspace
   fluent_bit_version           = "2.2.1-amd64"
