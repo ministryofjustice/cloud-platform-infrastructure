@@ -138,7 +138,7 @@ module "modsec_ingress_controllers_v1" {
 }
 
 module "ingress_controllers_v1_test" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.5"
 
   replica_count       = "3"
   controller_name     = "testing"
