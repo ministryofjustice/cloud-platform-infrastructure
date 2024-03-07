@@ -4,10 +4,18 @@ import (
 	"fmt"
 	"net"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/route53"
+)
+
+// Retry and wait time for Route53 API calls - throttling issue exponential backoff/retry strategy
+const (
+	maxRetries    = 5
+	startWaitTime = 1 * time.Second
 )
 
 // RecordSets uses the AWS API to return domain entry existence in Route53
@@ -20,19 +28,30 @@ func RecordSets(d, hostedZone string) (bool, error) {
 		HostedZoneId: aws.String(hostedZone),
 	}
 
-	sets, err := svc.ListResourceRecordSets(params)
-	if err != nil {
-		return false, err
-	}
+	wait := startWaitTime
 
-	for _, v := range sets.ResourceRecordSets {
-		record := strings.TrimRight(*v.Name, ".")
-		if record == d {
-			return true, nil
+	for i := 0; i < maxRetries; i++ {
+		sets, err := svc.ListResourceRecordSets(params)
+		if err != nil {
+			awsErr, ok := err.(awserr.Error)
+			if ok && awsErr.Code() == "Throttling" {
+				time.Sleep(wait)
+				wait *= 2 // exponential backoff
+				continue
+			}
+			return false, err
 		}
-	}
 
-	return false, nil
+		for _, v := range sets.ResourceRecordSets {
+			record := strings.TrimRight(*v.Name, ".")
+			if record == d {
+				return true, nil
+			}
+		}
+
+		return false, nil
+	}
+	return false, fmt.Errorf("max retries reached")
 }
 
 // DNSLookUp returns error if there is not DNS entry for an endpoint, used
