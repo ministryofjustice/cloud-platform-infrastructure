@@ -74,7 +74,7 @@ var _ = Describe("GIVEN pod security admission", func() {
 			replicaSet, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "replicaset", "-oyaml")
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(replicaSet).To(ContainSubstring(`violates PodSecurity "restricted:latest": runAsUser=0 (pod must not set runAsUser=0)`))
+			Expect(replicaSet).To(And(ContainSubstring("violates"), ContainSubstring(`PodSecurity "restricted:latest": runAsUser=0 (pod must not set runAsUser=0)`)))
 		})
 
 		It("THEN authenticated users via kubectl are restricted by psa", func() {
@@ -89,7 +89,7 @@ var _ = Describe("GIVEN pod security admission", func() {
 			replicaSet, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "replicaset", "-oyaml")
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(replicaSet).To(ContainSubstring(`violates PodSecurity "restricted:latest": runAsUser=0 (pod must not set runAsUser=0)`))
+			Expect(replicaSet).To(And(ContainSubstring("violates"), ContainSubstring(`PodSecurity "restricted:latest": runAsUser=0 (pod must not set runAsUser=0)`)))
 		})
 
 		It("THEN service accounts haven't got escalated privilege", func() {

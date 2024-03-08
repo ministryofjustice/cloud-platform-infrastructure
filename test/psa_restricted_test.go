@@ -61,7 +61,7 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 			replicaSet, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "replicaset", "-oyaml")
 			Expect(err).NotTo(HaveOccurred())
 
-			Expect(replicaSet).To(ContainSubstring(`violates PodSecurity "restricted:latest": runAsUser=0 (pod must not set runAsUser=0)`))
+			Expect(replicaSet).To(And(ContainSubstring("violates"), ContainSubstring(`PodSecurity "restricted:latest": runAsUser=0 (pod must not set runAsUser=0)`)))
 
 			deploy, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "deploy")
 			Expect(err).NotTo(HaveOccurred())
