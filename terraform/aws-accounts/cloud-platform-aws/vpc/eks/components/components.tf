@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.22.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.22.1"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -12,6 +12,8 @@ module "concourse" {
   cloud_platform_infrastructure_git_crypt_key       = var.cloud_platform_infrastructure_git_crypt_key
   cloud_platform_infrastructure_pr_git_access_token = var.cloud_platform_infrastructure_pr_git_access_token
   slack_hook_id                                     = var.slack_hook_id
+  slack_bot_token                                   = var.slack_bot_token
+  slack_webhook_url                                 = var.slack_webhook_url
   concourse-git-crypt                               = var.concourse-git-crypt
   environments-git-crypt                            = var.environments-git-crypt
   github_token                                      = var.github_token
@@ -19,8 +21,6 @@ module "concourse" {
   pingdom_password                                  = var.pingdom_password
   pingdom_api_key                                   = var.pingdom_api_key
   pingdom_api_token                                 = var.pingdom_api_token
-  slack_bot_token                                   = var.slack_bot_token
-  slack_webhook_url                                 = var.slack_webhook_url
   dockerhub_username                                = var.dockerhub_username
   dockerhub_password                                = var.dockerhub_password
   how_out_of_date_are_we_github_token               = var.how_out_of_date_are_we_github_token
