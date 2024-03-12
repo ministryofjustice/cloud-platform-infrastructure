@@ -134,6 +134,16 @@ variable "pingdom_api_token" {
   description = "Pingdom API token"
 }
 
+variable "slack_bot_token" {
+  type        = string
+  description = "slack concourse-bot token"
+}
+
+variable "slack_webhook_url" {
+  type        = string
+  description = "slack concourse-bot webhook url to post messages to channel"
+}
+
 variable "dockerhub_username" {
   type        = string
   description = "DockerHub username"
