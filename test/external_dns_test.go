@@ -18,7 +18,7 @@ import (
 
 // External DNS tests the external-dns function in a cluster can create
 // and destroy route53 entries. It uses the test domain to register.
-var _ = Describe("external-dns", func() {
+var _ = Describe("external-dns", Serial, func() {
 	var (
 		namespaceName, domain string
 		options               *k8s.KubectlOptions

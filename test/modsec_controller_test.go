@@ -15,7 +15,7 @@ import (
 	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
 
-var _ = Describe("modsec-ingress-controller", func() {
+var _ = Describe("modsec-ingress-controller", Serial, func() {
 	var (
 		namespaceName, host, url string
 		options                  *k8s.KubectlOptions
