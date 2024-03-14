@@ -13,9 +13,3 @@ variable "cluster_names" {
     live-1 = list(string)
   })
 }
-
-variable "prifle_name" {
-  type = string
-  description = "aws profile name"
-  default = "moj-cp"
-}
