@@ -62,7 +62,7 @@ module "descheduler" {
 }
 
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.9.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=switch-kubectl-provider"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
@@ -189,7 +189,7 @@ module "monitoring" {
 }
 
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.10.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=alekc-kubectl-switch"
 
   dryrun_map = {
     service_type                       = false,
