@@ -118,6 +118,26 @@ module "ingress_controllers_v1" {
   depends_on = [module.cert_manager.helm_cert_manager_status]
 }
 
+module "production_only_ingress_controllers_v1" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.6"
+
+  replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "6" : "3"
+  controller_name     = "production-only"
+  enable_latest_tls   = true
+  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+
+  # Enable this when we remove the module "ingress_controllers"
+  enable_external_dns_annotation = true
+
+  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "5Gi" : "512Mi"
+  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
+
+  depends_on = [module.cert_manager.helm_cert_manager_status]
+}
+
+
 module "modsec_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.6"
 
@@ -150,7 +170,9 @@ module "kuberos" {
 
   depends_on = [
     module.ingress_controllers_v1,
-    module.modsec_ingress_controllers_v1
+    module.modsec_ingress_controllers_v1,
+    module.production_only_ingress_controllers_v1
+
   ]
 }
 
