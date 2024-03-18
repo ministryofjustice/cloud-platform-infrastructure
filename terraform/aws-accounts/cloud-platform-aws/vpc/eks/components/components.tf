@@ -100,7 +100,7 @@ module "external_secrets_operator" {
   ]
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.0"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "30" : "3"
   controller_name     = "default"
@@ -119,7 +119,7 @@ module "ingress_controllers_v1" {
 }
 
 module "production_only_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.0"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "6" : "3"
   controller_name     = "production-only"
@@ -139,7 +139,7 @@ module "production_only_ingress_controllers_v1" {
 
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.7.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.0"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
   controller_name     = "modsec"
