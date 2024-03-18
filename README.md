@@ -109,12 +109,13 @@ Create a PR and merge to main.
 
 Terraform is used to manage all AWS resources, with Terraform resources stored in the `terraform/` directory.
 
-Terraform resources are split into four directories with matching state objects in S3, `terraform/global-resources`, `terraform/cloud-platform`, `terraform/cloud-platform-account` and `terraform/cloud-platform-components`:
+Terraform resources are split into five directories with matching state objects in S3, `terraform/global-resources`, `terraform/cloud-platform`, `terraform/cloud-platform-account`, `terraform/aws-accounts/cloud-platform-aws/vpc/eks/core` and `terraform/aws-accounts/cloud-platform-aws/vpc/eks/core/components`:
 
 - `global-resources` contains 'global' AWS resources that are not part of specific clusters or platform environments - e.g. elasticsearch and s3.
 - `cloud-platform` contains resources for the Cloud Platform environments - e.g. bastion hosts.
 - `cloud-platform-account` contains account specifics like cloud-trail. We decided to seperate account level Terraform and global "run once" as we're currently running from multiple AWS accounts.
-- `cloud-platform-components` contains appications required to bootstrap a cluster i.e. getting a Cloud Platform cluster into a functional state.
+- `terraform/aws-accounts/cloud-platform-aws/vpc/eks/core` contains core terraform which need to be present in every cluster.
+- `terraform/aws-accounts/cloud-platform-aws/vpc/eks/core/components` contains optional terraform components.
 
 As all four resources are defined with separate state backends, `terraform plan` and `apply` must be run separately:
 
@@ -131,7 +132,12 @@ $ cd terraform/cloud-platform-account
 $ terraform plan
 Refreshing Terraform state in-memory prior to plan...
 ...
-$ cd ../cloud-platform-components
+$ cd ../core
+$ terraform plan
+Refreshing Terraform state in-memory prior to plan...
+...
+...
+$ cd ../core/components
 $ terraform plan
 Refreshing Terraform state in-memory prior to plan...
 ...
@@ -147,6 +153,11 @@ The s3 state store structure appears as follows:
     │   ├── cloud-platform/
     │   │   └── terraform.tfstate
     │   ├── mojdsd-platform-integration/
+    │   │   └── terraform.tfstate
+    ├── cloud-platform-core/
+    │   ├── cloud-platform-live-0/
+    │   │   └── terraform.tfstate
+    │   ├── cloud-platform-test-1/
     │   │   └── terraform.tfstate
     ├── cloud-platform-components/
     │   ├── cloud-platform-live-0/
