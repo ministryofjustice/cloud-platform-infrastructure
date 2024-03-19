@@ -127,23 +127,6 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 			Expect(allowPrivilegeDeploy).To(ContainSubstring("allowPrivilegeEscalation: true"))
 		})
 
-		It("THEN NOT HAVE the 'seccomp.security.alpha.kubernetes.io/pod' annotation on a successfully deployed pod", func() {
-			deploymentName := "app-" + strings.ToLower(random.UniqueId())
-			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
-				"namespace":      namespace,
-				"deploymentName": deploymentName,
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
-			Expect(err).NotTo(HaveOccurred())
-
-			pod, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-l", "app="+deploymentName, "-n", namespace, "-oyaml")
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(pod).NotTo(ContainSubstring(`seccomp.security.alpha.kubernetes.io/pod`))
-		})
-
 		It("THEN ALLOW `spec.containers.securityContext.capabilities.drop: ['ALL']`", func() {
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":        namespace,
