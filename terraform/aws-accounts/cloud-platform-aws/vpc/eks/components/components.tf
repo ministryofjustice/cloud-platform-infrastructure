@@ -100,7 +100,7 @@ module "external_secrets_operator" {
   ]
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.2"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "30" : "3"
   controller_name     = "default"
@@ -119,14 +119,15 @@ module "ingress_controllers_v1" {
 }
 
 module "production_only_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.2"
 
-  replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "6" : "3"
-  controller_name     = "production-only"
-  enable_latest_tls   = true
-  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
-  live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+  replica_count            = lookup(local.live_workspace, terraform.workspace, false) ? "6" : "3"
+  controller_name          = "production-only"
+  enable_latest_tls        = true
+  proxy_response_buffering = "on"
+  cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
@@ -139,7 +140,7 @@ module "production_only_ingress_controllers_v1" {
 
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.2"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
   controller_name     = "modsec"
