@@ -11,10 +11,12 @@ This `README` will serve as a brief outline of the `cloud-platform-infrastructur
 ```
 
 The nesting of the terraform folders reflects the **dependencies** between them. For example when you are provisioning a new cluster, the terraform must be [applied in this order](https://runbooks.cloud-platform.service.justice.gov.uk/eks-cluster.html):
+
 ```
-aws-accounts/cloud-platform-aws/vpc 
-aws-accounts/cloud-platform-aws/vpc/eks 
-aws-accounts/cloud-platform-aws/vpc/eks/components
+aws-accounts/cloud-platform-aws/vpc
+aws-accounts/cloud-platform-aws/vpc/eks
+aws-accounts/cloud-platform-aws/vpc/eks/core
+aws-accounts/cloud-platform-aws/vpc/eks/core/components
 ```
 
 ## Deployment
