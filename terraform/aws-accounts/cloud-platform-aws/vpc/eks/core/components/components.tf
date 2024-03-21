@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.23.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.23.4"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -31,8 +31,8 @@ module "concourse" {
   hoodaw_host                  = var.hoodaw_host
   hoodaw_api_key               = var.hoodaw_api_key
   github_actions_secrets_token = var.github_actions_secrets_token
-  
-  eks_cluster_name = terraform.workspace
+  hoodaw_irsa_enabled          = var.hoodaw_irsa_enabled
+  eks_cluster_name             = terraform.workspace
 
   depends_on = [module.monitoring, module.ingress_controllers_v1]
 }
