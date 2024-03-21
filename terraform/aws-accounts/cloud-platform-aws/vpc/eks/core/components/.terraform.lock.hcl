@@ -23,23 +23,6 @@ provider "registry.terraform.io/alekc/kubectl" {
   ]
 }
 
-provider "registry.terraform.io/gavinbunney/kubectl" {
-  version     = "1.13.2"
-  constraints = ">= 1.13.2, 1.13.2"
-  hashes = [
-    "h1:bzHPPXyXiZ8Jb9TAwc3RS8JT3XfC5sJP3UaKkSbDl2k=",
-    "zh:0785bee7057808a708238f287ce1a4e2c694d44514da619586be5e970fb36771",
-    "zh:3948ecfa95a49925fea869f7780598f41a777e46bfc9348d18751bfaafcf1b44",
-    "zh:3e6c6cb301a0b8033fae8e3357df36c0f1f5baaa96320cb4bf11174ab176874f",
-    "zh:563faab38272c6448aa1ec2f6e791b20aff9890563eab2e164399023fc745d85",
-    "zh:7315c5a1e7ed8599a066c7080d6013d002aa040f0b39306319080e968a0659e9",
-    "zh:7aa03cdf3a17082a36af3268f5dbf2692e28f76749093365b10f9d3b035fdc78",
-    "zh:b365eb5cac7e4024a6cf155996b25e8a60fd6385888e3331a3382d8f40129afd",
-    "zh:e0c56271fee4590af4361facfcb51e38c6311aecd1253b1c18cd7a32fcc16bee",
-    "zh:e9a188bae3e76ef0716b0310589e46ba93979fd363a214c756a1aed70f402046",
-  ]
-}
-
 provider "registry.terraform.io/hashicorp/aws" {
   version     = "5.35.0"
   constraints = ">= 2.23.0, >= 3.0.0, >= 4.0.0, >= 4.24.0, 5.35.0"
