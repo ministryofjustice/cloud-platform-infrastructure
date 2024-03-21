@@ -36,7 +36,7 @@ locals {
   # To manage different cluster versions
   cluster_version = {
     live    = "1.26"
-    live-2  = "1.26"
+    live-2  = "1.27"
     manager = "1.26"
     default = "1.26"
   }
