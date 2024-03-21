@@ -50,20 +50,6 @@ provider "helm" {
   }
 }
 
-#################
-# Remote States #
-#################
-
-data "terraform_remote_state" "cluster" {
-  backend = "s3"
-
-  config = {
-    bucket  = "cloud-platform-terraform-state"
-    region  = "eu-west-1"
-    key     = "aws-accounts/cloud-platform-aws/vpc/eks/${terraform.workspace}/terraform.tfstate"
-    profile = "moj-cp"
-  }
-}
 
 ##################
 # Data Resources #
