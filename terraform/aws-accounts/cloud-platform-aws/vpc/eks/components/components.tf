@@ -38,7 +38,7 @@ module "concourse" {
 module "cluster_autoscaler" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.7.2"
 
-  enable_overprovision        = lookup(local.prod_workspace, terraform.workspace, false)
+  enable_overprovision        = lookup(local.prod_workspace, terraform.workspace, true)
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_id              = data.terraform_remote_state.cluster.outputs.cluster_id
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
@@ -73,15 +73,15 @@ module "cert_manager" {
 }
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.14.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.15.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzones           = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
   domain_filters      = lookup(local.domain_filters, terraform.workspace, local.domain_filters["default"])
 
 
-  # For live* and manager clusters, filter out test cluster domains
-  enable_test_cluster_filters = lookup(local.prod_workspace, terraform.workspace, false) || terraform.workspace == "live-2"
+  # For tuning external_dns config for production vs test clusters
+  is_live_cluster = lookup(local.prod_workspace, terraform.workspace, false) || terraform.workspace == "live-2"
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
@@ -102,7 +102,7 @@ module "external_secrets_operator" {
 module "ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.0"
 
-  replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "30" : "3"
+  replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "30" : "30"
   controller_name     = "default"
   enable_latest_tls   = true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -112,8 +112,8 @@ module "ingress_controllers_v1" {
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
 
-  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "5Gi" : "512Mi"
-  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
+  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "5Gi" : "5Gi"
+  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "20Gi"
 
   depends_on = [module.cert_manager.helm_cert_manager_status]
 }
@@ -121,7 +121,7 @@ module "ingress_controllers_v1" {
 module "production_only_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.0"
 
-  replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "6" : "3"
+  replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "6" : "6"
   controller_name     = "production-only"
   enable_latest_tls   = true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -131,8 +131,8 @@ module "production_only_ingress_controllers_v1" {
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
 
-  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "5Gi" : "512Mi"
-  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
+  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "5Gi" : "5Gi"
+  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "20Gi"
 
   depends_on = [module.cert_manager.helm_cert_manager_status]
 }
@@ -141,7 +141,7 @@ module "production_only_ingress_controllers_v1" {
 module "modsec_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.0"
 
-  replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
+  replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "12"
   controller_name     = "modsec"
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
@@ -149,8 +149,8 @@ module "modsec_ingress_controllers_v1" {
   enable_modsec       = true
   enable_owasp        = true
   enable_latest_tls   = true
-  memory_requests     = lookup(local.live_workspace, terraform.workspace, false) ? "3Gi" : "512Mi"
-  memory_limits       = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
+  memory_requests     = lookup(local.live_workspace, terraform.workspace, false) ? "3Gi" : "3Gi"
+  memory_limits       = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "20Gi"
 
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   cluster                      = terraform.workspace
@@ -195,23 +195,23 @@ module "monitoring" {
   oidc_components_client_secret              = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url                            = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   enable_thanos_sidecar                      = lookup(local.prod_2_workspace, terraform.workspace, false)
-  enable_large_nodesgroup                    = lookup(local.live_workspace, terraform.workspace, false)
+  enable_large_nodesgroup                    = lookup(local.live_workspace, terraform.workspace, true)
   enable_prometheus_affinity_and_tolerations = true
-  enable_kibana_proxy                        = lookup(local.live_workspace, terraform.workspace, false)
+  enable_kibana_proxy                        = lookup(local.live_workspace, terraform.workspace, true)
   kibana_upstream                            = format("%s://%s", "https", lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch"))
 
   enable_thanos_helm_chart = lookup(local.prod_2_workspace, terraform.workspace, false)
   enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
 
-  enable_ecr_exporter         = lookup(local.live_workspace, terraform.workspace, false)
-  enable_cloudwatch_exporter  = lookup(local.live_workspace, terraform.workspace, false)
+  enable_ecr_exporter         = lookup(local.live_workspace, terraform.workspace, true)
+  enable_cloudwatch_exporter  = lookup(local.live_workspace, terraform.workspace, true)
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
   depends_on = [module.eks_csi]
 }
 
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.11.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.11.1"
 
   dryrun_map = {
     service_type                       = false,
@@ -253,6 +253,7 @@ module "starter_pack" {
 
   enable_starter_pack = lookup(local.prod_2_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  starter_pack_count = 2
 
   depends_on = [
     module.ingress_controllers_v1,
@@ -264,7 +265,7 @@ module "starter_pack" {
 module "velero" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=2.2.0"
 
-  enable_velero               = lookup(local.prod_2_workspace, terraform.workspace, false)
+  enable_velero               = lookup(local.prod_2_workspace, terraform.workspace, true)
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
   node_agent_cpu_requests     = "2m"

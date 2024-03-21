@@ -173,21 +173,6 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 			Expect(allowPrivilegeDeploy).To(ContainSubstring("allowPrivilegeEscalation: false"))
 		})
 
-		It("THEN HAVE the 'seccomp.security.alpha.kubernetes.io/pod' annotation", func() {
-			tpl, err := helpers.TemplateFile("./fixtures/unprivileged-deployment.yaml.tmpl", "unprivileged-deployment.yaml.tmpl", template.FuncMap{
-				"namespace": namespace,
-			})
-			Expect(err).NotTo(HaveOccurred())
-
-			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
-			Expect(err).NotTo(HaveOccurred())
-
-			pod, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "pod", "-l", "app=unprivileged-integration-test", "-oyaml")
-			Expect(err).NotTo(HaveOccurred())
-
-			Expect(pod).To(ContainSubstring(`seccomp.security.alpha.kubernetes.io/pod`))
-		})
-
 		It("THEN ALLOW `containers.securityContext.capabilities.drop: ['ALL']`", func() {
 			tpl, err := helpers.TemplateFile("./fixtures/dynamic-deploy.yaml.tmpl", "dynamic-deploy.yaml.tmpl", template.FuncMap{
 				"namespace":        namespace,
@@ -357,7 +342,7 @@ var _ = Describe("GIVEN RESTRICTED pod security admission", func() {
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
 			Expect(err).To(HaveOccurred())
 
-			Expect(err.Error()).To(ContainSubstring(`spec.securityContext.seccompProfile.type: Forbidden`))
+			Expect(err.Error()).To(ContainSubstring(`violates PodSecurity "restricted:latest": seccompProfile (pod must not set securityContext.seccompProfile.type to "Unconfined"`))
 		})
 
 		It("THEN ALLOW `spec.containers.securityContext.readOnlyRootFilesystem: true`", func() {

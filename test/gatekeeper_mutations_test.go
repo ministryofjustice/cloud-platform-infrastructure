@@ -24,10 +24,6 @@ var _ = Describe("GIVEN a gatekeeper installation", func() {
 		"run-as-non-root-init",
 	}
 
-	expectedMetadataMutations := []string{
-		"annotate-seccomp-pod-runtime",
-	}
-
 	It("THEN return all expected mutations", func() {
 		actual, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "assign.mutations.gatekeeper.sh")
 		if err != nil {
@@ -39,14 +35,4 @@ var _ = Describe("GIVEN a gatekeeper installation", func() {
 		}
 	})
 
-	It("THEN return all expected metadata mutations", func() {
-		actual, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "assignmetadata.mutations.gatekeeper.sh")
-		if err != nil {
-			Fail(err.Error())
-		}
-
-		for _, expected := range expectedMetadataMutations {
-			Expect(actual).To(ContainSubstring(expected))
-		}
-	})
 })
