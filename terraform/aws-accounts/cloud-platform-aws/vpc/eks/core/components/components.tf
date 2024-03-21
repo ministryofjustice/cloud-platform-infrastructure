@@ -81,7 +81,7 @@ module "external_dns" {
 
 
   # For tuning external_dns config for production vs test clusters
-  is_live_cluster = lookup(local.prod_workspace, terraform.workspace, false) || terraform.workspace == "live-2"
+  is_live_cluster = lookup(local.prod_workspace, terraform.workspace, false)
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
