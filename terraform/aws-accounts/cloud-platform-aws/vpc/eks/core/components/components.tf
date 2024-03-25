@@ -100,7 +100,7 @@ module "external_secrets_operator" {
   ]
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.4"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "30" : "3"
   controller_name     = "default"
@@ -119,10 +119,12 @@ module "ingress_controllers_v1" {
 }
 
 module "production_only_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.4"
+  count  = lookup(local.live_workspace, terraform.workspace, false) ? 1 : 0
 
-  replica_count            = lookup(local.live_workspace, terraform.workspace, false) ? "6" : "3"
+  replica_count            = "6"
   controller_name          = "production-only"
+  upstream_keepalive_time  = "120s"
   enable_latest_tls        = true
   proxy_response_buffering = "on"
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -132,15 +134,15 @@ module "production_only_ingress_controllers_v1" {
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
 
-  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "5Gi" : "512Mi"
-  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
+  memory_requests = "5Gi"
+  memory_limits   = "20Gi"
 
   depends_on = [module.cert_manager.helm_cert_manager_status]
 }
 
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.4"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
   controller_name     = "modsec"
