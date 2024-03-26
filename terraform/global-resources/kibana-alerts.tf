@@ -460,7 +460,7 @@ resource "elasticsearch_opensearch_monitor" "external_dns_throttling" {
                     "range": {
                       "@timestamp": {
                          "boost": 1,
-                         "from": "{{period_end}}||-10m",
+                         "from": "{{period_end}}||-1m",
                          "to": "{{period_end}}",
                          "include_lower": true,
                          "include_upper": true,
