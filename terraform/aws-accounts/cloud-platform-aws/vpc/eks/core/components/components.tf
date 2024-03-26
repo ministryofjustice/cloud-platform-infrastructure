@@ -234,7 +234,7 @@ module "gatekeeper" {
     deprecated_apis_1_27               = false,
     deprecated_apis_1_29               = true,
     warn_kubectl_create_sa             = false,
-    # There are violations on system namespaces and until that is cleared, this 
+    # There are violations on system namespaces and until that is cleared, this
     # constraint will be in dryrun mode
     lock_priv_capabilities = true,
   }
@@ -278,7 +278,7 @@ module "velero" {
 }
 
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.3.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.4.0"
 
   cluster_env = terraform.workspace
 
