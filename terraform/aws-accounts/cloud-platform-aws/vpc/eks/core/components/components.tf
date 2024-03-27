@@ -127,7 +127,7 @@ module "production_only_ingress_controllers_v1" {
   replica_count            = "6"
   controller_name          = "production-only"
   enable_cross_zone_lb     = false
-  enbable_latest_tls       = true
+  enable_latest_tls        = true
   proxy_response_buffering = "on"
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
