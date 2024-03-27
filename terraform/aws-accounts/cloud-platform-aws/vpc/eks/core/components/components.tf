@@ -102,7 +102,7 @@ module "external_secrets_operator" {
   ]
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.5"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "30" : "3"
   controller_name     = "default"
@@ -121,12 +121,12 @@ module "ingress_controllers_v1" {
 }
 
 module "production_only_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.5"
   count  = lookup(local.live_workspace, terraform.workspace, false) ? 1 : 0
 
   replica_count            = "6"
   controller_name          = "production-only"
-  upstream_keepalive_time  = "120s"
+  enable_cross_zone_lb     = false
   enable_latest_tls        = true
   proxy_response_buffering = "on"
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -144,7 +144,7 @@ module "production_only_ingress_controllers_v1" {
 
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.5"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
   controller_name     = "modsec"
