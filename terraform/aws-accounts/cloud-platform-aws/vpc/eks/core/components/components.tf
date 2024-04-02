@@ -217,7 +217,7 @@ module "monitoring" {
 }
 
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.11.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.12.0"
 
   dryrun_map = {
     service_type                       = false,
