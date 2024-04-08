@@ -62,6 +62,10 @@ locals {
     max_size     = 85
     min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
 
+    update_config = {
+      max_unavailable_percentage = 100
+    }
+
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
