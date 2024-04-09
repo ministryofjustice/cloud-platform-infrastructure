@@ -59,3 +59,36 @@ data "aws_eks_cluster" "cluster" {
   name = terraform.workspace
 }
 
+data "aws_route53_zone" "integrationtest" {
+  name = "integrationtest.service.justice.gov.uk"
+}
+
+#################
+# Remote States #
+#################
+
+data "terraform_remote_state" "cluster" {
+  backend = "s3"
+
+  config = {
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "aws-accounts/cloud-platform-aws/vpc/eks/${terraform.workspace}/terraform.tfstate"
+    profile = "moj-cp"
+  }
+}
+
+##########
+# Locals #
+##########
+
+locals {
+  # prod_2_workspace is a temporary workspace to include live-2 on the modules that are tested.
+  # Once all the modules are tested, this list will replace the prod_workspace
+  prod_2_workspace = {
+    manager = true
+    live    = true
+    live-2  = true
+    default = false
+  }
+}
