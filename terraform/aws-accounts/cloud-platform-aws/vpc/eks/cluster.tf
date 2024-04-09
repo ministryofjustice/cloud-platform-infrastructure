@@ -24,21 +24,21 @@ locals {
     live    = "60"
     live-2  = "7"
     manager = "4"
-    default = "3"
+    default = "55"
   }
   # Default node group minimum capacity 
   default_ng_min_count = {
     live    = "60"
     live-2  = "2"
     manager = "4"
-    default = "2"
+    default = "55"
   }
   # To manage different cluster versions
   cluster_version = {
     live    = "1.27"
     live-2  = "1.27"
     manager = "1.27"
-    default = "1.27"
+    default = "1.29"
   }
   node_size = {
     live    = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
