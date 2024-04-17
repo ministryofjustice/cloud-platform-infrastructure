@@ -6,11 +6,11 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "5.43.0"
+      version = "5.45.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.27.0"
+      version = "2.29.0"
     }
   }
   required_version = ">= 1.2.5"
