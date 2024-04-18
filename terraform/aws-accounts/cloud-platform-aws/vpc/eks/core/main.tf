@@ -50,12 +50,3 @@ provider "helm" {
   }
 }
 
-
-##################
-# Data Resources #
-##################
-
-data "aws_eks_cluster" "cluster" {
-  name = terraform.workspace
-}
-
