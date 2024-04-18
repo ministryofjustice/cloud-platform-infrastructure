@@ -53,10 +53,10 @@ variable "index_pattern" {
   type        = list(string)
 }
 
-# variable "index_pattern_live_modsec_audit" {
-#   default = [
-#     "live_k8s_modsec_ingress-*",
-#   ]
-#   description = "Pattern created in Kibana, policy will apply to matching new indices"
-#   type        = list(string)
-# }
+variable "index_pattern_live_modsec_audit" {
+  default = [
+    "live_k8s_modsec_ingress-*",
+  ]
+  description = "Pattern created in Kibana, policy will apply to matching new indices"
+  type        = list(string)
+}
