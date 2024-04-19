@@ -12,10 +12,10 @@ terraform {
       source  = "hashicorp/external"
       version = "2.2.3"
     }
-    elasticsearch = {
-      source  = "phillbaker/elasticsearch"
-      version = "2.0.7"
-    }
+    # elasticsearch = {
+    #   source  = "phillbaker/elasticsearch"
+    #   version = "2.0.7"
+    # }
     curl = {
       source  = "anschoewe/curl"
       version = ">= 1.0.2"

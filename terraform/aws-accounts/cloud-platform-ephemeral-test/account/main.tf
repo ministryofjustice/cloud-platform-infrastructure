@@ -23,8 +23,9 @@ provider "aws" {
   }
 }
 
+
 data "aws_caller_identity" "current" {}
-# data "aws_iam_account_alias" "current" {}
+data "aws_iam_account_alias" "current" {}
 data "aws_region" "current" {}
 
 ###########################
@@ -47,13 +48,13 @@ module "baselines" {
 #######
 
 module "iam" {
-  source                   = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.30"
+  source                   = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.31"
   aws_account_name         = "cloud-platform-ephemeral-test"
   circleci_organisation_id = jsondecode(data.aws_secretsmanager_secret_version.circleci.secret_string)["organisation_id"]
 }
 
 module "sso" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.5.5"
 
   auth0_tenant_domain = "moj-cloud-platforms-dev.eu.auth0.com"
 }
