@@ -258,7 +258,7 @@ resource "auth0_action" "add-github-teams-to-opensearch-saml" {
 
   dependencies {
     name    = "node-fetch"
-    version = "2"
+    version = "2.7.0"
   }
 
   secrets {
