@@ -119,7 +119,7 @@ resource "aws_route53_record" "cloud_platform_justice_gov_uk_TXT" {
 
 module "s3_bucket_thanos" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.15.1"
+  version = "4.1.2"
 
   bucket = "cloud-platform-prometheus-thanos"
   acl    = "private"
@@ -145,7 +145,7 @@ module "s3_bucket_thanos" {
 
 module "s3_bucket_velero" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "2.14.0" # 2.15 pins to terraform-aws-provider <= 4, so this module needs to be upgraded to 3.6.0, which has some resource changes (which may require manual intervention for terraform state imports)
+  version = "4.1.2" # 2.15 pins to terraform-aws-provider <= 4, so this module needs to be upgraded to 3.6.0, which has some resource changes (which may require manual intervention for terraform state imports)
 
   bucket = "cloud-platform-velero-backups"
   acl    = "private"
@@ -171,7 +171,7 @@ module "s3_bucket_velero" {
 
 module "s3_bucket_kubeconfigs" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.15.1"
+  version = "4.1.2"
 
   bucket = "cloud-platform-concourse-kubeconfig"
   acl    = "private"
@@ -240,7 +240,7 @@ module "aws_scheduler" {
 
 # ECR creation for Kuberhealthy checks image
 module "ecr" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=6.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=6.1.1"
 
   # REQUIRED: Repository configuration
   repo_name = "cloud-platform-kuberhealthy-checks"
