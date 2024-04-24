@@ -9,6 +9,7 @@ provider "opensearch" {
 }
 
 # Create a channel configuration to replace elasticsearch_opensearch_destination
+# To be enabled
 resource "opensearch_channel_configuration" "cloud_platform_alerts" {
   provider = opensearch.app_logs
   body     = <<EOF
@@ -17,7 +18,7 @@ resource "opensearch_channel_configuration" "cloud_platform_alerts" {
     "name": "cloud-platform-alerts",
     "description" : "cloud-platform-alerts",
     "config_type" : "slack",
-    "is_enabled" : true,
+    "is_enabled" : false,
     "slack": {
       "url": "${jsondecode(data.aws_secretsmanager_secret_version.slack_webhook_url.secret_string)["url"]}"
     }
@@ -27,13 +28,15 @@ EOF
 }
 
 # Create opensearch monitoring and alert setting
+
+# To be enabled
 resource "opensearch_monitor" "duplicate_grafana_uid_monitor" {
   provider = opensearch.app_logs
   body     = <<EOF
 {
    "name": "Grafana duplcate UID",
    "type": "monitor",
-   "enabled": true,
+   "enabled": false,
    "schedule": {
       "period": {
          "interval": 1,
@@ -137,13 +140,14 @@ EOF
 
 }
 
+# To be enabled
 resource "opensearch_monitor" "psa_violations" {
   provider = opensearch.app_logs
   body     = <<EOF
 {
    "name": "PodSecurity Violations",
    "type": "monitor",
-   "enabled": true,
+   "enabled": false,
    "schedule": {
       "period": {
          "interval": 1,
@@ -256,13 +260,14 @@ EOF
 
 }
 
+# To be enabled
 resource "opensearch_monitor" "grafana_dashboard_fail" {
   provider = opensearch.app_logs
   body     = <<EOF
 {
    "name": "Failed to load Grafana dashboard",
    "type": "monitor",
-   "enabled": true,
+   "enabled": false,
    "schedule": {
       "period": {
          "interval": 1,
@@ -380,13 +385,14 @@ EOF
 
 }
 
+# To be enabled
 resource "opensearch_monitor" "external_dns_throttling" {
   provider   = opensearch.app_logs
   body       = <<EOF
 {
    "name": "Throttling Errors in External DNS",
    "type": "monitor",
-   "enabled": true,
+   "enabled": false,
    "schedule": {
       "period": {
          "interval": 1,
@@ -530,13 +536,14 @@ EOF
 
 }
 
+# To be enabled
 resource "opensearch_monitor" "external_dns_invalid_batch_change" {
   provider = opensearch.app_logs
   body     = <<EOF
 {
    "name": "Invalid Change Batch Errors in External DNS",
    "type": "monitor",
-   "enabled": true,
+   "enabled": false,
    "schedule": {
       "period": {
          "interval": 1,
