@@ -27,6 +27,7 @@ sed '1s/^/[/; $!s/$/,/; $s/$/]/' updated_objects > out.json
 echo "Vulnerabilitiy data enriched."
 
 echo "Pushing report to s3..."
+# https://github.com/ministryofjustice/cloud-platform-environments/blob/6b8397d5de591c6f6f533750291117b2e78d4296/namespaces/live.cloud-platform.service.justice.gov.uk/moj-vuln-report/resources/s3.tf#L4
 aws s3 cp "${FILENAME}.json" s3://cloud-platform-vulnerability-reports/$CLUSTER_NAME/
 
 exit 0
