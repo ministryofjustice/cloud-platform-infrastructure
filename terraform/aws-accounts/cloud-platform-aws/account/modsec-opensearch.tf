@@ -9,6 +9,9 @@ provider "elasticsearch" {
 
 locals {
   live_modsec_audit_domain = "cp-live-modsec-audit"
+  mod_sec_tags = {
+    Domain = local.live_modsec_audit_domain
+  }
 }
 
 resource "aws_iam_role" "os_access_role" {
@@ -409,4 +412,13 @@ resource "elasticsearch_opensearch_roles_mapping" "all_org_members" {
     aws_opensearch_domain_saml_options.live_modsec_audit,
     elasticsearch_opensearch_role.all_org_members
   ]
+}
+
+module "live_mod_sec_opensearch_monitoring" {
+  source              = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.1"
+  alarm_name_prefix   = "CP-live-mod-sec-"
+  domain_name         = local.live_modsec_audit_domain
+  sns_topic           = module.baselines.slack_sns_topic
+  min_available_nodes = "3"
+  tags                = local.mod_sec_tags
 }

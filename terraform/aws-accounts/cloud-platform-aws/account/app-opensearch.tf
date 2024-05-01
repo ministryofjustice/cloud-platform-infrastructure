@@ -10,6 +10,9 @@ provider "elasticsearch" {
 
 locals {
   live_app_logs_domain = "cp-live-app-logs"
+  app_logs_tags = {
+    Domain = local.live_app_logs_domain
+  }
 }
 
 data "aws_eks_node_groups" "manager" {
@@ -105,7 +108,7 @@ module "acm_app_logs" {
   wait_for_validation = false # for use in an automated pipeline set false to avoid waiting for validation to complete or error after a 45 minute timeout.
 
   tags = {
-    Domain = local.live_modsec_audit_domain
+    Domain = local.live_app_logs_domain
   }
 }
 
@@ -375,4 +378,13 @@ resource "auth0_client" "opensearch_app_logs" {
 resource "auth0_rule_config" "opensearch_app_logs_client_id" {
   key   = "OPENSEARCH_APP_CLIENT_ID_APP_LOGS"
   value = auth0_client.opensearch_app_logs.client_id
+}
+
+module "live_app_logs_opensearch_monitoring" {
+  source              = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.1"
+  alarm_name_prefix   = "CP-live-app-logs-"
+  domain_name         = local.live_app_logs_domain
+  sns_topic           = module.baselines.slack_sns_topic
+  min_available_nodes = "12"
+  tags                = local.app_logs_tags
 }
