@@ -6,7 +6,7 @@ jobs:
   format-code:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.2
+      - uses: actions/checkout@v4.1.4
       - uses: ministryofjustice/github-actions/code-formatter@main
         with:
           ignore-files: "terraform.tfvars"
