@@ -415,10 +415,10 @@ resource "elasticsearch_opensearch_roles_mapping" "all_org_members" {
 }
 
 module "live_mod_sec_opensearch_monitoring" {
-  source              = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.1"
+  source              = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.2"
   alarm_name_prefix   = "CP-live-mod-sec-"
   domain_name         = local.live_modsec_audit_domain
   sns_topic           = module.baselines.slack_sns_topic
-  min_available_nodes = "3"
+  min_available_nodes = aws_opensearch_domain.live_modsec_audit.cluster_config[0].instance_count
   tags                = local.mod_sec_tags
 }
