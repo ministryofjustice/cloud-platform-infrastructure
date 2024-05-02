@@ -381,10 +381,10 @@ resource "auth0_rule_config" "opensearch_app_logs_client_id" {
 }
 
 module "live_app_logs_opensearch_monitoring" {
-  source              = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.1"
+  source              = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.2"
   alarm_name_prefix   = "CP-live-app-logs-"
   domain_name         = local.live_app_logs_domain
   sns_topic           = module.baselines.slack_sns_topic
-  min_available_nodes = "12"
+  min_available_nodes = aws_opensearch_domain.live_app_logs.cluster_config[0].instance_count
   tags                = local.app_logs_tags
 }
