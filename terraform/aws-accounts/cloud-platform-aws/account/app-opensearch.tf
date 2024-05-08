@@ -316,7 +316,7 @@ resource "elasticsearch_opensearch_role" "all_org_members_app_logs" {
   }
 
   index_permissions {
-    index_patterns  = ["live_k8s_modsec_ingress-*"]
+    index_patterns  = ["live_kubernetes_cluster-*"]
     allowed_actions = ["read", "search", "data_access"]
 
     document_level_security = "{\"terms\": { \"github_teams.keyword\": [$${user.roles}]}}"
@@ -388,3 +388,4 @@ module "live_app_logs_opensearch_monitoring" {
   min_available_nodes = aws_opensearch_domain.live_app_logs.cluster_config[0].instance_count
   tags                = local.app_logs_tags
 }
+
