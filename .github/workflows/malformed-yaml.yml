@@ -7,6 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.1.2
-      - uses: ministryofjustice/github-actions/malformed-yaml@v17.1.0
+      - uses: ministryofjustice/github-actions/malformed-yaml@v18.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
