@@ -21,14 +21,14 @@ locals {
   # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler)
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/835
   node_groups_count = {
-    live    = "60"
+    live    = "65"
     live-2  = "7"
     manager = "4"
     default = "3"
   }
   # Default node group minimum capacity 
   default_ng_min_count = {
-    live    = "60"
+    live    = "65"
     live-2  = "2"
     manager = "4"
     default = "2"
