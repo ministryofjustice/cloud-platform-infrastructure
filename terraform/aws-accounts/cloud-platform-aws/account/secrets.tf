@@ -45,3 +45,8 @@ resource "aws_secretsmanager_secret_version" "slack_webhook_url" {
 data "aws_secretsmanager_secret_version" "slack_webhook_url" {
   secret_id = aws_secretsmanager_secret.slack_webhook_url.id
 }
+
+resource "aws_secretsmanager_secret" "slack_webhook_url_to_trigger_terraform_plan_only" {
+  name        = "cloud-platform/slack-webhook-url-os"
+  description = "url used for kibana to post alerts to a channel"
+}
