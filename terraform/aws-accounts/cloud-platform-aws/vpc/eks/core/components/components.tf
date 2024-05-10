@@ -101,7 +101,7 @@ module "external_secrets_operator" {
   ]
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.7"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "30" : "3"
   controller_name     = "default"
@@ -120,7 +120,7 @@ module "ingress_controllers_v1" {
 }
 
 module "production_only_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.7"
   count  = lookup(local.live_workspace, terraform.workspace, false) ? 1 : 0
 
   replica_count            = "6"
@@ -144,7 +144,7 @@ module "production_only_ingress_controllers_v1" {
 
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.7"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
   controller_name     = "modsec"
@@ -159,7 +159,7 @@ module "modsec_ingress_controllers_v1" {
 
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   cluster                      = terraform.workspace
-  fluent_bit_version           = "2.2.1-amd64"
+  fluent_bit_version           = "3.0.2-amd64"
 
   depends_on = [module.ingress_controllers_v1]
 }
