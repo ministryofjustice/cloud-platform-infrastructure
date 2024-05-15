@@ -50,7 +50,8 @@ module "cluster_autoscaler" {
   live_cpu_request    = "200m"
 
   depends_on = [
-    module.monitoring
+    module.monitoring,
+    module.label_pods_controller
   ]
 }
 
@@ -59,7 +60,8 @@ module "descheduler" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.7.0"
 
   depends_on = [
-    module.monitoring
+    module.monitoring,
+    module.label_pods_controller
   ]
 }
 
@@ -73,6 +75,17 @@ module "cert_manager" {
 
   depends_on = [module.monitoring.prometheus_operator_crds_status]
 }
+
+module "label_pods_controller" {
+  source = "github.com/ministryofjustice/cloud-platform-label-pods?ref=1.1.0"
+
+  chart_version = "1.0.1"
+  ecr_url       = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/cloud-platform-label-pods-ecr"
+  image_tag     = "1.1.0"
+
+  depends_on = [module.cert_manager]
+}
+
 
 module "external_dns" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.15.0"
@@ -97,7 +110,8 @@ module "external_secrets_operator" {
   secrets_prefix              = terraform.workspace
 
   depends_on = [
-    module.monitoring.prometheus_operator_crds_status
+    module.monitoring.prometheus_operator_crds_status,
+    module.label_pods_controller
   ]
 }
 module "ingress_controllers_v1" {
@@ -116,7 +130,7 @@ module "ingress_controllers_v1" {
   memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "5Gi" : "512Mi"
   memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
 
-  depends_on = [module.cert_manager.helm_cert_manager_status]
+  depends_on = [module.cert_manager.helm_cert_manager_status, module.label_pods_controller]
 }
 
 module "production_only_ingress_controllers_v1" {
@@ -139,7 +153,7 @@ module "production_only_ingress_controllers_v1" {
   memory_requests = "5Gi"
   memory_limits   = "20Gi"
 
-  depends_on = [module.cert_manager.helm_cert_manager_status]
+  depends_on = [module.cert_manager.helm_cert_manager_status, module.label_pods_controller]
 }
 
 
@@ -187,7 +201,7 @@ module "logging" {
   opensearch_app_host = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
   elasticsearch_host  = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
 
-  depends_on = [module.monitoring.prometheus_operator_crds_status]
+  depends_on = [module.monitoring.prometheus_operator_crds_status, module.label_pods_controller]
 }
 
 module "monitoring" {
@@ -238,7 +252,7 @@ module "velero" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
   node_agent_cpu_requests     = "2m"
 
-  depends_on = [module.monitoring.prometheus_operator_crds_status]
+  depends_on = [module.monitoring.prometheus_operator_crds_status, module.label_pods_controller]
 }
 
 module "kuberhealthy" {
@@ -256,7 +270,8 @@ module "trivy-operator" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.8.2"
 
   depends_on = [
-    module.monitoring.prometheus_operator_crds_status
+    module.monitoring.prometheus_operator_crds_status,
+    module.label_pods_controller
   ]
 
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
