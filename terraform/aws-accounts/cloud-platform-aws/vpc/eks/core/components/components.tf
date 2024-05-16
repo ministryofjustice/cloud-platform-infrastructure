@@ -202,7 +202,7 @@ module "monitoring" {
   enable_thanos_sidecar         = lookup(local.prod_2_workspace, terraform.workspace, false)
   enable_large_nodesgroup       = lookup(local.live_workspace, terraform.workspace, false)
   # The largegroup cpu and memory requests are valid only if the large_nodegroup is enabled.
-  large_nodesgroup_cpu_requests              = terraform.workspace == "live" ? "4000m" : "1300m"
+  large_nodesgroup_cpu_requests              = terraform.workspace == "live" ? "14000m" : "1300m"
   large_nodesgroup_memory_requests           = terraform.workspace == "live" ? "180000Mi" : "14000Mi"
   enable_prometheus_affinity_and_tolerations = true
   enable_kibana_proxy                        = lookup(local.live_workspace, terraform.workspace, false)
