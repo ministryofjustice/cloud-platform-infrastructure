@@ -12,6 +12,10 @@ spec:
     metadata:
       labels:
         app: unprivileged-integration-test
+    {{ if .preexistingAnnotations }}
+      annotations:
+        foo: bar
+    {{ end }}
     spec:
       securityContext:
         runAsUser: 1000

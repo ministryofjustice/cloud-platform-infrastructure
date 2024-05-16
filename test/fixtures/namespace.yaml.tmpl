@@ -9,22 +9,31 @@ metadata:
 
 ---
 
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: test-webops
-  namespace: {{ .namespace }}
-  labels:
-subjects:
-  - kind: Group
-    name: "github:test-webops"
+{{ if .disableRoleBinding }}
+
+{{else}}
+  kind: RoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1
+  metadata:
+    name: test-webops
+    namespace: {{ .namespace }}
+    labels:
+  subjects:
+    - kind: Group
+      name: "github:test-webops"
+      apiGroup: rbac.authorization.k8s.io
+  {{ if .multiGithubRbac }}
+    - kind: Group
+      name: "github:test-webops-2"
+      apiGroup: rbac.authorization.k8s.io
+  {{ end }}
+  roleRef:
+    kind: ClusterRole
+    name: "admin"
     apiGroup: rbac.authorization.k8s.io
-roleRef:
-  kind: ClusterRole
-  name: "admin"
-  apiGroup: rbac.authorization.k8s.io
 
 ---
+{{ end }}
 
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
