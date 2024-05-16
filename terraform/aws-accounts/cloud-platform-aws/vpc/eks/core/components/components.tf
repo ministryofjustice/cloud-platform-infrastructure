@@ -77,7 +77,7 @@ module "cert_manager" {
 }
 
 module "label_pods_controller" {
-  source = "github.com/ministryofjustice/cloud-platform-label-pods?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-label-pods?ref=1.1.0"
 
   chart_version = "1.0.1"
   ecr_url       = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/cloud-platform-label-pods-ecr"
