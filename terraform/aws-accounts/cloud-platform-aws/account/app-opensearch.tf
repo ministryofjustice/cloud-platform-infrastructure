@@ -305,7 +305,7 @@ resource "elasticsearch_opensearch_roles_mapping" "webops_app_logs" {
 }
 
 resource "elasticsearch_opensearch_role" "all_org_members_app_logs" {
-  provider      = elasticsearch.app_logs
+  provider    = elasticsearch.app_logs
   role_name   = "all_org_members"
   description = "role for all moj github users"
 
