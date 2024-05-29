@@ -114,7 +114,7 @@ module "acm_app_logs" {
 
 resource "aws_opensearch_domain" "live_app_logs" {
   domain_name    = "cp-live-app-logs"
-  engine_version = "OpenSearch_2.11"
+  engine_version = "OpenSearch_2.13"
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
