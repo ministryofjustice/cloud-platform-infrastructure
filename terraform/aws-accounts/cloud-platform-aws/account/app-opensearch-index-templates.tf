@@ -12,7 +12,6 @@ resource "opensearch_index_template" "live_kubernetes_cluster" {
       }
     }
   }
-}
 EOF
 }
 
@@ -29,7 +28,6 @@ resource "opensearch_index_template" "live_kubernetes_ingress" {
         "number_of_replicas": "1"
       }
     }
-  }
 }
 EOF
 }
@@ -47,7 +45,6 @@ resource "opensearch_index_template" "live_eventrouter" {
         "number_of_replicas": "1"
       }
     }
-  }
 }
 EOF
 }
@@ -65,7 +62,6 @@ resource "opensearch_index_template" "manager_kubernetes_cluster" {
         "number_of_replicas": "1"
       }
     }
-  }
 }
 EOF
 }
@@ -83,7 +79,6 @@ resource "opensearch_index_template" "manager_kubernetes_ingress" {
         "number_of_replicas": "1"
       }
     }
-  }
 }
 EOF
 }
@@ -102,6 +97,5 @@ resource "opensearch_index_template" "manager_eventrouter" {
       }
     }
   }
-}
 EOF
 }
