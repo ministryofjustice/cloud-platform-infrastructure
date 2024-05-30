@@ -6,6 +6,7 @@ resource "opensearch_index_template" "live_kubernetes_cluster" {
   "index_patterns": [
     "live_kuberenetes_cluster-*"
   ],
+  "template": {
     "settings": {
       "index": {
         "number_of_shards": "15",
@@ -13,6 +14,7 @@ resource "opensearch_index_template" "live_kubernetes_cluster" {
       }
     }
   }
+}
 EOF
 }
 
@@ -24,12 +26,14 @@ resource "opensearch_index_template" "live_kubernetes_ingress" {
   "index_patterns": [
     "live_kuberenetes_ingress-*"
   ],
+  "template": {
     "settings": {
       "index": {
         "number_of_shards": "1",
         "number_of_replicas": "1"
       }
     }
+  }
 }
 EOF
 }
@@ -43,12 +47,14 @@ resource "opensearch_index_template" "live_eventrouter" {
   "index_patterns": [
     "live_eventrouter-*"
   ],
+  "template": {
     "settings": {
       "index": {
         "number_of_shards": "1",
         "number_of_replicas": "1"
       }
     }
+  }
 }
 EOF
 }
@@ -62,12 +68,14 @@ resource "opensearch_index_template" "manager_kubernetes_cluster" {
   "index_patterns": [
     "manager_kuberenetes_cluster-*"
   ],
+  "template": {
     "settings": {
       "index": {
         "number_of_shards": "1",
         "number_of_replicas": "1"
       }
     }
+  }
 }
 EOF
 }
@@ -80,12 +88,14 @@ resource "opensearch_index_template" "manager_kubernetes_ingress" {
   "index_patterns": [
     "manager_kuberenetes_ingress-*"
   ],
+  "template": {
     "settings": {
       "index": {
         "number_of_shards": "1",
         "number_of_replicas": "1"
       }
     }
+  }
 }
 EOF
 }
@@ -98,6 +108,7 @@ resource "opensearch_index_template" "manager_eventrouter" {
   "index_patterns": [
     "manager_eventrouter-*"
   ],
+  "template": {
     "settings": {
       "index": {
         "number_of_shards": "1",
@@ -105,5 +116,6 @@ resource "opensearch_index_template" "manager_eventrouter" {
       }
     }
   }
+}
 EOF
 }
