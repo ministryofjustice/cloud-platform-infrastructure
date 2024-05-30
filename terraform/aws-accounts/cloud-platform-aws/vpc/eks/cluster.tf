@@ -66,7 +66,7 @@ locals {
       xvda = {
         device_name = "/dev/xvda"
         ebs = {
-          volume_size           = 140
+          volume_size           = 200
           volume_type           = "gp3"
           iops                  = 0
           encrypted             = false
