@@ -1,5 +1,15 @@
+provider "opensearch" {
+  alias               = "app_logs"
+  url                 = "https://${aws_opensearch_domain.live_app_logs.endpoint}"
+  aws_assume_role_arn = aws_iam_role.os_access_role_app_logs.arn
+  aws_profile         = "moj-cp"
+  sign_aws_requests   = true
+  healthcheck         = false
+  sniff               = false
+}
+
 resource "opensearch_index_template" "live_kubernetes_cluster" {
-  provider = elasticsearch.app_logs
+  provider = opensearch.app_logs
   name     = "live_kubernetes_cluster"
   body     = <<EOF
 {
@@ -17,7 +27,7 @@ EOF
 }
 
 resource "opensearch_index_template" "live_kubernetes_ingress" {
-  provider = elasticsearch.app_logs
+  provider = opensearch.app_logs
   name     = "live_kubernetes_ingress"
   body     = <<EOF
 {
@@ -35,7 +45,7 @@ EOF
 }
 
 resource "opensearch_index_template" "live_eventrouter" {
-  provider = elasticsearch.app_logs
+  provider = opensearch.app_logs
 
   name = "live_eventrouter"
   body = <<EOF
@@ -54,7 +64,7 @@ EOF
 }
 
 resource "opensearch_index_template" "manager_kubernetes_cluster" {
-  provider = elasticsearch.app_logs
+  provider = opensearch.app_logs
 
   name = "manager_kubernetes_cluster"
   body = <<EOF
@@ -73,7 +83,7 @@ EOF
 }
 
 resource "opensearch_index_template" "manager_kubernetes_ingress" {
-  provider = elasticsearch.app_logs
+  provider = opensearch.app_logs
   name     = "manager_kubernetes_ingress"
   body     = <<EOF
 {
@@ -91,7 +101,7 @@ EOF
 }
 
 resource "opensearch_index_template" "manager_eventrouter" {
-  provider = elasticsearch.app_logs
+  provider = opensearch.app_logs
   name     = "manager_eventrouter"
   body     = <<EOF
 {
