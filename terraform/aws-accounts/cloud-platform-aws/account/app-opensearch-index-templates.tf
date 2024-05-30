@@ -96,7 +96,7 @@ resource "opensearch_index_template" "manager_eventrouter" {
   body     = <<EOF
 {
   "index_patterns": [
-    "live_eventrouter-*"
+    "manager_eventrouter-*"
   ],
     "settings": {
       "index": {
