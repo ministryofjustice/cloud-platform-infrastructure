@@ -1,13 +1,3 @@
-provider "opensearch" {
-  alias               = "app_logs"
-  url                 = "https://${aws_opensearch_domain.live_app_logs.endpoint}"
-  aws_assume_role_arn = aws_iam_role.os_access_role_app_logs.arn
-  aws_profile         = "moj-cp"
-  sign_aws_requests   = true
-  healthcheck         = false
-  sniff               = false
-}
-
 resource "opensearch_index_template" "live_kubernetes_cluster" {
   provider = opensearch.app_logs
   name     = "live_kubernetes_cluster"
