@@ -4,7 +4,7 @@ resource "opensearch_index_template" "live_kubernetes_cluster" {
   body     = <<EOF
 {
   "index_patterns": [
-    "live_kuberenetes_cluster-*"
+    "live_kubernetes_cluster-*"
   ],
   "template": {
     "settings": {
