@@ -26,7 +26,7 @@ locals {
     manager = "4"
     default = "3"
   }
-  # Default node group minimum capacity 
+  # Default node group minimum capacity
   default_ng_min_count = {
     live    = "65"
     live-2  = "2"
@@ -59,7 +59,7 @@ locals {
 
   default_ng_12_12_23 = {
     desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_size     = 85
+    max_size     = 88
     min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
 
     block_device_mappings = {
