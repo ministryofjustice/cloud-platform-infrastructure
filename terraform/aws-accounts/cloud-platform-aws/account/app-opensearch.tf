@@ -72,7 +72,6 @@ data "aws_iam_policy_document" "live_app_logs" {
       "es:ESHttpHead",
       "es:ESHttpPost",
       "es:ESHttpPut",
-      "es:ESHttpDelete",
       "es:ESHttpPatch"
     ]
 
