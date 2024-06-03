@@ -67,7 +67,7 @@ data "aws_region" "current" {}
 
 # IAM configuration for cloud-platform. Users, groups, OIDC providers etc
 module "iam" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.31"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-iam?ref=0.0.32"
 
   aws_account_name         = "cloud-platform-aws"
   circleci_organisation_id = jsondecode(data.aws_secretsmanager_secret_version.circleci.secret_string)["organisation_id"]
@@ -236,77 +236,4 @@ module "aws_scheduler" {
   rds_schedule_expression_start = "cron(0 06 ? * * *)"
   rds_target_tag_key            = "cloud-platform-rds-auto-shutdown"
   rds_target_tag_value          = "Schedule RDS Stop/Start during non-business hours for cost saving"
-}
-
-# ECR creation for Kuberhealthy checks image
-module "ecr" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=6.1.0"
-
-  # REQUIRED: Repository configuration
-  repo_name = "cloud-platform-kuberhealthy-checks"
-
-  # REQUIRED: OIDC providers to configure, either "github", "circleci", or both
-  oidc_providers = ["github"]
-
-  # REQUIRED: GitHub repositories that push to this container repository
-  github_repositories = ["cloud-platform-kuberhealthy-checks"]
-
-  # OPTIONAL: GitHub environments, to create variables as actions variables in your environments
-  # github_environments = ["production"]
-
-  # Lifecycle policies
-  # Uncomment the below to automatically tidy up old Docker images
-  lifecycle_policy = <<EOF
-    {
-      "rules": [
-        {
-          "rulePriority": 1,
-          "description": "Expire untagged images older than 14 days",
-          "selection": {
-            "tagStatus": "untagged",
-            "countType": "sinceImagePushed",
-            "countUnit": "days",
-            "countNumber": 14
-          },
-          "action": {
-            "type": "expire"
-          }
-        },
-        {
-          "rulePriority": 2,
-          "description": "Keep last 30 dev and staging images",
-          "selection": {
-            "tagStatus": "tagged",
-            "tagPrefixList": ["dev", "staging"],
-            "countType": "imageCountMoreThan",
-            "countNumber": 30
-          },
-          "action": {
-            "type": "expire"
-          }
-        },
-        {
-          "rulePriority": 3,
-          "description": "Keep the newest 100 images and mark the rest for expiration",
-          "selection": {
-            "tagStatus": "any",
-            "countType": "imageCountMoreThan",
-            "countNumber": 100
-          },
-          "action": {
-            "type": "expire"
-          }
-        }
-      ]
-    }
-EOF
-
-  # Tags
-  business_unit          = var.business_unit
-  application            = var.application
-  is_production          = var.is_production
-  team_name              = var.team_name # also used for naming the container repository
-  namespace              = var.namespace # also used for creating a Kubernetes ConfigMap
-  environment_name       = var.environment
-  infrastructure_support = var.infrastructure_support
 }

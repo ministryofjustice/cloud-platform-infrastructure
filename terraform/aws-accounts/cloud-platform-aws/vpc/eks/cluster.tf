@@ -21,14 +21,14 @@ locals {
   # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler)
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/835
   node_groups_count = {
-    live    = "60"
+    live    = "65"
     live-2  = "7"
     manager = "4"
     default = "3"
   }
   # Default node group minimum capacity 
   default_ng_min_count = {
-    live    = "60"
+    live    = "65"
     live-2  = "2"
     manager = "4"
     default = "2"
@@ -66,7 +66,7 @@ locals {
       xvda = {
         device_name = "/dev/xvda"
         ebs = {
-          volume_size           = 140
+          volume_size           = 200
           volume_type           = "gp3"
           iops                  = 0
           encrypted             = false
@@ -261,6 +261,11 @@ module "eks" {
     {
       userarn  = "arn:aws:iam::754256621582:user/FolarinOyenuga"
       username = "FolarinOyenuga"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/AafreenAnsari"
+      username = "AafreenAnsari"
       groups   = ["system:masters"]
     }
   ]

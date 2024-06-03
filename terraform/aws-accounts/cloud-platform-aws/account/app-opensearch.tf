@@ -10,6 +10,9 @@ provider "elasticsearch" {
 
 locals {
   live_app_logs_domain = "cp-live-app-logs"
+  app_logs_tags = {
+    Domain = local.live_app_logs_domain
+  }
 }
 
 data "aws_eks_node_groups" "manager" {
@@ -105,13 +108,13 @@ module "acm_app_logs" {
   wait_for_validation = false # for use in an automated pipeline set false to avoid waiting for validation to complete or error after a 45 minute timeout.
 
   tags = {
-    Domain = local.live_modsec_audit_domain
+    Domain = local.live_app_logs_domain
   }
 }
 
 resource "aws_opensearch_domain" "live_app_logs" {
   domain_name    = "cp-live-app-logs"
-  engine_version = "OpenSearch_2.11"
+  engine_version = "OpenSearch_2.13"
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
@@ -129,8 +132,8 @@ resource "aws_opensearch_domain" "live_app_logs" {
   }
 
   cluster_config {
-    instance_type            = "r6g.xlarge.search"
-    instance_count           = "12"
+    instance_type            = "r6g.4xlarge.search"
+    instance_count           = "15"
     dedicated_master_enabled = true
     dedicated_master_type    = "m6g.large.search"
     dedicated_master_count   = "5"
@@ -302,6 +305,7 @@ resource "elasticsearch_opensearch_roles_mapping" "webops_app_logs" {
 }
 
 resource "elasticsearch_opensearch_role" "all_org_members_app_logs" {
+  provider    = elasticsearch.app_logs
   role_name   = "all_org_members"
   description = "role for all moj github users"
 
@@ -313,7 +317,7 @@ resource "elasticsearch_opensearch_role" "all_org_members_app_logs" {
   }
 
   index_permissions {
-    index_patterns  = ["live_k8s_modsec_ingress-*"]
+    index_patterns  = ["live_kubernetes_cluster-*"]
     allowed_actions = ["read", "search", "data_access"]
 
     document_level_security = "{\"terms\": { \"github_teams.keyword\": [$${user.roles}]}}"
@@ -326,6 +330,7 @@ resource "elasticsearch_opensearch_role" "all_org_members_app_logs" {
 }
 
 resource "elasticsearch_opensearch_roles_mapping" "all_org_members_app_logs" {
+  provider      = elasticsearch.app_logs
   role_name     = "all_org_members"
   description   = "Mapping AWS IAM roles to ES role all_org_members"
   backend_roles = ["all-org-members"]
@@ -376,3 +381,13 @@ resource "auth0_rule_config" "opensearch_app_logs_client_id" {
   key   = "OPENSEARCH_APP_CLIENT_ID_APP_LOGS"
   value = auth0_client.opensearch_app_logs.client_id
 }
+
+module "live_app_logs_opensearch_monitoring" {
+  source              = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.2"
+  alarm_name_prefix   = "CP-live-app-logs-"
+  domain_name         = local.live_app_logs_domain
+  sns_topic           = module.baselines.slack_sns_topic
+  min_available_nodes = aws_opensearch_domain.live_app_logs.cluster_config[0].instance_count
+  tags                = local.app_logs_tags
+}
+

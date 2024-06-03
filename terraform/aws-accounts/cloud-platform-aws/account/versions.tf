@@ -13,6 +13,10 @@ terraform {
       source  = "phillbaker/elasticsearch"
       version = "~> 2.0.7"
     }
+    opensearch = {
+      source  = "opensearch-project/opensearch"
+      version = "2.2.1"
+    }
     http = {
       source  = "hashicorp/http"
       version = "~> 3.4.1"

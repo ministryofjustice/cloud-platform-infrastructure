@@ -10,4 +10,4 @@ spec:
       containers:
       - name: smoketest-logging
         image: ministryofjustice/curl-jq:1
-        command: ["/bin/sh", "-c", "curl -s {{ .searchTerm }} -H 'Content-Type: application/json' -d '{ \"query\": { \"bool\": { \"must\": [], \"filter\": [ { \"match_phrase\": { \"log\": \"hello, world {{ .namespace }}\" } } ] } } }' | jq '.hits.total.value'"]
+        command: ["/bin/sh", "-c", "curl -s {{ .searchTerm }} -H 'Content-Type: application/json' -d '{\"query\":{\"bool\":{\"must\":{\"term\":{\"kubernetes.namespace_name.keyword\":\"{{ .namespace }}\"}},\"filter\":[{\"match_phrase\":{\"log\":\"hello, world {{ .namespace }}\"}}]}}}' | jq '.hits.total.value'"]

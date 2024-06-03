@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.23.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.24.0"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -50,7 +50,8 @@ module "cluster_autoscaler" {
   live_cpu_request    = "200m"
 
   depends_on = [
-    module.monitoring
+    module.monitoring,
+    module.label_pods_controller
   ]
 }
 
@@ -59,7 +60,8 @@ module "descheduler" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.7.0"
 
   depends_on = [
-    module.monitoring
+    module.monitoring,
+    module.label_pods_controller
   ]
 }
 
@@ -73,6 +75,18 @@ module "cert_manager" {
 
   depends_on = [module.monitoring.prometheus_operator_crds_status]
 }
+
+module "label_pods_controller" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-label-pods?ref=1.1.2"
+
+  chart_version = "1.0.1"
+  # https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/account/ecr.tf
+  ecr_url   = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/cloud-platform-terraform-label-pods"
+  image_tag = "1.1.2"
+
+  depends_on = [module.cert_manager]
+}
+
 
 module "external_dns" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.15.0"
@@ -97,11 +111,12 @@ module "external_secrets_operator" {
   secrets_prefix              = terraform.workspace
 
   depends_on = [
-    module.monitoring.prometheus_operator_crds_status
+    module.monitoring.prometheus_operator_crds_status,
+    module.label_pods_controller
   ]
 }
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.7"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "30" : "3"
   controller_name     = "default"
@@ -116,11 +131,11 @@ module "ingress_controllers_v1" {
   memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "5Gi" : "512Mi"
   memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
 
-  depends_on = [module.cert_manager.helm_cert_manager_status]
+  depends_on = [module.cert_manager.helm_cert_manager_status, module.label_pods_controller]
 }
 
 module "production_only_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.7"
   count  = lookup(local.live_workspace, terraform.workspace, false) ? 1 : 0
 
   replica_count            = "6"
@@ -139,12 +154,12 @@ module "production_only_ingress_controllers_v1" {
   memory_requests = "5Gi"
   memory_limits   = "20Gi"
 
-  depends_on = [module.cert_manager.helm_cert_manager_status]
+  depends_on = [module.cert_manager.helm_cert_manager_status, module.label_pods_controller]
 }
 
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.7"
 
   replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
   controller_name     = "modsec"
@@ -159,7 +174,7 @@ module "modsec_ingress_controllers_v1" {
 
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   cluster                      = terraform.workspace
-  fluent_bit_version           = "2.2.1-amd64"
+  fluent_bit_version           = "3.0.2-amd64"
 
   depends_on = [module.ingress_controllers_v1]
 }
@@ -182,16 +197,16 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.14.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.17.2"
 
   opensearch_app_host = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
   elasticsearch_host  = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
 
-  depends_on = [module.monitoring.prometheus_operator_crds_status]
+  depends_on = [module.monitoring.prometheus_operator_crds_status, module.label_pods_controller]
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.7.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.7.7"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? var.pagerduty_config : "dummy"
@@ -202,7 +217,7 @@ module "monitoring" {
   enable_thanos_sidecar         = lookup(local.prod_2_workspace, terraform.workspace, false)
   enable_large_nodesgroup       = lookup(local.live_workspace, terraform.workspace, false)
   # The largegroup cpu and memory requests are valid only if the large_nodegroup is enabled.
-  large_nodesgroup_cpu_requests              = terraform.workspace == "live" ? "4000m" : "1300m"
+  large_nodesgroup_cpu_requests              = terraform.workspace == "live" ? "14000m" : "1300m"
   large_nodesgroup_memory_requests           = terraform.workspace == "live" ? "180000Mi" : "14000Mi"
   enable_prometheus_affinity_and_tolerations = true
   enable_kibana_proxy                        = lookup(local.live_workspace, terraform.workspace, false)
@@ -238,7 +253,7 @@ module "velero" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
   node_agent_cpu_requests     = "2m"
 
-  depends_on = [module.monitoring.prometheus_operator_crds_status]
+  depends_on = [module.monitoring.prometheus_operator_crds_status, module.label_pods_controller]
 }
 
 module "kuberhealthy" {
@@ -256,7 +271,8 @@ module "trivy-operator" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.8.2"
 
   depends_on = [
-    module.monitoring.prometheus_operator_crds_status
+    module.monitoring.prometheus_operator_crds_status,
+    module.label_pods_controller
   ]
 
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
