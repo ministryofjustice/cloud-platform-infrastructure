@@ -28,6 +28,13 @@ function(user, context, callback) {
         }
       });
 
+
+      if (git_teams.indexOf("webops") >= 0) {
+        var allOrgMembersIdx = git_teams.indexOf("all-org-members");
+
+        git_teams.splice(allOrgMembersIdx, 1)
+      }
+
       user.GithubTeam = git_teams;
 
       // map the teams to saml

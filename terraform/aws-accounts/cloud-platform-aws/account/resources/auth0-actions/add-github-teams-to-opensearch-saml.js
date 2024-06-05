@@ -33,6 +33,12 @@ exports.onExecutePostLogin = async (event, api) => {
       }
     });
 
+    if (git_teams.indexOf("webops") >= 0) {
+      const allOrgMembersIdx = git_teams.indexOf("all-org-members");
+
+      git_teams.splice(allOrgMembersIdx, 1)
+    }
+
     event.user.GithubTeam = git_teams
 
     api.samlResponse.setAttribute("http://schemas.xmlsoap.org/claims/Group", "GithubTeam")

@@ -348,7 +348,7 @@ data "http" "saml_metadata_app_logs" {
 ### AWS Opensearch SAML -- client, rule, metadata and configure opensearch
 resource "auth0_client" "opensearch_app_logs" {
   name                       = "AWS Opensearch SAML for ${data.aws_iam_account_alias.current.account_alias} for user app logs"
-  description                = "Github SAML provider for cloud-platform-ephemeral-test for application logs"
+  description                = "Github SAML provider for cloud-platform live cluster for application logs"
   app_type                   = "spa"
   custom_login_page_on       = true
   is_first_party             = true
