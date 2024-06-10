@@ -1,6 +1,5 @@
-
 ##########
-# Calico 
+# Calico
 ##########
 
 locals {
@@ -40,6 +39,7 @@ resource "kubectl_manifest" "calico_crds" {
   yaml_body         = each.value["body"]
 }
 
+
 module "tigera_calico" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-tigera-calico?ref=0.1.7"
 
@@ -47,4 +47,3 @@ module "tigera_calico" {
     kubectl_manifest.calico_crds
   ]
 }
-
