@@ -139,6 +139,7 @@ func (c *Config) ExpectedCrds() {
 func (c *Config) ExpectedPromRules() {
 	c.PrometheusRules = append(c.PrometheusRules,
 		"prometheus-operator-custom-alerts-node.rules",
+		"ingress-controller-apps.rules",
 		"prometheus-operator-custom-kubernetes-apps.rules",
 		"prometheus-operator-kube-p-alertmanager.rules",
 		"prometheus-operator-kube-p-config-reloaders",
