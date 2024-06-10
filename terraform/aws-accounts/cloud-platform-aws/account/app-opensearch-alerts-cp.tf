@@ -41,8 +41,6 @@ resource "opensearch_channel_configuration" "cloud_platform_slack_alarm" {
 ##      Alert for Grafana duplcate UID     ##
 #############################################
 
-## To be enabled
-
 locals {
   duplicate_grafana_uid_monitor = jsonencode(
     {
@@ -61,7 +59,7 @@ locals {
       "name" : "Grafana duplcate UID",
       "type" : "monitor",
       "monitor_type" : "query_level_monitor",
-      "enabled" : false, ## To be enabled
+      "enabled" : true,
       "schedule" : {
         "period" : {
           "interval" : 1,
@@ -197,8 +195,6 @@ resource "opensearch_monitor" "duplicate_grafana_uid_monitor" {
 ##      Alert for PodSecurity Violations   ##
 #############################################
 
-## To be enabled
-
 locals {
   psa_violations = jsonencode(
     {
@@ -216,7 +212,7 @@ locals {
       },
       "name" : "PodSecurity Violations",
       "type" : "monitor",
-      "enabled" : false, ## To be enabled
+      "enabled" : true,
       "schedule" : {
         "period" : {
           "interval" : 1,
@@ -345,7 +341,7 @@ locals {
                 "name" : "Notify Cloud Platform lower-priority-alarms Slack Channel",
                 "destination_id" : opensearch_channel_configuration.cloud_platform_slack_alarm.id,
                 "message_template" : {
-                  "source" : "Follow <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-3h,to:now))&_a=(columns:!(_source),filters:!(),index:'167701b0-f8c0-11ec-b95c-1d65c3682287',interval:auto,query:(language:kuery,query:'%22violates%20PodSecurity%22%20AND%20NOT%20%22smoketest-restricted%22%20AND%20NOT%20%22smoketest-privileged%22'),sort:!())|this link> to check recent PodSecurity violation logs or search \"violates PodSecurity\" and investigate the affected namespaces. Contact the user to rectify.\n\nFurther guidance can be found on the <https://runbooks.cloud-platform.service.justice.gov.uk//kibana-podsecurity-violations-alert.html|Kibana PodSecurity Violations Alert runbook>.\n\nThis has been triggered by the <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/opendistro-alerting#/monitors/jR-J3YsBP8PE0GofcRIF|PodSecurity Violations Monitor> on Kibana.",
+                  "source" : "Follow <https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_q=(filters:!(),query:(language:kuery,query:'%22violates%20PodSecurity%22%20AND%20NOT%20%22smoketest-restricted%22%20AND%20NOT%20%22smoketest-privileged%22'))&_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:bb90f230-0d2e-11ef-bf63-53113938c53a,view:discover))|this link> to check recent PodSecurity violation logs or search \"violates PodSecurity\" and investigate the affected namespaces. Contact the user to rectify.\n\nFurther guidance can be found on the <https://runbooks.cloud-platform.service.justice.gov.uk//kibana-podsecurity-violations-alert.html|Kibana PodSecurity Violations Alert runbook>.\n\nThis has been triggered by the <https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/alerting#/monitors/t4z3XI8BxtKHqtnhcXO2|PodSecurity Violations Monitor> on OpenSearch.",
                   "lang" : "mustache"
                 },
                 "throttle_enabled" : true,
@@ -376,8 +372,6 @@ resource "opensearch_monitor" "psa_violations" {
 ##  Alert for Failed to load Grafana dashboard   ##
 ###################################################
 
-## To be enabled
-
 locals {
   grafana_dashboard_fail = jsonencode(
     {
@@ -396,7 +390,7 @@ locals {
       "name" : "Failed to load Grafana dashboard",
       "type" : "monitor",
       "monitor_type" : "query_level_monitor",
-      "enabled" : false,
+      "enabled" : true,
       "schedule" : {
         "period" : {
           "interval" : 1,
@@ -513,7 +507,7 @@ locals {
           "query_level_trigger" : {
             "id" : "grafana-dashboard-fail", # to prevent change in terraform plan
             "name" : "Failed to load Grafana dashboard",
-            "severity" : "5",
+            "severity" : "1",
             "condition" : {
               "script" : {
                 "source" : "ctx.results[0].hits.total.value > 1",
@@ -526,7 +520,7 @@ locals {
                 "name" : "Notify Cloud Platform lower-priority-alarms Slack Channel",
                 "destination_id" : opensearch_channel_configuration.cloud_platform_slack_alarm.id,
                 "message_template" : {
-                  "source" : "Follow <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-3h,to:now))&_a=(columns:!(log),filters:!(),index:'167701b0-f8c0-11ec-b95c-1d65c3682287',interval:auto,query:(language:kuery,query:'%22failed%20to%20load%20dashboard%22%20OR%20%22failed%20to%20save%20dashboard%22%20AND%20kubernetes.container_name:%20grafana'),sort:!())|this link> to see the offending logs on Kibana or refer to the troubleshooting section of the <https://runbooks.cloud-platform.service.justice.gov.uk/grafana-dashboards.html#troubleshooting|Grafana dashboards runbook> to help diagnose the issue. Contact the user to rectify.\n\nThis has been triggered by the <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/opendistro-alerting#/monitors/PvbYY4wBWxCz7Bq1729W|Failed to load Grafana dashboard monitor> on Kibana.",
+                  "source" : "Follow <https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:bb90f230-0d2e-11ef-bf63-53113938c53a,view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-3h,to:now))&_q=(filters:!(),query:(language:kuery,query:'%22failed%20to%20load%20dashboard%22%20OR%20%22failed%20to%20save%20dashboard%22%20AND%20kubernetes.container_name:%20grafana'))|this link> to see the offending logs on OpenSearch or refer to the troubleshooting section of the <https://runbooks.cloud-platform.service.justice.gov.uk/grafana-dashboards.html#troubleshooting|Grafana dashboards runbook> to help diagnose the issue. Contact the user to rectify.\n\nThis has been triggered by the <https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/alerting#/monitors/wij3XI8Bmgp0FyWHcDnG|Failed to load Grafana dashboard monitor> on OpenSearch.",
                   "lang" : "mustache"
                 },
                 "throttle_enabled" : true,
@@ -557,8 +551,6 @@ resource "opensearch_monitor" "grafana_dashboard_fail" {
 ##  Alert for Throttling Errors in External DNS  ##
 ###################################################
 
-## To be enabled
-
 locals {
   external_dns_throttling = jsonencode(
     {
@@ -577,7 +569,7 @@ locals {
       "name" : "Throttling Errors in External DNS",
       "type" : "monitor",
       "monitor_type" : "query_level_monitor",
-      "enabled" : false,
+      "enabled" : true,
       "schedule" : {
         "period" : {
           "interval" : 1,
@@ -721,7 +713,7 @@ locals {
           "query_level_trigger" : {
             "id" : "external-dns-throttling", # to prevent change in terraform plan
             "name" : "Throttling Errors in External DNS",
-            "severity" : "5",
+            "severity" : "1",
             "condition" : {
               "script" : {
                 "source" : "ctx.results[0].hits.total.value > 2",
@@ -734,7 +726,7 @@ locals {
                 "name" : "Notify Cloud Platform lower-priority-alarms Slack Channel",
                 "destination_id" : opensearch_channel_configuration.cloud_platform_slack_alarm.id,
                 "message_template" : {
-                  "source" : "Follow <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_a=(columns:!(_source),filters:!(),index:'167701b0-f8c0-11ec-b95c-1d65c3682287',interval:auto,query:(language:kuery,query:'kubernetes.namespace_name:%20%22kube-system%22%20AND%20kubernetes.pod_name:%20%22external-dns-*%22%20AND%20log:%20%22level%3Derror%22%20AND%20log:%20%22Throttling:%20Rate%20exceeded%22'),sort:!())|this link> to check recent Throttling Errors in External DNS.\n\nFurther guidance can be found on the <https://runbooks.cloud-platform.service.justice.gov.uk/external-dns-error.html#invalid-change-batch|External DNS Alert runbook>.\n\nThis has been triggered by the <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/opendistro-alerting|Throttling External DNS Errors Monitor> on Kibana.",
+                  "source" : "Follow <https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:bb90f230-0d2e-11ef-bf63-53113938c53a,view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_q=(filters:!(),query:(language:kuery,query:'kubernetes.namespace_name:%20%22kube-system%22%20AND%20kubernetes.pod_name:%20%22external-dns-*%22%20AND%20log:%20%22level%3Derror%22%20AND%20log:%20%22Throttling:%20Rate%20exceeded%22'))|this link> to check recent Throttling Errors in External DNS.\n\nFurther guidance can be found on the <https://runbooks.cloud-platform.service.justice.gov.uk/external-dns-error.html#invalid-change-batch|External DNS Alert runbook>.\n\nThis has been triggered by the <https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/alerting#/monitors/t7f3XI8B3ymCb6vwdOqL|Throttling External DNS Errors Monitor> on OpenSearch.",
                   "lang" : "mustache"
                 },
                 "throttle_enabled" : true,
@@ -765,8 +757,6 @@ resource "opensearch_monitor" "external_dns_throttling" {
 ##  Alert for Invalid Change Batch Errors in External DNS  ##
 #############################################################
 
-## To be enabled
-
 locals {
   external_dns_invalid_batch_change = jsonencode(
     {
@@ -776,7 +766,7 @@ locals {
         "alerts_history_index" : ".opendistro-alerting-alert-history-write",
         "alerts_history_index_pattern" : "<.opendistro-alerting-alert-history-{now/d}-1>",
         "alerts_index" : ".opendistro-alerting-alerts",
-        "findings_enabled" : false, ## To be enabled
+        "findings_enabled" : false,
         "findings_index" : ".opensearch-alerting-finding-history-write",
         "findings_index_pattern" : "<.opensearch-alerting-finding-history-{now/d}-1>",
         "query_index" : ".opensearch-alerting-queries",
@@ -785,7 +775,7 @@ locals {
       "name" : "Invalid Change Batch Errors in External DNS",
       "type" : "monitor",
       "monitor_type" : "query_level_monitor",
-      "enabled" : false,
+      "enabled" : true,
       "schedule" : {
         "period" : {
           "interval" : 1,
@@ -929,7 +919,7 @@ locals {
           "query_level_trigger" : {
             "id" : "external-dns-invalid-batch-change", # to prevent change in terraform plan
             "name" : "Invalid Change Batch Errors in External DNS",
-            "severity" : "5",
+            "severity" : "1",
             "condition" : {
               "script" : {
                 "source" : "ctx.results[0].hits.total.value > 1",
@@ -942,7 +932,7 @@ locals {
                 "name" : "Notify Cloud Platform lower-priority-alarms Slack Channel",
                 "destination_id" : opensearch_channel_configuration.cloud_platform_slack_alarm.id,
                 "message_template" : {
-                  "source" : "Follow <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_a=(columns:!(_source),filters:!(),index:'167701b0-f8c0-11ec-b95c-1d65c3682287',interval:auto,query:(language:kuery,query:'kubernetes.namespace_name:%20%22kube-system%22%20AND%20kubernetes.pod_name:%20%22external-dns-*%22%20AND%20log:%20%22level%3Derror%22%20AND%20log:%20%22InvalidChangeBatch%22'),sort:!())|this link> to check recent Invalid Change Batch Errors in External DNS.\n\nFurther guidance can be found on the <https://runbooks.cloud-platform.service.justice.gov.uk/external-dns-error.html#invalid-change-batch|External DNS Alert runbook>.\n\nThis has been triggered by the <https://kibana.cloud-platform.service.justice.gov.uk/_plugin/kibana/app/opendistro-alerting|Invalid Change Batch External DNS Errors Monitor> on Kibana.\n\n ```{{ctx.results[0].log}}```",
+                  "source" : "Follow <https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:bb90f230-0d2e-11ef-bf63-53113938c53a,view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_q=(filters:!(),query:(language:kuery,query:'kubernetes.namespace_name:%20%22kube-system%22%20AND%20kubernetes.pod_name:%20%22external-dns-*%22%20AND%20log:%20%22level%3Derror%22%20AND%20log:%20%22InvalidChangeBatch%22'))|this link> to check recent Invalid Change Batch Errors in External DNS.\n\nFurther guidance can be found on the <https://runbooks.cloud-platform.service.justice.gov.uk/external-dns-error.html#invalid-change-batch|External DNS Alert runbook>.\n\nThis has been triggered by the <https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/alerting#/monitors/VP33XI8BX4KAmaDRcNuw|Invalid Change Batch Errors in External DNS> on OpenSearch.\n\n ```{{ctx.results[0].log}}```",
                   "lang" : "mustache"
                 },
                 "throttle_enabled" : true,
