@@ -99,7 +99,7 @@ resource "aws_iam_policy" "sqs_queue_read_policy" {
 
 # Creates an IAM role that will access the sqs queue and read Cloudtrail bucket
 resource "aws_iam_role" "cortex_xsiam_role" {
-  name = "cortex_xsiam_role"
+  name               = "cortex_xsiam_role"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy_cortexxsiam.json
 }
 
