@@ -112,3 +112,13 @@ variable "index_pattern_live_app_logs" {
   description = "Pattern created in Kibana, policy will apply to matching new indices"
   type        = list(string)
 }
+
+variable "moj-cortex-xsiam-aws-account" {
+  description = "The AWS account ID for moj-cortex-xsiam"
+  type        = string
+}
+
+variable "moj-cortex-xsiam-aws-external_id" {
+  description = "External ID for moj-cortex-xsiam AssumeRole"
+  type        = string
+}
