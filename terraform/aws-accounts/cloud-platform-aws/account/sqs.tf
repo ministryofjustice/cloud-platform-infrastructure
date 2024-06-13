@@ -79,6 +79,7 @@ resource "aws_iam_policy" "sqs_queue_read_policy" {
 # Creates an IAM user that will access the sqs queue and read Cloudtrail bucket
 resource "aws_iam_user" "cortex_xsiam_user" {
   name = "cortex_xsiam_user"
+  path = "/cloud-platform/soc/"
 }
 
 resource "aws_iam_user_policy_attachment" "sqs_queue_read_policy_attachment" {
