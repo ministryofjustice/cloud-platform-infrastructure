@@ -75,23 +75,6 @@ data "aws_subnets" "private" {
   }
 }
 
-# This is to get subnet_id, to create a separate node group for monitoring with 2 nodes in "eu-west-2b".
-data "aws_subnets" "private_zone_2b" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.selected.id]
-  }
-
-  filter {
-    name   = "availability-zone"
-    values = ["eu-west-2b"]
-  }
-
-  tags = {
-    SubnetType = "Private"
-  }
-}
-
 data "aws_subnets" "public" {
   filter {
     name   = "vpc-id"

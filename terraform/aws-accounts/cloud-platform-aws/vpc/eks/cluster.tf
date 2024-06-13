@@ -103,10 +103,10 @@ locals {
     }
   }
 
-  monitoring_ng_12_12_23 = {
-    desired_size = 2
-    max_size     = 3
-    min_size     = 2
+  monitoring_ng_24_06_24 = {
+    desired_size = 4
+    max_size     = 6
+    min_size     = 4
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
@@ -122,7 +122,7 @@ locals {
     }
 
 
-    subnet_ids = data.aws_subnets.private_zone_2b.ids
+    subnet_ids = data.aws_subnets.private.ids
     name       = "${terraform.workspace}-mon-ng"
 
     create_security_group  = false
@@ -185,7 +185,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     default_ng_12_12_23    = local.default_ng_12_12_23
-    monitoring_ng_12_12_23 = local.monitoring_ng_12_12_23
+    monitoring_ng_24_06_24 = local.monitoring_ng_24_06_24
   }
 
   iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
