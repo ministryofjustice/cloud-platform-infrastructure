@@ -69,27 +69,6 @@ data "aws_iam_policy_document" "sqs_queue_read_document" {
   }
 }
 
-# Create an IAM policy document to allow AssumeRole
-# moj-cortex-xsiam-aws-account set to CP Ephemeral Test account for testing
-data "aws_iam_policy_document" "assume_role_policy_cortexxsiam" {
-  statement {
-    sid     = "AssumeRoleCortexXsiam"
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-
-    # condition {
-    #   test     = "StringEquals"
-    #   variable = "sts:ExternalId"
-    #   values   = ["${var.moj-cortex-xsiam-aws-external_id}"]
-    # }
-
-    principals {
-      type        = "AWS"
-      identifiers = ["${var.moj-cortex-xsiam-aws-account}"]
-    }
-  }
-}
-
 # IAM policy to read the SQS queue and read Cloudtrail bucket
 resource "aws_iam_policy" "sqs_queue_read_policy" {
   name        = "sqs-queue-read-policy"
@@ -97,13 +76,12 @@ resource "aws_iam_policy" "sqs_queue_read_policy" {
   policy      = data.aws_iam_policy_document.sqs_queue_read_document.json
 }
 
-# Creates an IAM role that will access the sqs queue and read Cloudtrail bucket
-resource "aws_iam_role" "cortex_xsiam_role" {
-  name               = "cortex_xsiam_role"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy_cortexxsiam.json
+# Creates an IAM user that will access the sqs queue and read Cloudtrail bucket
+resource "aws_iam_user" "cortex_xsiam_user" {
+  name = "cortex_xsiam_user"
 }
 
-resource "aws_iam_role_policy_attachment" "sqs_queue_read_policy_attachment" {
-  role       = aws_iam_role.cortex_xsiam_role.name
+resource "aws_iam_user_policy_attachment" "sqs_queue_read_policy_attachment" {
+  user       = "cortex_xsiam_user"
   policy_arn = aws_iam_policy.sqs_queue_read_policy.arn
 }
