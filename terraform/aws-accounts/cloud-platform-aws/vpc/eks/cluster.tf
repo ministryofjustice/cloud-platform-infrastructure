@@ -35,10 +35,10 @@ locals {
   }
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.27"
-    live-2  = "1.27"
-    manager = "1.27"
-    default = "1.27"
+    live    = "1.28"
+    live-2  = "1.28"
+    manager = "1.28"
+    default = "1.28"
   }
   node_size = {
     live    = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
