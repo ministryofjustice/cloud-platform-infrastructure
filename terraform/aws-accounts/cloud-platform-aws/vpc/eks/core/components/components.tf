@@ -187,8 +187,8 @@ module "kuberos" {
   oidc_kubernetes_client_secret = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   cluster_address               = data.terraform_remote_state.cluster.outputs.cluster_endpoint
-  image_tag = "2.7.0"
-  
+  image_tag                     = "2.7.0"
+
   depends_on = [
     module.ingress_controllers_v1,
     module.modsec_ingress_controllers_v1,
