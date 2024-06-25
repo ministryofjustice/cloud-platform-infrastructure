@@ -104,9 +104,9 @@ locals {
   }
 
   monitoring_ng_12_12_23 = {
-    desired_size = 2
-    max_size     = 3
-    min_size     = 2
+    desired_size = 4
+    max_size     = 6
+    min_size     = 4
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
@@ -122,7 +122,7 @@ locals {
     }
 
 
-    subnet_ids = data.aws_subnets.private_zone_2b.ids
+    subnet_ids = data.aws_subnets.private.ids
     name       = "${terraform.workspace}-mon-ng"
 
     create_security_group  = false
