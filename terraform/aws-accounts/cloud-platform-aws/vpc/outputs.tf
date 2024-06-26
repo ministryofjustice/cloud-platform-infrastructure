@@ -64,6 +64,6 @@ output "public_route_tables" {
 }
 
 output "vpc_flowlogs_bucket_arn" {
-  value       = module.flowlogs.s3_bucket_arn
+  value       = terraform.workspace == "live-1" ? module.flowlogs.s3_bucket_arn : null
   description = "VPC Flowlogs bucket arn"
 }
