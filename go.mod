@@ -1,11 +1,10 @@
 module github.com/ministryofjustice/cloud-platform-infrastructure
 
 go 1.21
-
-toolchain go1.21.1
+toolchain go1.22.4
 
 require (
-	github.com/aws/aws-sdk-go v1.53.16
+	github.com/aws/aws-sdk-go v1.54.8
 	github.com/go-resty/resty/v2 v2.13.1
 	github.com/gruntwork-io/terratest v0.46.15
 	github.com/ministryofjustice/cloud-platform-go-library v0.0.0-20220803122921-1ca1153b1730
@@ -15,9 +14,9 @@ require (
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.74.0
 	github.com/prometheus-operator/prometheus-operator/pkg/client v0.74.0
 	github.com/stretchr/testify v1.9.0
-	k8s.io/api v0.29.5
-	k8s.io/apimachinery v0.29.5
-	k8s.io/client-go v0.29.5
+	k8s.io/api v0.30.2
+	k8s.io/apimachinery v0.30.2
+	k8s.io/client-go v0.30.2
 )
 
 require (
@@ -39,6 +38,7 @@ require (
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/google/pprof v0.0.0-20240424215950-a892ee059fd6 // indirect
 	github.com/google/uuid v1.6.0 // indirect
+	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/gruntwork-io/go-commons v0.14.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
