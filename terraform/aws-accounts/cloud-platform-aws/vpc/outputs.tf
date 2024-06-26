@@ -62,3 +62,8 @@ output "public_route_tables" {
   value       = module.vpc.public_route_table_ids
   description = "List of IDs of public route tables"
 }
+
+output "vpc_flowlogs_bucket_arn" {
+  value       = module.flowlogs.s3_bucket_arn
+  description = "VPC Flowlogs bucket arn"
+}
