@@ -45,6 +45,18 @@ provider "aws" {
   }
 }
 
+# get access to live-1 VPC state
+# Necessary to get flowlogs bucket arn for SQS
+data "terraform_remote_state" "live-1" {
+  backend = "s3"
+  config = {
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "aws-accounts/cloud-platform-aws/vpc/live-1/terraform.tfstate"
+    profile = "moj-cp"
+  }
+}
+
 # used for cloudfront/waf
 provider "aws" {
   alias  = "northvirginia"
