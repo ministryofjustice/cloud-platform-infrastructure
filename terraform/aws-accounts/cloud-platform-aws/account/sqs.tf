@@ -109,18 +109,18 @@ data "aws_iam_policy_document" "sqs_queue_read_document" {
     resources = [
       aws_sqs_queue.cp_cloudtrail_log_queue.arn,
       aws_sqs_queue.cp_vpc_flowlogs_log_queue.arn
-      ]
+    ]
   }
   statement {
-    sid       = "SQSReadLoggingS3"
-    effect    = "Allow"
-    actions   = ["s3:GetObject"]
+    sid     = "SQSReadLoggingS3"
+    effect  = "Allow"
+    actions = ["s3:GetObject"]
     resources = [
-      module.baselines.cloudtraillogs_bucket_arn[0][0], 
+      module.baselines.cloudtraillogs_bucket_arn[0][0],
       "${module.baselines.cloudtraillogs_bucket_arn[0][0]}/*",
       "${data.terraform_remote_state.live-1.outputs.vpc_flowlogs_bucket_arn}",
       "${data.terraform_remote_state.live-1.outputs.vpc_flowlogs_bucket_arn}/*"
-      ]
+    ]
   }
 }
 
