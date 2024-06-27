@@ -78,7 +78,7 @@ data "aws_iam_policy_document" "vpc_flowlogs_queue_policy_document" {
     condition {
       test     = "ArnEquals"
       variable = "aws:SourceArn"
-      values   = ["${data.terraform_remote_state.live-1.outputs.vpc_flowlogs_bucket_arn}"]
+      values   = [data.terraform_remote_state.live-1.outputs.vpc_flowlogs_bucket_arn]
     }
   }
 }
@@ -118,7 +118,7 @@ data "aws_iam_policy_document" "sqs_queue_read_document" {
     resources = [
       module.baselines.cloudtraillogs_bucket_arn[0][0],
       "${module.baselines.cloudtraillogs_bucket_arn[0][0]}/*",
-      "${data.terraform_remote_state.live-1.outputs.vpc_flowlogs_bucket_arn}",
+      data.terraform_remote_state.live-1.outputs.vpc_flowlogs_bucket_arn,
       "${data.terraform_remote_state.live-1.outputs.vpc_flowlogs_bucket_arn}/*"
     ]
   }
