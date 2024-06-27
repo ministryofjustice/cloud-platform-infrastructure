@@ -67,3 +67,8 @@ output "vpc_flowlogs_bucket_arn" {
   value       = module.flowlogs.s3_bucket_arn
   description = "VPC Flowlogs bucket arn"
 }
+
+output "vpc_flowlogs_bucket_id" {
+  value       = module.flowlogs.s3_bucket_id
+  description = "VPC Flowlogs bucket id"
+}
