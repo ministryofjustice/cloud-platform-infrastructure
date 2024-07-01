@@ -10,7 +10,7 @@ jobs:
   tflint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - uses: actions/cache@v4
         with:
           path: ~/.tflint.d/plugins
@@ -27,7 +27,7 @@ jobs:
     permissions:
       security-events: write
     steps:
-      - uses: actions/checkout@v4.1.6
+      - uses: actions/checkout@v4.1.7
       - uses: aquasecurity/tfsec-sarif-action@v0.1.4
         with:
           tfsec_args: --force-all-dirs --soft-fail -m=CRITICAL --no-module-downloads --exclude-path=terraform/aws-accounts/cloud-platform-ephemeral-test --exclude-path=terraform/aws-accounts/cloud-platform-dsd --exclude-path=terraform/aws-accounts/cloud-platform-aws/vpc/kops --exclude-path=terraform/modules
