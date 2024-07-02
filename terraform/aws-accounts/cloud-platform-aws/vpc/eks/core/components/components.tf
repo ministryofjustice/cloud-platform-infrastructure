@@ -56,7 +56,7 @@ module "cluster_autoscaler" {
 
 module "descheduler" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 0 : 1
-  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.7.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.8.0"
 
   depends_on = [
     module.monitoring,
