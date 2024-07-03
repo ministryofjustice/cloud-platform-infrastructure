@@ -193,7 +193,6 @@ module "eks" {
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
   manage_aws_auth_configmap = true
   aws_auth_users = [
-  
     {
       userarn  = "arn:aws:iam::754256621582:user/SabluMiah"
       username = "SabluMiah"
