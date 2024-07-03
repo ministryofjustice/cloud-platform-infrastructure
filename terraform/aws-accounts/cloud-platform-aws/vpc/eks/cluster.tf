@@ -194,11 +194,6 @@ module "eks" {
   manage_aws_auth_configmap = true
   aws_auth_users = [
     {
-      userarn  = "arn:aws:iam::754256621582:user/PoornimaKrishnasamy"
-      username = "PoornimaKrishnasamy"
-      groups   = ["system:masters"]
-    },
-    {
       userarn  = "arn:aws:iam::754256621582:user/SabluMiah"
       username = "SabluMiah"
       groups   = ["system:masters"]
