@@ -72,3 +72,13 @@ output "vpc_flowlogs_bucket_id" {
   value       = module.flowlogs.s3_bucket_id
   description = "VPC Flowlogs bucket id"
 }
+
+output "route53_query_log_bucket_arn" {
+  value       = module.route53_query_log.s3_bucket_arn
+  description = "Route53 query log bucket arn"
+}
+
+output "route53_query_log_bucket_id" {
+  value       = module.route53_query_log.s3_bucket_id
+  description = "Route53 query log bucket id"
+}
