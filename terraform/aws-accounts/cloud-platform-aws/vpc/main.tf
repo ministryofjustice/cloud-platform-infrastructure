@@ -54,7 +54,7 @@ locals {
 #######
 
 module "vpc" {
-  version = "5.8.1"
+  version = "5.9.0"
   source  = "terraform-aws-modules/vpc/aws"
 
   name                    = local.vpc_name
@@ -112,7 +112,7 @@ module "flowlogs" {
 }
 
 module "route53_query_log" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-route53-logs?ref=1.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-route53-logs?ref=1.0.2"
 
   is_enabled = terraform.workspace == "live-1" ? true : false
   vpc_id     = module.vpc.vpc_id
