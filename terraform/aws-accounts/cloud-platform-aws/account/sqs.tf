@@ -154,7 +154,8 @@ data "aws_iam_policy_document" "sqs_queue_read_document" {
       "sqs:DeleteMessage",
       "sqs:GetQueueAttributes",
       "sqs:GetQueueUrl",
-      "sqs:ListQueues"
+      "sqs:ListQueues",
+      "sqs:ChangeMessageVisibility"
     ]
     resources = [
       aws_sqs_queue.cp_cloudtrail_log_queue.arn,
