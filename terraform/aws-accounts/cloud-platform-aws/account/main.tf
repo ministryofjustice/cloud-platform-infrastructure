@@ -255,7 +255,7 @@ module "aws_scheduler" {
 resource "aws_iam_role" "ops_eng_route53_readonly" {
   name               = "ops-eng-route53-readonly"
   assume_role_policy = data.aws_iam_policy_document.ops_eng_assume_role.json
-} 
+}
 
 
 data "aws_iam_policy_document" "ops_eng_assume_role" {
@@ -275,7 +275,7 @@ data "aws_iam_policy_document" "ops_eng_route53_readonly" {
       "route53:Get*",
       "route53:List*"
     ]
-    effect = "Allow"
+    effect    = "Allow"
     resources = ["*"]
   }
 }
