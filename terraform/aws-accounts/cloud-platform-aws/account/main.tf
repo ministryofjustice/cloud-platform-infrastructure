@@ -249,3 +249,45 @@ module "aws_scheduler" {
   rds_target_tag_key            = "cloud-platform-rds-auto-shutdown"
   rds_target_tag_value          = "Schedule RDS Stop/Start during non-business hours for cost saving"
 }
+
+# IAM Role for Operations Engineering Account Route53 readonly access
+
+resource "aws_iam_role" "ops_eng_route53_readonly" {
+  name               = "ops-eng-route53-readonly"
+  assume_role_policy = data.aws_iam_policy_document.ops_eng_assume_role.json
+} 
+
+
+data "aws_iam_policy_document" "ops_eng_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    effect  = "Allow"
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::880656497252:role/assume_cloud_platform_route53_read_role"]
+    }
+  }
+}
+
+data "aws_iam_policy_document" "ops_eng_route53_readonly" {
+  statement {
+    actions = [
+      "route53:Get*",
+      "route53:List*"
+    ]
+    effect = "Allow"
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "ops_eng_route53_readonly" {
+  name        = "ops-eng-route53-readonly-access"
+  description = "Allow read-only access to Route53 for Operations Engineering Account"
+  policy      = data.aws_iam_policy_document.ops_eng_route53_readonly.json
+}
+
+resource "aws_iam_policy_attachment" "ops_eng_route53_readonly" {
+  name       = "ops-eng-route53-readonly-access-attachment"
+  policy_arn = aws_iam_policy.ops_eng_route53_readonly.arn
+  roles      = [aws_iam_role.ops_eng_route53_readonly.name]
+}
