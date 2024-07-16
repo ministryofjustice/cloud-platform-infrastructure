@@ -226,7 +226,8 @@ module "monitoring" {
 
   depends_on = [
     module.eks_csi,
-    module.ingress_controllers_v1
+    module.ingress_controllers_v1,
+    module.modsec_ingress_controllers_v1
   ]
 }
 
