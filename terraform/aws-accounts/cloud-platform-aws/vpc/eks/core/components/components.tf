@@ -34,7 +34,10 @@ module "concourse" {
   hoodaw_irsa_enabled          = var.hoodaw_irsa_enabled
   eks_cluster_name             = terraform.workspace
 
-  depends_on = [module.monitoring, module.ingress_controllers_v1]
+  depends_on = [
+    module.monitoring,
+    module.ingress_controllers_v1
+  ]
 }
 
 module "cluster_autoscaler" {
@@ -220,7 +223,10 @@ module "monitoring" {
   enable_cloudwatch_exporter  = lookup(local.live_workspace, terraform.workspace, false)
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
-  depends_on = [module.eks_csi]
+  depends_on = [
+    module.eks_csi,
+    module.ingress_controllers_v1
+  ]
 }
 
 module "starter_pack" {
