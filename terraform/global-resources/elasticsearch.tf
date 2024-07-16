@@ -69,7 +69,8 @@ data "aws_iam_policy_document" "live_1" {
       "es:ESHttpHead",
       "es:ESHttpPost",
       "es:ESHttpPut",
-      "es:ESHttpPatch"
+      "es:ESHttpPatch",
+      "es:ESHttpDelete"
     ]
 
     resources = [
