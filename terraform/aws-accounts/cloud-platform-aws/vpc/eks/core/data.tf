@@ -25,3 +25,10 @@ data "terraform_remote_state" "cluster" {
   }
 }
 
+data "aws_route53_zone" "selected" {
+  name = "${terraform.workspace}.cloud-platform.service.justice.gov.uk"
+}
+
+data "aws_route53_zone" "cloud_platform" {
+  name = "cloud-platform.service.justice.gov.uk"
+}

@@ -34,7 +34,10 @@ module "concourse" {
   hoodaw_irsa_enabled          = var.hoodaw_irsa_enabled
   eks_cluster_name             = terraform.workspace
 
-  depends_on = [module.monitoring, module.ingress_controllers_v1]
+  depends_on = [
+    module.monitoring,
+    module.ingress_controllers_v1
+  ]
 }
 
 module "cluster_autoscaler" {
@@ -50,7 +53,8 @@ module "cluster_autoscaler" {
   live_cpu_request    = "200m"
 
   depends_on = [
-    module.label_pods_controller
+    module.label_pods_controller,
+    module.monitoring
   ]
 }
 
@@ -64,15 +68,6 @@ module "descheduler" {
   ]
 }
 
-module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.10.0"
-
-  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
-
-  eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
-}
-
 module "label_pods_controller" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-label-pods?ref=1.1.2"
 
@@ -80,8 +75,6 @@ module "label_pods_controller" {
   # https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/account/ecr.tf
   ecr_url   = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/cloud-platform-terraform-label-pods"
   image_tag = "1.1.2"
-
-  depends_on = [module.cert_manager]
 }
 
 
@@ -125,7 +118,9 @@ module "ingress_controllers_v1" {
   memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "5Gi" : "512Mi"
   memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
 
-  depends_on = [module.cert_manager.helm_cert_manager_status, module.label_pods_controller]
+  depends_on = [
+    module.label_pods_controller
+  ]
 }
 
 module "production_only_ingress_controllers_v1" {
@@ -148,7 +143,9 @@ module "production_only_ingress_controllers_v1" {
   memory_requests = "5Gi"
   memory_limits   = "20Gi"
 
-  depends_on = [module.cert_manager.helm_cert_manager_status, module.label_pods_controller]
+  depends_on = [
+    module.label_pods_controller
+  ]
 }
 
 
@@ -227,7 +224,11 @@ module "monitoring" {
   enable_cloudwatch_exporter  = lookup(local.live_workspace, terraform.workspace, false)
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
-  depends_on = [module.eks_csi]
+  depends_on = [
+    module.eks_csi,
+    module.ingress_controllers_v1,
+    module.modsec_ingress_controllers_v1
+  ]
 }
 
 module "starter_pack" {
