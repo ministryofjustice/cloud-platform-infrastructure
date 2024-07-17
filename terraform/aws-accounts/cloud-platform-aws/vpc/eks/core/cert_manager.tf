@@ -6,5 +6,5 @@ module "cert_manager" {
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
-  depends_on = [ kubectl_manifest.prometheus_operator_crds ]
+  depends_on = [kubectl_manifest.prometheus_operator_crds]
 }
