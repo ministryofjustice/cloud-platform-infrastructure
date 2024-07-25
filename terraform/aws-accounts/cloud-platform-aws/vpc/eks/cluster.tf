@@ -336,6 +336,14 @@ module "eks" {
     }
   ]
 
+  aws_auth_roles = [
+    {
+      rolearn  = "arn:aws:iam::754256621582:role/AWSReservedSSO_AdministratorAccess_bf5aaeece9ced5cc"
+      username = "{{SessionName}}"
+      groups   = ["system:masters"]
+    },
+  ]
+
   tags = local.tags
 }
 
