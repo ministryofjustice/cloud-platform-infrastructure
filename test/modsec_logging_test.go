@@ -117,7 +117,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 		})
 
 		Describe("check modsec logs have not been dropped", Ordered, func() {
-			It("should be able to retrieve the log messages", func() {
+			It("should be able to retrieve the log messages from modsec opensearch", func() {
 				values := helpers.SearchData{
 					Query: helpers.BoolData{
 						Bool: helpers.MustFilterData{
@@ -137,7 +137,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 				helpers.GetSearchResults(values, search, awsSigner, client)
 			})
 
-			It("should be able to retrieve the audit log messages", func() {
+			It("should be able to retrieve the audit log messages from modsec opensearch", func() {
 				auditValues := helpers.SearchData{
 					Query: helpers.BoolData{
 						Bool: helpers.MustFilterData{
