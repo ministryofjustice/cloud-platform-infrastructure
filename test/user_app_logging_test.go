@@ -121,7 +121,8 @@ var _ = Describe("logging", Ordered, func() {
 		})
 
 		Describe("check app logs have not been dropped", Ordered, func() {
-			It("should be able to retrieve the log messages", func() {
+			It("should be able to retrieve the log messages from opensearch", func() {
+				Skip("Skipping this test whilst OpenSearch logging is temporarily disabled")
 				values := helpers.SearchData{
 					Query: helpers.BoolData{
 						Bool: helpers.MustFilterData{

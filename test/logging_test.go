@@ -108,7 +108,7 @@ var _ = Describe("logging", Serial, func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		It("should be able to retrieve the log message", func() {
+		It("should be able to retrieve the log message from elasticsearch", func() {
 			var podName string
 
 			// To get the pod name, we need to first get all pods in the namespace.
