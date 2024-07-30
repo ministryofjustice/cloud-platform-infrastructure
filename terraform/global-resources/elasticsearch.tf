@@ -282,6 +282,9 @@ module "live_elasticsearch_monitoring" {
   sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
 
   alarm_cluster_status_is_yellow_periods = 10
+  jvm_memory_pressure_threshold = 90
+  alarm_jvm_memory_pressure_too_high_period = 600
+
 }
 
 # This is the OpenSearch cluster for live-2
