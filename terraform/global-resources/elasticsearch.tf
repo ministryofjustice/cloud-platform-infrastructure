@@ -281,8 +281,8 @@ module "live_elasticsearch_monitoring" {
   create_sns_topic  = false
   sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
 
-  alarm_cluster_status_is_yellow_periods = 10
-  jvm_memory_pressure_threshold = 90
+  alarm_cluster_status_is_yellow_periods    = 10
+  jvm_memory_pressure_threshold             = 90
   alarm_jvm_memory_pressure_too_high_period = 600
 
 }
