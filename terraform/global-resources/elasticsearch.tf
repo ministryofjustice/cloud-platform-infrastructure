@@ -176,7 +176,7 @@ resource "aws_elasticsearch_domain" "live_1" {
     zone_awareness_config {
       availability_zone_count = 3
     }
-    warm_count   = 8
+    warm_count   = 16
     warm_enabled = true
     warm_type    = "ultrawarm1.medium.elasticsearch"
     cold_storage_options {
@@ -384,7 +384,7 @@ resource "elasticsearch_opensearch_ism_policy" "ism-policy_live_2" {
   provider = elasticsearch.live-2
 }
 
-# Create an index template	
+# Create an index template
 resource "elasticsearch_index_template" "template_index_kubernetes" {
   name = "test_template"
   body = templatefile("${path.module}/resources/opensearch/mapping-template.json.tpl", {
