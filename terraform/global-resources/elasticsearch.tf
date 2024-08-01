@@ -395,3 +395,20 @@ resource "elasticsearch_index_template" "template_index_kubernetes" {
 
   provider = elasticsearch.live-2
 }
+
+resource "elasticsearch_index_template" "live_kubernetes_cluster" {
+  name = "live_kubernetes_cluster"
+  body = <<EOF
+{
+  "index_patterns": [
+    "live_kubernetes_cluster-*"
+  ],
+  "template": {
+    "settings": {
+      "number_of_shards": "16",
+      "number_of_replicas": "1"
+    }
+  }
+}
+  EOF
+}
