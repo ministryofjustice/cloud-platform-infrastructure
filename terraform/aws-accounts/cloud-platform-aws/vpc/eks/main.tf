@@ -142,3 +142,13 @@ resource "aws_eks_identity_provider_config" "oidc_associate" {
     required_claims               = {}
   }
 }
+
+variable "force_fail" {
+  description = "force fail tf plan"
+  type        = bool
+  default     = true
+}
+
+resource "null_resource" "force_fail" {
+  count = var.force_fail ? 0 : -1
+}
