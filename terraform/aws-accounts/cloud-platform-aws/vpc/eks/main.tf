@@ -146,7 +146,7 @@ resource "aws_eks_identity_provider_config" "oidc_associate" {
 variable "force_fail" {
   description = "force fail tf plan"
   type        = bool
-  default     = true
+  default     = false
 }
 
 resource "null_resource" "force_fail" {
