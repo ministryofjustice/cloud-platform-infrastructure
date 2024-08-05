@@ -11,7 +11,7 @@ import (
 	testHelpers "github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
 
-var _ = FDescribe("Monitoring", func() {
+var _ = Describe("Monitoring", func() {
 	namespace := "monitoring"
 	options := k8s.NewKubectlOptions("", "", namespace)
 	client, err := testHelpers.GetPrometheusClientSetE(GinkgoT(), options)
