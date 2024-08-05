@@ -135,7 +135,7 @@ func (c *Config) ExpectedCrds() {
 	)
 }
 
-// GetPrometheusRules returns a slice of all the Prometheus rules expected in a cluster
+// ExpectedPromRules returns a slice of all the Prometheus rules expected in a cluster
 func (c *Config) ExpectedPromRules() {
 	c.PrometheusRules = append(c.PrometheusRules,
 		"prometheus-operator-custom-alerts-node.rules",
@@ -170,6 +170,12 @@ func (c *Config) ExpectedPromRules() {
 		"prometheus-operator-kube-p-prometheus",
 		"prometheus-operator-kube-p-prometheus-operator",
 	)
+}
+
+// ExpectedManagerPromRules returns a slice of additional Prometheus rules expected to be in a manager cluster.
+func (c *Config) ExpectedManagerPromRules() {
+	c.PrometheusRules = append(c.PrometheusRules,
+		"prometheus-operator-manager-custom-kubernetes-apps.rules")
 }
 
 // ExpectedNamespaces returns a slice of all the namespaces
