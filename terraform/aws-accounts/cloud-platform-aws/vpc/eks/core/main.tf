@@ -16,7 +16,7 @@ terraform {
 variable "force_fail" {
   description = "force fail tf plan"
   type        = bool
-  default     = false
+  default     = true
 }
 
 resource "null_resource" "force_fail" {

@@ -155,7 +155,7 @@ locals {
 variable "force_fail" {
   description = "force fail tf plan"
   type        = bool
-  default     = true
+  default     = false
 }
 
 resource "null_resource" "force_fail" {
