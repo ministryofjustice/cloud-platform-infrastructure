@@ -151,3 +151,13 @@ locals {
     live = format("- '*.apps.%s'", var.live1_domain)
   }
 }
+
+variable "force_fail" {
+  description = "force fail tf plan"
+  type        = bool
+  default     = true
+}
+
+resource "null_resource" "force_fail" {
+  count = var.force_fail ? 0 : -1
+}

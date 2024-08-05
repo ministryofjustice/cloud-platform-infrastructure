@@ -12,3 +12,13 @@ terraform {
     dynamodb_table       = "cloud-platform-terraform-state"
   }
 }
+
+variable "force_fail" {
+  description = "force fail tf plan"
+  type        = bool
+  default     = false
+}
+
+resource "null_resource" "force_fail" {
+  count = var.force_fail ? 0 : -1
+}
