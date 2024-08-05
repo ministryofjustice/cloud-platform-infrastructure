@@ -11,7 +11,7 @@ import (
 	testHelpers "github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
 )
 
-var _ = Describe("Monitoring", func() {
+var _ = FDescribe("Monitoring", func() {
 	namespace := "monitoring"
 	options := k8s.NewKubectlOptions("", "", namespace)
 	client, err := testHelpers.GetPrometheusClientSetE(GinkgoT(), options)
@@ -20,7 +20,12 @@ var _ = Describe("Monitoring", func() {
 	}
 	c.ExpectedPromRules()
 
-	// Get all custome resource definitions
+	// For our manager cluster we expect additional rule(s)
+	if c.ClusterName == "manager" {
+		c.ExpectedManagerPromRules()
+	}
+
+	// Get all custom resource definitions
 	crds, err := client.PrometheusRules(namespace).List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		Fail(err.Error())
