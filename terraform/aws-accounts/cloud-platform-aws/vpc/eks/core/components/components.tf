@@ -160,7 +160,7 @@ module "modsec_ingress_controllers_v1" {
   enable_modsec       = true
   enable_owasp        = true
   enable_latest_tls   = true
-  memory_requests     = lookup(local.live_workspace, terraform.workspace, false) ? "3Gi" : "512Mi"
+  memory_requests     = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "512Mi"
   memory_limits       = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
 
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
