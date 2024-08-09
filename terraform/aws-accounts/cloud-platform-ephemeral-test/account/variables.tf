@@ -60,3 +60,28 @@ variable "aws_region" {
 #   description = "Pattern created in Kibana, policy will apply to matching new indices"
 #   type        = list(string)
 # }
+
+
+variable "waf_acl_rules" {
+  description = "List of WAF ACL rules"
+  type = list(object({
+    name      = string
+    priority  = number
+    action    = string
+    threshold = number
+  }))
+  default = [
+    {
+      name      = "CountRule"
+      priority  = 1
+      action    = "count"
+      threshold = 100000
+    },
+    {
+      name      = "BlockRule"
+      priority  = 2
+      action    = "block"
+      threshold = 100000
+    }
+  ]
+}
