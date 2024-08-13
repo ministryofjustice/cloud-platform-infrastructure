@@ -665,3 +665,152 @@ EOF
   depends_on = [elasticsearch_opensearch_destination.cloud_platform_alerts]
 
 }
+
+
+resource "elasticsearch_opensearch_monitor" "no_live_cluster_log_flowing_to_es" {
+  provider = elasticsearch
+  body     = <<EOF
+{
+   "name": "No Live Cluster Log Flowing to ElasticSearch",
+   "type": "monitor",
+   "enabled": true,
+   "schedule": {
+      "period": {
+         "interval": 1,
+         "unit": "MINUTES"
+      }
+   },
+    "inputs" : [
+      {
+        "search" : {
+          "indices" : [
+            "live_kubernetes_cluster*"
+          ],
+          "query" : {
+            "size" : 0,
+            "query" : {
+              "range" : {
+                "@timestamp" : {
+                  "from" : "now-5m",
+                  "to" : "now",
+                  "include_lower" : true,
+                  "include_upper" : true,
+                  "boost" : 1.0
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+   "triggers": [
+      {
+         "name": "No Live Cluster Log Flowing to ElasticSearch",
+         "severity": "5",
+         "condition": {
+            "script": {
+               "source": "ctx.results[0].hits.total.value < 1",
+               "lang": "painless"
+            }
+         },
+         "actions": [
+            {
+               "name": "Notify Cloud Platform lower-priority-alarms Slack Channel",
+               "destination_id": "${elasticsearch_opensearch_destination.cloud_platform_alerts.id}",
+               "throttle_enabled": true,
+               "throttle": {
+                  "value": 1440,
+                  "unit": "MINUTES"
+               },
+               "message_template": {
+                  "source": "There is no live cluster log flowing to ElasticSearch. Please investigate the issue.",
+                  "lang": "mustache"
+               },
+               "subject_template": {
+                  "source": "*No Live Cluster Log Flowing to ElastiSearch*",
+                  "lang": "mustache"
+               }
+            }
+         ]
+      }
+   ]
+}
+EOF
+
+  depends_on = [elasticsearch_opensearch_destination.cloud_platform_alerts]
+
+}
+
+resource "elasticsearch_opensearch_monitor" "no_log_flowing_to_es" {
+  provider = elasticsearch
+  body     = <<EOF
+{
+   "name": "No Log Flowing to ElasticSearch",
+   "type": "monitor",
+   "enabled": true,
+   "schedule": {
+      "period": {
+         "interval": 1,
+         "unit": "MINUTES"
+      }
+   },
+    "inputs" : [
+      {
+        "search" : {
+          "indices" : [
+            "*"
+          ],
+          "query" : {
+            "size" : 0,
+            "query" : {
+              "range" : {
+                "@timestamp" : {
+                  "from" : "now-5m",
+                  "to" : "now",
+                  "include_lower" : true,
+                  "include_upper" : true,
+                  "boost" : 1.0
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+   "triggers": [
+      {
+         "name": "No Log Flowing to ElastiSearch",
+         "severity": "5",
+         "condition": {
+            "script": {
+               "source": "ctx.results[0].hits.total.value < 1",
+               "lang": "painless"
+            }
+         },
+         "actions": [
+            {
+               "name": "Notify Cloud Platform lower-priority-alarms Slack Channel",
+               "destination_id": "${elasticsearch_opensearch_destination.cloud_platform_alerts.id}",
+               "throttle_enabled": true,
+               "throttle": {
+                  "value": 1440,
+                  "unit": "MINUTES"
+               },
+               "message_template": {
+                  "source": "There is no log flowing to ElasticSearch. Please investigate the issue.",
+                  "lang": "mustache"
+               },
+               "subject_template": {
+                  "source": "*No Log Flowing to ElastiSearch*",
+                  "lang": "mustache"
+               }
+            }
+         ]
+      }
+   ]
+}
+EOF
+
+  depends_on = [elasticsearch_opensearch_destination.cloud_platform_alerts]
+
+}
