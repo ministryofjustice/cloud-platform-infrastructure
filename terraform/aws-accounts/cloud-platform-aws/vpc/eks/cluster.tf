@@ -257,15 +257,7 @@ locals {
     ]
   }
 
-  tags = {
-    Terraform = "true"
-    Cluster   = terraform.workspace
-    Domain    = local.fqdn
-  }  
-
 }
-
-
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
@@ -292,6 +284,8 @@ module "eks" {
   eks_managed_node_groups = {
     default_ng_12_12_23    = local.default_ng_12_12_23
     monitoring_ng_12_12_23 = local.monitoring_ng_12_12_23
+    default_ng_14_08_24    = local.default_ng_14_08_24
+    monitoring_ng_14_08_24 = local.monitoring_ng_14_08_24
   }
 
   iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
