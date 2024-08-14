@@ -958,3 +958,198 @@ resource "opensearch_monitor" "external_dns_invalid_batch_change" {
   body       = local.external_dns_invalid_batch_change
   depends_on = [opensearch_channel_configuration.cloud_platform_slack_alarm]
 }
+
+#############################################################
+##  Alert for Low Live Cluster Log Flowing to OpenSearch   ##
+#############################################################
+
+locals {
+  low_live_cluster_log_flowing_to_os = jsonencode(
+    {
+      "owner" : "alerting",                   # to prevent change in terraform plan
+      "monitor_type" : "query_level_monitor", # to prevent change in terraform plan
+      "data_sources" : {                      # to prevent change in terraform plan
+        "alerts_history_index" : ".opendistro-alerting-alert-history-write",
+        "alerts_history_index_pattern" : "<.opendistro-alerting-alert-history-{now/d}-1>",
+        "alerts_index" : ".opendistro-alerting-alerts",
+        "findings_enabled" : false,
+        "findings_index" : ".opensearch-alerting-finding-history-write",
+        "findings_index_pattern" : "<.opensearch-alerting-finding-history-{now/d}-1>",
+        "query_index" : ".opensearch-alerting-queries",
+        "query_index_mappings_by_type" : {}
+      },
+      "name" : "Low Live Cluster Log Flowing to OpenSearch",
+      "type" : "monitor",
+      "monitor_type" : "query_level_monitor",
+      "enabled" : true,
+      "schedule" : {
+        "period" : {
+          "interval" : 1,
+          "unit" : "MINUTES"
+        }
+      },
+    "inputs" : [
+      {
+        "search" : {
+          "indices" : [
+            "live_kubernetes_cluster*"
+          ],
+          "query" : {
+            "size" : 0,
+            "query" : {
+              "range" : {
+                "@timestamp" : {
+                  "from" : "now-1m",
+                  "to" : "now",
+                  "include_lower" : true,
+                  "include_upper" : true,
+                  "boost" : 1.0
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+      "triggers" : [
+        {
+          "query_level_trigger" : {
+            "id" : "low-live-cluster-log-flowing-to-opensearch", # to prevent change in terraform plan
+            "name" : "Low Live Cluster Log Flowing to OpenSearch",
+            "severity" : "1",
+            "condition" : {
+              "script" : {
+                "source" : "ctx.results[0].hits.total.value < 144000",
+                "lang" : "painless"
+              }
+            },
+            "actions" : [
+              {
+                "id" : "low-live-cluster-log-flowing-to-opensearch", # to prevent change in terraform plan
+                "name" : "Notify Cloud Platform lower-priority-alarms Slack Channel",
+                "destination_id" : opensearch_channel_configuration.cloud_platform_slack_alarm.id,
+                "message_template" : {
+                  "source" : "The live cluster log flowing to OpenSearch is less than normal. Please investigate the issue.",
+                  "lang" : "mustache"
+                },
+                "throttle_enabled" : true,
+                "subject_template" : {
+                  "source" : "*Low Live Cluster Log Flowing to OpenSearch*",
+                  "lang" : "mustache"
+                },
+                "throttle" : {
+                  "value" : 1440,
+                  "unit" : "MINUTES"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  )
+}
+
+resource "opensearch_monitor" "low_live_cluster_log_flowing_to_os" {
+  provider   = opensearch.app_logs
+  body       = local.low_live_cluster_log_flowing_to_os
+  depends_on = [opensearch_channel_configuration.cloud_platform_slack_alarm]
+}
+
+
+#############################################################
+##       Alert for Low Total Log Flowing to OpenSearch     ##
+#############################################################
+
+locals {
+  low_total_log_flowing_to_os = jsonencode(
+    {
+      "owner" : "alerting",                   # to prevent change in terraform plan
+      "monitor_type" : "query_level_monitor", # to prevent change in terraform plan
+      "data_sources" : {                      # to prevent change in terraform plan
+        "alerts_history_index" : ".opendistro-alerting-alert-history-write",
+        "alerts_history_index_pattern" : "<.opendistro-alerting-alert-history-{now/d}-1>",
+        "alerts_index" : ".opendistro-alerting-alerts",
+        "findings_enabled" : false,
+        "findings_index" : ".opensearch-alerting-finding-history-write",
+        "findings_index_pattern" : "<.opensearch-alerting-finding-history-{now/d}-1>",
+        "query_index" : ".opensearch-alerting-queries",
+        "query_index_mappings_by_type" : {}
+      },
+      "name" : "Low Total Log Flowing to ElasticSearch",
+      "type" : "monitor",
+      "monitor_type" : "query_level_monitor",
+      "enabled" : true,
+      "schedule" : {
+        "period" : {
+          "interval" : 1,
+          "unit" : "MINUTES"
+        }
+      },
+    "inputs" : [
+      {
+        "search" : {
+          "indices" : [
+            "*"
+          ],
+          "query" : {
+            "size" : 0,
+            "query" : {
+              "range" : {
+                "@timestamp" : {
+                  "from" : "now-1m",
+                  "to" : "now",
+                  "include_lower" : true,
+                  "include_upper" : true,
+                  "boost" : 1.0
+                }
+              }
+            }
+          }
+        }
+      }
+    ],
+      "triggers" : [
+        {
+          "query_level_trigger" : {
+            "id" : "low-total-log-flowing-to-opensearch", # to prevent change in terraform plan
+            "name" : "Low Total Log Flowing to OpenSearch",
+            "severity" : "1",
+            "condition" : {
+              "script" : {
+                "source" : "ctx.results[0].hits.total.value < 320000",
+                "lang" : "painless"
+              }
+            },
+            "actions" : [
+              {
+                "id" : "low-total-log-flowing-to-opensearch", # to prevent change in terraform plan
+                "name" : "Notify Cloud Platform lower-priority-alarms Slack Channel",
+                "destination_id" : opensearch_channel_configuration.cloud_platform_slack_alarm.id,
+                "message_template" : {
+                  "source" : "The total log flowing to OpenSearch is less than normal. Please investigate the issue.",
+                  "lang" : "mustache"
+                },
+                "throttle_enabled" : true,
+                "subject_template" : {
+                  "source" : "*Low Total Log Flowing to OpenSearch*",
+                  "lang" : "mustache"
+                },
+                "throttle" : {
+                  "value" : 1440,
+                  "unit" : "MINUTES"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  )
+}
+
+resource "opensearch_monitor" "low_total_log_flowing_to_os" {
+  provider   = opensearch.app_logs
+  body       = local.low_total_log_flowing_to_os
+  depends_on = [opensearch_channel_configuration.cloud_platform_slack_alarm]
+}
