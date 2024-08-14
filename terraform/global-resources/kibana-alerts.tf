@@ -667,11 +667,11 @@ EOF
 }
 
 
-resource "elasticsearch_opensearch_monitor" "no_live_cluster_log_flowing_to_es" {
+resource "elasticsearch_opensearch_monitor" "low_live_cluster_log_flowing_to_es" {
   provider = elasticsearch
   body     = <<EOF
 {
-   "name": "No Live Cluster Log Flowing to ElasticSearch",
+   "name": "Low Live Cluster Log Flowing to ElasticSearch",
    "type": "monitor",
    "enabled": true,
    "schedule": {
@@ -705,11 +705,11 @@ resource "elasticsearch_opensearch_monitor" "no_live_cluster_log_flowing_to_es" 
     ],
    "triggers": [
       {
-         "name": "No Live Cluster Log Flowing to ElasticSearch",
+         "name": "Low Live Cluster Log Flowing to ElasticSearch",
          "severity": "5",
          "condition": {
             "script": {
-               "source": "ctx.results[0].hits.total.value < 1",
+               "source": "ctx.results[0].hits.total.value < 144000",
                "lang": "painless"
             }
          },
@@ -723,11 +723,11 @@ resource "elasticsearch_opensearch_monitor" "no_live_cluster_log_flowing_to_es" 
                   "unit": "MINUTES"
                },
                "message_template": {
-                  "source": "There is no live cluster log flowing to ElasticSearch. Please investigate the issue.",
+                  "source": "The live cluster log flowing to ElasticSearch is less than normal. Please investigate the issue.",
                   "lang": "mustache"
                },
                "subject_template": {
-                  "source": "*No Live Cluster Log Flowing to ElastiSearch*",
+                  "source": "*Low Live Cluster Log Flowing to ElastiSearch*",
                   "lang": "mustache"
                }
             }
@@ -741,11 +741,11 @@ EOF
 
 }
 
-resource "elasticsearch_opensearch_monitor" "no_log_flowing_to_es" {
+resource "elasticsearch_opensearch_monitor" "low_log_flowing_to_es" {
   provider = elasticsearch
   body     = <<EOF
 {
-   "name": "No Log Flowing to ElasticSearch",
+   "name": "Low Log Flowing to ElasticSearch",
    "type": "monitor",
    "enabled": true,
    "schedule": {
@@ -779,11 +779,11 @@ resource "elasticsearch_opensearch_monitor" "no_log_flowing_to_es" {
     ],
    "triggers": [
       {
-         "name": "No Log Flowing to ElastiSearch",
+         "name": "Low Log Flowing to ElastiSearch",
          "severity": "5",
          "condition": {
             "script": {
-               "source": "ctx.results[0].hits.total.value < 1",
+               "source": "ctx.results[0].hits.total.value < 320000",
                "lang": "painless"
             }
          },
@@ -797,11 +797,11 @@ resource "elasticsearch_opensearch_monitor" "no_log_flowing_to_es" {
                   "unit": "MINUTES"
                },
                "message_template": {
-                  "source": "There is no log flowing to ElasticSearch. Please investigate the issue.",
+                  "source": "The total log flowing to ElasticSearch is less than normal. Please investigate the issue.",
                   "lang": "mustache"
                },
                "subject_template": {
-                  "source": "*No Log Flowing to ElastiSearch*",
+                  "source": "*Low Log Flowing to ElastiSearch*",
                   "lang": "mustache"
                }
             }
