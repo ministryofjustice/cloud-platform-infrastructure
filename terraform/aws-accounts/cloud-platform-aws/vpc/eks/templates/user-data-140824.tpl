@@ -1,3 +1,6 @@
+#!/bin/bash
+set -o xtrace
+
 mkdir -p "/root/.docker"
 cat << EOF > /root/.docker/config.json
 {
@@ -18,10 +21,8 @@ cat << EOF > /var/lib/kubelet/config.json
   }
 }
 EOF
-### The following sets the Garbage collection thresholds to clean up the container images cache at a specified percent of disk usage
-#!/bin/bash
-set -o xtrace
 
+### The following sets the Garbage collection thresholds to clean up the container images cache at a specified percent of disk usage
 KUBELET_CONFIG=/etc/kubernetes/kubelet/kubelet-config.json
 
 # Inject imageGCHighThresholdPercent value
