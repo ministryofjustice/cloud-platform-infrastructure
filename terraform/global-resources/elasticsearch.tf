@@ -281,9 +281,13 @@ module "live_elasticsearch_monitoring" {
   create_sns_topic  = false
   sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
 
+
   alarm_cluster_status_is_yellow_periods    = 10
   jvm_memory_pressure_threshold             = 90
   alarm_jvm_memory_pressure_too_high_period = 600
+  min_available_nodes                       = aws_elasticsearch_domain.live_1.cluster_config[0].instance_count
+  monitor_free_storage_space_total_too_low  = true
+  free_storage_space_total_threshold        = 20480 * aws_elasticsearch_domain.live_1.cluster_config[0].instance_count
 
 }
 
