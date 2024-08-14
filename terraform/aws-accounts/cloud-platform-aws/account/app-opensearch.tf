@@ -383,11 +383,13 @@ resource "auth0_rule_config" "opensearch_app_logs_client_id" {
 }
 
 module "live_app_logs_opensearch_monitoring" {
-  source              = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.2"
-  alarm_name_prefix   = "CP-live-app-logs-"
-  domain_name         = local.live_app_logs_domain
-  sns_topic           = module.baselines.slack_sns_topic
-  min_available_nodes = aws_opensearch_domain.live_app_logs.cluster_config[0].instance_count
-  tags                = local.app_logs_tags
+  source                                   = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.2"
+  alarm_name_prefix                        = "CP-live-app-logs-"
+  domain_name                              = local.live_app_logs_domain
+  sns_topic                                = module.baselines.slack_sns_topic
+  min_available_nodes                      = aws_opensearch_domain.live_app_logs.cluster_config[0].instance_count
+  monitor_free_storage_space_total_too_low = true
+  free_storage_space_total_threshold       = 20480 * aws_elasticsearch_domain.live_1.cluster_config[0].instance_count
+  tags                                     = local.app_logs_tags
 }
 
