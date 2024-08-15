@@ -391,8 +391,8 @@ module "live_app_logs_opensearch_monitoring" {
   monitor_free_storage_space_total_too_low = true
   # Using this calculation of (size-in-gb * instance count * GB-to-MB * 25% * 1024) because 25% is the best-practice for low disk, per AWS's recommendations.
   # This value is in MiB so need to * 1024
-  free_storage_space_threshold             = aws_opensearch_domain.live_app_logs.ebs_options[0].volume_size * 1024 * 0.25
-  free_storage_space_total_threshold       = aws_opensearch_domain.live_app_logs.ebs_options[0].volume_size * aws_opensearch_domain.live_app_logs.cluster_config[0].instance_count * 1024 * 0.25
-  tags                                     = local.app_logs_tags
+  free_storage_space_threshold       = aws_opensearch_domain.live_app_logs.ebs_options[0].volume_size * 1024 * 0.25
+  free_storage_space_total_threshold = aws_opensearch_domain.live_app_logs.ebs_options[0].volume_size * aws_opensearch_domain.live_app_logs.cluster_config[0].instance_count * 1024 * 0.25
+  tags                               = local.app_logs_tags
 }
 
