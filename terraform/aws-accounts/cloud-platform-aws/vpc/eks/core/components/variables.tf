@@ -204,3 +204,15 @@ variable "github_actions_secrets_token" {
   default     = ""
   description = "Github personal access token able to update any MoJ repository. Used to create github actions secrets"
 }
+
+variable "cortex_xdr_distribution_id" {
+  type = string
+  default = ""
+  description = "distribution id for Cortex XDR agent tenant"
+}
+
+variable "cortex_xdr_docker_secret" {
+  type = string
+  default = ""
+  description = "dockerconfigjson for Cortex XDR agent"
+}
