@@ -389,7 +389,7 @@ module "live_app_logs_opensearch_monitoring" {
   sns_topic                                = module.baselines.slack_sns_topic
   min_available_nodes                      = aws_opensearch_domain.live_app_logs.cluster_config[0].instance_count
   monitor_free_storage_space_total_too_low = true
-  free_storage_space_total_threshold       = 20480 * aws_elasticsearch_domain.live_1.cluster_config[0].instance_count
+  free_storage_space_total_threshold       = 20480 * aws_opensearch_domain.live_app_logs.cluster_config[0].instance_count
   tags                                     = local.app_logs_tags
 }
 
