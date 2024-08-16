@@ -427,5 +427,5 @@ module "live_mod_sec_opensearch_monitoring" {
 
   # Using this calculation of (size-in-gb * total instance count * 25% * 1024) because 25% is the best-practice for low disk, per AWS's recommendations. This value is in MiB so need to * 1024
   free_storage_space_total_threshold = aws_opensearch_domain.live_modsec_audit.ebs_options[0].volume_size * aws_opensearch_domain.live_modsec_audit.cluster_config[0].instance_count * 0.25 * 1024
-  tags                               = local.app_logs_tags
+  tags                               = local.mod_sec_tags
 }
