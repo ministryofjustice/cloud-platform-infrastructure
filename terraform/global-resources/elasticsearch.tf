@@ -287,8 +287,12 @@ module "live_elasticsearch_monitoring" {
   alarm_jvm_memory_pressure_too_high_period = 600
   min_available_nodes                       = aws_elasticsearch_domain.live_1.cluster_config[0].instance_count
   monitor_free_storage_space_total_too_low  = true
-  free_storage_space_total_threshold        = 20480 * aws_elasticsearch_domain.live_1.cluster_config[0].instance_count
 
+  # Using this calculation of (size-in-gb * 25% * 1024) because 25% is the best-practice for low disk, per AWS's recommendations. This value is in MiB so need to * 1024
+  free_storage_space_threshold = aws_elasticsearch_domain.live_1.ebs_options[0].volume_size * 0.25 * 1024
+
+  # Using this calculation of (size-in-gb * total instance count * 25% * 1024) because 25% is the best-practice for low disk, per AWS's recommendations. This value is in MiB so need to * 1024
+  free_storage_space_total_threshold = aws_elasticsearch_domain.live_1.ebs_options[0].volume_size * aws_elasticsearch_domain.live_1.cluster_config[0].instance_count * 0.25 * 1024
 }
 
 # This is the OpenSearch cluster for live-2
