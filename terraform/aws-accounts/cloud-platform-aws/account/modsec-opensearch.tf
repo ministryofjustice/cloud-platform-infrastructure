@@ -415,11 +415,11 @@ resource "elasticsearch_opensearch_roles_mapping" "all_org_members" {
 }
 
 module "live_mod_sec_opensearch_monitoring" {
-  source              = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.2"
-  alarm_name_prefix   = "CP-live-mod-sec-"
-  domain_name         = local.live_modsec_audit_domain
-  sns_topic           = module.baselines.slack_sns_topic
-  min_available_nodes = aws_opensearch_domain.live_modsec_audit.cluster_config[0].instance_count
+  source                                   = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.2"
+  alarm_name_prefix                        = "CP-live-mod-sec-"
+  domain_name                              = local.live_modsec_audit_domain
+  sns_topic                                = module.baselines.slack_sns_topic
+  min_available_nodes                      = aws_opensearch_domain.live_modsec_audit.cluster_config[0].instance_count
   monitor_free_storage_space_total_too_low = true
 
   # Using this calculation of (size-in-gb * 25% * 1024) because 25% is the best-practice for low disk, per AWS's recommendations. This value is in MiB so need to * 1024
