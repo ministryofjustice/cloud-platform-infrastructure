@@ -54,7 +54,7 @@ locals {
 #######
 
 module "vpc" {
-  version = "5.8.1"
+  version = "5.13.0"
   source  = "terraform-aws-modules/vpc/aws"
 
   name                    = local.vpc_name
