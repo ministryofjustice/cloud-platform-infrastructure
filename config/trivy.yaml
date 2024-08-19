@@ -1,0 +1,29 @@
+format: table
+
+ignorefile: ./config/.trivyignore.yaml
+
+exit-code: 1
+
+severity:
+  - HIGH
+  - CRITICAL
+
+scan:
+  scanners:
+    - misconfing
+  
+  skip-dirs:
+    - terraform/aws-accounts/cloud-platform-ephemeral-test 
+    - terraform/aws-accounts/cloud-platform-dsd 
+    - terraform/aws-accounts/cloud-platform-aws/vpc/kops 
+    - terraform/modules
+
+misconfiguration:
+  include-deprecated-checks: true
+
+  scanners:
+    - terraform
+
+  terraform:
+    exclude-downloaded-modules: true
+
