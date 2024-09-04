@@ -309,7 +309,18 @@ resource "elasticsearch_opensearch_role" "all_org_members_app_logs" {
   role_name   = "all_org_members"
   description = "role for all moj github users"
 
-  cluster_permissions = ["search", "data_access", "read", "opensearch_dashboards_all_read", "get"]
+  cluster_permissions = [
+    "search", 
+    "data_access", 
+    "read", 
+    "opensearch_dashboards_all_read", 
+    "get",
+    "cluster:admin/opendistro/alerting/alerts/get",
+    "cluster:admin/opendistro/alerting/alerts/ack",
+    "cluster:admin/opendistro/alerting/monitors/get",
+    "cluster:admin/opendistro/alerting/monitors/search",
+    "cluster:admin/opensearch/notifications/configs/get"
+  ]
 
   index_permissions {
     index_patterns  = ["*"]
