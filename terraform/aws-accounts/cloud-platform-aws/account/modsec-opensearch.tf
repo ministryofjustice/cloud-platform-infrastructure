@@ -385,10 +385,10 @@ resource "elasticsearch_opensearch_role" "all_org_members" {
   description = "role for all moj github users"
 
   cluster_permissions = [
-    "search", 
-    "data_access", 
-    "read", 
-    "opensearch_dashboards_all_read", 
+    "search",
+    "data_access",
+    "read",
+    "opensearch_dashboards_all_read",
     "get",
     "cluster:admin/opendistro/alerting/alerts/get",
     "cluster:admin/opendistro/alerting/alerts/ack",
