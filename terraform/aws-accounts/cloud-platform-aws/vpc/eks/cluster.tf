@@ -18,7 +18,7 @@ provider "kubernetes" {
 }
 
 locals {
-  # desired_capcity change is a manual step after initial cluster creation (when no cluster-autoscaler)
+  # desired_capacity change is a manual step after initial cluster creation (when no cluster-autoscaler)
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/835
   node_groups_count = {
     live    = "65"
@@ -167,7 +167,7 @@ module "eks" {
 
 
   cluster_name              = terraform.workspace
-  subnet_ids                = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids))
+  subnet_ids                = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids), tolist(data.aws_subnets.eks_private))
   vpc_id                    = data.aws_vpc.selected.id
   cluster_version           = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
   enable_irsa               = true
