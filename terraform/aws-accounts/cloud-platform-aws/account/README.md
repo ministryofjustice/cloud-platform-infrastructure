@@ -16,6 +16,8 @@ The `cloudtrail.tf` in this directory will create a cloudtrail and a bucket in y
 
 Created to backup etcd persistent volumes within an AWS account.
 
+### SQS - Contains resources for management of VPC flowlog, cloudtrail and R53 Resolver log shipping to XSIAM
+
 #### Bucket Names
 
 | AWS Account | Bucket Name |
