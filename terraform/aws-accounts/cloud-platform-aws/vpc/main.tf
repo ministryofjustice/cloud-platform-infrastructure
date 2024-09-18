@@ -81,9 +81,9 @@ module "vpc" {
   manage_default_route_table    = false
   manage_default_security_group = false
 
-  enable_nat_gateway   = true
-  enable_vpn_gateway   = false
-  enable_dns_hostnames = true
+  enable_nat_gateway     = true
+  enable_vpn_gateway     = false
+  enable_dns_hostnames   = true
   one_nat_gateway_per_az = true
 
   public_subnet_tags = merge({
