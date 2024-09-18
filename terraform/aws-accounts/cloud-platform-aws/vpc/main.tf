@@ -84,6 +84,7 @@ module "vpc" {
   enable_nat_gateway   = true
   enable_vpn_gateway   = false
   enable_dns_hostnames = true
+  one_nat_gateway_per_az = true
 
   public_subnet_tags = merge({
     SubnetType               = "Utility"
