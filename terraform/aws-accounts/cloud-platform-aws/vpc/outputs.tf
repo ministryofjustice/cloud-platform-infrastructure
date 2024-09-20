@@ -29,12 +29,12 @@ output "vpc_id" {
 }
 
 output "internal_subnets" {
-  value       = module.vpc.private_subnets_cidr_blocks
+  value       = concat(module.vpc.private_subnets_cidr_blocks, tolist(aws_subnet.eks_private[*].cidr_block))
   description = "List of subnet CIDR blocks that are not publicly accessible"
 }
 
 output "internal_subnets_ids" {
-  value       = module.vpc.private_subnets
+  value       = concat(module.vpc.private_subnets, tolist(aws_subnet.eks_private[*].id))
   description = "Private subnet IDs"
 }
 
