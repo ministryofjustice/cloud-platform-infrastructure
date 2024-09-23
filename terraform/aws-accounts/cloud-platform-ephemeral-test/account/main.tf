@@ -54,7 +54,7 @@ module "iam" {
 }
 
 module "sso" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.5.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.5.6"
 
   auth0_tenant_domain = "moj-cloud-platforms-dev.eu.auth0.com"
 }
