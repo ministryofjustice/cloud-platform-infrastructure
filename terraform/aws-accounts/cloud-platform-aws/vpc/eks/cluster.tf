@@ -162,7 +162,7 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "18.31.2"
+  version = "20.24.2"
 
 
   cluster_name              = terraform.workspace
