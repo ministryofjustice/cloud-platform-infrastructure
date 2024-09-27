@@ -42,7 +42,7 @@ resource "kubectl_manifest" "calico_crds" {
 
 
 module "tigera_calico" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-tigera-calico?ref=0.1.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-tigera-calico?ref=remove-remove-installation"
 
   depends_on = [
     kubectl_manifest.calico_crds
