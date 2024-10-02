@@ -99,11 +99,6 @@ resource "kubernetes_cluster_role_binding" "privileged" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = "sonarqube-sonarqube"
-    namespace = "sonarqube"
-  }
-  subject {
-    kind      = "ServiceAccount"
     name      = "calico-node"
     namespace = "kube-system"
   }
