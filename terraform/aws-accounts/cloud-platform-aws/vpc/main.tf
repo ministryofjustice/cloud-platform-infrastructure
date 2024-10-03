@@ -109,7 +109,7 @@ module "vpc" {
 # Flow Logs and Route53 Resolver Query Logs #
 #############################################
 module "flowlogs" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-flow-logs?ref=1.3.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-flow-logs?ref=1.3.7"
 
   is_enabled = terraform.workspace == "live-1" ? true : false
   vpc_id     = module.vpc.vpc_id
