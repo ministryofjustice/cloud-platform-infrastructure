@@ -97,11 +97,7 @@ resource "kubernetes_cluster_role_binding" "privileged" {
     name      = "kube-proxy"
     namespace = "kube-system"
   }
-  subject {
-    kind      = "ServiceAccount"
-    name      = "sonarqube-sonarqube"
-    namespace = "sonarqube"
-  }
+
   subject {
     kind      = "ServiceAccount"
     name      = "calico-node"
