@@ -169,18 +169,6 @@ variable "authorized_keys_github_token" {
   description = "GitHub token for authorized keys"
 }
 
-variable "sonarqube_token" {
-  type        = string
-  default     = ""
-  description = "Sonarqube token used to authenticate against sonaqube for scanning repos"
-}
-
-variable "sonarqube_host" {
-  type        = string
-  default     = ""
-  description = "The host of the sonarqube"
-}
-
 variable "hoodaw_host" {
   type        = string
   default     = ""
