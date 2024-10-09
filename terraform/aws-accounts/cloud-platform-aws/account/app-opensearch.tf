@@ -99,7 +99,7 @@ resource "aws_kms_key" "live_app_logs" {
 # needed for load balancer cert
 module "acm_app_logs" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "5.0.0"
+  version = "5.1.0"
 
   domain_name = "app-logs.${data.aws_route53_zone.cloud_platform_justice_gov_uk.name}"
   zone_id     = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
