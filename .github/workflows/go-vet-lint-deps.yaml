@@ -13,7 +13,7 @@ jobs:
     steps:
       # Checkout your project with git
       - name: Checkout
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4.2.1
 
       # Install Go on the VM running the action.
       - uses: WillAbides/setup-go-faster@v1.14.0
