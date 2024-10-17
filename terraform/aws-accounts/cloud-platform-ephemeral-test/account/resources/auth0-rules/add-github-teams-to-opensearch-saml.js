@@ -7,7 +7,7 @@ function(user, context, callback) {
     
     // Get list of user"s Github teams
     var teams_req = {
-      url: "https://api.github.com/user/teams",
+      url: "https://api.github.com/user/teams?per_page=100",
       headers: {
         "Authorization": "token " + github_identity.access_token,
         "User-Agent": "request"
