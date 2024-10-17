@@ -31,6 +31,8 @@ variable "index_pattern" {
     "manager_kubernetes_cluster-*",
     "manager_kubernetes_ingress-*",
     "manager_concourse-*",
+    "live_ipamd-*",
+    "manager_ipamd-*",    
   ]
   description = "Pattern created in Kibana, policy will apply to matching new indices"
   type        = list(string)
