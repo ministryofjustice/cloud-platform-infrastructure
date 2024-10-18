@@ -246,6 +246,10 @@ resource "auth0_rule" "add-github-teams-to-opensearch-saml" {
   enabled = true
 }
 
+data "auth0_client" "management_api" {
+  name = "management:auth0-actions"
+}
+
 resource "auth0_action" "add-github-teams-to-opensearch-saml" {
   name = "add-github-teams-to-opensearch-saml"
   code = file(
@@ -262,6 +266,21 @@ resource "auth0_action" "add-github-teams-to-opensearch-saml" {
   dependencies {
     name    = "node-fetch"
     version = "2.7.0"
+  }
+
+  secrets {
+    name  = "AUTH0_TENANT_DOMAIN"
+    value = var.auth0_tenant_domain
+  }
+
+  secrets {
+    name  = "MGMT_ID"
+    value = data.auth0_client.management_api.client_id
+  }
+
+  secrets {
+    name  = "MGMT_SECRET"
+    value = data.auth0_client.management_api.client_secret
   }
 
   secrets {
