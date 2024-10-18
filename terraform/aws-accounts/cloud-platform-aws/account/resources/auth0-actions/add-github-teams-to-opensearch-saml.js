@@ -1,7 +1,12 @@
 exports.onExecutePostLogin = async (event, api) => {
-  const fetch = require("node-fetch")
-  const modsecClientId = event.client.client_id === event.secrets.OPENSEARCH_APP_CLIENT_ID && event.connection.name === "github";
-  const appClientId = event.client.client_id === event.secrets.OPENSEARCH_APP_CLIENT_ID_APP_LOGS && event.connection.name === "github";
+  const fetch = require("node-fetch");
+  const modsecClientId =
+    event.client.client_id === event.secrets.OPENSEARCH_APP_CLIENT_ID &&
+    event.connection.name === "github";
+  const appClientId =
+    event.client.client_id ===
+      event.secrets.OPENSEARCH_APP_CLIENT_ID_APP_LOGS &&
+    event.connection.name === "github";
 
   // Apply to 'github' connections only
   if (modsecClientId || appClientId) {
@@ -10,21 +15,24 @@ exports.onExecutePostLogin = async (event, api) => {
     //
     // Github user profile will also contain a Github API access token
     // which we can use to look up teams etc.
-    const github_identity = event.user.identities.find(id => id.connection === "github");
+    const github_identity = event.user.identities.find(
+      (id) => id.connection === "github",
+    );
 
     // Get list of user"s Github teams
     const teams_req = {
-      url: 'https://api.github.com/user/orgs',
+      url: "https://api.github.com/user/teams?per_page=100",
       headers: {
-        'Authorization': 'token ' + github_identity.accessToken
-      }
+        Authorization: "token " + github_identity.accessToken,
+        "User-Agent": "request",
+      },
     };
 
     const response = await fetch(teams_req.url, { headers: teams_req.headers });
     const body = await response.json();
 
     if (response.status !== 200) {
-      return api.access.deny('Error retrieving teams from github: ' + body)
+      return api.access.deny("Error retrieving teams from github: " + body);
     }
 
     const git_teams = body.map((team) => {
@@ -36,13 +44,15 @@ exports.onExecutePostLogin = async (event, api) => {
     if (git_teams.indexOf("webops") >= 0) {
       const allOrgMembersIdx = git_teams.indexOf("all-org-members");
 
-      git_teams.splice(allOrgMembersIdx, 1)
+      git_teams.splice(allOrgMembersIdx, 1);
     }
 
-    event.user.GithubTeam = git_teams
+    api.user.GithubTeam = git_teams;
 
-    api.samlResponse.setAttribute("http://schemas.xmlsoap.org/claims/Group", "GithubTeam")
+    api.samlResponse.setAttribute(
+      "http://schemas.xmlsoap.org/claims/Group",
+      "GithubTeam",
+    );
   }
-  return
-}
-
+  return;
+};
