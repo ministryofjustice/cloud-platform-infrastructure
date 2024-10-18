@@ -243,11 +243,7 @@ resource "auth0_rule" "add-github-teams-to-opensearch-saml" {
     "${path.module}/resources/auth0-rules/add-github-teams-to-opensearch-saml.js",
   )
   order   = 40
-  enabled = true
-}
-
-data "auth0_client" "management_api" {
-  name = "management:auth0-actions"
+  enabled = false
 }
 
 resource "auth0_action" "add-github-teams-to-opensearch-saml" {
@@ -255,32 +251,12 @@ resource "auth0_action" "add-github-teams-to-opensearch-saml" {
   code = file(
     "${path.module}/resources/auth0-actions/add-github-teams-to-opensearch-saml.js",
   )
-  deploy  = false
+  deploy  = true
   runtime = "node18"
 
   supported_triggers {
     id      = "post-login"
     version = "v3"
-  }
-
-  dependencies {
-    name    = "node-fetch"
-    version = "2.7.0"
-  }
-
-  secrets {
-    name  = "AUTH0_TENANT_DOMAIN"
-    value = var.auth0_tenant_domain
-  }
-
-  secrets {
-    name  = "MGMT_ID"
-    value = data.auth0_client.management_api.client_id
-  }
-
-  secrets {
-    name  = "MGMT_SECRET"
-    value = data.auth0_client.management_api.client_secret
   }
 
   secrets {
