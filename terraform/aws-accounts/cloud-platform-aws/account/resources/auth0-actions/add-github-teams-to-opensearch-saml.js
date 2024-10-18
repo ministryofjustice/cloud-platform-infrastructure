@@ -7,15 +7,50 @@ exports.onExecutePostLogin = async (event, api) => {
     event.client.client_id ===
       event.secrets.OPENSEARCH_APP_CLIENT_ID_APP_LOGS &&
     event.connection.name === "github";
+  const auth0TenantDomain = event.secrets.AUTH0_TENANT_DOMAIN;
+  const MGMT_ID = event.secrets.MGMT_ID;
+  const MGMT_SECRET = event.secrets.MGMT_SECRET;
 
   // Apply to 'github' connections only
   if (modsecClientId || appClientId) {
+    const url = `https://${auth0TenantDomain}/oauth/token`;
+
+    var data = {
+      grant_type: "client_credentials",
+      client_id: MGMT_ID,
+      client_secret: MGMT_SECRET,
+      audience: `https://${auth0TenantDomain}/v2/`,
+    };
+
+    try {
+      var mgmt_response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+    } catch (e) {
+      console.log(e);
+      api.access.deny("Could not post data to management api");
+    }
+
+    const headers = {
+      Authorization: "Bearer " + mgmt_response.data.access_token,
+      "content-type": "application/json",
+    };
+    const idp_url = `https://${auth0TenantDomain}/api/v2/users/${event.user.user_id}`;
+
+    try {
+      var idp_response = await fetch(idp_url, { headers });
+    } catch (e) {
+      console.log(e);
+      api.access.deny("Could not get idp details");
+    }
+
     // Get user's Github profile info (an Auth0 user can have multiple
     // connected accounts - Google, Facebook etc)
     //
     // Github user profile will also contain a Github API access token
     // which we can use to look up teams etc.
-    const github_identity = event.user.identities.find(
+    const github_identity = idp_response.data.identities.find(
       (id) => id.connection === "github",
     );
 
