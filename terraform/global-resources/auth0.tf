@@ -28,7 +28,7 @@ resource "auth0_rule_config" "k8s-oidc-group-claim-domain" {
 
 # Module for auth0 actions
 module "global_auth0" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-global-resources-auth0?ref=2.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-global-resources-auth0?ref=2.1.2"
 
   auth0_tenant_domain = local.auth0_tenant_domain
   auth0_groupsClaim   = local.auth0_groupsClaim
