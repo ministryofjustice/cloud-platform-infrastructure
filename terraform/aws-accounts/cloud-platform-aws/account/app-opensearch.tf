@@ -358,12 +358,11 @@ data "http" "saml_metadata_app_logs" {
 
 ### AWS Opensearch SAML -- client, rule, metadata and configure opensearch
 resource "auth0_client" "opensearch_app_logs" {
-  name                       = "AWS Opensearch SAML for ${data.aws_iam_account_alias.current.account_alias} for user app logs"
-  description                = "Github SAML provider for cloud-platform live cluster for application logs"
-  app_type                   = "spa"
-  custom_login_page_on       = true
-  is_first_party             = true
-  token_endpoint_auth_method = "none"
+  name                 = "AWS Opensearch SAML for ${data.aws_iam_account_alias.current.account_alias} for user app logs"
+  description          = "Github SAML provider for cloud-platform live cluster for application logs"
+  app_type             = "spa"
+  custom_login_page_on = true
+  is_first_party       = true
 
   callbacks = ["https://${aws_route53_record.opensearch_custom_domain_app_logs.fqdn}/_dashboards/_opendistro/_security/saml/acs"]
   logo_uri  = "https://ministryofjustice.github.io/assets/moj-crest.png"
@@ -408,3 +407,4 @@ module "live_app_logs_opensearch_monitoring" {
   free_storage_space_total_threshold = aws_opensearch_domain.live_app_logs.ebs_options[0].volume_size * aws_opensearch_domain.live_app_logs.cluster_config[0].instance_count * 0.25 * 1024
   tags                               = local.app_logs_tags
 }
+

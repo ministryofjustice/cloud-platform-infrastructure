@@ -87,7 +87,7 @@ module "iam" {
 
 # Github SSO
 module "sso" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.5.10"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.5.11"
 
   auth0_tenant_domain = "justice-cloud-platform.eu.auth0.com"
 }
@@ -291,3 +291,4 @@ resource "aws_iam_policy_attachment" "ops_eng_route53_readonly" {
   policy_arn = aws_iam_policy.ops_eng_route53_readonly.arn
   roles      = [aws_iam_role.ops_eng_route53_readonly.name]
 }
+
