@@ -4,7 +4,7 @@ resource "auth0_rule" "allow-github-orgs" {
     "${path.module}/resources/auth0-rules/allow-github-orgs.js",
   )
   order   = 10
-  enabled = true
+  enabled = false
 }
 
 resource "auth0_rule" "add-github-teams-to-oidc-group-claim" {
@@ -26,7 +26,6 @@ resource "auth0_rule_config" "k8s-oidc-group-claim-domain" {
   value = "https://k8s.integration.dsd.io/groups"
 }
 
-# Module for auth0 actions
 module "global_auth0" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-global-resources-auth0?ref=2.1.3"
 
