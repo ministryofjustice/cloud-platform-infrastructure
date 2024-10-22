@@ -24,7 +24,7 @@ resource "opensearch_index_template" "live_kubernetes_ingress" {
   body     = <<EOF
 {
   "index_patterns": [
-    "live_kuberenetes_ingress-*"
+    "live_kubernetes_ingress-*"
   ],
   "template": {
     "settings": {
@@ -59,6 +59,27 @@ resource "opensearch_index_template" "live_eventrouter" {
 EOF
 }
 
+resource "opensearch_index_template" "live_ipamd" {
+  provider = opensearch.app_logs
+  name     = "live_ipamd"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "live_ipamd-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "number_of_replicas": "1"
+      }
+    }
+  }
+}
+EOF
+}
+
+
 resource "opensearch_index_template" "manager_kubernetes_cluster" {
   provider = opensearch.app_logs
 
@@ -66,7 +87,7 @@ resource "opensearch_index_template" "manager_kubernetes_cluster" {
   body = <<EOF
 {
   "index_patterns": [
-    "manager_kuberenetes_cluster-*"
+    "manager_kubernetes_cluster-*"
   ],
   "template": {
     "settings": {
@@ -86,7 +107,7 @@ resource "opensearch_index_template" "manager_kubernetes_ingress" {
   body     = <<EOF
 {
   "index_patterns": [
-    "manager_kuberenetes_ingress-*"
+    "manager_kubernetes_ingress-*"
   ],
   "template": {
     "settings": {
@@ -107,6 +128,26 @@ resource "opensearch_index_template" "manager_eventrouter" {
 {
   "index_patterns": [
     "manager_eventrouter-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "number_of_replicas": "1"
+      }
+    }
+  }
+}
+EOF
+}
+
+resource "opensearch_index_template" "manager_ipamd" {
+  provider = opensearch.app_logs
+  name     = "manager_ipamd"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "manager_ipamd-*"
   ],
   "template": {
     "settings": {
