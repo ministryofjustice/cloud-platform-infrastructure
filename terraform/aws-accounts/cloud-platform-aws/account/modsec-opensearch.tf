@@ -207,12 +207,11 @@ resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec_audit" {
 }
 ### AWS Opensearch SAML -- client, rule, metadata and configure opensearch
 resource "auth0_client" "opensearch" {
-  name                       = "AWS Opensearch SAML for ${data.aws_iam_account_alias.current.account_alias}"
-  description                = "Github SAML provider for cloud-platform-aws"
-  app_type                   = "spa"
-  custom_login_page_on       = true
-  is_first_party             = true
-  token_endpoint_auth_method = "none"
+  name                 = "AWS Opensearch SAML for ${data.aws_iam_account_alias.current.account_alias}"
+  description          = "Github SAML provider for cloud-platform-aws"
+  app_type             = "spa"
+  custom_login_page_on = true
+  is_first_party       = true
 
   callbacks = ["https://${aws_route53_record.opensearch_custom_domain.fqdn}/_dashboards/_opendistro/_security/saml/acs"]
   logo_uri  = "https://ministryofjustice.github.io/assets/moj-crest.png"
