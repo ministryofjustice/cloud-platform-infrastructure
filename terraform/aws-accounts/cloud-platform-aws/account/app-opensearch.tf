@@ -387,11 +387,6 @@ resource "auth0_client" "opensearch_app_logs" {
   }
 }
 
-resource "auth0_rule_config" "opensearch_app_logs_client_id" {
-  key   = "OPENSEARCH_APP_CLIENT_ID_APP_LOGS"
-  value = auth0_client.opensearch_app_logs.client_id
-}
-
 module "live_app_logs_opensearch_monitoring" {
   source                                   = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.2"
   alarm_name_prefix                        = "CP-live-app-logs-"

@@ -66,10 +66,6 @@ provider "aws" {
   }
 }
 
-data "aws_caller_identity" "cloud-platform" {
-  provider = aws.cloud-platform
-}
-
 provider "external" {
 }
 

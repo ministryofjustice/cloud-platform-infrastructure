@@ -236,15 +236,6 @@ resource "auth0_client" "opensearch" {
   }
 }
 
-resource "auth0_rule" "add-github-teams-to-opensearch-saml" {
-  name = "add-github-teams-to-opensearch-saml"
-  script = file(
-    "${path.module}/resources/auth0-rules/add-github-teams-to-opensearch-saml.js",
-  )
-  order   = 40
-  enabled = false
-}
-
 resource "auth0_action" "add-github-teams-to-opensearch-saml" {
   name = "add-github-teams-to-opensearch-saml"
   code = file(
@@ -267,11 +258,6 @@ resource "auth0_action" "add-github-teams-to-opensearch-saml" {
     name  = "OPENSEARCH_APP_CLIENT_ID_APP_LOGS"
     value = auth0_client.opensearch_app_logs.client_id
   }
-}
-
-resource "auth0_rule_config" "opensearch-app-client-id" {
-  key   = "OPENSEARCH_APP_CLIENT_ID"
-  value = auth0_client.opensearch.client_id
 }
 
 data "http" "saml_metadata" {
