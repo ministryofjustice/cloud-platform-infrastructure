@@ -1,6 +1,6 @@
 # ECR creation for Kuberhealthy checks image
 module "ecr" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=6.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=7.1.0"
 
   # REQUIRED: Repository configuration
   repo_name = "cloud-platform-kuberhealthy-checks"
@@ -78,7 +78,7 @@ EOF
  *
  */
 module "ecr_credentials" {
-  source    = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=6.1.0"
+  source    = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=7.1.0"
   repo_name = "cloud-platform-terraform-label-pods"
 
   /*
