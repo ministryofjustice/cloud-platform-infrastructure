@@ -91,7 +91,7 @@ data "aws_route53_zone" "cloud_platform_justice_gov_uk" {
 # needed for load balancer cert
 module "acm" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "5.0.0"
+  version = "5.1.1"
 
   domain_name = "logs.${data.aws_route53_zone.cloud_platform_justice_gov_uk.name}"
   zone_id     = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
