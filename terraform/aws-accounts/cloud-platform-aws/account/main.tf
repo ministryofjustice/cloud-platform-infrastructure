@@ -85,9 +85,8 @@ module "iam" {
   circleci_organisation_id = jsondecode(data.aws_secretsmanager_secret_version.circleci.secret_string)["organisation_id"]
 }
 
-# Github SSO
 module "sso" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.5.12"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.5.14"
 
   auth0_tenant_domain = "justice-cloud-platform.eu.auth0.com"
 }
