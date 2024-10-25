@@ -43,7 +43,7 @@ locals {
   node_size = {
     live    = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
     live-2  = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
-    manager = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
+    manager = ["m6a.2xlarge", "m6a.4xlarge", "m6i.2xlarge"]
     default = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
   }
 
