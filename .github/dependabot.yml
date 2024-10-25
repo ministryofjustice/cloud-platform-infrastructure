@@ -51,6 +51,9 @@ updates:
       cloud-platform-aws-vpc-eks:
         patterns:
           - "*"
+    ignore:
+    - dependency-name: "terraform-aws-modules/eks/aws"
+      update-types: ["version-update:semver-major"]
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/eks/components"
     schedule:
@@ -61,13 +64,6 @@ updates:
       cloud-platform-aws-vpc-eks-components:
         patterns:
           - "*"
-  - package-ecosystem: "terraform"
-    directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/kops"
-    open-pull-requests-limit: 0
-    schedule:
-      interval: "weekly"
-      day: "wednesday"
-      time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-dsd"
     schedule:
