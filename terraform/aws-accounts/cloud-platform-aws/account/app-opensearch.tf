@@ -360,6 +360,18 @@ resource "elasticsearch_opensearch_roles_mapping" "all_org_members_app_logs" {
   ]
 }
 
+resource "elasticsearch_opensearch_roles_mapping" "opensearch_dashboards_user_app_logs" {
+  provider      = elasticsearch.app_logs
+  role_name     = "opensearch_dashboards_user"
+  description   = "Mapping all_org_members to dashboard user"
+  backend_roles = ["all-org-members"]
+  depends_on = [
+    aws_opensearch_domain_saml_options.live_app_logs,
+    elasticsearch_opensearch_role.all_org_members_app_logs,
+    elasticsearch_opensearch_roles_mapping.all_org_members_app_logs
+  ]
+}
+
 data "http" "saml_metadata_app_logs" {
   url    = "https://${var.auth0_tenant_domain}/samlp/metadata/${auth0_client.opensearch_app_logs.client_id}"
   method = "GET"
