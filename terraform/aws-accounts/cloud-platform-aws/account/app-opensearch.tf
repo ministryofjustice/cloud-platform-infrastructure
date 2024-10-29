@@ -194,15 +194,6 @@ resource "aws_route53_record" "opensearch_custom_domain_app_logs" {
   records = [aws_opensearch_domain.live_app_logs.endpoint]
 }
 
-resource "aws_route53_record" "elastic_redirect_to_opensearch" {
-  zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
-  name    = "kibana"
-  type    = "CNAME"
-  ttl     = 600
-
-  records = ["app-logs.cloud-platform.service.justice.gov.uk"]
-}
-
 resource "aws_opensearch_domain_policy" "live_app_logs" {
   domain_name     = aws_opensearch_domain.live_app_logs.domain_name
   access_policies = data.aws_iam_policy_document.live_app_logs.json
