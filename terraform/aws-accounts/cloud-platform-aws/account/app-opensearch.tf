@@ -200,7 +200,7 @@ resource "aws_route53_record" "elastic_redirect_to_opensearch" {
   type    = "CNAME"
   ttl     = 600
 
-  records = [aws_opensearch_domain.live_app_logs.endpoint]
+  records = ["app-logs.cloud-platform.service.justice.gov.uk"]
 }
 
 resource "aws_opensearch_domain_policy" "live_app_logs" {
