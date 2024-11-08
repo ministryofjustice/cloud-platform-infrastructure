@@ -254,7 +254,7 @@ module "velero" {
 }
 
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.5.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.5.2"
 
   cluster_env = terraform.workspace
 
