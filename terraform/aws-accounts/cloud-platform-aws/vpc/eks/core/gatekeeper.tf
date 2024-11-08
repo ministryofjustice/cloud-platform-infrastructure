@@ -1,5 +1,5 @@
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.12.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.12.3"
 
   dryrun_map = {
     service_type                       = false,
