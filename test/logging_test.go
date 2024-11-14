@@ -32,6 +32,8 @@ var _ = Describe("logging", Serial, func() {
 		)
 
 		BeforeEach(func() {
+			Skip("Elastic search is deprecated, skip this test until we convert it to opensearch see https://github.com/ministryofjustice/cloud-platform/issues/6456")
+
 			if !(c.ClusterName == "live") && !(c.ClusterName == "manager") {
 				Skip(fmt.Sprintf("Logs don't go to elasticsearch for cluster: %s", c.ClusterName))
 			}
