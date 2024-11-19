@@ -269,4 +269,8 @@ module "aws_eks_addons" {
   eks_cluster_id          = module.eks.cluster_id
   cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   addon_tags              = local.tags
+
+
+  addon_vpc_cni_version = "v1.19.0-eksbuild.1"
 }
+
