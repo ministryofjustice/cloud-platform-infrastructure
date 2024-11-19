@@ -272,5 +272,6 @@ module "aws_eks_addons" {
 
 
   addon_vpc_cni_version = "v1.19.0-eksbuild.1"
+  addon_coredns_version = "v1.11.3-eksbuild.2"
 }
 
