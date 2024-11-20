@@ -6,22 +6,23 @@ CLUSTER_NAME=$1
 FILENAME=$(date -I)
 
 update_obj() {
-  NS_OBJ=$(cat $1)
+    NS_OBJ=$(cat $1)
 
-  NS=$(echo $NS_OBJ | jq -r '.metadata.namespace')
+    NS=$(echo $NS_OBJ | jq -r '.metadata.namespace')
 
-  SOURCE_CODE=$(jq -r '.metadata.annotations."cloud-platform.justice.gov.uk/source-code"' "$NS.json")
-  OWNER=$(jq -r '.metadata.annotations."cloud-platform.justice.gov.uk/owner"' "$NS.json")
-  TEAM_NAME=$(jq -r '.metadata.annotations."cloud-platform.justice.gov.uk/team-name"' "$NS.json")
+    ANNOTATIONS=$(jq -r '.metadata.annotations' "$NS.json")
 
-  # add the new values to the object
-  UPDATED_SOURCE=$(echo $NS_OBJ | jq --arg SOURCE_CODE "$SOURCE_CODE" '.metadata += {"cloud-platform.justice.gov.uk/source-code": $SOURCE_CODE }')
+    SOURCE_CODE=$(echo $ANNOTATIONS | jq -r '."cloud-platform.justice.gov.uk/source-code"')
+    OWNER=$(echo $ANNOTATIONS | jq -r '."cloud-platform.justice.gov.uk/owner"')
+    TEAM_NAME=$(echo $ANNOTATIONS | jq -r '."cloud-platform.justice.gov.uk/team-name"')
+    # add the new values to the object
+    UPDATED_SOURCE=$(echo $NS_OBJ | jq --arg SOURCE_CODE "$SOURCE_CODE" '.metadata += {"cloud-platform.justice.gov.uk/source-code": $SOURCE_CODE }')
 
-  UPDATED_OWNER=$(echo $UPDATED_SOURCE | jq --arg OWNER "$OWNER" '.metadata += {"cloud-platform.justice.gov.uk/owner": $OWNER }')
+    UPDATED_OWNER=$(echo $UPDATED_SOURCE | jq --arg OWNER "$OWNER" '.metadata += {"cloud-platform.justice.gov.uk/owner": $OWNER }')
 
-  UPDATED_OBJ=$(echo $UPDATED_OWNER | jq --arg TEAM_NAME "$TEAM_NAME" '.metadata += {"cloud-platform.justice.gov.uk/team-name": $TEAM_NAME }')
+    UPDATED_OBJ=$(echo $UPDATED_OWNER | jq --arg TEAM_NAME "$TEAM_NAME" '.metadata += {"cloud-platform.justice.gov.uk/team-name": $TEAM_NAME }')
 
-  echo $UPDATED_OBJ
+    echo $UPDATED_OBJ
 }
 
 echo "Getting all vulnerabilities for ${CLUSTER_NAME}..."
@@ -37,7 +38,7 @@ jq -c '.items | .[]' ${CLUSTER_NAME}_vuln.json > item_per_line
 export -f update_obj
 
 # now run script to enrich namespace data on each item -- this is much quicker than a bash loop
-parallel -a item_per_line --recend '}\n' --line-buffer --pipe-part --will-cite --block 2K "update_obj {}" > updated_objects
+parallel -a item_per_line --recend '}\n' --line-buffer --pipe-part --will-cite --block 1K "update_obj {}" > updated_objects
 
 # create the json array
 sed '1s/^/[/; $!s/$/,/; $s/$/]/' updated_objects > out.json
@@ -45,7 +46,7 @@ sed '1s/^/[/; $!s/$/,/; $s/$/]/' updated_objects > out.json
 # use the new json array and create new json report
 /bin/cat out.json | jq -c '{ items: .}' > "${FILENAME}.json"
 
-echo "Vulnerabilitiy data enriched."
+echo "Vulnerability data enriched."
 
 echo "Pushing report to s3..."
 # https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/moj-vuln-report/resources/s3.tf
