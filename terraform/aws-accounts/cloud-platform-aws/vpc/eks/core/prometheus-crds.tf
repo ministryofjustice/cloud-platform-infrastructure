@@ -1,5 +1,5 @@
 locals {
-  prometheus_operator_crd_version = "v0.72.0"
+  prometheus_operator_crd_version = "v0.78.1"
 
   prometheus_crd_yamls = {
     alertmanager_configs = "https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/${local.prometheus_operator_crd_version}/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagerconfigs.yaml"
@@ -21,7 +21,7 @@ data "http" "prometheus_crd_yamls" {
 }
 
 # Prometheus crd yaml pulled from kube-prometheus-stack helm chart.
-# Upate local variable `prometheus_operator_crd_version` to manage the crd version
+# Update local variable `prometheus_operator_crd_version` to manage the crd version
 resource "kubectl_manifest" "prometheus_operator_crds" {
   server_side_apply = true
   for_each          = data.http.prometheus_crd_yamls
