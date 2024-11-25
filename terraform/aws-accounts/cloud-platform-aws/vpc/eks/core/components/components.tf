@@ -218,9 +218,9 @@ module "monitoring" {
   enable_thanos_helm_chart = lookup(local.prod_2_workspace, terraform.workspace, false)
   enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
 
-  enable_ecr_exporter         = lookup(local.live_workspace, terraform.workspace, false)
-  enable_cloudwatch_exporter  = lookup(local.live_workspace, terraform.workspace, false)
-  enable_rds_exporter         = terraform.workspace == "live"
+  enable_ecr_exporter        = lookup(local.live_workspace, terraform.workspace, false)
+  enable_cloudwatch_exporter = lookup(local.live_workspace, terraform.workspace, false)
+  enable_rds_exporter        = terraform.workspace == "live"
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
