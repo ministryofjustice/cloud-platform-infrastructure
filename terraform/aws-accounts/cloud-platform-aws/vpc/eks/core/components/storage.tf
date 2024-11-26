@@ -1,13 +1,3 @@
-########
-# CSIs #
-########
-
-module "eks_csi" {
-  source      = "github.com/ministryofjustice/cloud-platform-terraform-eks-csi?ref=1.2.1"
-  eks_cluster = terraform.workspace
-}
-
-
 ###################
 # Storage Classes #
 ###################
@@ -44,7 +34,6 @@ resource "kubernetes_storage_class" "io1" {
 }
 
 resource "kubernetes_storage_class" "storageclass_gp3" {
-  depends_on = [module.eks_csi]
   metadata {
     name = "gp3"
     annotations = {
