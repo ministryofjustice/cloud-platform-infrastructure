@@ -213,7 +213,7 @@ resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec_debug" {
     warm_transition   = "1d"
     cold_transition   = "3d"
     delete_transition = "7d"
-    index_pattern     = jsonencode("live_k8s_modsec_ingress_debug*")
+    index_pattern     = jsonencode(["live_k8s_modsec_ingress_debug*"])
   })
 
   depends_on = [
