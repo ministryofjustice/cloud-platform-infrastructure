@@ -207,7 +207,7 @@ resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec_audit" {
 }
 
 resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec_debug" {
-  policy_id = "hot-warm-cold-delete"
+  policy_id = "hot-warm-cold-delete-debug"
   body = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
     timestamp_field   = var.timestamp_field
     warm_transition   = "1d"
