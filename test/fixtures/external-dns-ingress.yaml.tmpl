@@ -19,3 +19,36 @@ spec:
             name: ingress-external-svc
             port:
               number: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-external-svc
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: ingress-external-svc
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingress-external-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ingress-external-svc
+  template:
+    metadata:
+      labels:
+        app: ingress-external-svc
+    spec:
+      containers:
+      - name: nginx
+        image: nginxinc/nginx-unprivileged:1.26-bookworm
+        ports:
+        - containerPort: 80
+---
