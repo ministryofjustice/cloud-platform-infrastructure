@@ -205,6 +205,21 @@ resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec_audit" {
     aws_opensearch_domain_saml_options.live_modsec_audit,
   ]
 }
+
+resource "elasticsearch_opensearch_ism_policy" "ism_policy_live_modsec_debug" {
+  policy_id = "hot-warm-cold-delete-debug"
+  body = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
+    timestamp_field   = var.timestamp_field
+    warm_transition   = "1d"
+    cold_transition   = "3d"
+    delete_transition = "7d"
+    index_pattern     = jsonencode(["live_k8s_modsec_ingress_debug*"])
+  })
+
+  depends_on = [
+    aws_opensearch_domain_saml_options.live_modsec_audit,
+  ]
+}
 ### AWS Opensearch SAML -- client, rule, metadata and configure opensearch
 resource "auth0_client" "opensearch" {
   name                 = "AWS Opensearch SAML for ${data.aws_iam_account_alias.current.account_alias}"
