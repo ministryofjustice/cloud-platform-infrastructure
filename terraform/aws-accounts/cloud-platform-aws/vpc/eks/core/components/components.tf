@@ -68,7 +68,7 @@ module "descheduler" {
 }
 
 module "label_pods_controller" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-label-pods?ref=1.1.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-label-pods?ref=1.1.4"
 
   chart_version = "1.0.1"
   # https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/account/ecr.tf
