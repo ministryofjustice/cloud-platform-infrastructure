@@ -157,7 +157,7 @@ resource "aws_opensearch_domain" "live_app_logs" {
     volume_type = "gp3"
     volume_size = "12000"
     iops        = "20000" # limit is between 15,000 and 20,000 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
-    throughput  = "593"   # Throughput scales proportionally up. iops x 0.25 (maximum 4,000) https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/general-purpose.html
+    throughput  = "1000"  # Throughput scales proportionally up. iops x 0.25 (maximum 4,000) https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/general-purpose.html
   }
 
   domain_endpoint_options {
