@@ -221,7 +221,8 @@ module "monitoring" {
   enable_ecr_exporter        = lookup(local.live_workspace, terraform.workspace, false)
   enable_cloudwatch_exporter = lookup(local.live_workspace, terraform.workspace, false)
   enable_rds_exporter        = terraform.workspace == "live"
-
+  enable_subnet_exporter     = terraform.workspace == "live"
+ 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
   depends_on = [
