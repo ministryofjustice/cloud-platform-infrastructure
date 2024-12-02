@@ -199,7 +199,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.16.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.17.0"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? var.pagerduty_config : "dummy"
@@ -221,6 +221,7 @@ module "monitoring" {
   enable_ecr_exporter        = lookup(local.live_workspace, terraform.workspace, false)
   enable_cloudwatch_exporter = lookup(local.live_workspace, terraform.workspace, false)
   enable_rds_exporter        = terraform.workspace == "live"
+  enable_subnet_exporter     = terraform.workspace == "live"
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
