@@ -1,29 +1,29 @@
 terraform {
+  required_version = ">= 1.2.5"
   required_providers {
-    auth0 = {
-      source  = "auth0/auth0"
-      version = "~> 0.35.0"
-    }
     aws = {
       source  = "hashicorp/aws"
-      version = "4.48.0"
+      version = "~> 5.40.0"
     }
-    external = {
-      source  = "hashicorp/external"
-      version = "2.2.3"
+    auth0 = {
+      source  = "auth0/auth0"
+      version = "~> 0.50.2"
     }
-    # elasticsearch = {
-    #   source  = "phillbaker/elasticsearch"
-    #   version = "2.0.7"
-    # }
-    curl = {
-      source  = "anschoewe/curl"
-      version = ">= 1.0.2"
+    elasticsearch = {
+      source  = "phillbaker/elasticsearch"
+      version = "~> 2.0.7"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = ">=2.0.0"
+    opensearch = {
+      source  = "opensearch-project/opensearch"
+      version = "2.2.1"
+    }
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.4.1"
+    }
+    github = {
+      source  = "integrations/github"
+      version = "~> 5.42.0"
     }
   }
-  required_version = ">= 1.2.5"
 }
