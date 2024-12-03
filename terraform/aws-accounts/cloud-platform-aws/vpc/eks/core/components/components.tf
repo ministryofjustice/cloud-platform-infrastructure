@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.27.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.28.1"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -68,12 +68,12 @@ module "descheduler" {
 }
 
 module "label_pods_controller" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-label-pods?ref=1.1.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-label-pods?ref=1.1.4"
 
   chart_version = "1.0.1"
   # https://github.com/ministryofjustice/cloud-platform-infrastructure/blob/main/terraform/aws-accounts/cloud-platform-aws/account/ecr.tf
   ecr_url   = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/cloud-platform-terraform-label-pods"
-  image_tag = "1.1.3"
+  image_tag = "1.1.4"
 }
 
 
@@ -199,7 +199,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.16.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.17.0"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? var.pagerduty_config : "dummy"
@@ -221,6 +221,7 @@ module "monitoring" {
   enable_ecr_exporter        = lookup(local.live_workspace, terraform.workspace, false)
   enable_cloudwatch_exporter = lookup(local.live_workspace, terraform.workspace, false)
   enable_rds_exporter        = terraform.workspace == "live"
+  enable_subnet_exporter     = terraform.workspace == "live"
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
@@ -266,7 +267,7 @@ module "kuberhealthy" {
 }
 
 module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.8.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.9.0"
 
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url

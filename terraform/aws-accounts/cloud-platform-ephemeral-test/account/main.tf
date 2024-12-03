@@ -33,7 +33,7 @@ provider "aws" {
 ###########################
 
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.2.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.2.2"
 
   enable_logging           = true
   enable_slack_integration = true
@@ -54,7 +54,7 @@ module "iam" {
 }
 
 module "sso" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.5.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-aws-sso?ref=1.5.15"
 
   auth0_tenant_domain = "moj-cloud-platforms-dev.eu.auth0.com"
 }
