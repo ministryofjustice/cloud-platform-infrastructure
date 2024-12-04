@@ -101,15 +101,17 @@ module "external_secrets_operator" {
     module.label_pods_controller
   ]
 }
-module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.20"
 
-  replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "30" : "3"
-  controller_name     = "default"
-  enable_latest_tls   = true
-  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
-  live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+module "ingress_controllers_v1" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.21"
+
+  replica_count            = lookup(local.live_workspace, terraform.workspace, false) ? "30" : "3"
+  controller_name          = "default"
+  proxy_response_buffering = "on"
+  enable_latest_tls        = true
+  cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
@@ -123,7 +125,7 @@ module "ingress_controllers_v1" {
 }
 
 module "production_only_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.20"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.21"
   count  = lookup(local.live_workspace, terraform.workspace, false) ? 1 : 0
 
   replica_count            = "6"
@@ -149,18 +151,19 @@ module "production_only_ingress_controllers_v1" {
 
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.20"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.21"
 
-  replica_count       = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
-  controller_name     = "modsec"
-  cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  is_live_cluster     = lookup(local.prod_workspace, terraform.workspace, false)
-  live1_cert_dns_name = lookup(local.live1_cert_dns_name, terraform.workspace, "")
-  enable_modsec       = true
-  enable_owasp        = true
-  enable_latest_tls   = true
-  memory_requests     = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "512Mi"
-  memory_limits       = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
+  replica_count            = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
+  controller_name          = "modsec"
+  cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+  proxy_response_buffering = "on"
+  enable_modsec            = true
+  enable_owasp             = true
+  enable_latest_tls        = true
+  memory_requests          = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "512Mi"
+  memory_limits            = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
 
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   cluster                      = terraform.workspace
