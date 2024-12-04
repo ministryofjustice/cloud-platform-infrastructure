@@ -202,7 +202,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.17.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.17.3"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? var.pagerduty_config : "dummy"
@@ -221,10 +221,11 @@ module "monitoring" {
   enable_thanos_helm_chart = lookup(local.prod_2_workspace, terraform.workspace, false)
   enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
 
-  enable_ecr_exporter        = lookup(local.live_workspace, terraform.workspace, false)
-  enable_cloudwatch_exporter = lookup(local.live_workspace, terraform.workspace, false)
-  enable_rds_exporter        = terraform.workspace == "live"
-  enable_subnet_exporter     = terraform.workspace == "live"
+  enable_ecr_exporter           = lookup(local.live_workspace, terraform.workspace, false)
+  enable_cloudwatch_exporter    = lookup(local.live_workspace, terraform.workspace, false)
+  enable_rds_exporter           = terraform.workspace == "live"
+  enable_subnet_exporter        = terraform.workspace == "live"
+  aws_subnet_exporter_image_tag = "d79d5d75cbdcd442b9a04e17269ece994b3b551d"
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
