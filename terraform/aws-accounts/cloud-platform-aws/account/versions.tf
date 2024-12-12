@@ -7,7 +7,7 @@ terraform {
     }
     auth0 = {
       source  = "auth0/auth0"
-      version = "~> 0.50.2"
+      version = "~> 1.8.0"
     }
     elasticsearch = {
       source  = "phillbaker/elasticsearch"
