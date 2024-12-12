@@ -230,7 +230,6 @@ module "monitoring" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
   depends_on = [
-    module.eks_csi,
     module.ingress_controllers_v1,
     module.modsec_ingress_controllers_v1
   ]
