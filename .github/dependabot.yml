@@ -9,13 +9,13 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00" # UTC
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00"
     groups:
       go:
@@ -25,7 +25,7 @@ updates:
     directory: "/terraform/aws-accounts/cloud-platform-aws/account"
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00"
     groups:
       cloud-platform-aws-account:
@@ -35,7 +35,7 @@ updates:
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc"
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00"
     groups:
       cloud-platform-aws-vpc:
@@ -45,7 +45,7 @@ updates:
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/eks"
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00"
     groups:
       cloud-platform-aws-vpc-eks:
@@ -58,7 +58,7 @@ updates:
     directory: "/terraform/aws-accounts/cloud-platform-aws/vpc/eks/components"
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00"
     groups:
       cloud-platform-aws-vpc-eks-components:
@@ -68,7 +68,7 @@ updates:
     directory: "/terraform/aws-accounts/cloud-platform-dsd"
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00"
     groups:
       cloud-platform-dsd:
@@ -79,34 +79,34 @@ updates:
     open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-ephemeral-test/vpc"
     open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-ephemeral-test/vpc/eks"
     open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/aws-accounts/cloud-platform-ephemeral-test/vpc/eks/components"
     open-pull-requests-limit: 0
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00"
   - package-ecosystem: "terraform"
     directory: "/terraform/global-resources"
     schedule:
       interval: "weekly"
-      day: "wednesday"
+      day: "sunday"
       time: "09:00"
     groups:
       global-resources:
