@@ -202,7 +202,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.17.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.17.7"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? var.pagerduty_config : "dummy"
@@ -230,7 +230,6 @@ module "monitoring" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
   depends_on = [
-    module.eks_csi,
     module.ingress_controllers_v1,
     module.modsec_ingress_controllers_v1
   ]
@@ -249,7 +248,7 @@ module "starter_pack" {
 }
 
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=2.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=2.4.0"
 
   enable_velero               = lookup(local.prod_2_workspace, terraform.workspace, false)
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
