@@ -15,7 +15,6 @@ require (
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.78.2
 	github.com/prometheus-operator/prometheus-operator/pkg/client v0.78.2
 	github.com/stretchr/testify v1.10.0
-	k8s.io/api v0.31.4
 	k8s.io/apimachinery v0.31.4
 	k8s.io/client-go v0.31.4
 )
@@ -117,6 +116,7 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	k8s.io/api v0.31.4 // indirect
 	k8s.io/apiextensions-apiserver v0.31.2 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240903163716-9e1beecbcb38 // indirect
