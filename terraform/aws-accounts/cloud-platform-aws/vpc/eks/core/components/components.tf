@@ -202,7 +202,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.17.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.17.10"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? var.pagerduty_config : "dummy"
@@ -218,8 +218,9 @@ module "monitoring" {
   large_nodesgroup_memory_requests           = terraform.workspace == "live" ? "180000Mi" : "14000Mi"
   enable_prometheus_affinity_and_tolerations = true
 
-  enable_thanos_helm_chart = lookup(local.prod_2_workspace, terraform.workspace, false)
-  enable_thanos_compact    = lookup(local.manager_workspace, terraform.workspace, false)
+  enable_thanos_helm_chart        = lookup(local.prod_2_workspace, terraform.workspace, false)
+  enable_thanos_compact           = lookup(local.manager_workspace, terraform.workspace, false)
+  compactor_existing_pvc_claim_id = terraform.workspace == "manager" ? "pvc-081baa60-8e4d-494c-b54d-67ec853625a4" : "disabled"
 
   enable_ecr_exporter           = lookup(local.live_workspace, terraform.workspace, false)
   enable_cloudwatch_exporter    = lookup(local.live_workspace, terraform.workspace, false)

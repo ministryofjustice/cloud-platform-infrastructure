@@ -40,6 +40,7 @@ locals {
     manager = "1.29"
     default = "1.29"
   }
+
   node_size = {
     live    = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
     live-2  = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
@@ -52,6 +53,11 @@ locals {
     live-2  = ["r6i.2xlarge", "r5a.2xlarge"]
     manager = ["t3a.medium", "t3.medium"]
     default = ["t3a.medium", "t3.medium"]
+  }
+
+  thanos_node_size = {
+    manager = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
+    default = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
   }
 
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
@@ -158,6 +164,59 @@ locals {
     ]
   }
 
+  thanos_ng_17_12_24 = {
+    desired_size = 1
+    max_size     = 1
+    min_size     = 1
+    block_device_mappings = {
+      xvda = {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = 200
+          volume_type           = "gp3"
+          iops                  = 0
+          encrypted             = false
+          kms_key_id            = ""
+          delete_on_termination = true
+        }
+      }
+    }
+
+
+    subnet_ids = data.aws_subnets.eks_private.ids
+    name       = "${terraform.workspace}-thanos-ng"
+
+    create_security_group  = false
+    create_launch_template = true
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-140824.tpl", {
+      dockerhub_credentials = local.dockerhub_credentials
+    })
+
+    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    instance_types               = lookup(local.thanos_node_size, terraform.workspace, local.thanos_node_size["default"])
+    labels = {
+      "topology.kubernetes.io/zone"             = "eu-west-2a"
+      Terraform                                 = "true"
+      "cloud-platform.justice.gov.uk/thanos-ng" = "true"
+      Cluster                                   = terraform.workspace
+      Domain                                    = local.fqdn
+    }
+    tags = {
+      monitoring_ng = "true"
+      application   = "moj-cloud-platform"
+      business-unit = "platforms"
+    }
+    taints = [
+      {
+        key    = "thanos-node"
+        value  = true
+        effect = "NO_SCHEDULE"
+      }
+    ]
+  }
+  eks_managed_node_groups = merge(
+    { default_ng_16_09_24 = local.default_ng_16_09_24, monitoring_ng_16_09_24 = local.monitoring_ng_16_09_24 },
+  terraform.workspace == "manager" ? { thanos_ng_17_12_24 = local.thanos_ng_17_12_24 } : {})
 }
 
 module "eks" {
@@ -182,10 +241,7 @@ module "eks" {
   iam_role_name    = terraform.workspace
   prefix_separator = ""
 
-  eks_managed_node_groups = {
-    default_ng_16_09_24    = local.default_ng_16_09_24
-    monitoring_ng_16_09_24 = local.monitoring_ng_16_09_24
-  }
+  eks_managed_node_groups = local.eks_managed_node_groups
 
   iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
