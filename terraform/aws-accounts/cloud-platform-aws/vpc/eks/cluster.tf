@@ -56,7 +56,7 @@ locals {
   }
 
   thanos_node_size = {
-    manager = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
+    manager = ["m6a.2xlarge", "m6a.4xlarge", "m6i.2xlarge"]
     default = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
   }
 
