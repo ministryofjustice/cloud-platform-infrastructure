@@ -143,23 +143,8 @@ module "eks" {
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
   map_users = [
     {
-      userarn  = "arn:aws:iam::754256621582:user/PoornimaKrishnasamy"
-      username = "PoornimaKrishnasamy"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/paulWyborn"
-      username = "paulWyborn"
-      groups   = ["system:masters"]
-    },
-    {
       userarn  = "arn:aws:iam::754256621582:user/SabluMiah"
       username = "SabluMiah"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/SteveMarshall"
-      username = "SteveMarshall"
       groups   = ["system:masters"]
     },
     {
