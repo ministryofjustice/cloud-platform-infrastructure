@@ -81,6 +81,8 @@ module "vpc" {
   manage_default_route_table    = false
   manage_default_security_group = false
 
+  public_dedicated_network_acl = true //Creates a dedicated network ACL and attaches to the public subnets
+
   enable_nat_gateway     = true
   enable_vpn_gateway     = false
   enable_dns_hostnames   = true
