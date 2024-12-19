@@ -167,18 +167,8 @@ resource "aws_elasticsearch_domain" "live_1" {
   elasticsearch_version = "7.10"
 
   cluster_config {
-    instance_type            = "r6g.4xlarge.elasticsearch"
-    instance_count           = "16"
-    dedicated_master_enabled = true
-    dedicated_master_type    = "m6g.xlarge.elasticsearch"
-    dedicated_master_count   = "5"
-    zone_awareness_enabled   = true
-    zone_awareness_config {
-      availability_zone_count = 3
-    }
-    warm_count   = 16
-    warm_enabled = true
-    warm_type    = "ultrawarm1.medium.elasticsearch"
+    instance_type  = "t3.small.search"
+    instance_count = "1"
     cold_storage_options {
       enabled = true
     }
@@ -187,9 +177,9 @@ resource "aws_elasticsearch_domain" "live_1" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp3"
-    volume_size = "12288"
-    iops        = 20000 # Must be between 15,000 to 20,000 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
-    throughput  = 593   # limit is 1,000
+    volume_size = "100"
+    iops        = 3000 # Must be between 15,000 to 20,000 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
+    throughput  = 125  # limit is 1,000
   }
 
   advanced_options = {
