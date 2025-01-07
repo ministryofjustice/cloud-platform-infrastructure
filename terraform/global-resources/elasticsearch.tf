@@ -168,7 +168,7 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   cluster_config {
     warm_enabled   = false
-    instance_type  = "t3.small.search"
+    instance_type  = "t3.small.elasticsearch"
     instance_count = "1"
     cold_storage_options {
       enabled = true
