@@ -167,6 +167,7 @@ resource "aws_elasticsearch_domain" "live_1" {
   elasticsearch_version = "7.10"
 
   cluster_config {
+    warm_enabled   = false
     instance_type  = "t3.small.search"
     instance_count = "1"
     cold_storage_options {
