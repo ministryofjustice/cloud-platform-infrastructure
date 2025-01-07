@@ -170,11 +170,11 @@ resource "aws_elasticsearch_domain" "live_1" {
     warm_count     = 16
     warm_enabled   = true
     warm_type      = "ultrawarm1.medium.elasticsearch"
-    instance_type  = "t3.small.elasticsearch"
+    instance_type  = "m5.large.elasticsearch"
     instance_count = "1"
 
     dedicated_master_enabled = true
-    dedicated_master_type    = "t3.small.elasticsearch"
+    dedicated_master_type    = "m5.large.elasticsearch"
     dedicated_master_count   = "3"
     cold_storage_options {
       enabled = true
