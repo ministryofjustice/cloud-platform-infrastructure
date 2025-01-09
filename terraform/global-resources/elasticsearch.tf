@@ -167,7 +167,9 @@ resource "aws_elasticsearch_domain" "live_1" {
   elasticsearch_version = "7.10"
 
   cluster_config {
-    warm_enabled             = false
+    warm_enabled             = true
+    warm_count               = 16
+    warm_type                = "ultrawarm1.medium.elasticsearch"
     instance_type            = "r6g.4xlarge.elasticsearch"
     instance_count           = "4"
     dedicated_master_enabled = true
@@ -408,6 +410,23 @@ resource "elasticsearch_index_template" "live_kubernetes_cluster" {
   "template": {
     "settings": {
       "number_of_shards": "16",
+      "number_of_replicas": "1"
+    }
+  }
+}
+  EOF
+}
+
+resource "elasticsearch_index_template" "live_kubernetes_cluster_reindexed" {
+  name = "live_kubernetes_cluster"
+  body = <<EOF
+{
+  "index_patterns": [
+    "reindexed_live_kubernetes_cluster-*"
+  ],
+  "template": {
+    "settings": {
+      "number_of_shards": "32",
       "number_of_replicas": "1"
     }
   }
