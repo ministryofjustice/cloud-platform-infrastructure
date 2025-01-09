@@ -130,7 +130,7 @@ resource "aws_route53_record" "cloud_platform_justice_gov_uk_TXT" {
 
 module "s3_bucket_thanos" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.15.1"
+  version = "4.3.0"
 
   bucket = "cloud-platform-prometheus-thanos"
   acl    = "private"
