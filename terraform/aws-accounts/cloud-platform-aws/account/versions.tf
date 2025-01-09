@@ -7,7 +7,7 @@ terraform {
     }
     auth0 = {
       source  = "auth0/auth0"
-      version = "~> 1.8.0"
+      version = "~> 1.9.1"
     }
     elasticsearch = {
       source  = "phillbaker/elasticsearch"
@@ -15,7 +15,7 @@ terraform {
     }
     opensearch = {
       source  = "opensearch-project/opensearch"
-      version = "2.2.1"
+      version = "2.3.1"
     }
     http = {
       source  = "hashicorp/http"
@@ -23,7 +23,7 @@ terraform {
     }
     github = {
       source  = "integrations/github"
-      version = "~> 5.42.0"
+      version = "~> 6.4.0"
     }
   }
 }
