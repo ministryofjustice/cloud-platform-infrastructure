@@ -414,3 +414,20 @@ resource "elasticsearch_index_template" "live_kubernetes_cluster" {
 }
   EOF
 }
+
+resource "elasticsearch_index_template" "live_kubernetes_cluster_reindexed" {
+  name = "live_kubernetes_cluster"
+  body = <<EOF
+{
+  "index_patterns": [
+    "reindexed_live_kubernetes_cluster-*"
+  ],
+  "template": {
+    "settings": {
+      "number_of_shards": "32",
+      "number_of_replicas": "1"
+    }
+  }
+}
+  EOF
+}
