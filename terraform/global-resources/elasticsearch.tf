@@ -178,6 +178,11 @@ resource "aws_elasticsearch_domain" "live_1" {
     cold_storage_options {
       enabled = true
     }
+
+    zone_awareness_enabled = true
+    zone_awareness_config {
+      availability_zone_count = 3
+    }
   }
 
   ebs_options {
