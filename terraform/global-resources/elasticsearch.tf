@@ -167,7 +167,9 @@ resource "aws_elasticsearch_domain" "live_1" {
   elasticsearch_version = "7.10"
 
   cluster_config {
-    warm_enabled             = false
+    warm_enabled             = true
+    warm_count               = 16
+    warm_type                = "ultrawarm1.medium.elasticsearch"
     instance_type            = "r6g.4xlarge.elasticsearch"
     instance_count           = "4"
     dedicated_master_enabled = true
