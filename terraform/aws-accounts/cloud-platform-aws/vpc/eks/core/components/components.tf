@@ -105,7 +105,7 @@ module "external_secrets_operator" {
 module "ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.22"
 
-  replica_count            = lookup(local.live_workspace, terraform.workspace, false) ? "30" : "3"
+  replica_count            = terraform.workspace == "live" ? "30" : "3"
   controller_name          = "default"
   proxy_response_buffering = "on"
   enable_latest_tls        = true
@@ -153,7 +153,7 @@ module "production_only_ingress_controllers_v1" {
 module "modsec_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.22"
 
-  replica_count            = lookup(local.live_workspace, terraform.workspace, false) ? "12" : "3"
+  replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
