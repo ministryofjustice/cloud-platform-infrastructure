@@ -423,7 +423,7 @@ resource "elasticsearch_index_template" "live_kubernetes_cluster" {
 }
 
 resource "elasticsearch_index_template" "live_kubernetes_cluster_reindexed" {
-  name = "live_kubernetes_cluster"
+  name = "reindexed_live_kubernetes_cluster"
   body = <<EOF
 {
   "index_patterns": [
