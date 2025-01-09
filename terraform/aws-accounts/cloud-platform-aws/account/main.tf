@@ -182,7 +182,7 @@ module "s3_bucket_velero" {
 
 module "s3_bucket_kubeconfigs" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.15.1"
+  version = "4.3.0"
 
   bucket = "cloud-platform-concourse-kubeconfig"
   acl    = "private"
