@@ -6,7 +6,7 @@ toolchain go1.23.3
 
 require (
 	github.com/aws/aws-sdk-go v1.55.5
-	github.com/go-resty/resty/v2 v2.16.2
+	github.com/go-resty/resty/v2 v2.16.3
 	github.com/gruntwork-io/terratest v0.48.1
 	github.com/ministryofjustice/cloud-platform-go-library v0.0.0-20220803122921-1ca1153b1730
 	github.com/onsi/ginkgo/v2 v2.22.2
