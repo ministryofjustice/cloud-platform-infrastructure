@@ -271,31 +271,6 @@ data "aws_iam_policy_document" "test" {
   }
 }
 
-# If you need to create a test ES, see https://github.com/ministryofjustice/cloud-platform-terraform-elasticsearch/tree/main/example
-
-module "live_elasticsearch_monitoring" {
-  source  = "dubiety/elasticsearch-cloudwatch-sns-alarms/aws"
-  version = "3.0.3"
-
-  alarm_name_prefix = "cloud-platform-live-"
-  domain_name       = local.live_domain
-  create_sns_topic  = false
-  sns_topic         = data.terraform_remote_state.account.outputs.slack_sns_topic
-
-
-  alarm_cluster_status_is_yellow_periods    = 10
-  jvm_memory_pressure_threshold             = 90
-  alarm_jvm_memory_pressure_too_high_period = 600
-  min_available_nodes                       = aws_elasticsearch_domain.live_1.cluster_config[0].instance_count
-  monitor_free_storage_space_total_too_low  = true
-
-  # Using this calculation of (size-in-gb * 25% * 1024) because 25% is the best-practice for low disk, per AWS's recommendations. This value is in MiB so need to * 1024
-  free_storage_space_threshold = aws_elasticsearch_domain.live_1.ebs_options[0].volume_size * 0.25 * 1024
-
-  # Using this calculation of (size-in-gb * total instance count * 25% * 1024) because 25% is the best-practice for low disk, per AWS's recommendations. This value is in MiB so need to * 1024
-  free_storage_space_total_threshold = aws_elasticsearch_domain.live_1.ebs_options[0].volume_size * aws_elasticsearch_domain.live_1.cluster_config[0].instance_count * 0.25 * 1024
-}
-
 # This is the OpenSearch cluster for live-2
 data "aws_iam_policy_document" "live-2" {
   statement {
