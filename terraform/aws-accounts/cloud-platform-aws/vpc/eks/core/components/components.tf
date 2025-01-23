@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.28.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.28.2"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = var.github_auth_client_id
@@ -103,7 +103,7 @@ module "external_secrets_operator" {
 }
 
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.23"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.24"
 
   replica_count            = terraform.workspace == "live" ? "30" : "3"
   controller_name          = "default"
@@ -126,7 +126,7 @@ module "ingress_controllers_v1" {
 }
 
 module "production_only_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.23"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.24"
   count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "6"
@@ -153,7 +153,7 @@ module "production_only_ingress_controllers_v1" {
 
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.23"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.8.24"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
@@ -195,7 +195,7 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.18.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.18.1"
 
   opensearch_app_host = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
   elasticsearch_host  = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
@@ -206,7 +206,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.17.13"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.17.14"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? var.pagerduty_config : "dummy"
@@ -265,7 +265,7 @@ module "velero" {
 }
 
 module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.5.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.5.3"
 
   cluster_env = terraform.workspace
 
