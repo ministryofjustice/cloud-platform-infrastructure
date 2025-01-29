@@ -33,6 +33,21 @@ locals {
     manager = "4"
     default = "2"
   }
+
+  # Monitoring node group desired capacity 
+  default_mon_desired_count = {
+    live    = "4"
+    live-2  = "3"
+    manager = "4"
+    default = "3"
+  }
+  # Monitoring node group minimum capacity 
+  default_mon_min_count = {
+    live    = "4"
+    live-2  = "3"
+    manager = "4"
+    default = "3"
+  }
   # To manage different cluster versions
   cluster_version = {
     live    = "1.29"
@@ -115,9 +130,9 @@ locals {
   }
 
   monitoring_ng_16_09_24 = {
-    desired_size = 4
+    desired_size = lookup(local.default_mon_desired_count, terraform.workspace, local.default_mon_desired_count["default"])
     max_size     = 6
-    min_size     = 4
+    min_size     = lookup(local.default_mon_min_count, terraform.workspace, local.default_mon_min_count["default"])
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
