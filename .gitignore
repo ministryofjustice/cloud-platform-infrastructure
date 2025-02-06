@@ -1,4 +1,4 @@
-.env
+*.env
 .terraform
 *.tfstate*
 ssh/*id_rsa
