@@ -171,7 +171,7 @@ resource "aws_elasticsearch_domain" "live_1" {
     warm_count               = 16
     warm_type                = "ultrawarm1.medium.elasticsearch"
     instance_type            = "r6g.4xlarge.elasticsearch"
-    instance_count           = "18"
+    instance_count           = "30"
     dedicated_master_enabled = true
     dedicated_master_type    = "m6g.xlarge.elasticsearch"
     dedicated_master_count   = "5"
