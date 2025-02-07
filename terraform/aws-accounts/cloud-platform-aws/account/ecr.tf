@@ -160,7 +160,7 @@ EOF
   infrastructure_support = var.infrastructure_support
 }
 
-module "ecr_credentials" {
+module "ecr_credentials_github_teams_filter" {
   source    = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=7.1.0"
   repo_name = "cloud-platform-github-teams-filter"
 
