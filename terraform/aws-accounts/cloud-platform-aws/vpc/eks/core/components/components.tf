@@ -302,6 +302,6 @@ module "github-teams-filter" {
   ecr_url       = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/cloud-platform-github-teams-filter"
   image_tag     = "7d8e836a0685bd50fcc23f3b824a0aed892cf9b4"
   replica_count = 2
-  hostname = "github-teams-filter.apps.${data.aws_route53_zone.selected.name}"
+  hostname      = "github-teams-filter.apps.${data.aws_route53_zone.selected.name}"
 
 }
