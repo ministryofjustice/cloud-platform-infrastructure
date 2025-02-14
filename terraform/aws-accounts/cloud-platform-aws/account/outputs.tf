@@ -16,4 +16,5 @@ output "click_here_to_login" {
 output "github_teams_filter_api_key" {
   value       = module.sso.github_teams_filter_api_key
   description = "API key for the GitHub teams filter API"
+  sensitive   = true
 }
