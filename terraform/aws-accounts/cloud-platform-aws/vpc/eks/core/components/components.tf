@@ -297,7 +297,7 @@ module "trivy-operator" {
 }
 
 module "github-teams-filter" {
-  source = "github.com/ministryofjustice/cloud-platform-github-teams-filter?ref=1.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-github-teams-filter?ref=1.1.1"
 
   chart_version  = "1.0.1"
   ecr_url        = "754256621582.dkr.ecr.eu-west-2.amazonaws.com/webops/cloud-platform-github-teams-filter"
