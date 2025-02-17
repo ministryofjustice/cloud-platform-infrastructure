@@ -210,7 +210,6 @@ module "s3_bucket_environments_live_reports" {
   version = "4.3.0"
 
   bucket = "cloud-platform-concourse-environments-live-reports"
-  acl    = "private"
 
   block_public_acls       = true
   block_public_policy     = true
@@ -218,7 +217,7 @@ module "s3_bucket_environments_live_reports" {
   restrict_public_buckets = true
 
   versioning = {
-    enabled = true
+    enabled = false
   }
 
   server_side_encryption_configuration = {
