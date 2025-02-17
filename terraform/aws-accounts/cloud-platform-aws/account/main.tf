@@ -205,6 +205,30 @@ module "s3_bucket_kubeconfigs" {
   }
 }
 
+module "s3_bucket_environments_live_reports" {
+  source  = "terraform-aws-modules/s3-bucket/aws"
+  version = "4.3.0"
+
+  bucket = "cloud-platform-concourse-environments-live-reports"
+  acl    = "private"
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  versioning = {
+    enabled = true
+  }
+
+  server_side_encryption_configuration = {
+    rule = {
+      apply_server_side_encryption_by_default = {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
 # Create a DynamoDB table so we can lock the terraform state of each
 # namespace in the cloud-platform-environments repository, as we
 # `terraform apply` it.
