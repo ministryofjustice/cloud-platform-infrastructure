@@ -18,3 +18,8 @@ output "github_teams_filter_api_key" {
   description = "API key for the GitHub teams filter API"
   sensitive   = true
 }
+
+output "concourse_environments_live-reports_bucket" {
+  value = module.s3_bucket_environments_live_reports.s3_bucket_arn
+  description = "S3 bucket arn for environmnts-live-reports"
+}
