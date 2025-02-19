@@ -99,8 +99,6 @@ data "aws_rooute53_zone" "external_dns_test" {
   name = "ext-dns-test.cloud-platform.service.justice.gov.uk"
 }
 
-
-
 ##########
 # Locals #
 ##########
