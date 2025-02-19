@@ -95,6 +95,12 @@ data "aws_route53_zone" "cloud_platform" {
   name = "cloud-platform.service.justice.gov.uk"
 }
 
+data "aws_rooute53_zone" "external_dns_test" {
+  name = "ext-dns-test.cloud-platform.service.justice.gov.uk"
+}
+
+
+
 ##########
 # Locals #
 ##########
@@ -147,7 +153,8 @@ locals {
   domain_filters = {
     default = [
       data.aws_route53_zone.selected.name,
-      data.aws_route53_zone.integrationtest.name
+      data.aws_route53_zone.integrationtest.name,
+      data.aws_route53_zone.external_dns_test.name
     ]
     manager = [
       data.aws_route53_zone.selected.name,
