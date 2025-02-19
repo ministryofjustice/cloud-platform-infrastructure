@@ -20,6 +20,6 @@ output "github_teams_filter_api_key" {
 }
 
 output "concourse_environments_live-reports_bucket" {
-  value       = module.s3_bucket_environments_live_reports.s3_bucket_arn
+  value       = module.s3_bucket_environments_live_reports.s3_bucket_id
   description = "S3 bucket arn for environmnts-live-reports"
 }
