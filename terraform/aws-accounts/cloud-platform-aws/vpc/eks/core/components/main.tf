@@ -95,7 +95,7 @@ data "aws_route53_zone" "cloud_platform" {
   name = "cloud-platform.service.justice.gov.uk"
 }
 
-data "aws_rooute53_zone" "external_dns_test" {
+data "aws_route53_zone" "external_dns_test" {
   name = "ext-dns-test.cloud-platform.service.justice.gov.uk"
 }
 
