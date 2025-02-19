@@ -127,6 +127,26 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
   ]
 }
 
+resource "aws_route53_zone" "external-dns-route53-test-zone" {
+  count = local.is_live_cluster ? 1 : 0
+  name  = "ext-dns-test.cloud-platform.service.justice.gov.uk."
+}
+
+resource "aws_route53_record" "external-dns-parent-zone-ns" {
+  count   = local.is_live_cluster ? 1 : 0
+  zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
+  name    = aws_route53_zone.external-dns-route53-test-zone[count.index].name
+  type    = "NS"
+  ttl     = "30"
+
+  records = [
+    aws_route53_zone.external-dns-route53-test-zone[count.index].name_servers[0],
+    aws_route53_zone.external-dns-route53-test-zone[count.index].name_servers[1],
+    aws_route53_zone.external-dns-route53-test-zone[count.index].name_servers[2],
+    aws_route53_zone.external-dns-route53-test-zone[count.index].name_servers[3],
+  ]
+}
+
 #########
 # Auth0 #
 #########
