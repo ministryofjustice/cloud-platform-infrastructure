@@ -138,7 +138,8 @@ locals {
   hostzones = {
     default = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
-      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}"
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}",
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.external_dns_test.zone_id}"
     ]
     manager = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
