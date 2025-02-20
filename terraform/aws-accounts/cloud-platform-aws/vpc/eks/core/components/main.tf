@@ -99,6 +99,10 @@ data "aws_route53_zone" "external_dns_test" {
   name = "ext-dns-test.cloud-platform.service.justice.gov.uk"
 }
 
+data "aws_route53_zone" "external_dns_test-2" {
+  name = "ext-dns-test-2.cloud-platform.service.justice.gov.uk"
+}
+
 ##########
 # Locals #
 ##########
@@ -139,7 +143,8 @@ locals {
     default = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.integrationtest.zone_id}",
-      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.external_dns_test.zone_id}"
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.external_dns_test.zone_id}",
+      "arn:aws:route53:::hostedzone/${data.aws_route53_zone.external_dns_test-2.zone_id}"
     ]
     manager = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
