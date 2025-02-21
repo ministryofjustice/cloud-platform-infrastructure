@@ -239,6 +239,7 @@ resource "elasticsearch_opensearch_roles_mapping" "all_access_app_logs" {
   description = "Mapping AWS IAM roles to ES role all_access"
   backend_roles = concat([
     "webops",
+    "organisation-security-auditor",
     aws_iam_role.os_access_role_app_logs.arn,
   ], values(data.aws_eks_node_group.current)[*].node_role_arn, values(data.aws_eks_node_group.manager)[*].node_role_arn)
 
@@ -255,6 +256,7 @@ resource "elasticsearch_opensearch_roles_mapping" "security_manager_app_logs" {
   description = "Mapping AWS IAM roles to ES role security_manager"
   backend_roles = [
     "webops",
+    "organisation-security-auditor",
     aws_iam_role.os_access_role_app_logs.arn,
   ]
 
@@ -300,6 +302,36 @@ resource "elasticsearch_opensearch_roles_mapping" "webops_app_logs" {
   depends_on = [
     aws_opensearch_domain_saml_options.live_app_logs,
     elasticsearch_opensearch_role.webops_app_logs
+  ]
+}
+
+resource "elasticsearch_opensearch_role" "org_sec_audit_app_logs" {
+  provider    = elasticsearch.app_logs
+  role_name   = "organisation-security-auditor"
+  description = "role for all org sec auditor github users"
+
+  cluster_permissions = ["*"]
+
+  index_permissions {
+    index_patterns          = ["*"]
+    allowed_actions         = ["cluster_all", "indices_all", "unlimited"]
+    document_level_security = "{\"match_all\": {}}"
+  }
+
+  tenant_permissions {
+    tenant_patterns = ["global_tenant"]
+    allowed_actions = ["kibana_all_write"]
+  }
+}
+
+resource "elasticsearch_opensearch_roles_mapping" "org_sec_audit_app_logs" {
+  provider      = elasticsearch.app_logs
+  role_name     = "organisation-security-auditor"
+  description   = "Mapping AWS IAM roles to ES role webops"
+  backend_roles = ["organisation-security-auditor"]
+  depends_on = [
+    aws_opensearch_domain_saml_options.live_app_logs,
+    elasticsearch_opensearch_role.org_sec_audit_app_logs
   ]
 }
 
