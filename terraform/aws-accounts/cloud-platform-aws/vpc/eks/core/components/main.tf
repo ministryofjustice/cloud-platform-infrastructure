@@ -158,7 +158,8 @@ locals {
     default = [
       data.aws_route53_zone.selected.name,
       data.aws_route53_zone.integrationtest.name,
-      data.aws_route53_zone.external_dns_test.name
+      data.aws_route53_zone.external_dns_test.name,
+      data.aws_route53_zone.external_dns_test-2.name
     ]
     manager = [
       data.aws_route53_zone.selected.name,
