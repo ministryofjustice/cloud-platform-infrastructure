@@ -1,5 +1,5 @@
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.12.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.13.0"
 
   dryrun_map = {
     service_type                       = false,
@@ -19,7 +19,8 @@ module "gatekeeper" {
     warn_kubectl_create_sa             = false,
     # There are violations on system namespaces and until that is cleared, this
     # constraint will be in dryrun mode
-    lock_priv_capabilities = true,
+    lock_priv_capabilities        = true,
+    allow_duplicate_hostname_yaml = false
   }
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
