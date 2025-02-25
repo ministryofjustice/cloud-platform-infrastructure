@@ -3,11 +3,11 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.83.0"
+      version = "~> 5.88.0"
     }
     auth0 = {
       source  = "auth0/auth0"
-      version = "~> 1.9.1"
+      version = "~> 1.13.1"
     }
     elasticsearch = {
       source  = "phillbaker/elasticsearch"
@@ -23,7 +23,7 @@ terraform {
     }
     github = {
       source  = "integrations/github"
-      version = "~> 6.4.0"
+      version = "~> 6.5.0"
     }
   }
 }
