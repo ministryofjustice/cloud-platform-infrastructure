@@ -242,7 +242,7 @@ module "monitoring" {
 }
 
 module "starter_pack" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.2.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.2.6"
 
   enable_starter_pack = lookup(local.prod_2_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
