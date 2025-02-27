@@ -1,5 +1,5 @@
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.13.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.14.0"
 
   dryrun_map = {
     service_type                       = false,
@@ -20,7 +20,8 @@ module "gatekeeper" {
     # There are violations on system namespaces and until that is cleared, this
     # constraint will be in dryrun mode
     lock_priv_capabilities        = true,
-    allow_duplicate_hostname_yaml = false
+    allow_duplicate_hostname_yaml = false,
+    block_ingresses               = true,
   }
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -36,3 +37,4 @@ module "gatekeeper" {
   audit_mem_limit      = terraform.workspace == "live" ? "16Gi" : "1Gi"
   audit_mem_req        = terraform.workspace == "live" ? "4Gi" : "512Mi"
 }
+
