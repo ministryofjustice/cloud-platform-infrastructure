@@ -21,7 +21,7 @@ module "gatekeeper" {
     # constraint will be in dryrun mode
     lock_priv_capabilities        = true,
     allow_duplicate_hostname_yaml = false,
-    block_ingresses               = false,
+    block_ingresses               = true,
   }
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
