@@ -59,13 +59,17 @@ var _ = Describe("external-dns", Serial, func() {
 	})
 
 	Context("when creating and then deleting an ingress resource", func() {
-		It("should create and then delete the A record", func() {
+		FIt("should create and then delete the A record", func() {
 			GinkgoWriter.Printf("\nWaiting for A record to be created\n")
 			Eventually(func() bool {
-				exists, err := helpers.RecordSets(domain, hostedZoneId)
+				aExists, err := helpers.RecordSets(domain, hostedZoneId, "A")
 				Expect(err).NotTo(HaveOccurred())
-				return exists
-			}, "10m", "10s").Should(BeTrue())
+
+				txtExists, err := helpers.RecordSets("_external_dns.cname."+domain, hostedZoneId, "TXT")
+				Expect(err).NotTo(HaveOccurred())
+
+				return aExists && txtExists
+			}, "10m", "30s").Should(BeTrue())
 
 			GinkgoWriter.Printf("\nDeleting ingress resource %s\n", namespaceName)
 			err := k8s.RunKubectlE(GinkgoT(), options, "delete", "ingress", "e2e-tests-externaldns")
@@ -73,11 +77,14 @@ var _ = Describe("external-dns", Serial, func() {
 
 			GinkgoWriter.Printf("\nWaiting for A record to be deleted\n")
 			Eventually(func() bool {
-				exists, err := helpers.RecordSets(domain, hostedZoneId)
+				aExists, err := helpers.RecordSets(domain, hostedZoneId, "A")
 				Expect(err).NotTo(HaveOccurred())
-				return !exists
-			}, "10m", "10s").Should(BeFalse())
+
+				txtExists, err := helpers.RecordSets("_external_dns.cname."+domain, hostedZoneId, "TXT")
+				Expect(err).NotTo(HaveOccurred())
+
+				return !aExists && !txtExists
+			}, "10m", "30s").Should(BeTrue())
 		})
 	})
-
 })
