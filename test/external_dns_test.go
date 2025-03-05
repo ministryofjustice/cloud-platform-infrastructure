@@ -59,7 +59,7 @@ var _ = Describe("external-dns", Serial, func() {
 	})
 
 	Context("when creating and then deleting an ingress resource", func() {
-		FIt("should create and then delete the A record", func() {
+		It("should create and then delete the A record", func() {
 			GinkgoWriter.Printf("\nWaiting for A record to be created\n")
 			Eventually(func() bool {
 				aExists, err := helpers.RecordSets(domain, hostedZoneId, "A")
