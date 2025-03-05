@@ -20,12 +20,15 @@ const (
 
 // RecordSets uses the AWS API to return domain entry existence in Route53
 // using the hostzone ID specified in the configuration
-func RecordSets(d, hostedZone string) (bool, error) {
+func RecordSets(d, hostedZone, recordType string) (bool, error) {
 	mySession := session.Must(session.NewSession())
 	svc := route53.New(mySession)
 
 	params := &route53.ListResourceRecordSetsInput{
-		HostedZoneId: aws.String(hostedZone),
+		MaxItems:        aws.String("200"),
+		HostedZoneId:    aws.String(hostedZone),
+		StartRecordType: aws.String(recordType),
+		StartRecordName: aws.String(d),
 	}
 
 	wait := startWaitTime
@@ -44,6 +47,7 @@ func RecordSets(d, hostedZone string) (bool, error) {
 
 		for _, v := range sets.ResourceRecordSets {
 			record := strings.TrimRight(*v.Name, ".")
+
 			if record == d {
 				return true, nil
 			}
