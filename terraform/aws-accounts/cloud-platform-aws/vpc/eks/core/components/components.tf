@@ -130,7 +130,7 @@ module "production_only_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.9.0"
   count  = terraform.workspace == "live" ? 1 : 0
 
-  replica_count            = "6"
+  replica_count            = "3"
   controller_name          = "production-only"
   enable_cross_zone_lb     = false
   enable_anti_affinity     = terraform.workspace == "live" ? true : false
@@ -142,7 +142,7 @@ module "production_only_ingress_controllers_v1" {
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
   # Enable this when we remove the module "ingress_controllers"
-  enable_external_dns_annotation = true
+  enable_external_dns_annotation = false
 
   memory_requests = "5Gi"
   memory_limits   = "20Gi"
