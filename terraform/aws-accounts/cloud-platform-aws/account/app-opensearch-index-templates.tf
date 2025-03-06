@@ -12,6 +12,13 @@ resource "opensearch_index_template" "live_kubernetes_cluster" {
         "number_of_shards": "15",
         "number_of_replicas": "1"
       }
+    },
+    "mappings": {
+      "properties": {
+        "time" : {
+          "type" :  "date"
+        }
+      }
     }
   }
 }
