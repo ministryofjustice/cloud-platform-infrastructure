@@ -12,21 +12,6 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-type Event struct {
-	Connection struct {
-		Name string `json:"name"`
-	} `json:"connection"`
-	User struct {
-		Nickname     string   `json:"nickname"`
-		UserMetadata Metadata `json:"user_metadata"`
-	} `json:"user"`
-	Secrets struct {
-		AwsSamlProvider string `json:"AWS_SAML_PROVIDER_NAME"`
-		AwsAccountID    string `json:"AWS_ACCOUNT_ID"`
-		FilterApiKey    string `json:"FILTER_API_KEY"`
-	} `json:"secrets"`
-}
-
 type Metadata struct {
 	GhTeams []string `json:"gh_teams"`
 }
