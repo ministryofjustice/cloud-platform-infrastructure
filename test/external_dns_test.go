@@ -75,7 +75,7 @@ var _ = Describe("external-dns", Serial, func() {
 			err := k8s.RunKubectlE(GinkgoT(), options, "delete", "ingress", "e2e-tests-externaldns")
 			Expect(err).NotTo(HaveOccurred())
 
-			GinkgoWriter.Printf("\nWaiting for A record to be deleted\n")
+			GinkgoWriter.Printf("\nWaiting for Route 53 records to be created\n")
 			Eventually(func() bool {
 				aExists, err := helpers.RecordSets(domain, hostedZoneId, "A")
 				Expect(err).NotTo(HaveOccurred())
