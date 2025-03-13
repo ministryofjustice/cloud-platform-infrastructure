@@ -37,11 +37,11 @@ var _ = Describe("PostLogin Function", func() {
 		Expect(resp.StatusCode).To(Equal(http.StatusOK))
 
 		defer resp.Body.Close()
-		body, _ := io.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		Expect(err).To(BeNil())
 
 		var result FilterResponse
-		json.Unmarshal(body, &result)
+		err = json.Unmarshal(body, &result)
 		Expect(err).To(BeNil())
 
 		fmt.Println("Processed GitHub teams:", result.FilteredTeams)
