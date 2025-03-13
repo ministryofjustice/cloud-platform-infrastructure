@@ -36,7 +36,7 @@ resource "opensearch_index_template" "live_kubernetes_ingress" {
   "template": {
     "settings": {
       "index": {
-        "number_of_shards": "1",
+        "number_of_shards": "4",
         "number_of_replicas": "1"
       }
     }
