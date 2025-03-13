@@ -38,7 +38,7 @@ type FilterResponse struct {
 	FilteredTeams string `json:"filtered_teams"`
 }
 
-var _ = FDescribe("PostLogin Function", func() {
+var _ = Describe("PostLogin Function", func() {
 	It("should process GitHub teams and call the filter API", func() {
 		req, _ := http.NewRequest("POST", "https://github-teams-filter.apps.live.cloud-platform.service.justice.gov.uk/filter-teams", bytes.NewBuffer([]byte(`{"teams": ":badteam:webops:test1:test2:worstteam:dps-tech"}`)))
 		req.Header.Set("Content-Type", "application/json")
