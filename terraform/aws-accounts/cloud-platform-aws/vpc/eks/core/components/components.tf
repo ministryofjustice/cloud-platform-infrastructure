@@ -25,7 +25,7 @@ module "concourse" {
   dockerhub_password                                = var.dockerhub_password
   how_out_of_date_are_we_github_token               = var.how_out_of_date_are_we_github_token
   authorized_keys_github_token                      = var.authorized_keys_github_token
-  github_teams_filter_api_key                       = data.terraform_remote_state.account.outputs.github_teams_filter_api_key
+  teams_filter_api_key                              = data.terraform_remote_state.account.outputs.github_teams_filter_api_key
   limit_active_tasks                                = 2
   environments_live_reports_s3_bucket               = data.terraform_remote_state.account.outputs.concourse_environments_live-reports_bucket
 
