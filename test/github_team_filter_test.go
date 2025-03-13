@@ -12,7 +12,6 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-// Mock event structure similar to the one in Node.js
 type Event struct {
 	Connection struct {
 		Name string `json:"name"`
@@ -28,12 +27,10 @@ type Event struct {
 	} `json:"secrets"`
 }
 
-// Metadata struct for GitHub teams
 type Metadata struct {
 	GhTeams []string `json:"gh_teams"`
 }
 
-// Response from the mock API
 type FilterResponse struct {
 	FilteredTeams string `json:"filtered_teams"`
 }
