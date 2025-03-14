@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strings"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -22,6 +23,10 @@ type FilterResponse struct {
 
 var _ = Describe("PostLogin Function", func() {
 	It("should process GitHub teams and call the filter API", func() {
+		if !strings.Contains(strings.ToLower(c.ClusterName), "live") {
+			Skip(fmt.Sprintf("Only run github teams filter on live: %s", c.ClusterName))
+		}
+
 		req, _ := http.NewRequest("POST", "https://github-teams-filter.apps.live.cloud-platform.service.justice.gov.uk/filter-teams", bytes.NewBuffer([]byte(`{"teams": ":badteam:webops:test1:test2:worstteam:dps-tech"}`)))
 		req.Header.Set("Content-Type", "application/json")
 		apiKey := os.Getenv("TEAMS_FILTER_API_KEY")
