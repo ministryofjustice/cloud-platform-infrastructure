@@ -43,7 +43,7 @@ module "concourse" {
 module "cluster_autoscaler" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-cluster-autoscaler?ref=1.11.1"
 
-  enable_overprovision        = true
+  enable_overprovision        = lookup(local.prod_workspace, terraform.workspace, false)
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_id              = data.terraform_remote_state.cluster.outputs.cluster_id
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
@@ -216,7 +216,7 @@ module "monitoring" {
   oidc_components_client_secret = data.terraform_remote_state.cluster.outputs.oidc_components_client_secret
   oidc_issuer_url               = data.terraform_remote_state.cluster.outputs.oidc_issuer_url
   enable_thanos_sidecar         = lookup(local.prod_2_workspace, terraform.workspace, false)
-  enable_large_nodesgroup       = true
+  enable_large_nodesgroup       = lookup(local.live_workspace, terraform.workspace, false)
 
   # The largegroup cpu and memory requests are valid only if the large_nodegroup is enabled.
   large_nodesgroup_cpu_requests              = terraform.workspace == "live" ? "14000m" : "1300m"
@@ -227,8 +227,8 @@ module "monitoring" {
   enable_thanos_compact      = lookup(local.manager_workspace, terraform.workspace, false)
   thanos_query_replica_count = 1
 
-  enable_ecr_exporter           = true
-  enable_cloudwatch_exporter    = true
+  enable_ecr_exporter           = lookup(local.live_workspace, terraform.workspace, false)
+  enable_cloudwatch_exporter    = lookup(local.live_workspace, terraform.workspace, false)
   enable_rds_exporter           = terraform.workspace == "live"
   enable_subnet_exporter        = terraform.workspace == "live"
   aws_subnet_exporter_image_tag = "d79d5d75cbdcd442b9a04e17269ece994b3b551d"
@@ -244,8 +244,6 @@ module "monitoring" {
 module "starter_pack" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.2.6"
 
-  starter_pack_count = 40
-
   enable_starter_pack = lookup(local.prod_2_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
 
@@ -258,7 +256,7 @@ module "starter_pack" {
 module "velero" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=2.4.1"
 
-  enable_velero               = true
+  enable_velero               = lookup(local.prod_2_workspace, terraform.workspace, false)
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
   node_agent_cpu_requests     = "2m"
