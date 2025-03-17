@@ -314,3 +314,8 @@ resource "aws_iam_policy_attachment" "ops_eng_route53_readonly" {
   roles      = [aws_iam_role.ops_eng_route53_readonly.name]
 }
 
+resource "null_resource" "test_pr" {
+  provisioner "local-exec" {
+    command = "echo 'Hello, Cloud Platform!'"
+  }
+}
