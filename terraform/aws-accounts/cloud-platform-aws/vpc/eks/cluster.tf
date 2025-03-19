@@ -63,8 +63,15 @@ locals {
     default = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
   }
 
+  monitoring_node_size_21_03_25 = {
+    live    = ["r7i.12xlarge", "r6i.12xlarge", "r7i.16xlarge", "r6i.16xlarge"]
+    live-2  = ["r6i.2xlarge", "r5a.2xlarge"]
+    manager = ["t3a.medium", "t3.medium"]
+    default = ["t3a.medium", "t3.medium"]
+  }
+
   monitoring_node_size = {
-    live    = ["r6i.12xlarge", "r5a.2xlarge"]
+    live    = ["r6i.12xlarge", "r5.2xlarge"]
     live-2  = ["r6i.2xlarge", "r5a.2xlarge"]
     manager = ["t3a.medium", "t3.medium"]
     default = ["t3a.medium", "t3.medium"]
@@ -159,6 +166,57 @@ locals {
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
     instance_types               = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
+
+    labels = {
+      Terraform                                     = "true"
+      "cloud-platform.justice.gov.uk/monitoring-ng" = "true"
+      Cluster                                       = terraform.workspace
+      Domain                                        = local.fqdn
+    }
+    tags = {
+      monitoring_ng = "true"
+      application   = "moj-cloud-platform"
+      business-unit = "platforms"
+    }
+    taints = [
+      {
+        key    = "monitoring-node"
+        value  = true
+        effect = "NO_SCHEDULE"
+      }
+    ]
+  }
+
+  monitoring_ng_19_03_25 = {
+    desired_size = lookup(local.default_mon_desired_count, terraform.workspace, local.default_mon_desired_count["default"])
+    max_size     = 6
+    min_size     = lookup(local.default_mon_min_count, terraform.workspace, local.default_mon_min_count["default"])
+    block_device_mappings = {
+      xvda = {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = 140
+          volume_type           = "gp3"
+          iops                  = 0
+          encrypted             = false
+          kms_key_id            = ""
+          delete_on_termination = true
+        }
+      }
+    }
+
+
+    subnet_ids = data.aws_subnets.eks_private.ids
+    name       = "${terraform.workspace}-mon-ng"
+
+    create_security_group  = false
+    create_launch_template = true
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-140824.tpl", {
+      dockerhub_credentials = local.dockerhub_credentials
+    })
+
+    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    instance_types               = lookup(local.monitoring_node_size_21_03_25, terraform.workspace, local.monitoring_node_size["default"])
     labels = {
       Terraform                                     = "true"
       "cloud-platform.justice.gov.uk/monitoring-ng" = "true"
@@ -230,7 +288,7 @@ locals {
     ]
   }
   eks_managed_node_groups = merge(
-    { default_ng_16_09_24 = local.default_ng_16_09_24, monitoring_ng_16_09_24 = local.monitoring_ng_16_09_24 },
+    { default_ng_16_09_24 = local.default_ng_16_09_24, monitoring_ng_16_09_24 = local.monitoring_ng_16_09_24, monitoring_ng_19_03_25 = local.monitoring_ng_19_03_25 },
   terraform.workspace == "manager" ? { thanos_ng_17_12_24 = local.thanos_ng_17_12_24 } : {})
 }
 

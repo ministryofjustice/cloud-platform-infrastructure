@@ -36,7 +36,6 @@ var _ = Describe("logging", Ordered, Serial, func() {
 		emptySlice := make([]interface{}, 0)
 
 		BeforeEach(func() {
-
 			if !(c.ClusterName == "live") && !(c.ClusterName == "manager") {
 				Skip(fmt.Sprintf("Logs don't go to opensearch for cluster: %s", c.ClusterName))
 			}
@@ -92,7 +91,6 @@ var _ = Describe("logging", Ordered, Serial, func() {
 			// Wait for the job to complete
 			err = k8s.WaitUntilJobSucceedE(GinkgoT(), options, "logging-smoketest", 10, 20*time.Second)
 			Expect(err).ToNot(HaveOccurred())
-
 		})
 
 		AfterEach(func() {
@@ -109,15 +107,18 @@ var _ = Describe("logging", Ordered, Serial, func() {
 							{
 								Match: helpers.PhraseData{
 									Log: "hello, world smoketest-logs-" + uniqueId,
-								}},
+								},
+							},
 							{
 								Match: helpers.PhraseData{
 									Stream: "stdout",
-								}},
+								},
+							},
 							{
 								Match: helpers.PhraseData{
 									Namespace: namespace,
-								}},
+								},
+							},
 						},
 					},
 				},
