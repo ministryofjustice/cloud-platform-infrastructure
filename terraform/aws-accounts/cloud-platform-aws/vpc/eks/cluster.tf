@@ -259,6 +259,7 @@ module "eks" {
   eks_managed_node_groups = local.eks_managed_node_groups
 
   iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
   manage_aws_auth_configmap = true
