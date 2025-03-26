@@ -105,7 +105,7 @@ module "external_secrets_operator" {
 }
 
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.2"
 
   replica_count            = terraform.workspace == "live" ? "30" : "3"
   controller_name          = "default"
@@ -128,7 +128,7 @@ module "ingress_controllers_v1" {
 }
 
 module "production_only_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.2"
   count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "3"
@@ -153,13 +153,13 @@ module "production_only_ingress_controllers_v1" {
   ]
 }
 
-module "dev_only_modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.1"
+module "non_prod_modsec_ingress_controllers_v1" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.2"
 
   count = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "3"
-  controller_name          = "modsec"
+  controller_name          = "modsec-non-prod"
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
