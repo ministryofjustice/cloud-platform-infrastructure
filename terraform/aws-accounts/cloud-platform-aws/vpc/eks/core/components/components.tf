@@ -159,7 +159,7 @@ module "dev_only_modsec_ingress_controllers_v1" {
   count = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "3"
-  controller_name          = "modsec"
+  controller_name          = "modsec-dev-only"
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
