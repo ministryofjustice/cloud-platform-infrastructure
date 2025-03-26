@@ -158,6 +158,7 @@ module "non_prod_modsec_ingress_controllers_v1" {
 
   count = terraform.workspace == "live" ? 1 : 0
 
+  is_non_prod_modsec       = true
   replica_count            = "3"
   controller_name          = "modsec-non-prod"
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
