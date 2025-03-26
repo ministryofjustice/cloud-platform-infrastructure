@@ -133,7 +133,7 @@ resource "aws_opensearch_domain" "live_app_logs" {
 
   cluster_config {
     instance_type            = "r6g.4xlarge.search"
-    instance_count           = "30"
+    instance_count           = "15"
     dedicated_master_enabled = true
     dedicated_master_type    = "m6g.large.search"
     dedicated_master_count   = "5"
