@@ -181,7 +181,7 @@ func (c *Config) ExpectedManagerPromRules() {
 // ExpectedNamespaces returns a slice of all the namespaces
 // that are expected to be in the cluster.
 func (c *Config) ExpectedNamespaces() {
-	c.Namespaces = append(c.Namespaces, "cert-manager", "ingress-controllers", "logging", "monitoring", "gatekeeper-system", "velero")
+	c.Namespaces = append(c.Namespaces, "cert-manager", "ingress-controllers", "logging", "monitoring", "gatekeeper-system", "velero", "calico-system", "calico-apiserver", "tigera-operator", "trivy-system", "external-secrets-operator", "cloud-platform-label-pods", "kuberos", "kube-system", "default")
 }
 
 // ExpectedServices returns a slice of all the Services
@@ -196,7 +196,11 @@ func (c *Config) ExpectedServices() {
 
 // ExpectedDaemonSets populates the 'Daemonsets' object in the 'Config' struct.
 func (c *Config) ExpectedDaemonSets() {
-	c.Daemonsets = append(c.Daemonsets, "fluent-bit", "prometheus-operator-prometheus-node-exporter")
+	c.Daemonsets = append(c.Daemonsets, "fluent-bit", "prometheus-operator-prometheus-node-exporter", "calico-node", "csi-node-driver", "aws-node", "ebs-csi-node")
+
+	if strings.Contains(strings.ToLower(c.ClusterName), "live") || strings.Contains(strings.ToLower(c.ClusterName), "manager") {
+		c.Daemonsets = append(c.Daemonsets, "node-agent")
+	}
 }
 
 // ExpectedServiceMonitors populates the 'ServiceMonitors' object in the 'Config' struct. A hashmap is used here
