@@ -87,7 +87,7 @@ data "aws_subnets" "eks_private" {
 }
 
 data "aws_subnets" "thanos_nodegroup_az" {
-    filter {
+  filter {
     name   = "vpc-id"
     values = [data.aws_vpc.selected.id]
   }
