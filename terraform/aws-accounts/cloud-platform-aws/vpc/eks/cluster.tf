@@ -198,7 +198,7 @@ locals {
     }
 
 
-    subnet_ids = data.aws_subnets.eks_private.ids
+    subnet_ids = data.aws_subnets.thanos_nodegroup_az.ids
     name       = "${terraform.workspace}-thanos-ng"
 
     create_security_group  = false
