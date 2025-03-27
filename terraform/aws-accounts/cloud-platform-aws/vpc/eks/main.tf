@@ -86,6 +86,23 @@ data "aws_subnets" "eks_private" {
   }
 }
 
+data "aws_subnets" "thanos_nodegroup_az" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.selected.id]
+  }
+
+  filter {
+    name   = "availability-zone"
+    values = ["eu-west-2a"]
+  }
+
+  tags = {
+    SubnetType = "EKS-Private"
+  }
+}
+
+
 data "aws_subnets" "public" {
   filter {
     name   = "vpc-id"
