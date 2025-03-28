@@ -84,7 +84,6 @@ variable "team_name" {
   default = "webops"
 }
 
-
 variable "environment" {
   type    = string
   default = "production"
