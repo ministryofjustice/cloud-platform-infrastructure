@@ -84,11 +84,6 @@ variable "team_name" {
   default = "webops"
 }
 
-variable "namespace" {
-  type    = string
-  default = "kuberhealthy"
-}
-
 variable "environment" {
   type    = string
   default = "production"

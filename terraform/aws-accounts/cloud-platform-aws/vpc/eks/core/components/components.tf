@@ -292,16 +292,6 @@ module "velero" {
   ]
 }
 
-module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.5.3"
-
-  cluster_env = terraform.workspace
-
-  depends_on = [
-    module.velero
-  ]
-}
-
 module "trivy-operator" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.10.0"
 
