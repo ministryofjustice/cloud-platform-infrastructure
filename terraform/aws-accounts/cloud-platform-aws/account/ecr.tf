@@ -114,7 +114,7 @@ EOF
   business_unit          = var.business_unit
   application            = var.application
   is_production          = var.is_production
-  team_name              = var.team_name                   
+  team_name              = var.team_name
   namespace              = "cloud-platform-github-teams-filter"
   environment_name       = var.environment
   infrastructure_support = var.infrastructure_support
