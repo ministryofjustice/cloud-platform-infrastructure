@@ -199,12 +199,6 @@ module "velero" {
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
 
-module "kuberhealthy" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberhealthy?ref=1.1.0"
-
-  dependence_prometheus = module.monitoring.prometheus_operator_crds_status
-}
-
 module "trivy-operator" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.5.1"
 
