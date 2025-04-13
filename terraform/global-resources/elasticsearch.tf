@@ -305,27 +305,17 @@ resource "aws_elasticsearch_domain" "live-2" {
   elasticsearch_version = "OpenSearch_1.3"
 
   cluster_config {
-    instance_type            = "r6g.xlarge.elasticsearch"
-    instance_count           = "3"
-    dedicated_master_enabled = true
-    dedicated_master_type    = "m6g.large.elasticsearch"
-    dedicated_master_count   = "3"
-    zone_awareness_enabled   = true
-    zone_awareness_config {
-      availability_zone_count = 3
-    }
-    warm_count   = 3
-    warm_enabled = true
-    warm_type    = "ultrawarm1.medium.elasticsearch"
-    cold_storage_options {
-      enabled = true
-    }
+    instance_type            = "r6g.large.elasticsearch"
+    instance_count           = "1"
+    dedicated_master_enabled = false
+    zone_awareness_enabled   = false
+    warm_enabled            = false
   }
 
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp3"
-    volume_size = "500"
+    volume_size = "10"
     iops        = "3000"
   }
 
