@@ -305,7 +305,7 @@ resource "aws_elasticsearch_domain" "live-2" {
   elasticsearch_version = "OpenSearch_1.3"
 
   cluster_config {
-    instance_type            = "r6g.large.elasticsearch"
+    instance_type            = "t3.small.search"
     instance_count           = "1"
     dedicated_master_enabled = false
     zone_awareness_enabled   = false
