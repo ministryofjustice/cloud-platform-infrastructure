@@ -309,7 +309,7 @@ resource "aws_elasticsearch_domain" "live-2" {
     instance_count           = "1"
     dedicated_master_enabled = false
     zone_awareness_enabled   = false
-    warm_enabled            = false
+    warm_enabled             = false
   }
 
   ebs_options {
