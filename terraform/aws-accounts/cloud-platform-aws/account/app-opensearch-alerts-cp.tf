@@ -958,3 +958,132 @@ resource "opensearch_monitor" "external_dns_invalid_batch_change" {
   body       = local.external_dns_invalid_batch_change
   depends_on = [opensearch_channel_configuration.cloud_platform_slack_alarm]
 }
+
+############################################################
+##  Alert for acme challenge Invalid Change Batch Errors  ##
+############################################################
+
+locals {
+  acme_challenge_invalid_batch_change = jsonencode(
+    {
+      "owner" : "alerting",                   # to prevent change in terraform plan
+      "monitor_type" : "query_level_monitor", # to prevent change in terraform plan
+      "data_sources" : {                      # to prevent change in terraform plan
+        "alerts_history_index" : ".opendistro-alerting-alert-history-write",
+        "alerts_history_index_pattern" : "<.opendistro-alerting-alert-history-{now/d}-1>",
+        "alerts_index" : ".opendistro-alerting-alerts",
+        "findings_enabled" : false,
+        "findings_index" : ".opensearch-alerting-finding-history-write",
+        "findings_index_pattern" : "<.opensearch-alerting-finding-history-{now/d}-1>",
+        "query_index" : ".opensearch-alerting-queries",
+        "query_index_mappings_by_type" : {}
+      },
+      "name" : "acme-challenge Invalid Change Batch Errors",
+      "type" : "monitor",
+      "monitor_type" : "query_level_monitor",
+      "enabled" : true,
+      "schedule" : {
+        "period" : {
+          "interval" : 1,
+          "unit" : "MINUTES"
+        }
+      },
+      "inputs" : [
+        {
+          "search" : {
+            "indices" : [
+              "live_eventrouter*"
+            ],
+            "query" : {
+              "size" : 0,
+              "query" : {
+                "bool" : {
+                  "filter" : [
+                    {
+                      "bool" : {
+                        "filter" : [
+                          {
+                            "bool" : {
+                              "should" : [
+                                {
+                                  "match_phrase" : {
+                                    "log" : {
+                                      "query" : "Error presenting challenge: failed to change Route 53 record set: InvalidChangeBatch",
+                                      "slop" : 0,
+                                      "zero_terms_query" : "NONE",
+                                      "boost" : 1
+                                    }
+                                  }
+                                }
+                              ],
+                              "adjust_pure_negative" : true,
+                              "minimum_should_match" : "1",
+                              "boost" : 1
+                            }
+                          }
+                        ],
+                        "adjust_pure_negative" : true,
+                        "boost" : 1
+                      }
+                    },
+                    {
+                      "range" : {
+                        "@timestamp" : {
+                          "from" : "{{period_end}}||-30m",
+                          "to" : "{{period_end}}",
+                          "include_lower" : true,
+                          "include_upper" : true,
+                          "format" : "epoch_millis",
+                          "boost" : 1
+                        }
+                      }
+                    }
+                  ],
+                  "adjust_pure_negative" : true,
+                  "boost" : 1
+                }
+              }
+            }
+          }
+        }
+      ],
+      "triggers" : [
+        {
+          "query_level_trigger" : {
+            "id" : "acme-challenge-invalid-batch-change", # to prevent change in terraform plan
+            "name" : "acme-challenge Invalid Change Batch Errors",
+            "severity" : "1",
+            "condition" : {
+              "script" : {
+                "source" : "ctx.results[0].hits.total.value > 1",
+                "lang" : "painless"
+              }
+            },
+            "actions" : [
+              {
+                "id" : "acme-challenge-invalid-batch-change", # to prevent change in terraform plan
+                "name" : "Notify Cloud Platform lower-priority-alarms Slack Channel",
+                "destination_id" : opensearch_channel_configuration.cloud_platform_slack_alarm.id,
+                "message_template" : {
+                  "source" : "<https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:'6c27ca40-6bbe-11ef-8007-3f25c14a7648',view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_q=(filters:!(),query:(language:kuery,query:'%22Error%20presenting%20challenge:%20failed%20to%20change%20Route%2053%20record%20set:%20InvalidChangeBatch%22'))|this link> to check recent acme-challenge Invalid Change Batch Errors.",
+                  "lang" : "mustache"
+                },
+                "throttle_enabled" : true,
+                "subject_template" : {
+                  "source" : "*acme-challenge Invalid Change Batch Errors*",
+                  "lang" : "mustache"
+                },
+                "throttle" : {
+                  "value" : 1440,
+                  "unit" : "MINUTES"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  )
+}
+https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:'6c27ca40-6bbe-11ef-8007-3f25c14a7648',view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_q=(filters:!(),query:(language:kuery,query:'%22Error%20presenting%20challenge:%20failed%20to%20change%20Route%2053%20record%20set:%20InvalidChangeBatch%22'))
+
