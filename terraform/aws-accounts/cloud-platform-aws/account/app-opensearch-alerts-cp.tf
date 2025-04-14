@@ -1085,5 +1085,9 @@ locals {
     }
   )
 }
-https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:'6c27ca40-6bbe-11ef-8007-3f25c14a7648',view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_q=(filters:!(),query:(language:kuery,query:'%22Error%20presenting%20challenge:%20failed%20to%20change%20Route%2053%20record%20set:%20InvalidChangeBatch%22'))
 
+resource "opensearch_monitor" "acme_challenge_invalid_batch_change" {
+  provider   = opensearch.app_logs
+  body       = local.acme_challenge_invalid_batch_change
+  depends_on = [opensearch_channel_configuration.cloud_platform_slack_alarm]
+}
