@@ -1065,7 +1065,7 @@ locals {
                 "name" : "Notify Cloud Platform lower-priority-alarms Slack Channel",
                 "destination_id" : opensearch_channel_configuration.cloud_platform_slack_alarm.id,
                 "message_template" : {
-                  "source" : "<https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:'6c27ca40-6bbe-11ef-8007-3f25c14a7648',view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_q=(filters:!(),query:(language:kuery,query:'%22Error%20presenting%20challenge:%20failed%20to%20change%20Route%2053%20record%20set:%20InvalidChangeBatch%22'))|this link> to check recent acme-challenge Invalid Change Batch Errors.",
+                  "source" : "<https://app-logs.cloud-platform.service.justice.gov.uk/_dashboards/app/data-explorer/discover#?_a=(discover:(columns:!(_source),isDirty:!f,sort:!()),metadata:(indexPattern:'6c27ca40-6bbe-11ef-8007-3f25c14a7648',view:discover))&_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-30m,to:now))&_q=(filters:!(),query:(language:kuery,query:'%22Error%20presenting%20challenge:%20failed%20to%20change%20Route%2053%20record%20set:%20InvalidChangeBatch%22'))",
                   "lang" : "mustache"
                 },
                 "throttle_enabled" : true,
