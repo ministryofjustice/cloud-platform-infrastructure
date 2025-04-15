@@ -216,8 +216,7 @@ module "kuberos" {
   depends_on = [
     module.ingress_controllers_v1,
     module.modsec_ingress_controllers_v1,
-    module.production_only_ingress_controllers_v1
-
+    module.non_prod_ingress_controllers_v1
   ]
 }
 
