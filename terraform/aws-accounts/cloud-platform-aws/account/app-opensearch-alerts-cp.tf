@@ -1006,13 +1006,14 @@ locals {
                             "bool" : {
                               "should" : [
                                 {
-                                  "match_phrase" : {
-                                    "log" : {
-                                      "query" : "Error presenting challenge: failed to change Route 53 record set: InvalidChangeBatch",
-                                      "slop" : 0,
-                                      "zero_terms_query" : "NONE",
-                                      "boost" : 1
-                                    }
+                                  "multi_match" : {
+                                    "type" : "phrase",
+                                    "query" : "Error presenting challenge: failed to change Route 53 record set: InvalidChangeBatch",
+                                    "fields" : [],
+                                    "slop" : 0,
+                                    "zero_terms_query" : "NONE",
+                                    "boost" : 1,
+                                    "lenient" : true
                                   }
                                 }
                               ],
