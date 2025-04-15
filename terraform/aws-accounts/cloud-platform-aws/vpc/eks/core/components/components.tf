@@ -142,8 +142,7 @@ module "non_prod_ingress_controllers_v1" {
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
-  # Enable this when we remove the module "ingress_controllers"
-  enable_external_dns_annotation = true
+  enable_external_dns_annotation = false // this creates the wildcards in external dns
 
   memory_requests = "5Gi"
   memory_limits   = "20Gi"
