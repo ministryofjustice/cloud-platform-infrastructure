@@ -330,7 +330,7 @@ module "eks" {
       groups   = ["system:masters"]
     },
     {
-      userarn  = "arn:aws:iam::754256621582:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_AdministratorAccess_bf5aaeece9ced5cc"
+      userarn  = "arn:aws:iam::754256621582:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_AdministratorAccess_ae2d551dbf676d8f"
       username = "administratoraccess"
       groups   = ["system:masters"]
     }
