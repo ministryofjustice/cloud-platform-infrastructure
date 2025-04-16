@@ -28,7 +28,7 @@ variable "timestamp_field" {
 
 variable "warm_transition" {
   type        = string
-  default     = "7d"
+  default     = "1d"
   description = "Time until transition to warm storage"
 }
 
