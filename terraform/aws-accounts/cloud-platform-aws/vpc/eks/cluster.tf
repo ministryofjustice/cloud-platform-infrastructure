@@ -328,17 +328,12 @@ module "eks" {
       userarn  = "arn:aws:iam::754256621582:user/EmmaTerry"
       username = "EmmaTerry"
       groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_AdministratorAccess_ae2d551dbf676d8f"
-      username = "administratoraccess"
-      groups   = ["system:masters"]
     }
   ]
 
   aws_auth_roles = [
     {
-      rolearn  = "arn:aws:iam::754256621582:role/AWSReservedSSO_AdministratorAccess_bf5aaeece9ced5cc"
+      rolearn  = "arn:aws:iam::754256621582:role/AWSReservedSSO_AdministratorAccess_ae2d551dbf676d8f"
       username = "{{SessionName}}"
       groups   = ["system:masters"]
     },
