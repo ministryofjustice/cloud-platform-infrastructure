@@ -1075,7 +1075,7 @@ locals {
                   "lang" : "mustache"
                 },
                 "throttle" : {
-                  "value" : 1440,
+                  "value" : 30,
                   "unit" : "MINUTES"
                 }
               }
