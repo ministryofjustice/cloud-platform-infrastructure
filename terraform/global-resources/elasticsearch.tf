@@ -314,9 +314,9 @@ resource "aws_elasticsearch_domain" "live-2" {
       availability_zone_count = 3
     }
 
-    warm_count = 2
+    warm_count   = 2
     warm_enabled = true
-    warm_type = "ultrawarm1.medium.elasticsearch"
+    warm_type    = "ultrawarm1.medium.elasticsearch"
 
     cold_storage_options {
       enabled = true
