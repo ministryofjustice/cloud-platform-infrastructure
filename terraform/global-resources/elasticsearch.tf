@@ -307,7 +307,6 @@ resource "aws_elasticsearch_domain" "live-2" {
   cluster_config {
     instance_type            = "t3.small.search"
     instance_count           = "1"
-<<<<<<< HEAD
     dedicated_master_enabled = true
     dedicated_master_count = 1
     zone_awareness_enabled   = true
