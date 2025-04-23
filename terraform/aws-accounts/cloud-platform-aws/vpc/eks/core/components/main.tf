@@ -173,10 +173,3 @@ locals {
     live = format("- '*.apps.%s'", var.live1_domain)
   }
 }
-
-resource "aws_ssm_parameter" "alertmanager_slack_receivers_import" {
-  name        = "/cloud-platform/alertmanager_slack_receivers_import"
-  type        = "SecureString"
-  value       = jsonencode(var.alertmanager_slack_receivers)
-  description = "Temp block to import Slack receivers for Alertmanager"
-}
