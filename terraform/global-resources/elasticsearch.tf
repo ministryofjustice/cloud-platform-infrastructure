@@ -314,7 +314,7 @@ resource "aws_elasticsearch_domain" "live-2" {
       availability_zone_count = 2
     }
 
-    warm_count = 2
+    warm_count   = 2
     warm_enabled = true
     warm_type = "ultrawarm1.medium.search"
 
