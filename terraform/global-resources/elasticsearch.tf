@@ -316,7 +316,11 @@ resource "aws_elasticsearch_domain" "live-2" {
 
     warm_count   = 2
     warm_enabled = true
+<<<<<<< HEAD
     warm_type = "ultrawarm1.medium.elasticsearch"
+=======
+    warm_type    = "ultrawarm1.medium.search"
+>>>>>>> cc811c1c3f9eabf9cf9811798e803a5a5a94eb48
 
     cold_storage_options {
       enabled = true
