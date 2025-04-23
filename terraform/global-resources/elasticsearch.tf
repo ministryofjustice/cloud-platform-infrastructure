@@ -302,7 +302,7 @@ data "aws_iam_policy_document" "live-2" {
 resource "aws_elasticsearch_domain" "live-2" {
   domain_name           = "cloud-platform-live-2"
   provider              = aws.cloud-platform
-  elasticsearch_version = "OpenSearch_2.3"
+  elasticsearch_version = "OpenSearch_2.17"
 
   cluster_config {
     instance_type            = "r6g.xlarge.elasticsearch"
