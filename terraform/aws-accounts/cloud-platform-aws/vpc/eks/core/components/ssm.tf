@@ -1,5 +1,5 @@
 ##############################################
-# SSM Parameters for components credenetials #
+# SSM Parameters for components credentials #
 ##############################################
 
 locals {
