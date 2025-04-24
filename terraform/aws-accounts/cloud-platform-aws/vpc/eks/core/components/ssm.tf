@@ -30,8 +30,6 @@ locals {
     "hoodaw_api_key",
     "github_actions_secrets_token"
   ]
-
-  #ssm_value = { for param in local.ssm_parameters : param => aws_ssm_parameter.components[param].value }
 }
 
 # Components SSM Parameters are managed in live workspace
@@ -49,12 +47,8 @@ resource "aws_ssm_parameter" "components" {
 }
 
 # Data blocks for SSM parameter lookup in all workspaces
-# data "aws_ssm_parameter" "components" {
-#   for_each = toset(local.ssm_parameters)
+data "aws_ssm_parameter" "components" {
+  for_each = toset(local.ssm_parameters)
 
-#   name = "/cloud-platform/infrastructure/components/${each.value}"
-# }
-
-data "aws_ssm_parameter" "github_auth_client_id" {
-  name = "/cloud-platform/infrastructure/components/github_auth_client_id"
+  name = "/cloud-platform/infrastructure/components/${each.value}"
 }

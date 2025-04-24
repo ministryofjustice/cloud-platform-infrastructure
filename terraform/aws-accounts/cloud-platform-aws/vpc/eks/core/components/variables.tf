@@ -64,131 +64,131 @@ variable "elasticsearch_modsec_audit_hosts_maps" {
 #   description = "GitHub client ID"
 # }
 
-variable "github_auth_client_secret" {
-  type        = string
-  description = "GitHub client secret"
-}
+# variable "github_auth_client_secret" {
+#   type        = string
+#   description = "GitHub client secret"
+# }
 
-variable "github_org" {
-  type        = string
-  description = "GitHub organisation (e.g. ministryofjustice) with view access to Concourse"
-}
+# variable "github_org" {
+#   type        = string
+#   description = "GitHub organisation (e.g. ministryofjustice) with view access to Concourse"
+# }
 
-variable "github_teams" {
-  type        = string
-  description = "GitHub teams with member access to Concourse (should be org:team e.g. ministryofjustice:webops)"
-}
+# variable "github_teams" {
+#   type        = string
+#   description = "GitHub teams with member access to Concourse (should be org:team e.g. ministryofjustice:webops)"
+# }
 
-variable "tf_provider_auth0_client_id" {
-  type        = string
-  description = "Auth0 client ID for the provider"
-}
+# variable "tf_provider_auth0_client_id" {
+#   type        = string
+#   description = "Auth0 client ID for the provider"
+# }
 
-variable "tf_provider_auth0_client_secret" {
-  type        = string
-  description = "Auth0 client secret for the provider"
-}
+# variable "tf_provider_auth0_client_secret" {
+#   type        = string
+#   description = "Auth0 client secret for the provider"
+# }
 
-variable "cloud_platform_infrastructure_git_crypt_key" {
-  type        = string
-  description = "git crypt key for encrypted files in cloud-platform-infrastructure"
-}
+# variable "cloud_platform_infrastructure_git_crypt_key" {
+#   type        = string
+#   description = "git crypt key for encrypted files in cloud-platform-infrastructure"
+# }
 
-variable "slack_hook_id" {
-  type        = string
-  description = "Slack webhook ID for alerts"
-}
+# variable "slack_hook_id" {
+#   type        = string
+#   description = "Slack webhook ID for alerts"
+# }
 
-variable "concourse-git-crypt" {
-  type        = string
-  description = "git crypt key for encrypted files in Concourse"
-}
+# variable "concourse-git-crypt" {
+#   type        = string
+#   description = "git crypt key for encrypted files in Concourse"
+# }
 
-variable "environments-git-crypt" {
-  type        = string
-  description = "git crypt key for encrypted files in cloud-platform-environments"
-}
+# variable "environments-git-crypt" {
+#   type        = string
+#   description = "git crypt key for encrypted files in cloud-platform-environments"
+# }
 
-variable "github_token" {
-  type        = string
-  description = "GitHub access token for cloud-platform-environments"
-}
+# variable "github_token" {
+#   type        = string
+#   description = "GitHub access token for cloud-platform-environments"
+# }
 
-variable "pingdom_user" {
-  type        = string
-  description = "Pingdom username"
-}
+# variable "pingdom_user" {
+#   type        = string
+#   description = "Pingdom username"
+# }
 
-variable "pingdom_password" {
-  type        = string
-  description = "Pingdom password"
-}
+# variable "pingdom_password" {
+#   type        = string
+#   description = "Pingdom password"
+# }
 
-variable "pingdom_api_key" {
-  type        = string
-  description = "Pingdom API key"
-}
+# variable "pingdom_api_key" {
+#   type        = string
+#   description = "Pingdom API key"
+# }
 
-variable "pingdom_api_token" {
-  type        = string
-  description = "Pingdom API token"
-}
+# variable "pingdom_api_token" {
+#   type        = string
+#   description = "Pingdom API token"
+# }
 
-variable "slack_bot_token" {
-  type        = string
-  description = "slack concourse-bot token"
-}
+# variable "slack_bot_token" {
+#   type        = string
+#   description = "slack concourse-bot token"
+# }
 
-variable "slack_webhook_url" {
-  type        = string
-  description = "slack concourse-bot webhook url to post messages to channel"
-}
+# variable "slack_webhook_url" {
+#   type        = string
+#   description = "slack concourse-bot webhook url to post messages to channel"
+# }
 
-variable "dockerhub_username" {
-  type        = string
-  description = "DockerHub username"
-}
+# variable "dockerhub_username" {
+#   type        = string
+#   description = "DockerHub username"
+# }
 
-variable "dockerhub_password" {
-  type        = string
-  description = "DockerHub password"
-}
+# variable "dockerhub_password" {
+#   type        = string
+#   description = "DockerHub password"
+# }
 
-variable "how_out_of_date_are_we_github_token" {
-  type        = string
-  description = "How Out Of Date Are We GitHub token"
-}
+# variable "how_out_of_date_are_we_github_token" {
+#   type        = string
+#   description = "How Out Of Date Are We GitHub token"
+# }
 
-variable "cloud_platform_infrastructure_pr_git_access_token" {
-  type        = string
-  description = "GitHub token for cloud-platform-infrastructure commits"
-}
+# variable "cloud_platform_infrastructure_pr_git_access_token" {
+#   type        = string
+#   description = "GitHub token for cloud-platform-infrastructure commits"
+# }
 
-variable "authorized_keys_github_token" {
-  type        = string
-  description = "GitHub token for authorized keys"
-}
+# variable "authorized_keys_github_token" {
+#   type        = string
+#   description = "GitHub token for authorized keys"
+# }
 
-variable "hoodaw_host" {
-  type        = string
-  default     = ""
-  description = "Hostname of the 'how out of date are we' web application. Required when posting JSON data to it."
-}
+# variable "hoodaw_host" {
+#   type        = string
+#   default     = ""
+#   description = "Hostname of the 'how out of date are we' web application. Required when posting JSON data to it."
+# }
 
-variable "hoodaw_api_key" {
-  type        = string
-  default     = ""
-  description = "API key to authenticate data posts to https://how-out-of-date-are-we.apps.live-1.cloud-platform.service.justice.gov.uk"
-}
+# variable "hoodaw_api_key" {
+#   type        = string
+#   default     = ""
+#   description = "API key to authenticate data posts to https://how-out-of-date-are-we.apps.live-1.cloud-platform.service.justice.gov.uk"
+# }
 
-variable "hoodaw_irsa_enabled" {
-  type        = bool
-  default     = true
-  description = "Enable IRSA for the hoodaw service account"
-}
+# variable "hoodaw_irsa_enabled" {
+#   type        = bool
+#   default     = true
+#   description = "Enable IRSA for the hoodaw service account"
+# }
 
-variable "github_actions_secrets_token" {
-  type        = string
-  default     = ""
-  description = "Github personal access token able to update any MoJ repository. Used to create github actions secrets"
-}
+# variable "github_actions_secrets_token" {
+#   type        = string
+#   default     = ""
+#   description = "Github personal access token able to update any MoJ repository. Used to create github actions secrets"
+# }
