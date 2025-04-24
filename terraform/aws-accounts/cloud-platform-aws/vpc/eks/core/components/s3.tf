@@ -4,7 +4,9 @@
 
 module "s3_bucket_alertmanager_slack_receivers" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.7.0"
+  version = "4.3.0"
+
+  count = terraform.workspace == "live" ? 1 : 0
 
   bucket = "cloud-platform-alertmanager-slack-receivers"
   acl    = "private"
@@ -28,6 +30,8 @@ module "s3_bucket_alertmanager_slack_receivers" {
 }
 
 resource "aws_s3_object" "alertmanager_slack_receivers" {
+  count  = terraform.workspace == "live" ? 1 : 0
+  
   bucket = module.s3_bucket_alertmanager_slack_receivers.s3_bucket_id
   key    = "alertmanager_slack_receivers.json"
   acl    = "private"
