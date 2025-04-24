@@ -59,10 +59,10 @@ variable "elasticsearch_modsec_audit_hosts_maps" {
 
 
 # Concourse vars
-variable "github_auth_client_id" {
-  type        = string
-  description = "GitHub client ID"
-}
+# variable "github_auth_client_id" {
+#   type        = string
+#   description = "GitHub client ID"
+# }
 
 variable "github_auth_client_secret" {
   type        = string
