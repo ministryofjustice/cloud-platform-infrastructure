@@ -1,3 +1,7 @@
+##############################################
+# SSM Parameters for components credenetials #
+##############################################
+
 locals {
   ssm_parameters = [
     "github_auth_client_id",
