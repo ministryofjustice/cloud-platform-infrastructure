@@ -30,6 +30,6 @@ module "s3_bucket_alertmanager_slack_receivers" {
 
 data "aws_s3_object" "alertmanager_slack_receivers" {
   bucket = "cloud-platform-alertmanager-slack-receivers"
-  key    = "alertmanager-slack-receivers.json"
+  key    = "alertmanager_slack_receivers.json"
 }
 
