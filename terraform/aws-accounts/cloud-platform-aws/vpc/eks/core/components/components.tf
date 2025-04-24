@@ -3,7 +3,7 @@ module "concourse" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.30.0"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  github_auth_client_id                             = var.github_auth_client_id
+  github_auth_client_id                             = data.aws_ssm_parameter.github_auth_client_id.value
   github_auth_client_secret                         = var.github_auth_client_secret
   github_org                                        = var.github_org
   github_teams                                      = var.github_teams
