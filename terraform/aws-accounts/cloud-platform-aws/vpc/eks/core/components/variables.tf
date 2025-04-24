@@ -181,11 +181,11 @@ variable "elasticsearch_modsec_audit_hosts_maps" {
 #   description = "API key to authenticate data posts to https://how-out-of-date-are-we.apps.live-1.cloud-platform.service.justice.gov.uk"
 # }
 
-# variable "hoodaw_irsa_enabled" {
-#   type        = bool
-#   default     = true
-#   description = "Enable IRSA for the hoodaw service account"
-# }
+variable "hoodaw_irsa_enabled" {
+  type        = bool
+  default     = true
+  description = "Enable IRSA for the hoodaw service account"
+}
 
 # variable "github_actions_secrets_token" {
 #   type        = string
