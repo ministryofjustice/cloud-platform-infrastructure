@@ -40,7 +40,7 @@ resource "aws_ssm_parameter" "components" {
 
   name        = "/cloud-platform/infrastructure/components/${each.value}"
   type        = "SecureString"
-  value       = ""
+  value       = "PLACEHOLDER"
   description = "components.tf secret: ${each.value}"
 
   lifecycle {
