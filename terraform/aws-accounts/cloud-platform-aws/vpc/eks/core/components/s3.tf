@@ -9,7 +9,6 @@ module "s3_bucket_alertmanager_slack_receivers" {
   count = terraform.workspace == "live" ? 1 : 0
 
   bucket = "cloud-platform-alertmanager-slack-receivers"
-  acl    = "private"
 
   block_public_acls       = true
   block_public_policy     = true
