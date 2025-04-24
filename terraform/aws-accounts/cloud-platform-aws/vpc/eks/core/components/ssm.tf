@@ -54,3 +54,7 @@ resource "aws_ssm_parameter" "components" {
 
 #   name = "/cloud-platform/infrastructure/components/${each.value}"
 # }
+
+data "aws_ssm_parameter" "github_auth_client_id" {
+  name = "/cloud-platform/infrastructure/components/github_auth_client_id"
+}
