@@ -234,7 +234,7 @@ module "logging" {
 module "monitoring" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.20.0"
 
-  alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
+  alertmanager_slack_receivers  = local.enable_alerts ? local.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? var.pagerduty_config : "dummy"
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_components_client_id     = data.terraform_remote_state.cluster.outputs.oidc_components_client_id

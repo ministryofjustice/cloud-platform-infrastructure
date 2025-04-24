@@ -172,4 +172,6 @@ locals {
   live1_cert_dns_name = {
     live = format("- '*.apps.%s'", var.live1_domain)
   }
+
+  alertmanager_slack_receivers = jsondecode(data.aws_s3_object.alertmanager_slack_receivers.body)
 }

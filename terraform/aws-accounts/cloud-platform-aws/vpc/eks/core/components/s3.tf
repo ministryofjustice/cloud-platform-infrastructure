@@ -28,13 +28,8 @@ module "s3_bucket_alertmanager_slack_receivers" {
   }
 }
 
-resource "aws_s3_object" "alertmanager_slack_receivers" {
-  count = terraform.workspace == "live" ? 1 : 0
-
-  bucket = module.s3_bucket_alertmanager_slack_receivers[0].s3_bucket_id
-  key    = "alertmanager_slack_receivers.json"
-
-  content = jsonencode(var.alertmanager_slack_receivers)
-
-  server_side_encryption = "AES256"
+data "aws_s3_object" "alertmanager_slack_receivers" {
+  bucket = "cloud-platform-alertmanager-slack-receivers"
+  key    = "alertmanager-slack-receivers.json"
 }
+
