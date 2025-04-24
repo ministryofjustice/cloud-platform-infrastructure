@@ -9,7 +9,6 @@ module "s3_bucket_alertmanager_slack_receivers" {
   count = terraform.workspace == "live" ? 1 : 0
 
   bucket = "cloud-platform-alertmanager-slack-receivers"
-  acl    = "private"
 
   block_public_acls       = true
   block_public_policy     = true
@@ -34,7 +33,6 @@ resource "aws_s3_object" "alertmanager_slack_receivers" {
 
   bucket = module.s3_bucket_alertmanager_slack_receivers[0].s3_bucket_id
   key    = "alertmanager_slack_receivers.json"
-  acl    = "private"
 
   content = jsonencode(var.alertmanager_slack_receivers)
 
