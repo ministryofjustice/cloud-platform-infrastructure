@@ -131,7 +131,7 @@ module "non_prod_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.4"
   count  = terraform.workspace == "live" ? 1 : 0
 
-  replica_count            = "3"
+  replica_count            = "6"
   controller_name          = "default-non-prod"
   enable_cross_zone_lb     = false
   enable_anti_affinity     = terraform.workspace == "live" ? true : false
@@ -157,7 +157,7 @@ module "non_prod_modsec_ingress_controllers_v1" {
 
   count = terraform.workspace == "live" ? 1 : 0
 
-  replica_count            = "3"
+  replica_count            = "6"
   is_non_prod_modsec       = true
   controller_name          = "modsec-non-prod"
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -232,7 +232,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.20.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.21.0"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? var.pagerduty_config : "dummy"
