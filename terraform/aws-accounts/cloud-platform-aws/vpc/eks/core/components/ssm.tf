@@ -28,7 +28,8 @@ locals {
     "authorized_keys_github_token",
     "hoodaw_host",
     "hoodaw_api_key",
-    "github_actions_secrets_token"
+    "github_actions_secrets_token",
+    "pagerduty_config"
   ]
 }
 
