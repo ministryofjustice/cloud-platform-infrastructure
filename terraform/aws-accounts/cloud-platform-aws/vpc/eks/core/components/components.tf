@@ -11,7 +11,7 @@ module "concourse" {
   tf_provider_auth0_client_secret                   = data.aws_ssm_parameter.components["tf_provider_auth0_client_secret"].value
   cloud_platform_infrastructure_git_crypt_key       = data.aws_ssm_parameter.components["cloud_platform_infrastructure_git_crypt_key"].value
   cloud_platform_infrastructure_pr_git_access_token = data.aws_ssm_parameter.components["cloud_platform_infrastructure_pr_git_access_token"].value
-  slack_hook_id                                     = data.aws_ssm_parameter.components["slack_hook_id"].value
+  slack_hook_id                                     = lookup(local.manager_workspace, terraform.workspace, false) ? data.aws_ssm_parameter.components["slack_hook_id"].value : "dummydummy"
   slack_bot_token                                   = data.aws_ssm_parameter.components["slack_bot_token"].value
   slack_webhook_url                                 = data.aws_ssm_parameter.components["slack_webhook_url"].value
   concourse-git-crypt                               = data.aws_ssm_parameter.components["concourse_git_crypt"].value
