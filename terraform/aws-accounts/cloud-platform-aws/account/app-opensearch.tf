@@ -244,7 +244,7 @@ resource "elasticsearch_opensearch_roles_mapping" "all_access_app_logs" {
   ], values(data.aws_eks_node_group.current)[*].node_role_arn, values(data.aws_eks_node_group.manager)[*].node_role_arn)
 
   // Permissions to manager-concourse in order to run logging tests
-  users = ["arn:aws:iam::754256621582:user/cloud-platform/manager-concourse"]
+  users = ["arn:aws:iam::754256621582:user/cloud-platform/manager-concourse", "arn:aws:iam::754256621582:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_AdministratorAccess_ae2d551dbf676d8f"]
   depends_on = [
     aws_opensearch_domain_saml_options.live_app_logs,
   ]
