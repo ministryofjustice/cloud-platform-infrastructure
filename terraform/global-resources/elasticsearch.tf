@@ -305,10 +305,10 @@ resource "aws_elasticsearch_domain" "live-2" {
   elasticsearch_version = "OpenSearch_1.3"
 
   cluster_config {
-    instance_type            = "r5.large.search"
+    instance_type            = "r5.large.elasticsearch"
     instance_count           = "2"
     dedicated_master_enabled = true
-    dedicated_master_type    = "r5.large.search"
+    dedicated_master_type    = "r5.large.elasticsearch"
     dedicated_master_count   = "3"
     zone_awareness_enabled   = true
     zone_awareness_config {
