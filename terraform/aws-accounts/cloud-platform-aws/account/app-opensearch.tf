@@ -284,7 +284,7 @@ resource "elasticsearch_opensearch_role" "webops_app_logs" {
 
   index_permissions {
     index_patterns          = ["*"]
-    allowed_actions         = ["cluster_all", "indices_all", "unlimited"]
+    allowed_actions         = ["cluster_all", "indices_all", "unlimited", "indices:monitor/settings/get"]
     document_level_security = "{\"match_all\": {}}"
   }
 
