@@ -284,7 +284,7 @@ resource "elasticsearch_opensearch_role" "webops_app_logs" {
 
   index_permissions {
     index_patterns          = ["*"]
-    allowed_actions         = ["cluster_all", "indices_all", "unlimited", "indices:monitor/settings/get"]
+    allowed_actions         = ["cluster_all", "indices_all", "unlimited"]
     document_level_security = "{\"match_all\": {}}"
   }
 
@@ -357,11 +357,14 @@ resource "elasticsearch_opensearch_role" "all_org_members_app_logs" {
     "cluster:admin/opendistro/reports/definition/delete",
     "cluster:admin/opendistro/reports/definition/get",
     "cluster:admin/opendistro/reports/definition/list",
+    "cluster:admin/opendistro/reports/menu/download",
+    "cluster:admin/opendistro/reports/instance/get",
+    "cluster:admin/opendistro/reports/instance/list",
   ]
 
   index_permissions {
     index_patterns  = ["*"]
-    allowed_actions = ["read", "search", "data_access"]
+    allowed_actions = ["read", "search", "data_access", "indices:monitor/settings/get"]
   }
 
   index_permissions {
