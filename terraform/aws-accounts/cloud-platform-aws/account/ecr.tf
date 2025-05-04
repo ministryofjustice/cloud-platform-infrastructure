@@ -1,5 +1,5 @@
 module "ecr_credentials" {
-  source    = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=7.1.0"
+  source    = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=7.1.1"
   repo_name = "cloud-platform-terraform-label-pods"
 
   oidc_providers      = ["github"]
@@ -60,7 +60,7 @@ EOF
 }
 
 module "ecr_credentials_github_teams_filter" {
-  source    = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=7.1.0"
+  source    = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=7.1.1"
   repo_name = "cloud-platform-github-teams-filter"
 
   oidc_providers      = ["github"]
