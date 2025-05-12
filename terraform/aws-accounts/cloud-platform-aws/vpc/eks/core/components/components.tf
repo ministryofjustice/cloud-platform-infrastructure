@@ -128,7 +128,7 @@ module "ingress_controllers_v1" {
 }
 
 module "non_prod_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.6"
   count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "6"
@@ -147,13 +147,15 @@ module "non_prod_ingress_controllers_v1" {
   memory_requests = "5Gi"
   memory_limits   = "20Gi"
 
+  default_tags = local.default_tags
+
   depends_on = [
     module.label_pods_controller
   ]
 }
 
 module "non_prod_modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.6"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -174,6 +176,8 @@ module "non_prod_modsec_ingress_controllers_v1" {
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   cluster                      = terraform.workspace
   fluent_bit_version           = "3.0.2-amd64"
+
+  default_tags = local.default_tags
 
   depends_on = [module.ingress_controllers_v1]
 }
