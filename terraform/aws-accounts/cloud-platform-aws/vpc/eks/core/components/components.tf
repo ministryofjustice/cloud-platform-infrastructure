@@ -16,7 +16,7 @@ module "concourse" {
   slack_webhook_url                                 = data.aws_ssm_parameter.components["slack_webhook_url"].value
   concourse-git-crypt                               = data.aws_ssm_parameter.components["concourse_git_crypt"].value
   environments-git-crypt                            = data.aws_ssm_parameter.components["environments_git_crypt"].value
-  github_token                                      = data.aws_ssm_parameter.components["github_token"].value
+  github_token                                      = data.aws_ssm_parameter.components["github_token"].value # aka environments_pr_git_access_token
   pingdom_user                                      = data.aws_ssm_parameter.components["pingdom_user"].value
   pingdom_password                                  = data.aws_ssm_parameter.components["pingdom_password"].value
   pingdom_api_key                                   = data.aws_ssm_parameter.components["pingdom_api_key"].value
@@ -332,4 +332,3 @@ module "github-teams-filter" {
   filter_api_key = data.terraform_remote_state.account.outputs.github_teams_filter_api_key
 
 }
-
