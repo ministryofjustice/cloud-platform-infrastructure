@@ -31,7 +31,7 @@ module "concourse" {
 
   hoodaw_host                  = data.aws_ssm_parameter.components["hoodaw_host"].value
   hoodaw_api_key               = data.aws_ssm_parameter.components["hoodaw_api_key"].value
-  github_actions_secrets_token = data.aws_ssm_parameter.components["github_actions_secrets_token"].value
+  github_actions_secrets_token = data.aws_ssm_parameter.components["github_actions_secrets_token"].value # switched 
   hoodaw_irsa_enabled          = var.hoodaw_irsa_enabled
   eks_cluster_name             = terraform.workspace
 
