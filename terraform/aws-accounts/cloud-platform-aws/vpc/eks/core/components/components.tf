@@ -157,7 +157,7 @@ module "non_prod_ingress_controllers_v1" {
 }
 
 module "non_prod_modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.11.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.11.2"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -186,7 +186,7 @@ module "non_prod_modsec_ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.11.2"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
@@ -229,7 +229,7 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.20.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.21.0"
 
   opensearch_app_host = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
   elasticsearch_host  = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
