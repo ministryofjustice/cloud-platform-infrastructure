@@ -48,7 +48,7 @@ locals {
     default = "172.20.0.0/16"
   }
 
-    firewall_subnet_cidrs = {
+  firewall_subnet_cidrs = {
     live-1  = "172.20.255.0/24"
     live-2  = "10.195.255.0/24"
     default = "172.20.255.0/24"
