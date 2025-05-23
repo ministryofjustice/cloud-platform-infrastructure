@@ -186,7 +186,7 @@ module "non_prod_modsec_ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.10.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.12.1"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
@@ -201,10 +201,10 @@ module "modsec_ingress_controllers_v1" {
   memory_requests          = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "512Mi"
   memory_limits            = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
 
-  # opensearch_app_logs_host     = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
+  opensearch_app_logs_host     = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   cluster                      = terraform.workspace
-  fluent_bit_version           = "3.0.2-amd64"
+  fluent_bit_version           = "4.0.2-amd64"
 
   default_tags = local.default_tags
 
@@ -230,7 +230,7 @@ module "kuberos" {
 }
 
 module "logging" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.21.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-logging?ref=1.22.0"
 
   opensearch_app_host = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
   elasticsearch_host  = lookup(var.elasticsearch_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
