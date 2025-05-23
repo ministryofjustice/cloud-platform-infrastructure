@@ -34,5 +34,4 @@ var _ = Describe("GIVEN a gatekeeper installation", func() {
 			Expect(actual).To(ContainSubstring(expected))
 		}
 	})
-
 })

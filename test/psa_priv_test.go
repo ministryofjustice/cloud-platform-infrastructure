@@ -44,7 +44,6 @@ var _ = Describe("GIVEN PRIVILEGED pod security admission", func() {
 		})
 
 		It("THEN have a namespace with the `privileged` psa label", func() {
-
 			ns, err := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "get", "ns", namespace, "-oyaml")
 			if err != nil {
 				Fail(err.Error())

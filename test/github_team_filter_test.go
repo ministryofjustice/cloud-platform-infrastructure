@@ -50,6 +50,5 @@ var _ = Describe("PostLogin Function", func() {
 
 		fmt.Println("Processed GitHub teams:", result.FilteredTeams)
 		Expect(result.FilteredTeams).To(Equal(":webops:dps-tech:"))
-
 	})
 })
