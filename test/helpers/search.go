@@ -12,10 +12,11 @@ import (
 )
 
 type PhraseData struct {
-	Log       string `json:"log,omitempty"`
-	Stream    string `json:"stream,omitempty"`
-	HttpCode  int    `json:"transaction.response.http_code,omitempty"`
-	Namespace string `json:"kubernetes.namespace_name,omitempty"`
+	Log                string `json:"log,omitempty"`
+	ProcessedNamespace string `json:"log_processed.kubernetes.namespace_name,omitempty"`
+	Stream             string `json:"stream,omitempty"`
+	HttpCode           int    `json:"transaction.response.http_code,omitempty"`
+	Namespace          string `json:"kubernetes.namespace_name,omitempty"`
 }
 
 type FilterData struct {
@@ -62,7 +63,7 @@ func GetSearchResults(values SearchData, search string, awsSigner *signer.Signer
 
 	Expect(signErr).ToNot(HaveOccurred())
 
-	time.Sleep(10 * time.Second) // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors and wait for logs
+	time.Sleep(15 * time.Second) // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors and wait for logs
 
 	resp, httpErr := client.Do(req)
 
@@ -80,6 +81,5 @@ func GetSearchResults(values SearchData, search string, awsSigner *signer.Signer
 
 	Expect(unmarshalErr).ToNot(HaveOccurred())
 
-	// Check the logs for the expected message
 	Expect(hits.Hits.Total.Value).To(Equal(100))
 }

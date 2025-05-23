@@ -29,6 +29,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 		openSearchDomain := "https://search-cp-live-app-logs-jywwr7het3xzoh5t7ajar4ho3m.eu-west-2.es.amazonaws.com/"
 		date := time.Now().Format("2006.01.02")
 		search := openSearchDomain + c.ClusterName + "_kubernetes_cluster" + "-" + date + "/_search"
+		// searchIngress := openSearchDomain + c.ClusterName + "_kubernetes_ingress" + "-" + date + "/_search"
 		client := &http.Client{}
 		awsCreds := creds.NewEnvCredentials()
 		awsSigner := signer.NewSigner(awsCreds)
@@ -41,7 +42,6 @@ var _ = Describe("logging", Ordered, Serial, func() {
 			}
 
 			// Create a helloworld app
-
 			uniqueId = strings.ToLower(random.UniqueId())
 
 			namespace = fmt.Sprintf("%s-logs-%s", c.Prefix, uniqueId)
@@ -125,6 +125,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 			}
 
 			helpers.GetSearchResults(values, search, awsSigner, client)
+			// helpers.GetSearchResults(, searchsearchIngress, awsSigner, client)
 		})
 	})
 })
