@@ -123,8 +123,6 @@ var _ = Describe("logging", Ordered, func() {
 
 		Describe("check app logs have not been dropped", Ordered, func() {
 			It("should be able to retrieve the log messages from opensearch", func() {
-				Skip("This case is skipped until we understand the ingress index behaviour, this test will in future look for ingress logs")
-
 				values := helpers.SearchData{
 					Query: helpers.BoolData{
 						Bool: helpers.MustFilterData{
