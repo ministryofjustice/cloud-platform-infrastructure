@@ -29,7 +29,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 		openSearchDomain := "https://search-cp-live-app-logs-jywwr7het3xzoh5t7ajar4ho3m.eu-west-2.es.amazonaws.com/"
 		date := time.Now().Format("2006.01.02")
 		search := openSearchDomain + c.ClusterName + "_kubernetes_cluster" + "-" + date + "/_search"
-		// searchIngress := openSearchDomain + c.ClusterName + "_kubernetes_ingress" + "-" + date + "/_search"
+		searchIngress := openSearchDomain + c.ClusterName + "_kubernetes_ingress" + "-" + date + "/_search"
 		client := &http.Client{}
 		awsCreds := creds.NewEnvCredentials()
 		awsSigner := signer.NewSigner(awsCreds)
@@ -125,7 +125,30 @@ var _ = Describe("logging", Ordered, Serial, func() {
 			}
 
 			helpers.GetSearchResults(values, search, awsSigner, client)
-			// helpers.GetSearchResults(, searchsearchIngress, awsSigner, client)
+		})
+
+		It("should be able to retrieve the ingress log messages from opensearch", func() {
+			values := helpers.SearchData{
+				Query: helpers.BoolData{
+					Bool: helpers.MustFilterData{
+						Must: emptySlice,
+						Filter: []helpers.FilterData{
+							{
+								Match: helpers.PhraseData{
+									Log: "hello, world smoketest-logs-" + uniqueId,
+								},
+							},
+							{
+								Match: helpers.PhraseData{
+									Namespace: namespace,
+								},
+							},
+						},
+					},
+				},
+			}
+
+			helpers.GetSearchResults(values, searchIngress, awsSigner, client)
 		})
 	})
 })
