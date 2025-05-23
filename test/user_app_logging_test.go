@@ -38,6 +38,7 @@ var _ = Describe("logging", Ordered, func() {
 		emptySlice := make([]interface{}, 0)
 
 		BeforeAll(func() {
+			Skip("This case is skipped until we understand the ingress index behaviour, this test will in future look for ingress logs")
 			if !(c.ClusterName == "live") {
 				Skip(fmt.Sprintf("Logs don't go to opensearch for cluster: %s", c.ClusterName))
 			}
