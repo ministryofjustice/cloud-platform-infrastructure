@@ -63,7 +63,7 @@ func GetSearchResults(values SearchData, search string, awsSigner *signer.Signer
 
 	Expect(signErr).ToNot(HaveOccurred())
 
-	time.Sleep(15 * time.Second) // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors and wait for logs
+	time.Sleep(30 * time.Second) // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors and wait for logs
 
 	resp, httpErr := client.Do(req)
 
