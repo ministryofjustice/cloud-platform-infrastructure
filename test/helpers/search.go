@@ -12,10 +12,14 @@ import (
 )
 
 type PhraseData struct {
-	Log       string `json:"log,omitempty"`
-	Stream    string `json:"stream,omitempty"`
-	HttpCode  int    `json:"transaction.response.http_code,omitempty"`
-	Namespace string `json:"kubernetes.namespace_name,omitempty"`
+	Log                 string `json:"log,omitempty"`
+	Stream              string `json:"stream,omitempty"`
+	HttpCode            int    `json:"transaction.response.http_code,omitempty"`
+	Namespace           string `json:"kubernetes.namespace_name,omitempty"`
+	GithubTeams         string `json:"github_teams,omitempty"`
+	ProcessedRequestUri string `json:"log_processed.request_uri,omitempty"`
+	ProcessedStatus     int    `json:"log_processed.status,omitempty"`
+	ProcessedNamespace  string `json:"log_processed.kubernetes_namespace,omitempty"`
 }
 
 type FilterData struct {
