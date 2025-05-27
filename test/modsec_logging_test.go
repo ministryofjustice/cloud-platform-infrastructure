@@ -170,6 +170,9 @@ var _ = Describe("logging", Ordered, Serial, func() {
 							Must: emptySlice,
 							Filter: []helpers.FilterData{
 								{Match: helpers.PhraseData{
+									GithubTeams: "all-org-members",
+								}},
+								{Match: helpers.PhraseData{
 									ProcessedRequestUri: "/aphpfilethatdonotexist.php?something=../../etc",
 								}},
 								{Match: helpers.PhraseData{
