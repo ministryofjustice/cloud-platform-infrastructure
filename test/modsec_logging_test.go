@@ -28,8 +28,11 @@ var _ = Describe("logging", Ordered, Serial, func() {
 			uniqueId  string
 		)
 
+		openSearchAppDomain := "https://search-cp-live-app-logs-jywwr7het3xzoh5t7ajar4ho3m.eu-west-2.es.amazonaws.com/"
+
 		openSearchDomain := "https://search-cp-live-modsec-audit-nuhzlrjwxrmdd6op3mvj2k5mye.eu-west-2.es.amazonaws.com/"
 		date := time.Now().Format("2006.01.02")
+		appSearch := openSearchAppDomain + c.ClusterName + "_kubernetes_ingress" + "-" + date + "/_search"
 		search := openSearchDomain + c.ClusterName + "_k8s_modsec_ingress" + "-" + date + "/_search"
 		client := &http.Client{}
 		awsCreds := creds.NewEnvCredentials()
@@ -117,14 +120,17 @@ var _ = Describe("logging", Ordered, Serial, func() {
 		})
 
 		Describe("check modsec logs have not been dropped", Ordered, func() {
-			It("should be able to retrieve the log messages from modsec opensearch", func() {
+			It("should be able to retrieve the error log messages from modsec opensearch", func() {
 				values := helpers.SearchData{
 					Query: helpers.BoolData{
 						Bool: helpers.MustFilterData{
 							Must: emptySlice,
 							Filter: []helpers.FilterData{
 								{Match: helpers.PhraseData{
-									Log: "github_team=" + uniqueId,
+									Log: "ModSecurity: Access denied with code 403 (phase 2).",
+								}},
+								{Match: helpers.PhraseData{
+									GithubTeams: uniqueId,
 								}},
 								{Match: helpers.PhraseData{
 									Stream: "stderr",
@@ -144,7 +150,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 							Must: emptySlice,
 							Filter: []helpers.FilterData{
 								{Match: helpers.PhraseData{
-									Log: "github_team=" + uniqueId,
+									GithubTeams: uniqueId,
 								}},
 								{Match: helpers.PhraseData{
 									HttpCode: 403,
@@ -155,6 +161,32 @@ var _ = Describe("logging", Ordered, Serial, func() {
 				}
 
 				helpers.GetSearchResults(30, auditValues, search, awsSigner, client)
+			})
+
+			It("should be able to retrieve the ingress log messages from app opensearch", func() {
+				ingressValues := helpers.SearchData{
+					Query: helpers.BoolData{
+						Bool: helpers.MustFilterData{
+							Must: emptySlice,
+							Filter: []helpers.FilterData{
+								{Match: helpers.PhraseData{
+									GithubTeams: "all-org-members",
+								}},
+								{Match: helpers.PhraseData{
+									ProcessedRequestUri: "/aphpfilethatdonotexist.php?something=../../etc",
+								}},
+								{Match: helpers.PhraseData{
+									ProcessedStatus: 403,
+								}},
+								{Match: helpers.PhraseData{
+									ProcessedNamespace: namespace,
+								}},
+							},
+						},
+					},
+				}
+
+				helpers.GetSearchResults(30, ingressValues, appSearch, awsSigner, client)
 			})
 		})
 	})
