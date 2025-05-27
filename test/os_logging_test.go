@@ -124,7 +124,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 				},
 			}
 
-			helpers.GetSearchResults(values, search, awsSigner, client)
+			helpers.GetSearchResults(50, values, search, awsSigner, client)
 		})
 	})
 })

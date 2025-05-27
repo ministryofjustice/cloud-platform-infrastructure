@@ -139,7 +139,7 @@ var _ = Describe("logging", Ordered, func() {
 					},
 				}
 
-				helpers.GetSearchResults(values, search, awsSigner, client)
+				helpers.GetSearchResults(180, values, search, awsSigner, client)
 			})
 		})
 	})

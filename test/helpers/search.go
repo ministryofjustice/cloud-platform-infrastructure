@@ -35,7 +35,7 @@ type SearchData struct {
 	Query BoolData `json:"query"`
 }
 
-func GetSearchResults(values SearchData, search string, awsSigner *signer.Signer, client *http.Client) {
+func GetSearchResults(delay int, values SearchData, search string, awsSigner *signer.Signer, client *http.Client) {
 	type ValueKey struct {
 		Value int `json:"value"`
 	}
@@ -62,7 +62,7 @@ func GetSearchResults(values SearchData, search string, awsSigner *signer.Signer
 
 	Expect(signErr).ToNot(HaveOccurred())
 
-	time.Sleep(80 * time.Second) // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors and wait for logs
+	time.Sleep(time.Duration(delay) * time.Second) // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors and wait for logs
 
 	resp, httpErr := client.Do(req)
 
@@ -80,6 +80,5 @@ func GetSearchResults(values SearchData, search string, awsSigner *signer.Signer
 
 	Expect(unmarshalErr).ToNot(HaveOccurred())
 
-	// Check the logs for the expected message
 	Expect(hits.Hits.Total.Value).To(Equal(100))
 }

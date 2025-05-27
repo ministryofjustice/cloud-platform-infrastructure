@@ -134,7 +134,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 					},
 				}
 
-				helpers.GetSearchResults(values, search, awsSigner, client)
+				helpers.GetSearchResults(30, values, search, awsSigner, client)
 			})
 
 			It("should be able to retrieve the audit log messages from modsec opensearch", func() {
@@ -154,7 +154,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 					},
 				}
 
-				helpers.GetSearchResults(auditValues, search, awsSigner, client)
+				helpers.GetSearchResults(30, auditValues, search, awsSigner, client)
 			})
 		})
 	})
