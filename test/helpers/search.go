@@ -20,6 +20,7 @@ type PhraseData struct {
 	ProcessedRequestUri string `json:"log_processed.request_uri,omitempty"`
 	ProcessedStatus     int    `json:"log_processed.status,omitempty"`
 	ProcessedNamespace  string `json:"log_processed.kubernetes_namespace,omitempty"`
+	ProcessedHost       string `json:"log_processed.http_host,omitempty"`
 }
 
 type FilterData struct {

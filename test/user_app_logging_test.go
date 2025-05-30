@@ -1,9 +1,7 @@
 package integration_tests
 
 import (
-	"crypto/tls"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -20,7 +18,7 @@ import (
 
 // Logging tests define the ability for Cloud Platform to perform aggregated logging
 // on the platform. The tests are designed to be run in a Kubernetes cluster, with a logging agent installed.
-var _ = Describe("logging", Ordered, func() {
+var _ = Describe("logging", Ordered, Serial, func() {
 	Context("when an app generates a log message", func() {
 		var (
 			namespace string
@@ -38,17 +36,14 @@ var _ = Describe("logging", Ordered, func() {
 		emptySlice := make([]interface{}, 0)
 
 		BeforeAll(func() {
-			Skip("This case is skipped until we understand the ingress index behaviour, this test will in future look for ingress logs")
 			if !(c.ClusterName == "live") {
 				Skip(fmt.Sprintf("Logs don't go to opensearch for cluster: %s", c.ClusterName))
 			}
 
 			uniqueId = strings.ToLower(random.UniqueId())
 
-			// Create a helloworld app
 			namespace = fmt.Sprintf("%s-logs-%s", c.Prefix, uniqueId)
 			options = k8s.NewKubectlOptions("", "", namespace)
-			host := fmt.Sprintf("%s.%s", namespace, testDomain)
 
 			nsObject := metav1.ObjectMeta{
 				Name: namespace,
@@ -60,32 +55,13 @@ var _ = Describe("logging", Ordered, func() {
 			err := k8s.CreateNamespaceWithMetadataE(GinkgoT(), options, nsObject)
 			Expect(err).ToNot(HaveOccurred())
 
-			setIdentifier := "integration-test-app-ing-" + namespace + "-green"
-
-			helloVar := map[string]interface{}{
-				"namespace": namespace,
-				"host":      host,
-				"ingress_annotations": map[string]string{
-					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
-					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
-				},
-			}
-
-			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", helloVar)
-			Expect(err).ToNot(HaveOccurred())
-
-			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
-			Expect(err).ToNot(HaveOccurred())
-
-			k8s.WaitUntilIngressAvailable(GinkgoT(), options, "integration-test-app-ing", 8, 20*time.Second)
-
 			// Create a job that creates a simple log message.
 			jobVar := map[string]interface{}{
 				"jobName":   "logging-smoketest",
 				"namespace": namespace,
 			}
 
-			tpl, err = helpers.TemplateFile("./fixtures/helloworld-job.yaml.tmpl", "helloworld-job.yaml.tmpl", jobVar)
+			tpl, err := helpers.TemplateFile("./fixtures/helloworld-job.yaml.tmpl", "helloworld-job.yaml.tmpl", jobVar)
 			Expect(err).ToNot(HaveOccurred())
 
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
@@ -93,26 +69,6 @@ var _ = Describe("logging", Ordered, func() {
 
 			// Wait for the job to complete
 			err = k8s.WaitUntilJobSucceedE(GinkgoT(), options, "logging-smoketest", 10, 20*time.Second)
-			Expect(err).ToNot(HaveOccurred())
-
-			tr := &http.Transport{
-				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-			}
-			getClient := &http.Client{Transport: tr}
-
-			req, _ := http.NewRequest(http.MethodGet, "http://"+host, nil)
-
-			time.Sleep(40 * time.Second) // // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors
-
-			for i := 0; i < 100; i++ {
-				resp, doErr := getClient.Do(req)
-				if doErr != nil {
-					log.Panic(doErr)
-				}
-
-				defer resp.Body.Close()
-			}
-
 			Expect(err).ToNot(HaveOccurred())
 		})
 
@@ -128,18 +84,27 @@ var _ = Describe("logging", Ordered, func() {
 						Bool: helpers.MustFilterData{
 							Must: emptySlice,
 							Filter: []helpers.FilterData{
-								{Match: helpers.PhraseData{
-									Namespace: namespace,
-								}},
-								{Match: helpers.PhraseData{
-									Stream: "stdout",
-								}},
+								{
+									Match: helpers.PhraseData{
+										Log: "hello, world smoketest-logs-" + uniqueId,
+									},
+								},
+								{
+									Match: helpers.PhraseData{
+										Stream: "stdout",
+									},
+								},
+								{
+									Match: helpers.PhraseData{
+										Namespace: namespace,
+									},
+								},
 							},
 						},
 					},
 				}
 
-				helpers.GetSearchResults(180, values, search, awsSigner, client)
+				helpers.GetSearchResults(40, values, search, awsSigner, client)
 			})
 		})
 	})
