@@ -35,8 +35,8 @@ var _ = Describe("logging", Ordered, Serial, func() {
 
 		emptySlice := make([]interface{}, 0)
 
-		BeforeEach(func() {
-			if !(c.ClusterName == "live") && !(c.ClusterName == "manager") {
+		BeforeAll(func() {
+			if !(c.ClusterName == "live") {
 				Skip(fmt.Sprintf("Logs don't go to opensearch for cluster: %s", c.ClusterName))
 			}
 
@@ -72,38 +72,40 @@ var _ = Describe("logging", Ordered, Serial, func() {
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		AfterEach(func() {
+		AfterAll(func() {
 			err := k8s.DeleteNamespaceE(GinkgoT(), options, namespace)
 			Expect(err).ToNot(HaveOccurred())
 		})
 
-		It("should be able to retrieve the log messages from opensearch", func() {
-			values := helpers.SearchData{
-				Query: helpers.BoolData{
-					Bool: helpers.MustFilterData{
-						Must: emptySlice,
-						Filter: []helpers.FilterData{
-							{
-								Match: helpers.PhraseData{
-									Log: "hello, world smoketest-logs-" + uniqueId,
+		Describe("check app logs have not been dropped", Ordered, func() {
+			It("should be able to retrieve the log messages from opensearch", func() {
+				values := helpers.SearchData{
+					Query: helpers.BoolData{
+						Bool: helpers.MustFilterData{
+							Must: emptySlice,
+							Filter: []helpers.FilterData{
+								{
+									Match: helpers.PhraseData{
+										Log: "hello, world smoketest-logs-" + uniqueId,
+									},
 								},
-							},
-							{
-								Match: helpers.PhraseData{
-									Stream: "stdout",
+								{
+									Match: helpers.PhraseData{
+										Stream: "stdout",
+									},
 								},
-							},
-							{
-								Match: helpers.PhraseData{
-									Namespace: namespace,
+								{
+									Match: helpers.PhraseData{
+										Namespace: namespace,
+									},
 								},
 							},
 						},
 					},
-				},
-			}
+				}
 
-			helpers.GetSearchResults(40, values, search, awsSigner, client)
+				helpers.GetSearchResults(40, values, search, awsSigner, client)
+			})
 		})
 	})
 })
