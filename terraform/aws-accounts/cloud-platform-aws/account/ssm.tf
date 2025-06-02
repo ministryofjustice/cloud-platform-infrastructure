@@ -24,9 +24,9 @@ resource "aws_ssm_parameter" "account" {
 
 # Data blocks for SSM parameter lookup in all workspaces
 data "aws_ssm_parameter" "account" {
-    for_each = toset(local.ssm_parameters)
+  for_each = toset(local.ssm_parameters)
 
-    name = "/cloud-platform/infrastructure/account/${each.value}"
+  name = "/cloud-platform/infrastructure/account/${each.value}"
 
-    depends_on = [aws_ssm_parameter.account]
+  depends_on = [aws_ssm_parameter.account]
 }
