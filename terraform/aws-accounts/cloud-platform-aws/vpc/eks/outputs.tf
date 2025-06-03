@@ -74,3 +74,8 @@ output "cluster_endpoint" {
   value       = module.eks.cluster_endpoint
   description = "The endpoint for your EKS Kubernetes API."
 }
+
+output "cloudwatch_log_group_name" {
+  value       = module.eks.cloudwatch_log_group_name
+  description = "The name of the CloudWatch log group for the EKS cluster."
+}
