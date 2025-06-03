@@ -57,6 +57,18 @@ data "terraform_remote_state" "live-1" {
   }
 }
 
+# get access to live EKS Cluster state
+# Necessary to get CloudWatch Log Group name for Firehose
+data "terraform_remote_state" "eks_live" {
+  backend = "s3"
+  config = {
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "aws-accounts/cloud-platform-aws/vpc/eks/live/terraform.tfstate"
+    profile = "moj-cp"
+  }
+}
+
 # used for cloudfront/waf
 provider "aws" {
   alias  = "northvirginia"
