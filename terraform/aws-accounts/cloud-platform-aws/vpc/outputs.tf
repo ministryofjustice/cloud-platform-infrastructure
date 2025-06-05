@@ -38,16 +38,6 @@ output "internal_subnets_ids" {
   description = "Private subnet IDs"
 }
 
-output "firewall_subnets" {
-  value       = aws_subnet.firewall_subnets[*].cidr_block
-  description = "Firewall subnet CIDR blocks"
-}
-
-output "firewall_subnet_ids" {
-  value       = aws_subnet.firewall_subnets[*].id
-  description = "Firewall subnet IDs"
-}
-
 output "external_subnets" {
   description = "List of subnet CIDR blocks that are publicly accessible"
   value       = module.vpc.public_subnets_cidr_blocks
