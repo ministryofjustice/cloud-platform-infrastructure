@@ -4,7 +4,7 @@ provider "aws" {
   default_tags {
     tags = {
       business-unit = "Platforms"
-      application   = "cloud-platform-aws/vpc/firewall"
+      application   = "cloud-platform-aws/inspection"
       is-production = "true"
       owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
       source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
