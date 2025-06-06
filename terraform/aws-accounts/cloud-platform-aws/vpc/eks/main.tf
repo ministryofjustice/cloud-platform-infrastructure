@@ -200,7 +200,7 @@ resource "aws_eks_identity_provider_config" "oidc_associate" {
   // Install OIDC provider on each cluster but offer the option to disable it.
   count        = var.enable_oidc_associate ? 1 : 0
   cluster_name = terraform.workspace
-  depends_on   = [module.eks.cluster_id]
+  depends_on   = [module.eks.cluster_name]
   oidc {
     client_id                     = module.auth0.oidc_kubernetes_client_id
     identity_provider_config_name = "Auth0"

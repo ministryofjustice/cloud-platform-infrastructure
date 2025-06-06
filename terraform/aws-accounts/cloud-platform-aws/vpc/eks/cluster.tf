@@ -3,7 +3,7 @@
 ###############
 
 data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
+  name = module.eks.cluster_name
 }
 
 
@@ -78,9 +78,14 @@ locals {
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
 
   tags = {
-    Terraform = "true"
-    Cluster   = terraform.workspace
-    Domain    = local.fqdn
+    Terraform     = "true"
+    Cluster       = terraform.workspace
+    Domain        = local.fqdn
+    application   = "cloud-platform-aws/vpc/eks"
+    business-unit = "Platforms"
+    is-production = "true"
+    owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+    source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
   }
 
   default_ng_16_09_24 = {
@@ -112,7 +117,8 @@ locals {
     pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-140824.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    # iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    iam_role_additional_policies = { AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" }
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
     labels = {
@@ -157,7 +163,7 @@ locals {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    iam_role_additional_policies = { AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" }
     instance_types               = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
     labels = {
       Terraform                                     = "true"
@@ -207,8 +213,11 @@ locals {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
-    instance_types               = lookup(local.thanos_node_size, terraform.workspace, local.thanos_node_size["default"])
+    # iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
+    instance_types = lookup(local.thanos_node_size, terraform.workspace, local.thanos_node_size["default"])
     labels = {
       "topology.kubernetes.io/zone"             = "eu-west-2a"
       Terraform                                 = "true"
@@ -236,7 +245,7 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "18.31.2"
+  version = "19.21.0"
 
 
   cluster_name              = terraform.workspace
@@ -245,6 +254,9 @@ module "eks" {
   cluster_version           = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
   enable_irsa               = true
   cluster_enabled_log_types = var.cluster_enabled_log_types
+
+  cluster_endpoint_public_access  = true
+  cluster_endpoint_private_access = false
 
   cloudwatch_log_group_retention_in_days = var.cluster_log_retention_in_days
   cluster_security_group_description     = "EKS cluster security group."
@@ -258,7 +270,9 @@ module "eks" {
 
   eks_managed_node_groups = local.eks_managed_node_groups
 
-  iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+  iam_role_additional_policies = {
+    "AmazonSSMManagedInstanceCore" : "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
 
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
@@ -340,6 +354,7 @@ module "eks" {
   ]
 
   tags = local.tags
+
 }
 
 
@@ -351,7 +366,7 @@ module "aws_eks_addons" {
   source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.18.9"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
-  eks_cluster_id          = module.eks.cluster_id
+  eks_cluster_id          = module.eks.cluster_name
   cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   addon_tags              = local.tags
 
