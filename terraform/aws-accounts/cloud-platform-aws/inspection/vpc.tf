@@ -10,10 +10,15 @@ data "aws_availability_zones" "available" {
 we can get the correct availability zone */
 data "aws_route_table" "intra" {
   for_each = {
-    for subnet in module.vpc.intra_subnet_objects : subnet.id => subnet
+    for i in range(local.num_azs) : i => i
   }
 
-  subnet_id = each.key
+  vpc_id = module.vpc.vpc_id
+
+  filter {
+    name   = "tag:Name"
+    values = ["intra-${local.azs[each.key]}"]
+  }
 }
 
 locals {
