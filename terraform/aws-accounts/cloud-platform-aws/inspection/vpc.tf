@@ -17,7 +17,7 @@ data "aws_route_table" "intra" {
 
   filter {
     name   = "tag:Name"
-    values = ["intra-${local.azs[each.key]}"]
+    values = ["${module.vpc.name}-${local.intra_subnet_suffix}-${local.azs[each.key]}"]
   }
 }
 
@@ -30,6 +30,9 @@ locals {
   private_subnets = slice(local.subnet_cidrs, 0, 3)
   intra_subnets   = slice(local.subnet_cidrs, 3, 6)
 
+  intra_subnet_suffix   = "transit"
+  private_subnet_suffix = "firewall"
+
   /* Create a map of Availability Zones with corresponding VPC Endpoint IDs */
   az_to_endpoint_id = {
     for sync in module.cloud-platform-firewall.status[0].sync_states :
@@ -37,13 +40,8 @@ locals {
   }
 
   az_to_route_table_id = {
-    for az, subnet_id in local.az_to_subnet_id :
-    az => data.aws_route_table.intra[subnet_id].id
-  }
-
-  az_to_subnet_id = {
-    for subnet in module.vpc.intra_subnet_objects :
-    subnet.availability_zone => subnet.id
+    for idx, az in local.azs :
+    az => data.aws_route_table.intra[tostring(idx)].id
   }
 
   az_to_route_table_and_endpoint = {
@@ -70,11 +68,13 @@ module "vpc" {
 
   enable_flow_log = true
 
-  intra_subnets      = local.intra_subnets
-  intra_subnet_names = [for key in local.azs : "transit-${key}"]
+  intra_subnets       = local.intra_subnets
+  intra_subnet_names  = [for key in local.azs : "transit-${key}"]
+  intra_subnet_suffix = local.intra_subnet_suffix
 
-  private_subnets      = local.private_subnets
-  private_subnet_names = [for key in local.azs : "firewall-${key}"]
+  private_subnets       = local.private_subnets
+  private_subnet_names  = [for key in local.azs : "firewall-${key}"]
+  private_subnet_suffix = local.private_subnet_suffix
 }
 
 resource "aws_route" "transit-to-firewall" {
@@ -86,7 +86,7 @@ resource "aws_route" "transit-to-firewall" {
 
 /* Add a route back to the transit gateway once that's been constructed and attached
 resource "aws_route" "firewall-to-transit" {
-  destination_cidr_block = "0.0.0.0/0"
+ _ destination_cidr_block = "0.0.0.0/0"
   route_table_id         = module.vpc.private_route_table_ids
   transit_gateway_id     = ""
 }
