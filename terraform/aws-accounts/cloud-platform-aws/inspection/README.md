@@ -27,4 +27,3 @@ This configuration sets up the following:
 - `firewall_rules.json` must exist and define the expected schema for rules to be applied.
 - This module assumes three availability zones are used.
 - The final transit gateway routing is stubbed and not yet implemented.
-
