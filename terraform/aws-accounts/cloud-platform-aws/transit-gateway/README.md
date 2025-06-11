@@ -1,4 +1,4 @@
- Cloud Platform Transit Gateway
+Cloud Platform Transit Gateway
 
 This Terraform module configures an AWS Transit Gateway to route traffic between the Cloud Platform and internal MOJ environments.
 
