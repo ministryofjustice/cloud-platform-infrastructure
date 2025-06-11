@@ -24,9 +24,18 @@ module "cloud-platform-transit-gateway" {
   vpc_attachments                        = local.vpc_attachments
 }
 
+/* aws_ec2_transit_gateway_route_table doesn't appear to consume default_tags supplied by the provider.
+ Possibly related to https://github.com/hashicorp/terraform-provider-aws/issues/37297 */
 resource "aws_ec2_transit_gateway_route_table" "this" {
   for_each           = local.tgw_route_table_names
   transit_gateway_id = module.cloud-platform-transit-gateway.ec2_transit_gateway_id
+  tags = {
+    business-unit = "Platforms"
+    application   = "cloud-platform-aws/transit-gateway"
+    is-production = "true"
+    owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+    source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+  }
 }
 
 resource "aws_ec2_transit_gateway_route_table_association" "this" {
