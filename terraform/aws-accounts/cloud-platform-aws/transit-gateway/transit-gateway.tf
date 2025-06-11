@@ -3,9 +3,11 @@ locals {
   vpc_attachments = {
     inspection = {
       appliance_mode_support = true
-      vpc_id                 = data.aws_vpc.inspection_vpc.id
-      route_table            = "inspection"
-      subnet_ids             = toset([for subnet in data.aws_subnet.inspection_vpc_intra : subnet.id])
+      enable_default_route_table_association = false
+      enable_default_route_table_propagation = false
+      route_table                            = "inspection"
+      subnet_ids                             = toset([for subnet in data.aws_subnet.inspection_vpc_intra : subnet.id])
+      vpc_id                                 = data.aws_vpc.inspection_vpc.id
     }
   }
 }
@@ -17,11 +19,9 @@ module "cloud-platform-transit-gateway" {
   name        = "cloud-platform-transit-gateway"
   description = "Transit Gateway connecting the MOJ Cloud Platform with internal AWS and on-premise environments."
 
-  create_tgw_routes                      = false
-  enable_default_route_table_association = false
-  enable_default_route_table_propagation = false
-  share_tgw                              = false
-  vpc_attachments                        = local.vpc_attachments
+  create_tgw_routes = false
+  share_tgw         = false
+  vpc_attachments   = local.vpc_attachments
 }
 
 /* aws_ec2_transit_gateway_route_table doesn't appear to consume default_tags supplied by the provider.
