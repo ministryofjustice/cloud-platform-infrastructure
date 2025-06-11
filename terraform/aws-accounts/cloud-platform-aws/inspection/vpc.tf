@@ -17,6 +17,13 @@ data "aws_route_table" "intra" {
   vpc_id = module.vpc.vpc_id
 }
 
+data "aws_ec2_transit_gateway" "cloud-platform-transit-gateway" {
+  filter {
+    name   = "tag:Name"
+    values = ["cloud-platform-transit-gateway"]
+  }
+}
+
 locals {
   vpc_cidr = "10.0.0.0/16"
   azs      = slice(data.aws_availability_zones.available.names, 0, local.num_azs)
@@ -28,6 +35,8 @@ locals {
 
   intra_subnet_suffix   = "transit"
   private_subnet_suffix = "firewall"
+
+  private_route_table_ids = toset(module.vpc.private_route_table_ids)
 
   /* Create a map of Availability Zones with corresponding VPC Endpoint IDs */
   az_to_endpoint_id = {
@@ -80,10 +89,9 @@ resource "aws_route" "transit-to-firewall" {
   vpc_endpoint_id        = each.value["vpc_endpoint_id"]
 }
 
-/* Add a route back to the transit gateway once that's been constructed and attached
 resource "aws_route" "firewall-to-transit" {
- _ destination_cidr_block = "0.0.0.0/0"
-  route_table_id         = module.vpc.private_route_table_ids
-  transit_gateway_id     = ""
+  for_each               = local.private_route_table_ids
+  destination_cidr_block = "0.0.0.0/0"
+  route_table_id         = each.key
+  transit_gateway_id     = data.aws_ec2_transit_gateway.cloud-platform-transit-gateway.id
 }
-*/
