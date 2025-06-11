@@ -2,10 +2,12 @@ locals {
   tgw_route_table_names = toset(["external", "inspection", "internal"])
   vpc_attachments = {
     inspection = {
-      appliance_mode_support = true
-      vpc_id                 = data.aws_vpc.inspection_vpc.id
-      route_table            = "inspection"
-      subnet_ids             = toset([for subnet in data.aws_subnet.inspection_vpc_intra : subnet.id])
+      appliance_mode_support                 = true
+      enable_default_route_table_association = false
+      enable_default_route_table_propagation = false
+      route_table                            = "inspection"
+      subnet_ids                             = toset([for subnet in data.aws_subnet.inspection_vpc_intra : subnet.id])
+      vpc_id                                 = data.aws_vpc.inspection_vpc.id
     }
   }
 }
