@@ -9,16 +9,12 @@ data "aws_availability_zones" "available" {
 /* Because the route table details aren't fully exposed this allows us to map route tables to subnets and from there
 we can get the correct availability zone */
 data "aws_route_table" "intra" {
-  for_each = {
-    for i in range(local.num_azs) : i => i
-  }
-
-  vpc_id = module.vpc.vpc_id
-
+  for_each = { for i in range(local.num_azs) : i => i }
   filter {
     name   = "tag:Name"
     values = ["${module.vpc.name}-${local.intra_subnet_suffix}-${local.azs[each.key]}"]
   }
+  vpc_id = module.vpc.vpc_id
 }
 
 locals {
