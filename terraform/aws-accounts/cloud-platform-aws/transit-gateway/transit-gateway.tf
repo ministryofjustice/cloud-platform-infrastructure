@@ -87,12 +87,14 @@ resource "aws_ec2_transit_gateway_route" "external" {
   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this["external"].id
 }
 
+/*
 resource "aws_ec2_transit_gateway_route" "inspection" {
   for_each                       = local.tgw_route_table_routes["inspection"]
   destination_cidr_block         = each.key
   transit_gateway_attachment_id  = each.value
   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this["inspection"].id
 }
+ */
 
 resource "aws_ec2_transit_gateway_route" "internal" {
   for_each                       = local.tgw_route_table_routes["internal"]
