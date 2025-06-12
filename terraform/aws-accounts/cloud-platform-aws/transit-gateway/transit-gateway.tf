@@ -1,5 +1,24 @@
 locals {
   tgw_route_table_names = toset(["external", "inspection", "internal"])
+  tgw_route_table_routes = {
+    external = {
+      "172.20.0.0/16" = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment["inspection"].id,
+      "10.195.0.0/16" = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment["inspection"].id
+    },
+    /* This will require established peering with LAA ECP and MOJ TGW for full routing assignments
+    inspection = {
+      "10.0.0.0/8" = data.aws_ec2_transit_gateway_peering_attachment.moj-tgw.id,
+      "172.12.0.0/12" = data.aws_ec2_transit_gateway_peering_attachment.moj-tgw.id,
+      "192.168.0.0/16" = data.aws_ec2_transit_gateway_peering_attachment.moj-tgw.id,
+      "10.205.4.0/22" = data.aws_ec2_transit_gateway_peering_attachment.laa-ecp-tgw.id
+    },
+    */
+    internal = {
+      "10.0.0.0/8"     = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment["inspection"].id,
+      "172.16.0.0/12"  = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment["inspection"].id,
+      "192.168.0.0/16" = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment["inspection"].id,
+    }
+  }
   vpc_attachments = {
     inspection = {
       appliance_mode_support                          = true
@@ -52,4 +71,32 @@ resource "aws_ec2_transit_gateway_route_table_propagation" "this" {
   for_each                       = local.vpc_attachments
   transit_gateway_attachment_id  = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment[each.key].id
   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this[each.value.route_table].id
+}
+
+/* Ensure all attached VPCs propagate their routes into the inspection route table */
+resource "aws_ec2_transit_gateway_route_table_propagation" "inspection" {
+  for_each                       = local.vpc_attachments
+  transit_gateway_attachment_id  = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment[each.key].id
+  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this["inspection"].id
+}
+
+resource "aws_ec2_transit_gateway_route" "external" {
+  for_each                       = local.tgw_route_table_routes["external"]
+  destination_cidr_block         = each.key
+  transit_gateway_attachment_id  = each.value
+  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this["external"].id
+}
+
+resource "aws_ec2_transit_gateway_route" "inspection" {
+  for_each                       = local.tgw_route_table_routes["inspection"]
+  destination_cidr_block         = each.key
+  transit_gateway_attachment_id  = each.value
+  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this["inspection"].id
+}
+
+resource "aws_ec2_transit_gateway_route" "internal" {
+  for_each                       = local.tgw_route_table_routes["internal"]
+  destination_cidr_block         = each.key
+  transit_gateway_attachment_id  = each.value
+  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this["internal"].id
 }
