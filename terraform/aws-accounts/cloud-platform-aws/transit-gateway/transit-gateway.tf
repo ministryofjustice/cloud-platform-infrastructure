@@ -41,6 +41,7 @@ locals {
       tags                                            = { Name = "inspection-tgw-attachment" }
     }
   }
+  vpc_attachments_without_inspection = toset([for key in keys(local.vpc_attachments) : tostring(key) if key != "inspection"])
 }
 
 module "cloud-platform-transit-gateway" {
@@ -86,7 +87,7 @@ resource "aws_ec2_transit_gateway_route_table_propagation" "this" {
 
 /* Ensure all attached VPCs propagate their routes into the inspection route table */
 resource "aws_ec2_transit_gateway_route_table_propagation" "inspection" {
-  for_each                       = local.vpc_attachments
+  for_each                       = local.vpc_attachments_without_inspection
   transit_gateway_attachment_id  = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment[each.key].id
   transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this["inspection"].id
 }
