@@ -2,12 +2,13 @@ locals {
   tgw_route_table_names = toset(["external", "inspection", "internal"])
   vpc_attachments = {
     inspection = {
-      appliance_mode_support                 = true
-      enable_default_route_table_association = false
-      enable_default_route_table_propagation = false
-      route_table                            = "inspection"
-      subnet_ids                             = toset([for subnet in data.aws_subnet.inspection_vpc_intra : subnet.id])
-      vpc_id                                 = data.aws_vpc.inspection_vpc.id
+      appliance_mode_support                          = true
+      route_table                                     = "inspection"
+      subnet_ids                                      = toset([for subnet in data.aws_subnet.inspection_vpc_intra : subnet.id])
+      transit_gateway_default_route_table_association = false
+      transit_gateway_default_route_table_propagation = false
+      vpc_id                                          = data.aws_vpc.inspection_vpc.id
+      tags                                            = { Name = "inspection-tgw-attachment" }
     }
   }
 }
@@ -32,6 +33,7 @@ resource "aws_ec2_transit_gateway_route_table" "this" {
   for_each           = local.tgw_route_table_names
   transit_gateway_id = module.cloud-platform-transit-gateway.ec2_transit_gateway_id
   tags = {
+    name          = each.key
     business-unit = "Platforms"
     application   = "cloud-platform-aws/transit-gateway"
     is-production = "true"
