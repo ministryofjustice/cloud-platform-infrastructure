@@ -41,7 +41,7 @@ locals {
       tags                                            = { Name = "inspection-tgw-attachment" }
     }
   }
-  vpc_attachments_without_inspection = toset([ for key in keys(local.vpc_attachments) : tostring(key) if key != "inspection" ])
+  vpc_attachments_without_inspection = toset([for key in keys(local.vpc_attachments) : tostring(key) if key != "inspection"])
 }
 
 module "cloud-platform-transit-gateway" {
