@@ -62,6 +62,12 @@ module "vpc" {
   azs                     = var.availability_zones
   map_public_ip_on_launch = true
 
+  intra_subnets = [
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 12, 768),
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 12, 769),
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 12, 770)
+  ]
+
   private_subnets = [
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 1),
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, 2),
@@ -87,6 +93,9 @@ module "vpc" {
   enable_vpn_gateway     = false
   enable_dns_hostnames   = true
   one_nat_gateway_per_az = true
+
+  intra_subnet_names  = [for key in var.availability_zones : "transit-${key}"]
+  intra_subnet_suffix = "transit"
 
   public_subnet_tags = merge({
     SubnetType               = "Utility"
