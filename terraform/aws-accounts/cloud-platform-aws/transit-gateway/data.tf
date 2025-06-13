@@ -1,14 +1,20 @@
-data "aws_vpc" "inspection_vpc" {
+locals {
+  vpcs_to_attach = toset(["inspection-vpc", "live-1", "live-2"])
+}
+
+data "aws_vpc" "selected" {
+  for_each = local.vpcs_to_attach
   filter {
     name   = "tag:Name"
-    values = ["inspection-vpc"]
+    values = [each.key]
   }
 }
 
-data "aws_subnets" "inspection_vpc" {
+data "aws_subnets" "transit" {
+  for_each = local.vpcs_to_attach
   filter {
     name   = "vpc-id"
-    values = [data.aws_vpc.inspection_vpc.id]
+    values = [data.aws_vpc.selected[each.key].id]
   }
   filter {
     name   = "tag:Name"
@@ -16,7 +22,17 @@ data "aws_subnets" "inspection_vpc" {
   }
 }
 
-data "aws_subnet" "inspection_vpc_intra" {
-  for_each = toset(data.aws_subnets.inspection_vpc.ids)
+data "aws_subnet" "live_1" {
+  for_each = toset(data.aws_subnets.transit["live-1"].ids)
+  id       = each.key
+}
+
+data "aws_subnet" "live_2" {
+  for_each = toset(data.aws_subnets.transit["live-2"].ids)
+  id       = each.key
+}
+
+data "aws_subnet" "inspection_vpc" {
+  for_each = toset(data.aws_subnets.transit["inspection-vpc"].ids)
   id       = each.key
 }
