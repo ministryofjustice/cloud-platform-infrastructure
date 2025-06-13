@@ -34,11 +34,29 @@ locals {
     inspection = {
       appliance_mode_support                          = true
       route_table                                     = "inspection"
-      subnet_ids                                      = toset([for subnet in data.aws_subnet.inspection_vpc_intra : subnet.id])
+      subnet_ids                                      = toset([for subnet in data.aws_subnet.inspection_vpc : subnet.id])
       transit_gateway_default_route_table_association = false
       transit_gateway_default_route_table_propagation = false
-      vpc_id                                          = data.aws_vpc.inspection_vpc.id
+      vpc_id                                          = data.aws_vpc.selected["inspection-vpc"].id
       tags                                            = { Name = "inspection-tgw-attachment" }
+    }
+    live_1 = {
+      route_table                                     = "internal"
+      security_group_referencing_support              = true
+      subnet_ids                                      = toset([for subnet in data.aws_subnet.live_1 : subnet.id])
+      transit_gateway_default_route_table_association = false
+      transit_gateway_default_route_table_propagation = false
+      vpc_id                                          = data.aws_vpc.selected["live-1"].id
+      tags                                            = { Name = "live-1-tgw-attachment" }
+    }
+    live_2 = {
+      route_table                                     = "internal"
+      security_group_referencing_support              = true
+      subnet_ids                                      = toset([for subnet in data.aws_subnet.live_2 : subnet.id])
+      transit_gateway_default_route_table_association = false
+      transit_gateway_default_route_table_propagation = false
+      vpc_id                                          = data.aws_vpc.selected["live-2"].id
+      tags                                            = { Name = "live-2-tgw-attachment" }
     }
   }
   vpc_attachments_without_inspection = toset([for key in keys(local.vpc_attachments) : tostring(key) if key != "inspection"])
