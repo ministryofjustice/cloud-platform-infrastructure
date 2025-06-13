@@ -82,7 +82,7 @@ resource "aws_ec2_transit_gateway_route_table" "this" {
   for_each           = local.tgw_route_table_names
   transit_gateway_id = module.cloud-platform-transit-gateway.ec2_transit_gateway_id
   tags = {
-    name          = each.key
+    Name          = each.key
     business-unit = "Platforms"
     application   = "cloud-platform-aws/transit-gateway"
     is-production = "true"
