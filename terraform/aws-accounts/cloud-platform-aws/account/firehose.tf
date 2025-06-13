@@ -8,6 +8,6 @@ module "firehose_eks_live_logs_to_xsiam" {
 }
 
 module "test_firehose_eks_app_logs_to_xsiam" {
-  source                     = "github.com/ministryofjustice/cloud-platform-terraform-firehose-data-stream?ref=no-loggroup"
-  destination_http_endpoint  = data.aws_ssm_parameter.account["cortex_xsiam_endpoint_preprod"].value
+  source                    = "github.com/ministryofjustice/cloud-platform-terraform-firehose-data-stream?ref=no-loggroup"
+  destination_http_endpoint = data.aws_ssm_parameter.account["cortex_xsiam_endpoint_preprod"].value
 }
