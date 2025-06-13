@@ -18,6 +18,8 @@ resource "aws_ssm_parameter" "account" {
   value       = "PLACEHOLDER"
   description = "infrastructure/account terraform secret: ${each.value}"
 
+  overwrite = true
+
   lifecycle {
     ignore_changes = [value]
   }
