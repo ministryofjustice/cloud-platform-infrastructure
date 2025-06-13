@@ -4,7 +4,8 @@
 
 locals {
   ssm_parameters = [
-    "cortex_xsiam_endpoint"
+    "cortex_xsiam_endpoint",
+    "cortex_xsiam_endpoint_preprod"
   ]
 }
 
@@ -28,5 +29,4 @@ data "aws_ssm_parameter" "account" {
 
   name = "/cloud-platform/infrastructure/account/${each.value}"
 
-  depends_on = [aws_ssm_parameter.account]
 }
