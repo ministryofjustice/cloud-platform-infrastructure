@@ -32,8 +32,8 @@ module "gatekeeper" {
   is_production        = lookup(local.prod_2_workspace, terraform.workspace, false) ? "true" : "false"
   environment_name     = lookup(local.prod_2_workspace, terraform.workspace, false) ? "production" : "development"
   out_of_hours_alert   = lookup(local.prod_2_workspace, terraform.workspace, false) ? "true" : "false"
-  controller_mem_limit = terraform.workspace == "live" ? "4Gi" : "1Gi"
-  controller_mem_req   = terraform.workspace == "live" ? "1Gi" : "512Mi"
+  controller_mem_limit = terraform.workspace == "live" ? "8Gi" : "1Gi"
+  controller_mem_req   = terraform.workspace == "live" ? "4Gi" : "512Mi"
   audit_mem_limit      = terraform.workspace == "live" ? "16Gi" : "1Gi"
   audit_mem_req        = terraform.workspace == "live" ? "4Gi" : "512Mi"
 }
