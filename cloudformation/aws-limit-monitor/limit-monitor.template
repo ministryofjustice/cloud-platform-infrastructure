@@ -350,6 +350,18 @@ Resources:
       Tags:
         - Key: Solution
           Value: Serverless-Limit-Monitor
+        - Key: business-unit
+          Value: Platforms
+        - Key: service-area
+          Value: Hosting
+        - Key: application
+          Value: cloud-platform-infrastructure
+        - Key: source-code
+          Value: github.com/ministryofjustice/cloud-platform-infrastructure
+        - Key: is-production
+          Value: true
+        - Key: owner
+          Value: Cloud Platform: platforms@digital.justice.gov.uk
       TimeToLiveSpecification:
           AttributeName: ExpiryTime
           Enabled: true
