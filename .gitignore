@@ -5,3 +5,8 @@ ssh/*id_rsa
 generated/*
 .bundle
 .key
+cold_indices_json/*
+collated_cold_indices
+compacted_failed_cold
+failed_cold_indices_*
+all_warm_indices
