@@ -26,10 +26,12 @@ get_cold_size () {
         if [ -z "$COLD_INDEX_SIZE" ] || [ -z "$WARM_INDEX_SIZE" ]; then
             echo "Either Cold or Warm is missing"
             echo "$INDEX_NAME cold: $COLD_INDEX_SIZE warm: $WARM_INDEX_SIZE" >> missing_size
-            # TODO: what is the plan here?
-            # if cold is missing, delete whole index?
-            # if warm is missing then delete warm?
-            # curl -X DELETE -L --user $AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY --aws-sigv4 "aws:amz:eu-west-2:es" https://app-logs.cloud-platform.service.justice.gov.uk/$INDEX_NAME
+            if [ -z COLD_INDEX_SIZE ]; then
+                curl -X DELETE -L --user $AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY --aws-sigv4 "aws:amz:eu-west-2:es" https://app-logs.cloud-platform.service.justice.gov.uk/_cold/$INDEX_NAME
+            fi
+            if [ -z $WARM_INDEX_SIZE ]; then
+                curl -X DELETE -L --user $AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY --aws-sigv4 "aws:amz:eu-west-2:es" https://app-logs.cloud-platform.service.justice.gov.uk/$INDEX_NAME
+            fi
             return
         fi
 

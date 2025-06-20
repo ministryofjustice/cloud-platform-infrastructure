@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -u
+set -eu
 
 BATCH_SIZE=10
 
@@ -53,8 +53,7 @@ do
 
     sleep 0.2
 
-    # TODO: output stderr to dev null and set -e 2>&1 > /dev/null
-    curl -L -X POST -H "Content-Type: application/json" --user "$AWS_ACCESS_KEY_ID":"$AWS_SECRET_ACCESS_KEY" "${PIPELINE_AWS_SESSION_TOKEN}" --aws-sigv4 "aws:amz:eu-west-2:es" "https://app-logs.cloud-platform.service.justice.gov.uk/_reindex" -d "{\"source\": {\"index\": \"$INDEX\"}, \"dest\": {\"index\": \"$INDEX-reindexed\"}}" --max-time 10
+    curl -L -X POST -H "Content-Type: application/json" --user "$AWS_ACCESS_KEY_ID":"$AWS_SECRET_ACCESS_KEY" "${PIPELINE_AWS_SESSION_TOKEN}" --aws-sigv4 "aws:amz:eu-west-2:es" "https://app-logs.cloud-platform.service.justice.gov.uk/_reindex" -d "{\"source\": {\"index\": \"$INDEX\"}, \"dest\": {\"index\": \"$INDEX-reindexed\"}}" --max-time 10 2>&1 > /dev/null
 done
 
 echo "${BATCH_SIZE} indices are now reindexing..."
