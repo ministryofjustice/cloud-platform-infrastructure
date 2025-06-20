@@ -5,3 +5,4 @@ ssh/*id_rsa
 generated/*
 .bundle
 .key
+scripts/opensearch/cold_indices_json/*
