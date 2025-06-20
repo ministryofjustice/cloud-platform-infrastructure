@@ -17,6 +17,8 @@ Here we need to delete the metadata duplicated index and retry the lifecycle pol
 
 ## Steps for handling stuck indices
 
+Each script takes a single boolean arg `IS_PIPELINE` eg. ./run_my_script false
+
 ### Hot to warm
 
 1. ./hot/fix.sh (handles shard resizing for indices stuck moving from hot to warm)
@@ -25,4 +27,10 @@ Here we need to delete the metadata duplicated index and retry the lifecycle pol
 
 1. ./warm/get_all_cold_and_warm_indices.sh (paginates through all the cold indices and produces "collated_cold_indices")
 2. ./warm/get_failed_cold_indices.sh (produces "compacted_failed_cold" needed to be read in the retrigger script)
-3. ./warm/fix.sh (handles the failed to move from warm to cold due to index with the same name already existing)
+3. ./warm/retrigger_stuck_warm.sh (handles the failed to move from warm to cold due to index with the same name already existing)
+
+or you can just run:
+
+```
+    ./warm/fix.sh
+```
