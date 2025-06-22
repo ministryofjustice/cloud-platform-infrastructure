@@ -142,7 +142,7 @@ resource "aws_route53_record" "cloud_platform_justice_gov_uk_TXT" {
 
 module "s3_bucket_thanos" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.3.0"
+  version = "4.11.0"
 
   bucket = "cloud-platform-prometheus-thanos"
   acl    = "private"
@@ -168,7 +168,7 @@ module "s3_bucket_thanos" {
 
 module "s3_bucket_velero" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.3.0"
+  version = "4.11.0"
 
   bucket = "cloud-platform-velero-backups"
   acl    = "private"
@@ -194,7 +194,7 @@ module "s3_bucket_velero" {
 
 module "s3_bucket_kubeconfigs" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.3.0"
+  version = "4.11.0"
 
   bucket = "cloud-platform-concourse-kubeconfig"
   acl    = "private"
@@ -219,7 +219,7 @@ module "s3_bucket_kubeconfigs" {
 
 module "s3_bucket_environments_live_reports" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.3.0"
+  version = "4.11.0"
 
   bucket = "cloud-platform-concourse-environments-live-reports"
 
