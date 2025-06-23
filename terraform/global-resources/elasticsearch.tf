@@ -9,11 +9,11 @@ provider "elasticsearch" {
   alias       = "live-modsec-audit"
 }
 
-provider "elasticsearch" {
-  url         = "https://${aws_elasticsearch_domain.live-2.endpoint}"
-  aws_profile = "moj-cp"
-  alias       = "live-2"
-}
+# provider "elasticsearch" {
+#   url         = "https://${aws_elasticsearch_domain.live-2.endpoint}"
+#   aws_profile = "moj-cp"
+#   alias       = "live-2"
+# }
 
 locals {
   live_domain = "cloud-platform-live"
