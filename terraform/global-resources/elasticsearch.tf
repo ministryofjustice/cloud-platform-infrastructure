@@ -269,113 +269,113 @@ data "aws_iam_policy_document" "test" {
 }
 
 # This is the OpenSearch cluster for live-2
-data "aws_iam_policy_document" "live-2" {
-  statement {
-    actions = [
-      "es:Describe*",
-      "es:List*",
-      "es:ESHttpGet",
-      "es:ESHttpHead",
-      "es:ESHttpPost",
-      "es:ESHttpPut",
-      "es:ESHttpPatch"
-    ]
+# data "aws_iam_policy_document" "live-2" {
+#   statement {
+#     actions = [
+#       "es:Describe*",
+#       "es:List*",
+#       "es:ESHttpGet",
+#       "es:ESHttpHead",
+#       "es:ESHttpPost",
+#       "es:ESHttpPut",
+#       "es:ESHttpPatch"
+#     ]
 
-    resources = [
-      "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.live_2_domain}/*",
-    ]
+#     resources = [
+#       "arn:aws:es:${data.aws_region.moj-cp.name}:${data.aws_caller_identity.moj-cp.account_id}:domain/${local.live_2_domain}/*",
+#     ]
 
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
+#     principals {
+#       type        = "AWS"
+#       identifiers = ["*"]
+#     }
 
-    condition {
-      test     = "IpAddress"
-      variable = "aws:SourceIp"
+#     condition {
+#       test     = "IpAddress"
+#       variable = "aws:SourceIp"
 
-      values = keys(local.allowed_live_2_ips)
-    }
-  }
-}
+#       values = keys(local.allowed_live_2_ips)
+#     }
+#   }
+# }
 
-resource "aws_elasticsearch_domain" "live-2" {
-  domain_name           = "cloud-platform-live-2"
-  provider              = aws.cloud-platform
-  elasticsearch_version = "OpenSearch_1.3"
+# resource "aws_elasticsearch_domain" "live-2" {
+#   domain_name           = "cloud-platform-live-2"
+#   provider              = aws.cloud-platform
+#   elasticsearch_version = "OpenSearch_1.3"
 
-  cluster_config {
-    instance_type            = "r5.large.elasticsearch"
-    instance_count           = "2"
-    dedicated_master_enabled = true
-    dedicated_master_type    = "r5.large.elasticsearch"
-    dedicated_master_count   = "3"
-    zone_awareness_enabled   = true
-    zone_awareness_config {
-      availability_zone_count = 2
-    }
-    warm_count   = 2
-    warm_enabled = true
-    warm_type    = "ultrawarm1.medium.elasticsearch"
-    cold_storage_options {
-      enabled = true
-    }
-  }
+#   cluster_config {
+#     instance_type            = "r5.large.elasticsearch"
+#     instance_count           = "2"
+#     dedicated_master_enabled = true
+#     dedicated_master_type    = "r5.large.elasticsearch"
+#     dedicated_master_count   = "3"
+#     zone_awareness_enabled   = true
+#     zone_awareness_config {
+#       availability_zone_count = 2
+#     }
+#     warm_count   = 2
+#     warm_enabled = true
+#     warm_type    = "ultrawarm1.medium.elasticsearch"
+#     cold_storage_options {
+#       enabled = true
+#     }
+#   }
 
-  ebs_options {
-    ebs_enabled = "true"
-    volume_type = "gp3"
-    volume_size = "50"
-    iops        = "3000"
-  }
+#   ebs_options {
+#     ebs_enabled = "true"
+#     volume_type = "gp3"
+#     volume_size = "50"
+#     iops        = "3000"
+#   }
 
-  advanced_options = {
-    "rest.action.multi.allow_explicit_index" = "true"
-    "indices.query.bool.max_clause_count"    = 3000
-    "override_main_response_version"         = "true"
-  }
+#   advanced_options = {
+#     "rest.action.multi.allow_explicit_index" = "true"
+#     "indices.query.bool.max_clause_count"    = 3000
+#     "override_main_response_version"         = "true"
+#   }
 
-  access_policies = data.aws_iam_policy_document.live-2.json
+#   access_policies = data.aws_iam_policy_document.live-2.json
 
-  snapshot_options {
-    automated_snapshot_start_hour = 23
-  }
+#   snapshot_options {
+#     automated_snapshot_start_hour = 23
+#   }
 
-  log_publishing_options {
-    cloudwatch_log_group_arn = ""
-    enabled                  = false
-    log_type                 = "ES_APPLICATION_LOGS"
-  }
+#   log_publishing_options {
+#     cloudwatch_log_group_arn = ""
+#     enabled                  = false
+#     log_type                 = "ES_APPLICATION_LOGS"
+#   }
 
-  tags = {
-    Domain = local.live_2_domain
-  }
-}
+#   tags = {
+#     Domain = local.live_2_domain
+#   }
+# }
 
-resource "elasticsearch_opensearch_ism_policy" "ism-policy_live_2" {
-  policy_id = "hot-warm-cold-delete"
-  body = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
-    timestamp_field   = var.timestamp_field
-    warm_transition   = var.warm_transition
-    cold_transition   = var.cold_transition
-    delete_transition = var.delete_transition
-    index_pattern     = jsonencode(var.index_pattern_live_2)
-  })
+# resource "elasticsearch_opensearch_ism_policy" "ism-policy_live_2" {
+#   policy_id = "hot-warm-cold-delete"
+#   body = templatefile("${path.module}/resources/opensearch/ism-policy.json.tpl", {
+#     timestamp_field   = var.timestamp_field
+#     warm_transition   = var.warm_transition
+#     cold_transition   = var.cold_transition
+#     delete_transition = var.delete_transition
+#     index_pattern     = jsonencode(var.index_pattern_live_2)
+#   })
 
-  provider = elasticsearch.live-2
-}
+#   provider = elasticsearch.live-2
+# }
 
-# Create an index template
-resource "elasticsearch_index_template" "template_index_kubernetes" {
-  name = "test_template"
-  body = templatefile("${path.module}/resources/opensearch/mapping-template.json.tpl", {
-    no_of_shards = "1"
-  })
+# # Create an index template
+# resource "elasticsearch_index_template" "template_index_kubernetes" {
+#   name = "test_template"
+#   body = templatefile("${path.module}/resources/opensearch/mapping-template.json.tpl", {
+#     no_of_shards = "1"
+#   })
 
-  depends_on = [aws_elasticsearch_domain.live-2]
+#   depends_on = [aws_elasticsearch_domain.live-2]
 
-  provider = elasticsearch.live-2
-}
+#   provider = elasticsearch.live-2
+# }
 
 resource "elasticsearch_index_template" "live_kubernetes_cluster" {
   name = "live_kubernetes_cluster"
