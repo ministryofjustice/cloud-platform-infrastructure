@@ -10,7 +10,7 @@ provider "elasticsearch" {
 }
 
 provider "elasticsearch" {
-  url         = "https://${aws_elasticsearch_domain.live-2.endpoint}"
+  url         = "https://search-cloud-platform-live-2-y3xuoui3qenhfpmiulk4wthw5i.eu-west-2.es.amazonaws.com/"
   aws_profile = "moj-cp"
   alias       = "live-2"
 }
