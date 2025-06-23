@@ -36,12 +36,12 @@ variable "index_pattern" {
   type        = list(string)
 }
 
-variable "index_pattern_live_2" {
-  default = [
-    "live-2_kubernetes_cluster*",
-    "live-2_kubernetes_ingress*",
-    "live-2_eventrouter*",
-  ]
-  description = "Pattern created in Kibana, policy will apply to matching new indices"
-  type        = list(string)
-}
+# variable "index_pattern_live_2" {
+#   default = [
+#     "live-2_kubernetes_cluster*",
+#     "live-2_kubernetes_ingress*",
+#     "live-2_eventrouter*",
+#   ]
+#   description = "Pattern created in Kibana, policy will apply to matching new indices"
+#   type        = list(string)
+# }

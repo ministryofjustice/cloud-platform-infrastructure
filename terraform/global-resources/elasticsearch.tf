@@ -18,7 +18,7 @@ provider "elasticsearch" {
 locals {
   live_domain = "cloud-platform-live"
 
-  live_2_domain = "cloud-platform-live-2"
+  # live_2_domain = "cloud-platform-live-2"
 
   # for tests, use something like merge(local.allowed_live_1_ips, { "88.98.227.149" = "test" })
   allowed_live_1_ips = {
@@ -27,11 +27,11 @@ locals {
     "3.8.51.207/32"     = "live-1-c"
   }
 
-  allowed_live_2_ips = {
-    "18.134.190.194" = "live-2-b"
-    "35.176.15.151"  = "live-2-a"
-    "35.178.11.229"  = "live-2-c"
-  }
+  # allowed_live_2_ips = {
+  #   "18.134.190.194" = "live-2-b"
+  #   "35.176.15.151"  = "live-2-a"
+  #   "35.178.11.229"  = "live-2-c"
+  # }
 
   test_domain = "cloud-platform-test"
 
