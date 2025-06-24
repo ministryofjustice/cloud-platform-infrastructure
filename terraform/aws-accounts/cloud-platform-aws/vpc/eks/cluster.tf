@@ -34,14 +34,14 @@ locals {
     default = "2"
   }
 
-  # Monitoring node group desired capacity 
+  # Monitoring node group desired capacity
   default_mon_desired_count = {
     live    = "4"
     live-2  = "3"
     manager = "4"
     default = "3"
   }
-  # Monitoring node group minimum capacity 
+  # Monitoring node group minimum capacity
   default_mon_min_count = {
     live    = "4"
     live-2  = "3"
@@ -327,6 +327,16 @@ module "eks" {
     {
       userarn  = "arn:aws:iam::754256621582:user/EmmaTerry"
       username = "EmmaTerry"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/WajidFarid"
+      username = "WajidFarid"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::754256621582:user/ZuriGuardiola"
+      username = "ZuriGuardiola"
       groups   = ["system:masters"]
     }
   ]
