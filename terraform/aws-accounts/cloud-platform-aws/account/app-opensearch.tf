@@ -350,6 +350,7 @@ resource "elasticsearch_opensearch_role" "all_org_members_app_logs" {
     "cluster:admin/opendistro/alerting/alerts/ack",
     "cluster:admin/opendistro/alerting/monitors/get",
     "cluster:admin/opendistro/alerting/monitors/search",
+    "cluster:admin/opendistro/alerting/monitors/execute",
     "cluster:admin/opensearch/notifications/configs/get",
     "cluster:admin/opendistro/reports/definition/create",
     "cluster:admin/opendistro/reports/definition/update",
