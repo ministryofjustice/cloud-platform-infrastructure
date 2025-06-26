@@ -17,7 +17,6 @@ if [ $PAGE_ID -eq 0 ]; then
     PAGE_ID=$(echo "$RESP" | jq -r '. | .pagination_id')
     echo "$RESP" > "cold_indices_json/$COUNTER.json"
     COUNTER=$((COUNTER+1))
-
 fi
 
 while [ -n "$PAGE_ID" ] || [ $PAGE_ID != null ] && [ $INDEX_LENGTH -ne 0 ];
