@@ -2,10 +2,9 @@
 
 set -u
 
-BATCH_SIZE=10
+BATCH_SIZE=15
 
 TODAY="$(date +'%Y.%m.%d')"
-
 IS_PIPELINE=$1
 
 if [[ "$IS_PIPELINE" = true ]]; then
@@ -37,12 +36,23 @@ done
 
 echo "selecting new indices to reindex..."
 
-INDICES_TO_REINDEX="$(curl -L --user "$AWS_ACCESS_KEY_ID":"$AWS_SECRET_ACCESS_KEY" ${USE_SESSION_TOKEN:+ -H "x-amz-security-token: $AWS_SESSION_TOKEN"} --aws-sigv4 "aws:amz:eu-west-2:es" "https://app-logs.cloud-platform.service.justice.gov.uk/_cat/indices/_hot?s=pri.store.size:desc" | awk '{ print $3 " " $10 }'  | grep -v '^\.' | grep -v $TODAY | grep -v "reindex" | head -n $BATCH_SIZE)"
+ISM_POLICY_STATE_JSON=$(curl -L --user $AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY  ${USE_SESSION_TOKEN:+ -H "x-amz-security-token: $AWS_SESSION_TOKEN"} --aws-sigv4 "aws:amz:eu-west-2:es" https://app-logs.cloud-platform.service.justice.gov.uk/_plugins/_ism/explain/_all)
 
-echo "$INDICES_TO_REINDEX" | while read -r line
+RESTRUCTURED_JSON=$(echo $ISM_POLICY_STATE_JSON | jq '[.[] | {index: .index?, state: .action?.failed?, cause: .info?.cause?, message: .info?.message?}]')
+
+echo $RESTRUCTURED_JSON
+
+WARM_INDEXES=$(echo $RESTRUCTURED_JSON | jq '[.[] | select(.cause != null) | select(.cause? | contains("exceeds the warm migration shard size limit")) | select(.index)]' | jq --argjson BATCH_SIZE "$BATCH_SIZE" '.[:$BATCH_SIZE]')
+
+INDICES_TO_REINDEX="$(curl -L --user "$AWS_ACCESS_KEY_ID":"$AWS_SECRET_ACCESS_KEY" ${USE_SESSION_TOKEN:+ -H "x-amz-security-token: $AWS_SESSION_TOKEN"} --aws-sigv4 "aws:amz:eu-west-2:es" "https://app-logs.cloud-platform.service.justice.gov.uk/_cat/indices/_hot?s=pri.store.size:desc" | awk '{ print $3 " " $10 }'  | grep -v '^\.' | grep -v $TODAY | grep -v "reindex")"
+
+echo $WARM_INDEXES | jq -c '.[]' | while read i;
 do
-    SIZE=$(echo "$line" | awk '{ print $2 }')
-    INDEX=$(echo "$line" | awk '{ print $1 }')
+    TARGET_INDEX=$(echo $i | jq -r '.index')
+
+    LINE=$(echo "$INDICES_TO_REINDEX" | grep "$TARGET_INDEX")
+    SIZE=$(echo "$LINE" | awk '{ print $2 }')
+    INDEX=$(echo "$LINE" | awk '{ print $1 }')
     SHARD_NUMB=15
     if [[ $SIZE =~ "tb" ]]; then
         STRIPED_SIZE=${SIZE%tb}
