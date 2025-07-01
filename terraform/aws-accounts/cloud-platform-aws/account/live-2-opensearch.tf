@@ -47,7 +47,7 @@ data "aws_iam_policy_document" "assume_role_policy_live_2_app_logs" {
 }
 
 resource "aws_iam_policy" "os_access_policy_live_2_app_logs" {
-  name = "opensearch-access-policy-app-logs"
+  name = "opensearch-access-policy-live-2-app-logs"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -86,7 +86,7 @@ data "aws_iam_policy_document" "live_2_app_logs" {
 }
 
 resource "aws_kms_key" "live_2_app_logs" {
-  description                        = "Used for OpenSearch: cp-live-app-logs"
+  description                        = "Used for OpenSearch: cp-live-2-app-logs"
   key_usage                          = "ENCRYPT_DECRYPT"
   bypass_policy_lockout_safety_check = false
   deletion_window_in_days            = 30
@@ -116,7 +116,7 @@ module "acm_live_2_app_logs" {
 }
 
 resource "aws_opensearch_domain" "live_2_app_logs" {
-  domain_name    = "cp-live-app-logs"
+  domain_name    = "cp-live-2-app-logs"
   engine_version = "OpenSearch_2.13"
 
   advanced_options = {
@@ -425,7 +425,7 @@ data "http" "saml_metadata_live_2_app_logs" {
 
 ### AWS Opensearch SAML -- client, rule, metadata and configure opensearch
 resource "auth0_client" "opensearch_live_2_app_logs" {
-  name                 = "AWS Opensearch SAML for ${data.aws_iam_account_alias.current.account_alias} for user app logs"
+  name                 = "AWS Opensearch SAML for ${data.aws_iam_account_alias.current.account_alias} for user live-2 app logs"
   description          = "Github SAML provider for cloud-platform live-2 cluster for application logs"
   app_type             = "spa"
   custom_login_page_on = true
