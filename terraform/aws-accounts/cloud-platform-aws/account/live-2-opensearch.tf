@@ -146,7 +146,7 @@ resource "aws_opensearch_domain" "live_2_app_logs" {
       availability_zone_count = 3
     }
 
-    warm_count   = 5
+    warm_count   = 3
     warm_enabled = true
     warm_type    = "ultrawarm1.medium.search"
 
