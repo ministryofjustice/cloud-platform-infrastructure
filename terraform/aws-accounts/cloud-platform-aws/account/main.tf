@@ -69,6 +69,30 @@ data "terraform_remote_state" "eks_live" {
   }
 }
 
+# get access to components state in manager workspace
+# Necessary to fluent-bit irsa role
+data "terraform_remote_state" "components_manager" {
+  backend = "s3"
+  config = {
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "aws-accounts/cloud-platform-aws/vpc/eks/core/components/manager/terraform.tfstate"
+    profile = "moj-cp"
+  }
+}
+
+# get access to components state in live workspace
+# Necessary to fluent-bit irsa role
+data "terraform_remote_state" "components_live" {
+  backend = "s3"
+  config = {
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "aws-accounts/cloud-platform-aws/vpc/eks/core/components/live/terraform.tfstate"
+    profile = "moj-cp"
+  }
+}
+
 # used for cloudfront/waf
 provider "aws" {
   alias  = "northvirginia"
