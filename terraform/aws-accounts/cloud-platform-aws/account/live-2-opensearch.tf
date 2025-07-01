@@ -158,7 +158,7 @@ resource "aws_opensearch_domain" "live_2_app_logs" {
   ebs_options {
     ebs_enabled = "true"
     volume_type = "gp3"
-    volume_size = "12000"
+    volume_size = "2000"
     iops        = "20000" # limit is between 15,000 and 20,000 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-volume-types.html
     throughput  = "593"   # LimitExceededException: Throughput must be set to 593 https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/general-purpose.html
   }
@@ -351,8 +351,10 @@ resource "elasticsearch_opensearch_role" "all_org_members_live_2_app_logs" {
     "get",
     "cluster:admin/opendistro/alerting/alerts/get",
     "cluster:admin/opendistro/alerting/alerts/ack",
-    "cluster:admin/opendistro/alerting/monitors/get",
-    "cluster:admin/opendistro/alerting/monitors/search",
+    "cluster:admin/opendistro/alerting/monitor/get",
+    "cluster:admin/opendistro/alerting/monitor/write",
+    "cluster:admin/opendistro/alerting/monitor/search",
+    "cluster:admin/opendistro/alerting/monitor/execute",
     "cluster:admin/opensearch/notifications/configs/get",
     "cluster:admin/opendistro/reports/definition/create",
     "cluster:admin/opendistro/reports/definition/update",
