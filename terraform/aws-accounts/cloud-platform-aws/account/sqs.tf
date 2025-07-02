@@ -141,8 +141,54 @@ resource "aws_s3_bucket_notification" "route53_log_bucket_notification" {
   }
 }
 
+#### Application logs from live EKS cluster
 
-##### IAM User & Resources to access the sqs queue and read cloudtrail, flowlogs and Route53 Resolver query log buckets
+# SQS Queue to present the application logs bucket updates
+resource "aws_sqs_queue" "cp_application_logs_queue" {
+  name                       = "cp_application_logs_queue"
+  sqs_managed_sse_enabled    = true   # Using managed encryption
+  delay_seconds              = 0      # The default is 0 but can be up to 15 minutes
+  max_message_size           = 262144 # 256k which is the max size
+  message_retention_seconds  = 345600 # This is 4 days. The max is 14 days
+  visibility_timeout_seconds = 30     # This is only useful for queues that have multiple subscribers
+}
+
+# This policy grants queue send message from the application logs bucket
+resource "aws_sqs_queue_policy" "application_logs_queue_policy" {
+  queue_url = aws_sqs_queue.cp_application_logs_queue.id
+  policy    = data.aws_iam_policy_document.application_logs_queue_policy_document.json
+}
+
+data "aws_iam_policy_document" "application_logs_queue_policy_document" {
+  statement {
+    sid    = "AllowSendMessage"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["s3.amazonaws.com"]
+    }
+    actions = ["sqs:SendMessage"]
+    resources = [
+      aws_sqs_queue.cp_application_logs_queue.arn
+    ]
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:SourceArn"
+      values   = [data.terraform_remote_state.components_live.outputs.s3_bucket_application_logs_arn]
+    }
+  }
+}
+
+# S3 bucket event notification for updates from the application logs bucket
+resource "aws_s3_bucket_notification" "application_logs_bucket_notification" {
+  bucket = data.terraform_remote_state.components_live.outputs.s3_bucket_application_logs_name
+  queue {
+    queue_arn = aws_sqs_queue.cp_application_logs_queue.arn
+    events    = ["s3:ObjectCreated:*"] # Events to trigger the notification
+  }
+} 
+
+##### IAM User & Resources to access the sqs queue and read cloudtrail, flowlogs, Route53 Resolver query and application log buckets
 
 # Create an IAM policy document to allow access to the SQS Queue and cloudtrail bucket
 data "aws_iam_policy_document" "sqs_queue_read_document" {
@@ -160,7 +206,8 @@ data "aws_iam_policy_document" "sqs_queue_read_document" {
     resources = [
       aws_sqs_queue.cp_cloudtrail_log_queue.arn,
       aws_sqs_queue.cp_vpc_flowlogs_log_queue.arn,
-      aws_sqs_queue.cp_route53_log_queue.arn
+      aws_sqs_queue.cp_route53_log_queue.arn,
+      aws_sqs_queue.cp_application_logs_queue.arn
     ]
   }
   statement {
@@ -173,7 +220,9 @@ data "aws_iam_policy_document" "sqs_queue_read_document" {
       data.terraform_remote_state.live-1.outputs.vpc_flowlogs_bucket_arn,
       "${data.terraform_remote_state.live-1.outputs.vpc_flowlogs_bucket_arn}/*",
       data.terraform_remote_state.live-1.outputs.route53_query_log_bucket_arn,
-      "${data.terraform_remote_state.live-1.outputs.route53_query_log_bucket_arn}/*"
+      "${data.terraform_remote_state.live-1.outputs.route53_query_log_bucket_arn}/*",
+      data.terraform_remote_state.components_live.outputs.s3_bucket_application_logs_arn,
+      "${data.terraform_remote_state.components_live.outputs.s3_bucket_application_logs_arn}/*"
     ]
   }
 }
