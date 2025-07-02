@@ -186,7 +186,7 @@ resource "aws_s3_bucket_notification" "application_logs_bucket_notification" {
     queue_arn = aws_sqs_queue.cp_application_logs_queue.arn
     events    = ["s3:ObjectCreated:*"] # Events to trigger the notification
   }
-} 
+}
 
 ##### IAM User & Resources to access the sqs queue and read cloudtrail, flowlogs, Route53 Resolver query and application log buckets
 
