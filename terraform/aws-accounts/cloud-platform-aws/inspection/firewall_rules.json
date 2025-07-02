@@ -1,9 +1,9 @@
 {
-  "default_alert_all": {
+  "allow_internal_platform_to_cloud_platform": {
     "action": "ALERT",
-    "source_ip": "0.0.0.0/0",
-    "destination_ip": "0.0.0.0/0",
-    "destination_port": "ANY",
-    "protocol": "IP"
+    "source_ip": "${internal_platforms}",
+    "destination_ip": "${cloud_platform}",
+    "destination_port": "${web_ports}",
+    "protocol": "TCP"
   }
 }
