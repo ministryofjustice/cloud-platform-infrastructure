@@ -1,6 +1,7 @@
 locals {
   raw_rules        = fileexists("./firewall_rules.json") ? jsondecode(file("./firewall_rules.json")) : {}
-  rulegroup_sets   = fileexists("./firewall_sets.json") ? jsondecode(file("./firewall_sets.json")) : {}
+  raw_rules = fileexists("./firewall_rules.json") ? jsondecode(templatefile("./firewall_rules.json",
+    merge(local.rulegroup_sets.ip_sets, local.rulegroup_sets.port_sets))) : {}
   sorted_rule_keys = sort(keys(local.raw_rules))
   stateful_rules = [for idx, key in local.sorted_rule_keys : {
     action = local.raw_rules[key].action
