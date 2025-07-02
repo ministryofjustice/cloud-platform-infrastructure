@@ -1,6 +1,6 @@
 locals {
-  raw_rules        = fileexists("./firewall_rules.json") ? jsondecode(templatefile("./firewall_rules.json", {})) : {}
-  rulegroup_sets   = fileexists("./firewall_sets.json") ? jsondecode(templatefile("./firewall_sets.json", {})) : {}
+  raw_rules        = fileexists("./firewall_rules.json") ? jsondecode(file("./firewall_rules.json")) : {}
+  rulegroup_sets   = fileexists("./firewall_sets.json") ? jsondecode(file("./firewall_sets.json")) : {}
   sorted_rule_keys = sort(keys(local.raw_rules))
   stateful_rules = [for idx, key in local.sorted_rule_keys : {
     action = local.raw_rules[key].action
@@ -79,10 +79,6 @@ module "cloud-platform-firewall-rule-group" {
     }
     rules_source = {
       stateful_rule = local.stateful_rules
-    }
-    rule_variables = {
-      ip_sets   = local.ip_sets
-      port_sets = local.port_sets
     }
     stateful_rule_options = {
       rule_order = "DEFAULT_ACTION_ORDER"
