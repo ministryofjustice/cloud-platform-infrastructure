@@ -25,7 +25,6 @@ variable "delete_transition" {
 variable "index_pattern" {
   default = [
     "manager_eventrouter*",
-    "live_kubernetes_cluster*",
     "live_kubernetes_ingress*",
     "live_eventrouter*",
     "manager_kubernetes_cluster-*",

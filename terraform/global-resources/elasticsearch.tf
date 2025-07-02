@@ -168,7 +168,7 @@ resource "aws_elasticsearch_domain" "live_1" {
 
   cluster_config {
     warm_enabled             = true
-    warm_count               = 2
+    warm_count               = 40
     warm_type                = "ultrawarm1.medium.elasticsearch"
     instance_type            = "r7g.medium.elasticsearch"
     instance_count           = "1"
