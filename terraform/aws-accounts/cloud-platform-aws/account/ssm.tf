@@ -4,8 +4,7 @@
 
 locals {
   ssm_parameters = [
-    "cortex_xsiam_endpoint",
-    "cortex_xsiam_endpoint_preprod"
+    "cortex_xsiam_endpoint"
   ]
 }
 
