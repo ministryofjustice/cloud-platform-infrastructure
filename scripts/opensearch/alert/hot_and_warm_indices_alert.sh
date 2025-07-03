@@ -40,7 +40,7 @@ echo "Warm indices count: $WARM_COUNT"
 send_slack_alert() {
   local message="$1"
   curl -s -X POST -H 'Content-type: application/json' \
-    --data "{\"text\":\"$message\"}" \
+    --data "{\"channel\": \"#lower-priority-alarms\", \"text\": \"$message\"}" \
     "$SLACK_WEBHOOK_URL"
 }
 
