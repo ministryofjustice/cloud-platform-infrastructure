@@ -3,7 +3,7 @@
 ###############
 
 data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
+  name = module.eks.cluster_name
 }
 
 
@@ -88,6 +88,10 @@ locals {
     max_size     = 85
     min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
 
+    update_config = {
+      "max_unavailable" : 1
+    }
+
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
@@ -112,7 +116,7 @@ locals {
     pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-140824.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    iam_role_additional_policies = { default = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" }
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
     labels = {
@@ -133,6 +137,9 @@ locals {
     desired_size = lookup(local.default_mon_desired_count, terraform.workspace, local.default_mon_desired_count["default"])
     max_size     = 6
     min_size     = lookup(local.default_mon_min_count, terraform.workspace, local.default_mon_min_count["default"])
+    update_config = {
+      "max_unavailable" : 1
+    }
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
@@ -157,7 +164,7 @@ locals {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    iam_role_additional_policies = { monitoring = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" }
     instance_types               = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
     labels = {
       Terraform                                     = "true"
@@ -236,7 +243,7 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "18.31.2"
+  version = "19.21.0"
 
 
   cluster_name              = terraform.workspace
@@ -256,9 +263,15 @@ module "eks" {
   iam_role_name    = terraform.workspace
   prefix_separator = ""
 
+  cluster_endpoint_public_access  = true
+  cluster_endpoint_private_access = false
+
+  create_kms_key            = false
+  cluster_encryption_config = {}
+
   eks_managed_node_groups = local.eks_managed_node_groups
 
-  iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+  iam_role_additional_policies = { sssmanagedinstancecore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore" }
 
   # Out of the box you can't specify groups to map, just users. Some people did some workarounds
   # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
@@ -354,6 +367,7 @@ module "eks" {
 
 
 
+
 #######################
 # EKS Cluster add-ons #
 #######################
@@ -361,7 +375,7 @@ module "aws_eks_addons" {
   source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.18.9"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
-  eks_cluster_id          = module.eks.cluster_id
+  eks_cluster_id          = module.eks.cluster_name
   cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   addon_tags              = local.tags
 

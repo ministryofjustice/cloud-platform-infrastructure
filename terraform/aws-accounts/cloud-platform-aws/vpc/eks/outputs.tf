@@ -66,8 +66,8 @@ output "cluster_oidc_issuer_url" {
   description = "URL on the EKS cluster OIDC Issuer"
 }
 
-output "cluster_id" {
-  value       = module.eks.cluster_id
+output "cluster_name" {
+  value       = module.eks.cluster_name
   description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready."
 }
 output "cluster_endpoint" {
