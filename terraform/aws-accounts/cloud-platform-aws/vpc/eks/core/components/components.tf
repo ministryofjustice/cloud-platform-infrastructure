@@ -157,7 +157,7 @@ module "non_prod_ingress_controllers_v1" {
 }
 
 module "non_prod_modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.14.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.14.7"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -186,7 +186,7 @@ module "non_prod_modsec_ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.14.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.14.7"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
@@ -241,7 +241,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.25.5"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.25.6"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? data.aws_ssm_parameter.components["pagerduty_config"].value : "dummy"
