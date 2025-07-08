@@ -7,7 +7,7 @@ USE_SESSION_TOKEN=$1
 PAGE_ID=0
 INDEX_LENGTH=99
 COUNTER=0
-COLD_INDICES_THRESHOLD=2755 # update later
+COLD_INDICES_THRESHOLD=3294 # 366 * 9 = 3294
 
 touch cold_indices_json/random.json
 rm cold_indices_json/*json
