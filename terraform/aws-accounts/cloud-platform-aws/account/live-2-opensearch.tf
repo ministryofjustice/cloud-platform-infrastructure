@@ -139,7 +139,7 @@ resource "aws_opensearch_domain" "live_2_app_logs" {
     instance_count           = "3"
     dedicated_master_enabled = true
     dedicated_master_type    = "m6g.large.search"
-    dedicated_master_count   = "1"
+    dedicated_master_count   = "3"
     zone_awareness_enabled   = true
 
     zone_awareness_config {
