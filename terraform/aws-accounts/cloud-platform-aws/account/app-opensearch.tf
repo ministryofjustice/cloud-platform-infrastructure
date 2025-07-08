@@ -241,6 +241,8 @@ resource "elasticsearch_opensearch_roles_mapping" "all_access_app_logs" {
     "webops",
     "organisation-security-auditor",
     aws_iam_role.os_access_role_app_logs.arn,
+    data.terraform_remote_state.components_manager.outputs.fluent_bit_irsa_arn,
+    data.terraform_remote_state.components_live.outputs.fluent_bit_irsa_arn,
   ], values(data.aws_eks_node_group.current)[*].node_role_arn, values(data.aws_eks_node_group.manager)[*].node_role_arn)
 
   // Permissions to manager-concourse in order to run logging tests
