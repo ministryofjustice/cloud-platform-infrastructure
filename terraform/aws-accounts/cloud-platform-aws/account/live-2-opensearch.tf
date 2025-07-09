@@ -27,7 +27,7 @@ data "aws_eks_node_group" "live_2" {
 }
 
 resource "aws_iam_role" "os_access_role_live_2_app_logs" {
-  name               = "opensearch-access-role-live-2-app-logs"
+  name               = "opensearch-live-2-app-logs"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy_live_2_app_logs.json
   managed_policy_arns = [
     aws_iam_policy.os_access_policy_live_2_app_logs.arn,
