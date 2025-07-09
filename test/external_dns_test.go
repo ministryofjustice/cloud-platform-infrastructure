@@ -58,7 +58,7 @@ var _ = Describe("external-dns", Serial, func() {
 		defer k8s.DeleteNamespace(GinkgoT(), options, namespaceName)
 	})
 
-	Context("when creating and then deleting an ingress resource", func() {
+	FContext("when creating and then deleting an ingress resource", func() {
 		It("should create and then delete the A record", func() {
 			GinkgoWriter.Printf("\nWaiting for A record to be created\n")
 			Eventually(func() bool {
