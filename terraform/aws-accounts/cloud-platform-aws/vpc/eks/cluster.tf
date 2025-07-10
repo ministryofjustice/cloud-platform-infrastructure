@@ -50,10 +50,10 @@ locals {
   }
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.30"
-    live-2  = "1.30"
-    manager = "1.30"
-    default = "1.30"
+    live    = "1.31"
+    live-2  = "1.31"
+    manager = "1.31"
+    default = "1.31"
   }
 
   node_size = {
