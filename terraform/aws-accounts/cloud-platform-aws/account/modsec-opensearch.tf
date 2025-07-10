@@ -273,6 +273,11 @@ resource "auth0_action" "add-github-teams-to-opensearch-saml" {
     name  = "OPENSEARCH_APP_CLIENT_ID_APP_LOGS"
     value = auth0_client.opensearch_app_logs.client_id
   }
+
+  secrets {
+    name  = "OPENSEARCH_APP_LIVE2_CLIENT_ID_APP_LOGS"
+    value = auth0_client.opensearch_live_2_app_logs.client_id
+  }
 }
 
 data "http" "saml_metadata" {

@@ -6,8 +6,12 @@ exports.onExecutePostLogin = async (event, api) => {
     event.client.client_id ===
       event.secrets.OPENSEARCH_APP_CLIENT_ID_APP_LOGS &&
     event.connection.name === "github";
+  const appLive2ClientId =
+    event.client.client_id ===
+      event.secrets.OPENSEARCH_APP_LIVE2_CLIENT_ID_APP_LOGS &&
+    event.connection.name === "github";
 
-  if (modsecClientId || appClientId) {
+  if (modsecClientId || appClientId || appLive2ClientId) {
     const git_teams = event.user.user_metadata["gh_teams"].map((t) =>
       t.replace("github:", ""),
     );
