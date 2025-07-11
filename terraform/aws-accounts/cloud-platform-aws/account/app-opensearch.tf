@@ -471,3 +471,13 @@ module "live_app_logs_opensearch_monitoring" {
   tags                               = local.app_logs_tags
 }
 
+module "opensearch_snapshot_repository" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-snapshot?ref=0.0.3" # Replace `latest` with the latest version tag
+
+  providers = {
+    opensearch = opensearch.app_logs
+  }
+
+  opensearch_primary_domain       = local.live_app_logs_domain
+  opensearch_domain_names      = [local.live_app_logs_domain, "test-restore"] # List of domain names allowed to assume the role
+}
