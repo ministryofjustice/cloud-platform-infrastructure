@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4.2.2
-      - uses: ministryofjustice/github-actions/code-formatter@db1a54895bf5fb975c60af47e5a3aab96505ca3e # v18.6.0
+      - uses: ministryofjustice/github-actions/code-formatter@9c552c078797be58222f42f311cdf52c5fabd9ee # v19.0.0
         with:
           ignore-files: "terraform.tfvars"
           terraform-version: 1.2.5
