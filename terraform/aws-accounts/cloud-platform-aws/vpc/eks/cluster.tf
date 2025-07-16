@@ -368,6 +368,6 @@ module "aws_eks_addons" {
 
   addon_vpc_cni_version    = "v1.19.6-eksbuild.1"
   addon_coredns_version    = "v1.11.4-eksbuild.14"
-  addon_kube_proxy_version = "v1.30.13-eksbuild.2"
+  addon_kube_proxy_version = "v1.31.10-eksbuild.2"
 }
 
