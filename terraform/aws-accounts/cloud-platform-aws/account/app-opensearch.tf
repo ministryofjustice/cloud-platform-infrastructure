@@ -472,7 +472,7 @@ module "live_app_logs_opensearch_monitoring" {
 }
 
 module "opensearch_snapshot_repository" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-snapshot-repository?ref=0.0.8"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-snapshot-repository?ref=0.0.10"
 
   providers = {
     opensearch = opensearch.app_logs
