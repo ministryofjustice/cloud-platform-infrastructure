@@ -470,3 +470,15 @@ module "live_app_logs_opensearch_monitoring" {
   free_storage_space_total_threshold = aws_opensearch_domain.live_app_logs.ebs_options[0].volume_size * aws_opensearch_domain.live_app_logs.cluster_config[0].instance_count * 0.25 * 1024
   tags                               = local.app_logs_tags
 }
+
+module "opensearch_snapshot_repository" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-snapshot-repository?ref=0.0.8"
+
+  providers = {
+    opensearch = opensearch.app_logs
+  }
+
+  opensearch_primary_domain = local.live_app_logs_domain
+  opensearch_domain_names   = [local.live_app_logs_domain, "test-restore"] # List of domain names allowed to assume the role
+
+}
