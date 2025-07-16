@@ -478,8 +478,8 @@ module "opensearch_snapshot_repository" {
     opensearch = opensearch.app_logs
   }
 
-  opensearch_primary_domain = local.live_app_logs_domain
-  opensearch_domain_names   = [local.live_app_logs_domain, "test-restore"] # List of domain names allowed to assume the role
+  opensearch_primary_domain         = local.live_app_logs_domain
+  opensearch_domain_names           = [local.live_app_logs_domain, "test-restore"] # List of domain names allowed to assume the role
   additional_snapshot_backend_roles = [aws_iam_role.os_access_role_app_logs.arn]
 
 }
