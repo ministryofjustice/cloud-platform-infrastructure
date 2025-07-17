@@ -83,12 +83,12 @@ data "aws_iam_policy_document" "assume_role_policy" {
     }
 
     condition {
-    test     = "ArnLike"
-    variable = "aws:SourceArn"
-    values = [
+      test     = "ArnLike"
+      variable = "aws:SourceArn"
+      values = [
         for domain_name in local.snapshot_allowed_domains :
         "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${domain_name}"
-    ]
+      ]
     }
   }
 }
@@ -104,7 +104,7 @@ resource "aws_iam_role" "opensearch_snapshot_role" {
 
 # Mapping IAM role to manage_snapshots so it can register snapshot repositories
 resource "opensearch_roles_mapping" "manage_snapshots_mapping" {
-  provider = opensearch.app_logs  
+  provider    = opensearch.app_logs
   role_name   = "manage_snapshots"
   description = "Mapping IAM roles to manage_snapshots so it can register snapshot repositories"
 
@@ -122,8 +122,8 @@ resource "opensearch_roles_mapping" "manage_snapshots_mapping" {
 # Attach the s3 repository to the snapshot
 resource "opensearch_snapshot_repository" "this" {
   provider = opensearch.app_logs
-  name = "${local.live_app_logs_domain}-snapshot-s3-repository"
-  type = "s3"
+  name     = "${local.live_app_logs_domain}-snapshot-s3-repository"
+  type     = "s3"
 
   settings = {
     bucket   = module.s3_bucket_live_app_log.s3_bucket_id
