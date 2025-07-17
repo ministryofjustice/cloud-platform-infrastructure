@@ -30,6 +30,32 @@ module "s3_bucket_live_app_log" {
   }
 }
 
+resource "aws_s3_bucket_policy" "snapshot_repo_policy" {
+  bucket = module.s3_bucket_live_app_log.s3_bucket_id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          AWS = aws_iam_role.opensearch_snapshot_role.arn
+        },
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ],
+        Resource = [
+          module.s3_bucket_live_app_log.s3_bucket_arn,
+          "${module.s3_bucket_live_app_log.s3_bucket_arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
 # Create IAM role for OpenSearch
 data "aws_iam_policy_document" "s3_snapshot_access" {
   statement {
