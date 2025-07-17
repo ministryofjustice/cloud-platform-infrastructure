@@ -65,7 +65,7 @@ resource "aws_iam_policy" "s3_snapshot_access" {
   policy      = data.aws_iam_policy_document.s3_snapshot_access.json
 }
 
-data "aws_iam_policy_document" "assume_role_policy" {
+data "aws_iam_policy_document" "os_s3_assume_role_policy" {
   statement {
     effect = "Allow"
 
@@ -95,7 +95,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 
 resource "aws_iam_role" "opensearch_snapshot_role" {
   name               = "${local.live_app_logs_domain}-snapshot-s3-role"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+  assume_role_policy = data.aws_iam_policy_document.os_s3_assume_role_policy.json
 
   managed_policy_arns = [
     aws_iam_policy.s3_snapshot_access.arn
