@@ -62,8 +62,8 @@ resource "aws_iam_policy" "os_access_policy_app_logs" {
         ]
       },
       {
-        Action = ["iam:PassRole"],
-        Effect = "Allow",
+        Action   = ["iam:PassRole"],
+        Effect   = "Allow",
         Resource = aws_iam_role.opensearch_snapshot_role.arn
       }
     ]
