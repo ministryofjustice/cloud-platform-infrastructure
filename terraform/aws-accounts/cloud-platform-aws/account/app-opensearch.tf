@@ -52,15 +52,20 @@ resource "aws_iam_policy" "os_access_policy_app_logs" {
   name = "opensearch-access-policy-app-logs"
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version = "2012-10-17",
     Statement = [
       {
-        Action = ["es:*"]
-        Effect = "Allow"
+        Action = ["es:*"],
+        Effect = "Allow",
         Resource = [
           "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${local.live_app_logs_domain}/*",
         ]
       },
+      {
+        Action   = ["iam:PassRole"],
+        Effect   = "Allow",
+        Resource = aws_iam_role.opensearch_snapshot_role.arn
+      }
     ]
   })
 }
