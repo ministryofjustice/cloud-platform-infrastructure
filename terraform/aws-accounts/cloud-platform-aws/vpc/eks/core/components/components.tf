@@ -157,7 +157,7 @@ module "non_prod_ingress_controllers_v1" {
 }
 
 module "non_prod_modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.14.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.15.0"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -182,11 +182,17 @@ module "non_prod_modsec_ingress_controllers_v1" {
 
   default_tags = local.default_tags
 
+  # Required variables for tags in S3-Bucket submodule
+  business_unit = local.default_tags["business-unit"]
+  application   = local.default_tags["application"]
+  is_production = local.default_tags["is-production"]
+  team_name     = local.default_tags["owner"]
+
   depends_on = [module.ingress_controllers_v1]
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.14.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.15.0"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
@@ -207,6 +213,12 @@ module "modsec_ingress_controllers_v1" {
   fluent_bit_version           = "4.0.2-amd64"
 
   default_tags = local.default_tags
+
+  # Required variables for tags in S3-Bucket submodule
+  business_unit = local.default_tags["business-unit"]
+  application   = local.default_tags["application"]
+  is_production = local.default_tags["is-production"]
+  team_name     = local.default_tags["owner"]
 
   depends_on = [module.ingress_controllers_v1]
 }
