@@ -31,8 +31,7 @@ resource "aws_iam_role" "os_access_role_app_logs" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy_app_logs.json
 
   managed_policy_arns = [
-    aws_iam_policy.os_access_policy_app_logs.arn,
-    aws_iam_policy.os_access_s3_snapshot_policy_app_logs.arn
+    aws_iam_policy.os_access_policy_app_logs.arn
   ]
 }
 
@@ -62,39 +61,9 @@ resource "aws_iam_policy" "os_access_policy_app_logs" {
         ]
       },
       {
-        Action   = ["iam:PassRole"],
+        Action   = ["iam:PassRole"], # this is to pass the snapshot role to OpenSearch Service
         Effect   = "Allow",
         Resource = aws_iam_role.opensearch_snapshot_role.arn
-      }
-    ]
-  })
-}
-
-resource "aws_iam_policy" "os_access_s3_snapshot_policy_app_logs" {
-  name = "opensearch-access-s3-snapshot-policy-app-logs"
-
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Effect = "Allow",
-        Action = [
-          "s3:ListBucket"
-        ],
-        Resource = [
-          module.s3_bucket_live_app_log.s3_bucket_arn
-        ]
-      },
-      {
-        Effect = "Allow",
-        Action = [
-          "s3:GetObject",
-          "s3:PutObject",
-          "s3:DeleteObject"
-        ],
-        Resource = [
-          "${module.s3_bucket_live_app_log.s3_bucket_arn}/*"
-        ]
       }
     ]
   })
