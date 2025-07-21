@@ -319,6 +319,8 @@ resource "elasticsearch_opensearch_roles_mapping" "all_access" {
   backend_roles = concat([
     "webops",
     aws_iam_role.os_access_role.arn,
+    data.terraform_remote_state.components_live.outputs.fluent_bit_modsec_irsa_arn,
+    data.terraform_remote_state.components_live.outputs.fluent_bit_non_prod_modsec_irsa_arn,
   ], values(data.aws_eks_node_group.current)[*].node_role_arn)
   // Permissions to manager-concourse in order to run modsec logging tests
   users = ["arn:aws:iam::754256621582:user/cloud-platform/manager-concourse", "arn:aws:iam::754256621582:role/aws-reserved/sso.amazonaws.com/eu-west-2/AWSReservedSSO_AdministratorAccess_ae2d551dbf676d8f"]
