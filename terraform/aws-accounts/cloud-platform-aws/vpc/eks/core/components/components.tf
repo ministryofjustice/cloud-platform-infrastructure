@@ -157,7 +157,7 @@ module "non_prod_ingress_controllers_v1" {
 }
 
 module "non_prod_modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.15.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.15.1"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -192,7 +192,7 @@ module "non_prod_modsec_ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.15.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.15.1"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
