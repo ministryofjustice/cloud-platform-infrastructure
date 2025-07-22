@@ -78,6 +78,16 @@ module "cloud-platform-firewall-rule-group" {
     rules_source = {
       stateful_rule = local.stateful_rules
     }
+    rule_variables = {
+      ip_sets = [
+        { key    = "HOME_NET"
+          ip_set = { definition = ["172.20.0.0/16", "10.195.0.0/16"] }
+        },
+        { key    = "EXTERNAL_NET"
+          ip_set = { definition = ["10.25.0.0/15", "10.205.0.0/16"] }
+        }
+      ]
+    }
   }
 }
 
