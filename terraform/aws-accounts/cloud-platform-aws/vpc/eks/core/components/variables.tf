@@ -4,10 +4,10 @@ variable "live1_domain" {
   type        = string
 }
 
-variable "alertmanager_slack_receivers" {
-  description = "A list of configuration values for Slack receivers"
-  type        = list(any)
-}
+# variable "alertmanager_slack_receivers" {
+#   description = "A list of configuration values for Slack receivers"
+#   type        = list(any)
+# }
 
 variable "elasticsearch_hosts_maps" {
   description = "Cloud Platform ElasticSearch hosts for each Terraform workspace"

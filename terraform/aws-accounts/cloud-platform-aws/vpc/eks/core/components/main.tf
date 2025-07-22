@@ -175,3 +175,9 @@ locals {
     source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
   }
 }
+
+locals {
+  alertmanager_slack_receivers = jsondecode(
+    terraform.workspace == "live" ? data.aws_s3_object.alert_manager_config_live.body : data.aws_s3_object.alert_manager_config_test.body
+  )
+}

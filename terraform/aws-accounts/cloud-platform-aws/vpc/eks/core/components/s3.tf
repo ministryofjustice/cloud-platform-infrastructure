@@ -27,3 +27,13 @@ module "s3_bucket_alertmanager_slack_receivers" {
     }
   }
 }
+
+data "aws_s3_object" "alert_manager_config_live" {
+  bucket = "cloud-platform-hoodaw-reports"
+  key    = "alert_manager_receivers.json"
+}
+
+data "aws_s3_object" "alert_manager_config_test" {
+  bucket = "cloud-platform-hoodaw-reports"
+  key    = "alert_manager_receivers-dummy.json"
+}
