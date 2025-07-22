@@ -42,3 +42,9 @@ output "s3_bucket_modsec_logs_name" {
   description = "S3 bucket name for ModSecurity logs"
   value       = module.modsec_ingress_controllers_v1.s3_bucket_modsec_logs_name
 }
+
+output "alertmanager_slack_receivers" {
+  description = "Alertmanager Slack Receivers configuration"
+  value       = local.alertmanager_slack_receivers
+  sensitive   = true
+}
