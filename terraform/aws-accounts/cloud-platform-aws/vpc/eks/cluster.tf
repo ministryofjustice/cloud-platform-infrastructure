@@ -249,6 +249,7 @@ module "eks" {
   cloudwatch_log_group_retention_in_days = var.cluster_log_retention_in_days
   cluster_security_group_description     = "EKS cluster security group."
   cluster_security_group_name            = terraform.workspace
+  cluster_additional_security_group_ids  = [aws_security_group.karpenter_cluster_additional.id]
 
   create_node_security_group = false
   node_security_group_id     = aws_security_group.node.id
@@ -342,6 +343,11 @@ module "eks" {
       username = "{{SessionName}}"
       groups   = ["system:masters"]
     },
+    {
+      rolearn  = aws_iam_role.karpenter_node_role.arn
+      username = "system:node:{{EC2PrivateDNSName}}"
+      groups   = ["system:bootstrappers", "system:nodes"]
+    }
   ]
 
   tags = local.tags

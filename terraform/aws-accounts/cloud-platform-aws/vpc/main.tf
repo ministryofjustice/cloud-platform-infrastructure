@@ -105,6 +105,7 @@ module "vpc" {
   private_subnet_tags = merge({
     SubnetType                        = "Private"
     "kubernetes.io/role/internal-elb" = "1"
+    "karpenter.sh/discovery"          = "cp-2107-0807"
   }, local.cluster_tags)
 
   vpc_tags = local.vpc_tags
