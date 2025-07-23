@@ -16,9 +16,9 @@ locals {
       "172.20.0.0/16" = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment["inspection"].id,
       "10.195.0.0/16" = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment["inspection"].id,
     },
-    This will require established peering with LAA ECP and MOJ TGW for full routing assignments
     inspection = {
       /*
+      This will require established peering with LAA ECP and MOJ TGW for full routing assignment
       "10.0.0.0/8" = data.aws_ec2_transit_gateway_peering_attachment.moj-tgw.id,
       "172.12.0.0/12" = data.aws_ec2_transit_gateway_peering_attachment.moj-tgw.id,
       "192.168.0.0/16" = data.aws_ec2_transit_gateway_peering_attachment.moj-tgw.id,
@@ -80,7 +80,7 @@ module "cloud-platform-transit-gateway" {
 }
 
 resource "aws_ec2_transit_gateway_peering_attachment_accepter" "laa-ecp-prod-tgw" {
-  transit_gateway_attachment_id = "tgw-0ffb674cc543a84ae"
+  transit_gateway_attachment_id = "tgw-attach-08f56a523d8575bec"
 }
 
 /* aws_ec2_transit_gateway_route_table doesn't appear to consume default_tags supplied by the provider.
@@ -96,6 +96,11 @@ resource "aws_ec2_transit_gateway_route_table" "this" {
     owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
     source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
   }
+}
+
+resource "aws_ec2_transit_gateway_route_table_association" "laa-ecp-prod-tgw" {
+  transit_gateway_attachment_id  = aws_ec2_transit_gateway_peering_attachment_accepter.laa-ecp-prod-tgw.id
+  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table["external"].id
 }
 
 resource "aws_ec2_transit_gateway_route_table_association" "this" {
