@@ -6,7 +6,7 @@
     "destination_port": "ANY",
     "protocol": "IP"
   },
-  "001_drop_ecp_to_cp": {
+  "002_drop_ecp_to_cp": {
     "action": "DROP",
     "source_ip": "10.205.0.0/16",
     "destination_ip": "$HOME_NET",

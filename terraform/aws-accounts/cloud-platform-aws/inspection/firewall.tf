@@ -58,9 +58,14 @@ module "cloud-platform-firewall-policy" {
   stateless_default_actions          = ["aws:forward_to_sfe"]
   stateless_fragment_default_actions = ["aws:drop"]
 
-  stateful_rule_group_reference = [{
-    resource_arn = module.cloud-platform-firewall-rule-group.arn
-  }]
+  stateful_engine_options = {
+    rule_order = "STRICT_ORDER"
+  }
+
+  stateful_rule_group_reference = [
+    { priority = 1
+      resource_arn = module.cloud-platform-firewall-rule-group.arn }
+  ]
 }
 
 module "cloud-platform-firewall-rule-group" {
