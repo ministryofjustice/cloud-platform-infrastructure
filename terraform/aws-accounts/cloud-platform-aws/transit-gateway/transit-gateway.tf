@@ -100,7 +100,7 @@ resource "aws_ec2_transit_gateway_route_table" "this" {
 
 resource "aws_ec2_transit_gateway_route_table_association" "laa-ecp-prod-tgw" {
   transit_gateway_attachment_id  = aws_ec2_transit_gateway_peering_attachment_accepter.laa-ecp-prod-tgw.id
-  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table["external"].id
+  transit_gateway_route_table_id = aws_ec2_transit_gateway_route_table.this["external"].id
 }
 
 resource "aws_ec2_transit_gateway_route_table_association" "this" {
