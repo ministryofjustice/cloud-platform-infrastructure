@@ -64,7 +64,7 @@ module "cloud-platform-firewall-policy" {
 
   stateful_rule_group_reference = [
     { priority = 1
-      resource_arn = module.cloud-platform-firewall-rule-group.arn }
+    resource_arn = module.cloud-platform-firewall-rule-group.arn }
   ]
 }
 
