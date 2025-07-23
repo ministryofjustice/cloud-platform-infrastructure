@@ -73,7 +73,7 @@ module "cloud-platform-firewall-rule-group" {
 
   rule_group = {
     stateful_rule_options = {
-      rule_order = "DEFAULT_ACTION_ORDER"
+      rule_order = "STRICT_ORDER"
     }
     rules_source = {
       stateful_rule = local.stateful_rules
@@ -84,7 +84,7 @@ module "cloud-platform-firewall-rule-group" {
           ip_set = { definition = ["172.20.0.0/16", "10.195.0.0/16"] }
         },
         { key    = "EXTERNAL_NET"
-          ip_set = { definition = ["10.25.0.0/15", "10.205.0.0/16"] }
+          ip_set = { definition = ["0.0.0.0/0"] }
         }
       ]
     }
