@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.31.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.32.0"
 
   concourse_hostname                                = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                             = data.aws_ssm_parameter.components["github_auth_client_id"].value
@@ -80,7 +80,7 @@ module "label_pods_controller" {
 
 
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.18.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.19.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzones           = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
@@ -224,7 +224,7 @@ module "modsec_ingress_controllers_v1" {
 }
 
 module "kuberos" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.6.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-kuberos?ref=0.7.0"
 
   cluster_domain_name           = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   oidc_kubernetes_client_id     = data.terraform_remote_state.cluster.outputs.oidc_kubernetes_client_id
@@ -260,7 +260,7 @@ module "logging" {
 }
 
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.25.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.26.0"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? data.aws_ssm_parameter.components["pagerduty_config"].value : "dummy"
@@ -295,7 +295,7 @@ module "monitoring" {
 }
 
 module "starter_pack" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.2.6"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.3.0"
 
   enable_starter_pack = lookup(local.prod_2_workspace, terraform.workspace, false) ? false : true
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
@@ -320,7 +320,7 @@ module "velero" {
 }
 
 module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.11.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.12.0"
 
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
@@ -341,7 +341,7 @@ module "trivy-operator" {
 }
 
 module "github-teams-filter" {
-  source = "github.com/ministryofjustice/cloud-platform-github-teams-filter?ref=1.1.1"
+  source = "github.com/ministryofjustice/cloud-platform-github-teams-filter?ref=1.2.0"
 
   count          = terraform.workspace == "live" ? 1 : 0
   chart_version  = "1.0.1"
