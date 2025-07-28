@@ -18,7 +18,7 @@ To make the process safe and isolated, all restoration work is performed on a se
 
 This allows us to snapshot and restore large volumes of log data without affecting live service operations.
 
-## Script 1: `take_snpashot_cold_incides.sh`
+## Script 1: `take_snapshot_cold_indices.sh`
 
 This script:
 
@@ -28,7 +28,7 @@ This script:
 4. Tracks completed snapshots by prefixing the index with `snapshot-taken-`.
 5. Migrates the index back to cold tier after snapshot.
 
-## Script 2: `restore_snpashot.sh`
+## Script 2: `restore_snapshot.sh`
 
 This script:
 

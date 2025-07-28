@@ -133,19 +133,19 @@ while IFS= read -r line; do
     echo "Checking if index $raw_index_name is green..."
 
     while true; do
-    index_health=$(curl -s -XGET -L \
-        --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
-        ${USE_SESSION_TOKEN:+ -H "x-amz-security-token: $AWS_SESSION_TOKEN"}  \
-        --aws-sigv4 "aws:amz:eu-west-2:es" \
-        "$RESTORE_OS_ENDPOINT/_cat/indices/$raw_index_name?h=health")
+        index_health=$(curl -s -XGET -L \
+            --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
+            ${USE_SESSION_TOKEN:+ -H "x-amz-security-token: $AWS_SESSION_TOKEN"}  \
+            --aws-sigv4 "aws:amz:eu-west-2:es" \
+            "$RESTORE_OS_ENDPOINT/_cat/indices/$raw_index_name?h=health")
 
-    if [[ "$index_health" == "green" ]]; then
-        echo "Index $raw_index_name is green. Proceeding to migrate to warm tier."
-        break
-    else
-        echo "Index $raw_index_name health is $index_health. Sleeping 60s and retrying..."
-        sleep 10
-    fi
+        if [[ "$index_health" == "green" ]]; then
+            echo "Index $raw_index_name is green. Proceeding to migrate to warm tier."
+            break
+        else
+            echo "Index $raw_index_name health is $index_health. Sleeping 60s and retrying..."
+            sleep 10
+        fi
     done
 
     echo "Migrating $raw_index_name to warm tier..."
