@@ -116,6 +116,7 @@ locals {
     live    = true
     live-2  = true
     default = false
+    cp-2207-0938 = false
   }
 
   # Disable alerts to test clusters by default
