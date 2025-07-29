@@ -47,7 +47,7 @@ locals {
   public_subnet_suffix  = "public"
 
   private_route_table_ids = toset(module.vpc.private_route_table_ids)
-  public_route_table_ids = toset(module.vpc.public_route_table_ids)
+  public_route_table_ids  = toset(module.vpc.public_route_table_ids)
 
   /* Create a map of Availability Zones with corresponding VPC Endpoint IDs */
   az_to_endpoint_id = {
