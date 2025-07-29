@@ -68,7 +68,7 @@ wait_for_restore() {
       return 0
     else
       echo "Waiting for restore to complete..."
-      sleep 10
+      sleep 60
     fi
   done
 }
