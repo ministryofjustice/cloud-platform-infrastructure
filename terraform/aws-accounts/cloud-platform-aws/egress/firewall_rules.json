@@ -1,0 +1,9 @@
+{
+  "001_pass_cp_to_any": {
+    "action": "PASS",
+    "source_ip": "$HOME_NET",
+    "destination_ip": "$EXTERNAL_NET",
+    "destination_port": "ANY",
+    "protocol": "IP"
+  }
+}
