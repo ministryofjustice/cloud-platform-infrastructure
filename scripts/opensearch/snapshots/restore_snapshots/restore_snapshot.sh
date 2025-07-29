@@ -12,10 +12,10 @@ fi
 
 RESTORE_OS_ENDPOINT="https://search-test-restore-5utyz7htozji7omw54emmciqum.eu-west-2.es.amazonaws.com"
 SNAPSHOT_REPO="cp-live-app-logs-snapshot-s3-repository"
-S3_SOURCE_INDEX_FILE="s3://cloud-platform-concourse-environments-live-reports/opensearch-snapshots/source-index-list.txt"
-S3_RESTORED_INDEX_FILE="s3://cloud-platform-concourse-environments-live-reports/opensearch-snapshots/snapshot-restored.txt"
+S3_SOURCE_INDEX_FILE="s3://cloud-platform-concourse-environments-live-reports/opensearch-snapshots/source-index-list-test.txt"
+S3_RESTORED_INDEX_FILE="s3://cloud-platform-concourse-environments-live-reports/opensearch-snapshots/snapshot-restored-test.txt"
 
-MAX_BATCH=10
+MAX_BATCH=2
 TMP_FILE="$(mktemp)"
 RESTORED_INDICES_FILE="$(mktemp)"
 EXISTING_RESTORED_FILE="$(mktemp)"
@@ -25,14 +25,13 @@ aws s3 cp "$S3_SOURCE_INDEX_FILE" "$TMP_FILE"
 TOTAL_INDICES_TO_RESTORE=$(wc -l < "$TMP_FILE")
 aws s3 cp "$S3_RESTORED_INDEX_FILE" "$EXISTING_RESTORED_FILE"
 
-count=0
+COUNT=0
 
 wait_for_restore() {
   local index_name="$1"
   echo "Waiting for restore to complete for index: $index_name"
 
   while true; do
-    local all_done=false
     local recovery_output
     recovery_output=$(curl -s -XGET -L \
       --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
@@ -41,10 +40,9 @@ wait_for_restore() {
       "$RESTORE_OS_ENDPOINT/${index_name}/_recovery")
 
     local shard_count
-    shard_count=$(echo "$recovery_output" | jq ".\"${index_name}\".shards | length")
+    shard_count=$(echo "$recovery_output" | jq -r ".\"${index_name}\".shards | length")
     echo "Checking $shard_count shards for index: $index_name"
 
-    local snapshot_shard_indexes=()
     local ready_snapshot_shards=0
 
     for ((i = 0; i < shard_count; i++)); do
@@ -56,25 +54,21 @@ wait_for_restore() {
 
       echo "Shard $i — type=$type, stage=$stage, percent=$percent"
 
-      if [[ "$type" == "SNAPSHOT" ]]; then
-        snapshot_shard_indexes+=("$i")
-        if [[ "$stage" == "DONE" && "$percent" == "100.0%" ]]; then
-          ((ready_snapshot_shards++))
-        fi
+      if [[ "$type" == "SNAPSHOT" && "$stage" == "DONE" && "$percent" == "100.0%" ]]; then
+        (( ++ready_snapshot_shards ))
       fi
     done
 
-    local total_snapshot_shards=${#snapshot_shard_indexes[@]}
-    if [[ "$ready_snapshot_shards" -eq "$total_snapshot_shards" ]]; then
-      all_done=true
-    fi
+    total_snapshot_shards=$(echo "$recovery_output" | jq -r ".\"${index_name}\".shards | map(select(.type == \"SNAPSHOT\")) | length")    
+    
+    echo "Ready: $ready_snapshot_shards / Total: $total_snapshot_shards"
 
-    if [[ "$all_done" == true ]]; then
+    if (( ready_snapshot_shards == total_snapshot_shards )); then
       echo "Restore completed for index: $index_name"
       return 0
     else
       echo "Waiting for restore to complete..."
-      sleep 60
+      sleep 10
     fi
   done
 }
@@ -158,8 +152,8 @@ while IFS= read -r line; do
     echo
     echo "$raw_index_name" >> "$RESTORED_INDICES_FILE"
 
-    ((count++))
-    if [[ "$count" -ge "$MAX_BATCH" ]]; then
+    COUNT=$((COUNT + 1))
+    if [[ "$COUNT" -ge "$MAX_BATCH" ]]; then
       echo "Reached max batch size of $MAX_BATCH. Stopping."
       break
     fi
@@ -172,7 +166,7 @@ done < "$TMP_FILE"
 cat "$RESTORED_INDICES_FILE" >> "$EXISTING_RESTORED_FILE"
 aws s3 cp "$EXISTING_RESTORED_FILE" "$S3_RESTORED_INDEX_FILE"
 
-echo "Batch complete. $count index snapshots restored."
+echo "Batch complete. $COUNT index snapshots restored."
 
 TOTAL_RESTORED_INDICES=$(wc -l < "$EXISTING_RESTORED_FILE")
 
