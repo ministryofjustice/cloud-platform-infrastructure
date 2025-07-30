@@ -122,6 +122,7 @@ while IFS= read -r line; do
         }
       }'
 
+    sleep 100
     wait_for_restore "$raw_index_name"
 
     echo "Checking if index $raw_index_name is green..."
