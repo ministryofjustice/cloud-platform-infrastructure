@@ -1,14 +1,14 @@
 {
-  "001_drop_cp_to_ecp": {
-    "action": "DROP",
+  "001_allow_cp_to_ecp_2484": {
+    "action": "PASS",
     "source_ip": "$HOME_NET",
-    "destination_ip": "10.205.0.0/16",
-    "destination_port": "ANY",
-    "protocol": "IP"
+    "destination_ip": "10.205.0.0/20",
+    "destination_port": "2484",
+    "protocol": "TCP"
   },
   "002_drop_ecp_to_cp": {
     "action": "DROP",
-    "source_ip": "10.205.0.0/16",
+    "source_ip": "10.205.0.0/20",
     "destination_ip": "$HOME_NET",
     "destination_port": "ANY",
     "protocol": "IP"
