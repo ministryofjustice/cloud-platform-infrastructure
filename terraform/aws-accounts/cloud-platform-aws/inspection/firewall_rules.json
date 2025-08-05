@@ -2,7 +2,7 @@
   "001_allow_cp_to_ecp_2484": {
     "action": "PASS",
     "source_ip": "$HOME_NET",
-    "destination_ip": "10.205.0.0/20",
+    "destination_ip": "10.205.7.0/24",
     "destination_port": "2484",
     "protocol": "TCP"
   },
