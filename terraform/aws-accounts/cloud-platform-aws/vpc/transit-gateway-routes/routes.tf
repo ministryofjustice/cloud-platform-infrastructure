@@ -2,8 +2,12 @@
 locals {
   route_tables = data.terraform_remote_state.cluster-network.outputs.private_route_tables
 
-  pttp_tgw_id = "tgw-026162f1ba39ce704"
+  ecp_tgw_id = "tgw-0ffb674cc543a84ae"
+  ecp_tgw_destination_cidr_blocks = [
+    "10.205.7.0/24"
+  ]
 
+  pttp_tgw_id = "tgw-026162f1ba39ce704"
   pttp_tgw_destination_cidr_blocks = [
     "10.162.32.0/20", # Delius MIS Dev VPC
     "10.160.32.0/20", # Delius Core Stage VPC
@@ -29,5 +33,15 @@ module "tgw_route" {
   destination_cidr_block = each.key
 
   transit_gateway_id = local.pttp_tgw_id
+  route_tables       = local.route_tables
+}
+
+module "tgw_route_to_ecp" {
+  for_each = toset(local.ecp_tgw_destination_cidr_blocks)
+  source   = "./modules/tgw-route"
+
+  destination_cidr_block = each.key
+
+  transit_gateway_id = local.ecp_tgw_id
   route_tables       = local.route_tables
 }
