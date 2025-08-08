@@ -2,7 +2,7 @@
 locals {
   route_tables = data.terraform_remote_state.cluster-network.outputs.private_route_tables
 
-  ecp_tgw_id = "tgw-0ffb674cc543a84ae"
+  cp_tgw_id = data.aws_ec2_transit_gateway.cloud-platform-transit-gateway.id
   ecp_tgw_destination_cidr_blocks = [
     "10.205.7.0/24"
   ]
@@ -42,6 +42,6 @@ module "tgw_route_to_ecp" {
 
   destination_cidr_block = each.key
 
-  transit_gateway_id = local.ecp_tgw_id
+  transit_gateway_id = local.cp_tgw_id
   route_tables       = local.route_tables
 }
