@@ -102,7 +102,7 @@ data "aws_route53_zone" "live_2_cloud_platform_justice_gov_uk" {
 # needed for load balancer cert
 module "acm_live_2_app_logs" {
   source  = "terraform-aws-modules/acm/aws"
-  version = "5.1.1"
+  version = "6.1.0"
 
   domain_name = "app-logs.${data.aws_route53_zone.live_2_cloud_platform_justice_gov_uk.name}"
   zone_id     = data.aws_route53_zone.live_2_cloud_platform_justice_gov_uk.zone_id
