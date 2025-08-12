@@ -1,5 +1,5 @@
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.13.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.13.2"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
