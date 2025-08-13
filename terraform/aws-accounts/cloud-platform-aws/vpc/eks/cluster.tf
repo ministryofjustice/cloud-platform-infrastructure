@@ -85,7 +85,7 @@ locals {
 
   default_ng_16_09_24 = {
     desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_size     = 85
+    max_size     = 120
     min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
 
     block_device_mappings = {
