@@ -1,5 +1,5 @@
 module "external_dns" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.19.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-external-dns?ref=1.20.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzones           = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
