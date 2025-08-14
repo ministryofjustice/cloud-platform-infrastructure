@@ -1,0 +1,30 @@
+{
+  "001_pass_cp_to_any_tcp": {
+    "action": "PASS",
+    "source_ip": "$HOME_NET",
+    "destination_ip": "$EXTERNAL_NET",
+    "destination_port": "ANY",
+    "protocol": "TCP"
+  },
+  "002_allow_cp_to_any_udp": {
+    "action": "PASS",
+    "source_ip": "$HOME_NET",
+    "destination_ip": "$EXTERNAL_NET",
+    "destination_port": "ANY",
+    "protocol": "UDP"
+  },
+  "003_allow_cp_to_any_icmp": {
+    "action": "PASS",
+    "source_ip": "$HOME_NET",
+    "destination_ip": "$EXTERNAL_NET",
+    "destination_port": "ANY",
+    "protocol": "ICMP"
+  },
+  "004_drop_ecp_to_any_ip": {
+    "action": "PASS",
+    "source_ip": "$HOME_NET",
+    "destination_ip": "$EXTERNAL_NET",
+    "destination_port": "ANY",
+    "protocol": "IP"
+  }
+}
