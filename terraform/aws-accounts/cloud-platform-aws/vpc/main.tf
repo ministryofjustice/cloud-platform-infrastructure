@@ -83,6 +83,13 @@ module "vpc" {
     cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 6, 2)
   ]
 
+  # We're borrowing the redshift_subnets input to create firewall subnets
+  redshift_subnets = [
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 12, 195),
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 12, 196),
+    cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 12, 197)
+  ]
+
   manage_default_network_acl    = false
   manage_default_route_table    = false
   manage_default_security_group = false
@@ -106,6 +113,10 @@ module "vpc" {
     SubnetType                        = "Private"
     "kubernetes.io/role/internal-elb" = "1"
   }, local.cluster_tags)
+
+  # We're borrowing the redshift_subnets input to create firewall subnets
+  redshift_subnet_names  = [for key in var.availability_zones : "${local.vpc_name}-firewall-${key}"]
+  redshift_subnet_suffix = "firewall"
 
   vpc_tags = local.vpc_tags
 
