@@ -7,12 +7,7 @@ import (
 	"fmt"
 	"unused-policies/utils"
 
-	// AWS SDK packages
-	// Used for getting core AWS service API calls
-
-	"github.com/aws/aws-sdk-go-v2/config" // Loads AWS creds
-	// IAM client
-	// Gets AWS account ID
+	"github.com/aws/aws-sdk-go-v2/config"
 )
 
 func derefString(s *string) string {
