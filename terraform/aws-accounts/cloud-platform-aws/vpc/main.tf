@@ -115,8 +115,9 @@ module "vpc" {
   }, local.cluster_tags)
 
   # We're borrowing the redshift_subnets input to create firewall subnets
-  redshift_subnet_names  = [for key in var.availability_zones : "${local.vpc_name}-firewall-${key}"]
-  redshift_subnet_suffix = "firewall"
+  redshift_subnet_names        = [for key in var.availability_zones : "${local.vpc_name}-firewall-${key}"]
+  redshift_subnet_suffix       = "firewall"
+  create_redshift_subnet_group = false
 
   vpc_tags = local.vpc_tags
 
