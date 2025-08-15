@@ -189,14 +189,14 @@ locals {
         ebs = {
           volume_size           = 200
           volume_type           = "gp3"
-          iops                  = 0
+          iops                  = 4000
+          throughput            = 150
           encrypted             = false
           kms_key_id            = ""
           delete_on_termination = true
         }
       }
     }
-
 
     subnet_ids = data.aws_subnets.thanos_nodegroup_az.ids
     name       = "${terraform.workspace}-thanos-ng"
