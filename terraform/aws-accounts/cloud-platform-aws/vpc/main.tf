@@ -94,7 +94,7 @@ module "vpc" {
   enable_dns_hostnames   = true
   one_nat_gateway_per_az = true
 
-  intra_subnet_names  = [for key in var.availability_zones : "transit-${key}"]
+  intra_subnet_names  = [for key in var.availability_zones : "${local.vpc_name}-transit-${key}"]
   intra_subnet_suffix = "transit"
 
   public_subnet_tags = merge({
