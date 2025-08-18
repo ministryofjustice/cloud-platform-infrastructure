@@ -2,7 +2,7 @@ resource "aws_subnet" "firewall_private" {
   count = 3
 
   vpc_id                  = module.vpc.vpc_id
-  cidr_block              = cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 3, count.index + 4)
+  cidr_block              = cidrsubnet(lookup(local.vpc_cidr, terraform.workspace, local.vpc_cidr["default"]), 12, count.index + 195)
   availability_zone       = var.availability_zones[count.index]
   map_public_ip_on_launch = false
 
