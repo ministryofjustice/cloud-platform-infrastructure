@@ -7,9 +7,9 @@ USE_SESSION_TOKEN=$1
 # hot = 9 * 1 = 9
 # warm = 9 * 30 = 270
 # update the threshold when the indices are stable
-HOT_INDICES_THRESHOLD=78
+HOT_INDICES_THRESHOLD=18 # some buffer for reindex
 
-WARM_INDICES_THRESHOLD=223
+WARM_INDICES_THRESHOLD=280 # some buffer for warm migration
 
 HOT_COUNT=$(curl -sL \
   --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
