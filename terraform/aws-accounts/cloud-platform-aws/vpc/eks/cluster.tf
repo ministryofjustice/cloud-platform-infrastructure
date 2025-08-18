@@ -187,10 +187,10 @@ locals {
       xvda = {
         device_name = "/dev/xvda"
         ebs = {
-          volume_size           = 200
+          volume_size           = 400
           volume_type           = "gp3"
-          iops                  = 4000
-          throughput            = 150
+          iops                  = 6000
+          throughput            = 300
           encrypted             = false
           kms_key_id            = ""
           delete_on_termination = true
