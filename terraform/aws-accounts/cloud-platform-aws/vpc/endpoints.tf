@@ -5,8 +5,8 @@ module "vpc_endpoints" {
   vpc_id     = module.vpc.vpc_id
   subnet_ids = module.vpc.private_subnets
 
-  create_security_group      = false
-  security_group_ids         = [aws_security_group.interface_endpoints.id]
+  create_security_group      = true
+#   security_group_ids         = [aws_security_group.interface_endpoints.id]
 
   endpoints = {
     ssm = {
@@ -35,14 +35,6 @@ module "vpc_endpoints" {
     },
     ecr_dkr = {
       service             = "ecr.dkr"
-      private_dns_enabled = true
-    },
-    eks = {
-      service             = "eks"
-      private_dns_enabled = true
-    }
-    ec2 = {
-      service             = "ec2" 
       private_dns_enabled = true
     }
   }
