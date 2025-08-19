@@ -36,6 +36,14 @@ module "vpc_endpoints" {
     ecr_dkr = {
       service             = "ecr.dkr"
       private_dns_enabled = true
+    },
+    eks = {
+      service             = "eks"
+      private_dns_enabled = true
+    }
+    ec2 = {
+      service             = "ec2" 
+      private_dns_enabled = true
     }
   }
 
