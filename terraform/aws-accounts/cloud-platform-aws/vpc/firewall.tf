@@ -97,7 +97,7 @@ module "cloud-platform-firewall-rule-group" {
     rule_variables = {
       ip_sets = [
         { key    = "HOME_NET"
-          ip_set = { definition = ["172.20.0.0/16", "10.195.0.0/16"] }
+          ip_set = { definition = ["0.0.0.0/0"] }
         },
         { key    = "EXTERNAL_NET"
           ip_set = { definition = ["0.0.0.0/0"] }
@@ -178,31 +178,31 @@ resource "aws_route" "private_subnets_to_firewall" {
 /// The following add routes from the public subnet to corresponding AZ firewall endpoints
 /// create_multiple_public_route_tables needs to be `true` in the vpc module
 
-# resource "aws_route" "public_subnets_to_private" {
-#   count = length(module.vpc.public_route_table_ids)
+resource "aws_route" "public_subnets_to_private" {
+  count = length(module.vpc.public_route_table_ids)
 
-#   route_table_id         = module.vpc.public_route_table_ids[count.index]
-#   destination_cidr_block = module.vpc.private_subnets_cidr_blocks[count.index]
-#   vpc_endpoint_id        = local.firewall_endpoints[var.availability_zones[count.index]]
+  route_table_id         = module.vpc.public_route_table_ids[count.index]
+  destination_cidr_block = module.vpc.private_subnets_cidr_blocks[count.index]
+  vpc_endpoint_id        = local.firewall_endpoints[var.availability_zones[count.index]]
 
-#   # Ensure vpc and firewall is created before adding routes
-#   depends_on = [
-#     module.cloud-platform-firewall,
-#     module.vpc
-#   ]
-# }
+  # Ensure vpc and firewall is created before adding routes
+  depends_on = [
+    module.cloud-platform-firewall,
+    module.vpc
+  ]
+}
 
-# resource "aws_route" "public_subnets_to_eks_private" {
-#   count = length(module.vpc.public_route_table_ids)
+resource "aws_route" "public_subnets_to_eks_private" {
+  count = length(module.vpc.public_route_table_ids)
 
-#   route_table_id         = module.vpc.public_route_table_ids[count.index]
-#   destination_cidr_block = aws_subnet.eks_private[count.index].cidr_block
-#   vpc_endpoint_id        = local.firewall_endpoints[var.availability_zones[count.index]]
+  route_table_id         = module.vpc.public_route_table_ids[count.index]
+  destination_cidr_block = aws_subnet.eks_private[count.index].cidr_block
+  vpc_endpoint_id        = local.firewall_endpoints[var.availability_zones[count.index]]
 
-#   # Ensure vpc and firewall is created before adding routes
-#   depends_on = [
-#     module.cloud-platform-firewall,
-#     module.vpc,
-#     aws_subnet.eks_private
-#   ]
-# }
+  # Ensure vpc and firewall is created before adding routes
+  depends_on = [
+    module.cloud-platform-firewall,
+    module.vpc,
+    aws_subnet.eks_private
+  ]
+}
