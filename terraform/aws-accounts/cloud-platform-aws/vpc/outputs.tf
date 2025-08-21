@@ -29,12 +29,12 @@ output "vpc_id" {
 }
 
 output "internal_subnets" {
-  value       = concat(module.vpc.private_subnets_cidr_blocks, tolist(aws_subnet.eks_private[*].cidr_block))
+  value       = concat(module.vpc.private_subnets_cidr_blocks, tolist(aws_subnet.eks_private[*].cidr_block), tolist(aws_subnet.firewall_private[*].cidr_block))
   description = "List of subnet CIDR blocks that are not publicly accessible"
 }
 
 output "internal_subnets_ids" {
-  value       = concat(module.vpc.private_subnets, tolist(aws_subnet.eks_private[*].id))
+  value       = concat(module.vpc.private_subnets, tolist(aws_subnet.eks_private[*].id), tolist(aws_subnet.firewall_private[*].id))
   description = "Private subnet IDs"
 }
 
@@ -46,6 +46,11 @@ output "external_subnets" {
 output "external_subnets_ids" {
   value       = module.vpc.public_subnets
   description = "Public subnet IDs"
+}
+
+output "firewall_subnets_ids" {
+  description = "Firewall subnet IDs"
+  value       = aws_subnet.firewall_private[*].id
 }
 
 output "nat_gateway_ips" {
