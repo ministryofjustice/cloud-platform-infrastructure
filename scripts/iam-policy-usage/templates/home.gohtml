@@ -1,0 +1,36 @@
+{{define "home"}}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Policy Usage</title>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+	<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+	<div id="navbar"></div>
+	<script src="/templates/nav.js"></script>
+	<script>renderNavbar();</script>
+	<header>
+		<h1>Policy Usage</h1>
+	</header>
+	<main>
+		<div class="container">
+			<h2>Welcome to the Policy Usage Dashboard</h2>
+			<p>Select a report from the navigation bar to view detailed charts and statistics.</p>
+			<li><a href="/owners">Policy Owners</a></li>
+			<li><a href="/stale1yr">Stale Policies over 1 Year</a></li>
+			<li><a href="/stale30day">Stale Policies over 30 Days</a></li>
+		</div>
+	</main>
+	<footer>
+	</footer>
+</body>
+  <!-- jquery & Bootstrap JS -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="/templates/nav.js"></script>
+</html>
+{{end}}

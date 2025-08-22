@@ -1,0 +1,66 @@
+    {{define "charts"}}
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <title>Go Templates</title>
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+      </head>
+      <body>
+  <div id="navbar"></div>
+  <script src="/templates/nav.js"></script>
+  <script>renderNavbar();</script>
+        <div class="container-fluid">
+          <h1>{{.Title}}</h1>
+          <h3>{{.Subtitle}}</h3>
+          <div class="row">
+            <div class="col-md-6">
+              <canvas id="pieChart"></canvas>
+            </div>
+            <div class="col-md-6">
+              <table class="table table-bordered">
+                <thead><tr><th>Label</th><th>Value</th></tr></thead>
+                <tbody>
+                  {{range .Data}}
+                  <tr><td>{{.Label}}</td><td>{{.Value}}</td></tr>
+                  {{end}}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- jquery & Bootstrap JS -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+        // Prepare data for Chart.js
+        const pieLabels = [
+          {{range .Data}}"{{.Label}}",{{end}}
+        ];
+        const pieValues = [
+          {{range .Data}}{{.Value}},{{end}}
+        ];
+        const ctx = document.getElementById('pieChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: pieLabels,
+            datasets: [{
+              data: pieValues,
+              backgroundColor: [
+                '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#C9CBCF'
+              ]
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: 'bottom' }
+            }
+          }
+        });
+        </script>
+      </body>
+    </html>
+    {{end}}
