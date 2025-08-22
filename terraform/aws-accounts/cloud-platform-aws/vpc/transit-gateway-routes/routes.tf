@@ -4,8 +4,7 @@ locals {
 
   cp_tgw_id = data.aws_ec2_transit_gateway.cloud-platform-transit-gateway.id
   ecp_tgw_destination_cidr_blocks = [
-    "10.205.7.0/24",
-    "10.205.15.0/24"
+    "10.205.14.0/24"
   ]
 
   pttp_tgw_id = "tgw-026162f1ba39ce704"
