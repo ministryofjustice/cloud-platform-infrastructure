@@ -175,8 +175,8 @@ resource "aws_route" "private_subnets_to_firewall" {
   ]
 }
 
-/// The following add routes from the public subnet to corresponding AZ firewall endpoints
-/// create_multiple_public_route_tables needs to be `true` in the vpc module
+# The following add routes from the public subnet to corresponding AZ firewall endpoints
+# create_multiple_public_route_tables needs to be `true` in the vpc module
 
 resource "aws_route" "public_subnets_to_private" {
   count = length(module.vpc.public_route_table_ids)
@@ -204,5 +204,20 @@ resource "aws_route" "public_subnets_to_eks_private" {
     module.cloud-platform-firewall,
     module.vpc,
     aws_subnet.eks_private
+  ]
+}
+
+# Route from private subnets to public subnets via firewall endpoints
+resource "aws_route" "private_subnets_to_public" {
+  count = length(module.vpc.private_route_table_ids)
+
+  route_table_id         = module.vpc.private_route_table_ids[count.index]
+  destination_cidr_block = module.vpc.public_subnets_cidr_blocks[count.index]
+  vpc_endpoint_id        = local.firewall_endpoints[var.availability_zones[count.index]]
+
+  # Ensure vpc and firewall is created before adding routes
+  depends_on = [
+    module.cloud-platform-firewall,
+    module.vpc
   ]
 }
