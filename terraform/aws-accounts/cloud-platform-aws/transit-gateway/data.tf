@@ -18,7 +18,7 @@ data "aws_subnets" "transit" {
   }
   filter {
     name   = "tag:Name"
-    values = ["transit-*"]
+    values = ["*-transit-*"]
   }
 }
 
