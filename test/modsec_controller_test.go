@@ -25,6 +25,9 @@ var _ = Describe("modsec-ingress-controller", Serial, func() {
 	)
 
 	BeforeEach(func() {
+		if c.ClusterName == "manager" {
+			Skip("no modsec ingress controllers on manager cluster, skipping..")
+		}
 		namespaceName = fmt.Sprintf("%s-modsec-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 		host = fmt.Sprintf("%s.apps.%s.%s", namespaceName, c.ClusterName, domain)
 
