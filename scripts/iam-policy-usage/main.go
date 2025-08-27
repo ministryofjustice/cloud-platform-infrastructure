@@ -84,5 +84,22 @@ func main() {
 		return c.Type("html").SendString(utils.ExecuteTemplateToString(tmpl, "charts", chart))
 	})
 
+	app.Get("/unattached", func(c *fiber.Ctx) error {
+		chart := charts.PieChart{}
+		r, err := aws.DownloadCSVFromS3ToReader(bucket, key)
+		if err != nil {
+			return err
+		}
+		err = chart.UnattachedPolicies(r)
+		if err != nil {
+			return err
+		}
+		tmpl, err := template.ParseFiles("templates/template.gohtml")
+		if err != nil {
+			return err
+		}
+		return c.Type("html").SendString(utils.ExecuteTemplateToString(tmpl, "charts", chart))
+	})
+
 	log.Fatal(app.Listen(":3000"))
 }
