@@ -89,10 +89,10 @@ module "vpc" {
 
   public_dedicated_network_acl = true //Creates a dedicated network ACL and attaches to the public subnets
 
-  enable_nat_gateway     = true
-  enable_vpn_gateway     = false
-  enable_dns_hostnames   = true
-  one_nat_gateway_per_az = true
+  enable_nat_gateway                  = true
+  enable_vpn_gateway                  = false
+  enable_dns_hostnames                = true
+  one_nat_gateway_per_az              = true
   create_multiple_public_route_tables = true
 
   intra_subnet_names  = [for key in var.availability_zones : "${local.vpc_name}-transit-${key}"]
