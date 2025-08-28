@@ -31,6 +31,12 @@ locals {
     "github_actions_secrets_token",
     "pagerduty_config"
   ]
+
+  github_concourse_bot = [
+    "app_id",
+    "installation_id",
+    "pem_file"
+  ]
 }
 
 # Components SSM Parameters are managed in live workspace
@@ -52,4 +58,19 @@ data "aws_ssm_parameter" "components" {
   for_each = toset(local.ssm_parameters)
 
   name = "/cloud-platform/infrastructure/components/${each.value}"
+}
+
+resource "aws_ssm_parameter" "github_concourse_bot_app" {
+  for_each = terraform.workspace == "manager" ? toset(local.github_concourse_bot) : toset([])
+
+  name        = "/cloud-platform/infrastructure/components/github_cloud_platform_concourse_bot_app/${each.value}"
+  type        = "SecureString"
+  value       = "PLACEHOLDER"
+  description = "infrastructure/components terraform secret: github_cloud_platform_concourse_bot_app/${each.value}"
+
+  overwrite = true
+
+  lifecycle {
+    ignore_changes = [value]
+  }
 }
