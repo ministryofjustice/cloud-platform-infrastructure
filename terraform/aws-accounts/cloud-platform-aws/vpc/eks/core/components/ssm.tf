@@ -29,7 +29,10 @@ locals {
     "hoodaw_host",
     "hoodaw_api_key",
     "github_actions_secrets_token",
-    "pagerduty_config"
+    "pagerduty_config",
+    "github_cloud_platform_concourse_bot_app_id",
+    "github_cloud_platform_concourse_bot_installation_id",
+    "github_cloud_platform_concourse_bot_pem_file"
   ]
 }
 
