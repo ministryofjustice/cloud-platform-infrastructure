@@ -93,6 +93,7 @@ module "vpc" {
   enable_vpn_gateway     = false
   enable_dns_hostnames   = true
   one_nat_gateway_per_az = true
+  create_multiple_public_route_tables = true
 
   intra_subnet_names  = [for key in var.availability_zones : "${local.vpc_name}-transit-${key}"]
   intra_subnet_suffix = "transit"
