@@ -1,23 +1,6 @@
 locals {
-  raw_rules        = fileexists("./firewall_rules.json") ? jsondecode(file("./firewall_rules.json")) : {}
-  sorted_rule_keys = sort(keys(local.raw_rules))
-  stateful_rules = [for idx, key in local.sorted_rule_keys : {
-    action = local.raw_rules[key].action
-    header = {
-      destination      = local.raw_rules[key].destination_ip
-      destination_port = local.raw_rules[key].destination_port
-      direction        = "ANY"
-      protocol         = local.raw_rules[key].protocol
-      source           = local.raw_rules[key].source_ip
-      source_port      = "ANY"
-    }
-    rule_option = [
-      {
-        keyword  = "sid"
-        settings = [tostring(idx + 1)]
-      }
-    ]
-  }]
+  firewall_rules_string = fileexists("./firewall_rules.rules") ? file("./firewall_rules.rules") : ""
+
   subnets = { for idx, subnet in aws_subnet.firewall_private : "subnet${idx + 1}" =>
     {
       subnet_id       = subnet.id
@@ -95,15 +78,12 @@ module "cloud-platform-firewall-rule-group" {
       rule_order = "STRICT_ORDER"
     }
     rules_source = {
-      stateful_rule = local.stateful_rules
+      rules_string = local.firewall_rules_string
     }
     rule_variables = {
       ip_sets = [
         { key    = "HOME_NET"
-          ip_set = { definition = ["0.0.0.0/0"] }
-        },
-        { key    = "EXTERNAL_NET"
-          ip_set = { definition = ["0.0.0.0/0"] }
+          ip_set = { definition = ["${module.vpc.vpc_cidr_block}"] }
         }
       ]
     }
