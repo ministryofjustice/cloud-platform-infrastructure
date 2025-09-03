@@ -3,7 +3,6 @@ module "descheduler" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-descheduler?ref=0.9.2"
 
   depends_on = [
-    module.monitoring,
-    module.label_pods_controller
+    module.monitoring
   ]
 }

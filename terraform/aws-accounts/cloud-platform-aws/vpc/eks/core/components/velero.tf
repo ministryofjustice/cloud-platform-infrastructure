@@ -5,8 +5,4 @@ module "velero" {
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
   node_agent_cpu_requests     = "2m"
-
-  depends_on = [
-    module.label_pods_controller
-  ]
 }

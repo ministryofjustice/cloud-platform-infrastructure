@@ -3,8 +3,4 @@ module "external_secrets_operator" {
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
   secrets_prefix              = terraform.workspace
-
-  depends_on = [
-    module.label_pods_controller
-  ]
 }

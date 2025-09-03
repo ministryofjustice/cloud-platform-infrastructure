@@ -17,10 +17,6 @@ module "ingress_controllers_v1" {
   memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
 
   default_tags = local.default_tags
-
-  depends_on = [
-    module.label_pods_controller
-  ]
 }
 
 module "non_prod_ingress_controllers_v1" {
@@ -44,10 +40,6 @@ module "non_prod_ingress_controllers_v1" {
   memory_limits   = "20Gi"
 
   default_tags = local.default_tags
-
-  depends_on = [
-    module.label_pods_controller
-  ]
 }
 
 module "modsec_ingress_controllers_v1" {

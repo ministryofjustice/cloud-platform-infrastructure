@@ -12,7 +12,6 @@ module "cluster_autoscaler" {
   live_cpu_request    = "200m"
 
   depends_on = [
-    module.label_pods_controller,
     module.monitoring
   ]
 }
