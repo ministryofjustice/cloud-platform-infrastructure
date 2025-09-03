@@ -7,6 +7,6 @@ module "label_pods_controller" {
   image_tag = "1.2.0"
 
   depends_on = [
-    "cert_manager"
+    module.cert_manager
   ]
 }
