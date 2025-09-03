@@ -13,8 +13,4 @@ module "trivy-operator" {
   trivy_timeout       = "10m0s"
   severity_list       = "HIGH,CRITICAL"
   enable_trivy_server = "true"
-
-  depends_on = [
-    module.label_pods_controller
-  ]
 }
