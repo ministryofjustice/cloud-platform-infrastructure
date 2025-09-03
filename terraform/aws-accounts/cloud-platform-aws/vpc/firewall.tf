@@ -83,7 +83,7 @@ module "cloud-platform-firewall-rule-group" {
     rule_variables = {
       ip_sets = [
         { key    = "HOME_NET"
-          ip_set = { definition = ["${module.vpc.vpc_cidr_block}"] }
+          ip_set = { definition = [module.vpc.vpc_cidr_block] }
         }
       ]
     }
