@@ -1,9 +1,55 @@
 # ────────────────────────────────────────────────────────────────
 #  C P   N e t w o r k   F i r e w a l l   R u l e s
-#  Version : 1.0   (2025-09-03)
-#  Scope   : Inbound and Outbound traffic from $HOME_NET to any
-#  Action  : drop = block, alert = detect-only
+#  Version : 1.2   (2025-09-04)
+#  Scope   : Organised by traffic initiation direction
+#  Action  : drop = block, alert = detect-only, pass = allow
+# ────────────────────────────────────────────────────────────────
+#
+#  SID NUMBER RANGES:
+#  ┌─────────────┬──────────────────────────────────────────────┐
+#  │ SID Range   │ Purpose                                      │
+#  ├─────────────┼──────────────────────────────────────────────┤
+#  │ 1-99        │ Emergency/Critical blocking rules            │
+#  │ 100-999     │ High priority security rules                 │
+#  │ 1000-4999   │ Standard security policies                   │
+#  │ 5000+       │ Current default allow rules                  │
+#  └─────────────┴──────────────────────────────────────────────┘
+#
+#  EXAMPLES:
+#  Emergency:    drop tcp any any -> any 22 (sid:1;)
+#  High Priority: drop tcp $HOME_NET any -> $MALWARE_IPS any (sid:100;)
+#  Standard:     alert tcp any any -> any 3389 (sid:1000;)
+#  Current:      pass tcp $HOME_NET any -> 0.0.0.0/0 any (sid:5010;)
+#
 # ────────────────────────────────────────────────────────────────
 
-pass ip $HOME_NET any -> 0.0.0.0/0 any (msg:"1001_pass_cloud_platform_to_any"; sid:1001; rev:1;)
-pass ip 0.0.0.0/0 any -> $HOME_NET any (msg:"1002_pass_any_to_cloud_platform"; sid:1002; rev:1;)
+# ═══════════════════════════════════════════════════════════════
+#  EGRESS INITIATED TRAFFIC (Cloud Platform → External)
+# ═══════════════════════════════════════════════════════════════
+
+# New outbound connections
+pass tcp $HOME_NET any -> 0.0.0.0/0 any (msg:"5010_egress_tcp_new"; flow:to_server; sid:5010; rev:1;)
+pass udp $HOME_NET any -> 0.0.0.0/0 any (msg:"5011_udp_outbound"; sid:5011; rev:1;)
+pass icmp $HOME_NET any -> 0.0.0.0/0 any (msg:"5012_egress_icmp"; sid:5012; rev:1;)
+
+# Return traffic for egress-initiated connections
+pass tcp 0.0.0.0/0 any -> $HOME_NET any (msg:"5015_egress_return_tcp"; flow:from_server,established; sid:5015; rev:1;)
+
+# ═══════════════════════════════════════════════════════════════
+#  INGRESS INITIATED TRAFFIC (External → Cloud Platform)
+# ═══════════════════════════════════════════════════════════════
+
+# New inbound connections
+pass tcp 0.0.0.0/0 any -> $HOME_NET any (msg:"5020_ingress_tcp_new"; flow:to_server; sid:5020; rev:1;)
+pass udp 0.0.0.0/0 any -> $HOME_NET any (msg:"5021_udp_inbound"; sid:5021; rev:1;)
+pass icmp 0.0.0.0/0 any -> $HOME_NET any (msg:"5022_ingress_icmp"; sid:5022; rev:1;)
+
+# Return traffic for ingress-initiated connections
+pass tcp $HOME_NET any -> 0.0.0.0/0 any (msg:"5025_ingress_return_tcp"; flow:from_server,established; sid:5025; rev:1;)
+
+# ═══════════════════════════════════════════════════════════════
+#  BACKUP/FALLBACK RULES (Safety Net)
+# ═══════════════════════════════════════════════════════════════
+
+pass ip $HOME_NET any -> 0.0.0.0/0 any (msg:"5090_backup_all_outbound"; sid:5090; rev:1;)
+pass ip 0.0.0.0/0 any -> $HOME_NET any (msg:"5091_backup_all_inbound"; sid:5091; rev:1;)
