@@ -74,11 +74,11 @@ module "vpc" {
   enable_flow_log = true
 
   intra_subnets       = local.intra_subnets
-  intra_subnet_names  = [for key in local.azs : "transit-${key}"]
+  intra_subnet_names  = [for key in local.azs : "inspection-vpc-transit-${key}"]
   intra_subnet_suffix = local.intra_subnet_suffix
 
   private_subnets       = local.private_subnets
-  private_subnet_names  = [for key in local.azs : "firewall-${key}"]
+  private_subnet_names  = [for key in local.azs : "inspection-vpc-firewall-${key}"]
   private_subnet_suffix = local.private_subnet_suffix
 }
 
