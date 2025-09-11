@@ -130,9 +130,9 @@ locals {
   }
 
   default_ng_10_10_25 = {
-    desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_size     = 120
-    min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+    desired_size = 1
+    max_size     = 1
+    min_size     = 1
 
     block_device_mappings = {
       xvda = {
@@ -150,7 +150,7 @@ locals {
 
     subnet_ids           = data.aws_subnets.eks_private.ids
     bootstrap_extra_args = "--use-max-pods false"
-    kubelet_extra_args   = "--max-pods=110 --registry-qps=50"
+    kubelet_extra_args   = "--max-pods=100 --registry-qps=50"
     name                 = "${terraform.workspace}-def-ng"
 
     create_security_group  = false
