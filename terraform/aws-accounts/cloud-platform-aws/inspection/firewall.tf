@@ -27,12 +27,12 @@ locals {
   vpc = module.vpc.vpc_id
 }
 
-module "cloud-platform-firewall" {
+module "inspection-firewall" {
   source              = "terraform-aws-modules/network-firewall/aws//modules/firewall"
   version             = "1.0.2"
   description         = "Network firewall positioned to secure flows between Cloud Platform and the MOJ internal network."
-  firewall_policy_arn = module.cloud-platform-firewall-policy.arn
-  name                = "cloud-platform-firewall"
+  firewall_policy_arn = module.inspection-firewall-policy.arn
+  name                = "inspection-firewall"
   subnet_mapping      = local.subnets
   vpc_id              = local.vpc
 
@@ -49,11 +49,11 @@ module "cloud-platform-firewall" {
   ]
 }
 
-module "cloud-platform-firewall-policy" {
+module "inspection-firewall-policy" {
   source      = "terraform-aws-modules/network-firewall/aws//modules/policy"
   version     = "1.0.2"
-  description = "Firewall policy intended for cloud-platform-firewall"
-  name        = "cloud-platform-firewall-policy"
+  description = "Firewall policy intended for inspection-firewall"
+  name        = "inspection-firewall-policy"
 
   stateless_default_actions          = ["aws:forward_to_sfe"]
   stateless_fragment_default_actions = ["aws:drop"]
@@ -64,16 +64,16 @@ module "cloud-platform-firewall-policy" {
 
   stateful_rule_group_reference = [
     { priority = 1
-    resource_arn = module.cloud-platform-firewall-rule-group.arn }
+    resource_arn = module.inspection-firewall-rule-group.arn }
   ]
 }
 
-module "cloud-platform-firewall-rule-group" {
+module "inspection-firewall-rule-group" {
   source      = "terraform-aws-modules/network-firewall/aws//modules/rule-group"
   version     = "1.0.2"
   capacity    = 30000
   description = "Stateful rule group configured to control traffic between Cloud Platform and the MOJ internal network."
-  name        = "cloud-platform-firewall-stateful-rules"
+  name        = "inspection-firewall-stateful-rules"
   type        = "STATEFUL"
 
   rule_group = {
@@ -97,6 +97,6 @@ module "cloud-platform-firewall-rule-group" {
 }
 
 resource "aws_cloudwatch_log_group" "logs" {
-  name_prefix       = "cloud-platform-firewall-logs"
+  name_prefix       = "inspection-firewall-logs"
   retention_in_days = 7
 }
