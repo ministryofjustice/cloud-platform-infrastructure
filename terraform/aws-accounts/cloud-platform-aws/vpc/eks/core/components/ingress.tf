@@ -132,7 +132,7 @@ module "ingress_controllers_laa" {
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
 
-  internal_load_balancer   = true
+  internal_load_balancer = true
 
   memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "2Gi" : "512Mi"
   memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "1Gi"
