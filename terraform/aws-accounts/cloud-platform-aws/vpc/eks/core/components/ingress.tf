@@ -130,7 +130,7 @@ module "ingress_controllers_laa" {
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
   # Enable this when we remove the module "ingress_controllers"
-  enable_external_dns_annotation = true
+  enable_external_dns_annotation = false
 
   internal_load_balancer = true
 
