@@ -145,11 +145,13 @@ resource "aws_route53_record" "parent_zone_cluster_ns" {
 }
 
 resource "aws_route53_zone" "internal_ingress_controller_zone" {
+  count = local.is_live_cluster ? 1 : 0
   name          = "internal.cloud-platform.service.justice.gov.uk."
   force_destroy = true
 }
 
 resource "aws_route53_record" "parent_zone_internal_ns" {
+  count = local.is_live_cluster ? 1 : 0
   zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
   name    = aws_route53_zone.internal_ingress_controller_zone.name
   type    = "NS"
