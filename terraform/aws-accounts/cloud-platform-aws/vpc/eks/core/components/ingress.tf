@@ -121,7 +121,7 @@ module "ingress_controllers_laa" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.16.0"
 
   replica_count            = terraform.workspace == "live" ? "3" : "1"
-  controller_name          = "laa"
+  controller_name          = "laa-internal"
   proxy_response_buffering = "on"
   enable_anti_affinity     = terraform.workspace == "live" ? true : false
   enable_latest_tls        = true
