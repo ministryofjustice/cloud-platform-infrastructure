@@ -155,9 +155,28 @@ locals {
 
     create_security_group  = false
     create_launch_template = true
+
     pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-140824.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
+
+    cloudinit_pre_nodeadm = [
+      {
+        content_type = "application/node.eks.aws"
+        content      = <<-EOT
+        ---
+        apiVersion: node.eks.aws/v1alpha1
+        kind: NodeConfig
+        spec:
+          kubelet:
+            config:
+              maxPods: 90 # Set for testing purposes
+              registryPullQPS: 15 # Number of registry pulls per second
+              registryBurst: 30 # Temporarily allow burst to 30
+      EOT
+      }
+    ]
+
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
