@@ -160,6 +160,8 @@ locals {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
+    platform = "al2023"
+    ami_type = "AL2023_x86_64_STANDARD"
     cloudinit_pre_nodeadm = [
       {
         content_type = "application/node.eks.aws"
@@ -295,7 +297,11 @@ locals {
     ]
   }
   eks_managed_node_groups = merge(
-    { default_ng_16_09_24 = local.default_ng_16_09_24, default_ng_10_10_25 = local.default_ng_10_10_25, monitoring_ng_19_03_25 = local.monitoring_ng_19_03_25 },
+    {
+      default_ng_16_09_24 = local.default_ng_16_09_24,
+      # default_ng_10_10_25 = local.default_ng_10_10_25,
+      monitoring_ng_19_03_25 = local.monitoring_ng_19_03_25
+    },
   terraform.workspace == "manager" ? { thanos_ng_17_12_24 = local.thanos_ng_17_12_24 } : {})
 }
 
