@@ -113,7 +113,7 @@ resource "aws_route53_zone" "internal_laa_ingress_controller_zone" {
 resource "aws_route53_record" "parent_zone_laa_internal_ns" {
   count   = local.is_live_cluster ? 1 : 0
   zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
-  name    = aws_route53_zone.laa_internal_ingress_controller_zone[count.index].name
+  name    = aws_route53_zone.internal_laa_ingress_controller_zone[count.index].name
   type    = "NS"
   ttl     = "30"
 
