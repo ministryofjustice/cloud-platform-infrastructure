@@ -120,6 +120,8 @@ module "non_prod_modsec_ingress_controllers_v1" {
 module "ingress_controllers_laa" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.16.0"
 
+  count = terraform.workspace == "live" ? 1 : 0
+
   replica_count            = terraform.workspace == "live" ? "3" : "1"
   controller_name          = "internal-laa"
   proxy_response_buffering = "on"
