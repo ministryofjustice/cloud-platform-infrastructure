@@ -88,7 +88,7 @@ resource "aws_route53_zone" "internal_dev_ingress_controller_zone" {
   force_destroy = true
 }
 
-resource "aws_route53_record" "parent_zone_dev_internal_ns" {
+resource "aws_route53_record" "parent_zone_internal_dev_ns" {
   count   = local.is_live_cluster ? 1 : 0
   zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
   name    = aws_route53_zone.internal_dev_ingress_controller_zone[count.index].name
@@ -110,7 +110,7 @@ resource "aws_route53_zone" "internal_laa_ingress_controller_zone" {
   force_destroy = true
 }
 
-resource "aws_route53_record" "parent_zone_laa_internal_ns" {
+resource "aws_route53_record" "parent_zone_internal_laa_ns" {
   count   = local.is_live_cluster ? 1 : 0
   zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
   name    = aws_route53_zone.internal_laa_ingress_controller_zone[count.index].name
