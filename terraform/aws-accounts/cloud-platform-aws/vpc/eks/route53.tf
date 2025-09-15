@@ -103,6 +103,7 @@ resource "aws_route53_record" "parent_zone_dev_internal_ns" {
   ]
 }
 
+# This is a temporary zone @TODO rename to prod-internal
 resource "aws_route53_zone" "laa_internal_ingress_controller_zone" {
   count         = local.is_live_cluster ? 1 : 0
   name          = "laa-internal.cloud-platform.service.justice.gov.uk."
