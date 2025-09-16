@@ -75,6 +75,11 @@ locals {
     default = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
   }
 
+  arm_node_size = {
+    arm     = ["m8g.xlarge", "m8g.2xlarge", "m7g.xlarge"]
+    default = ["m8g.xlarge", "m8g.2xlarge", "m7g.xlarge"]
+  }
+
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
 
   tags = {
@@ -130,9 +135,9 @@ locals {
   }
 
   default_ng_10_10_25 = {
-    desired_size = 1
-    max_size     = 1
-    min_size     = 1
+    desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
+    max_size     = 120
+    min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
 
     block_device_mappings = {
       xvda = {
@@ -149,35 +154,14 @@ locals {
     }
 
     subnet_ids           = data.aws_subnets.eks_private.ids
-    bootstrap_extra_args = "--use-max-pods false"
-    kubelet_extra_args   = "--max-pods=100 --registry-qps=50"
     name                 = "${terraform.workspace}-def-ng"
 
     create_security_group  = false
     create_launch_template = true
 
-    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-140824.tpl", {
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
-
-    platform = "al2023"
-    ami_type = "AL2023_x86_64_STANDARD"
-    cloudinit_pre_nodeadm = [
-      {
-        content_type = "application/node.eks.aws"
-        content      = <<-EOT
-        ---
-        apiVersion: node.eks.aws/v1alpha1
-        kind: NodeConfig
-        spec:
-          kubelet:
-            config:
-              maxPods: 90 # Set for testing purposes
-              registryPullQPS: 15 # Number of registry pulls per second
-              registryBurst: 30 # Temporarily allow burst to 30
-      EOT
-      }
-    ]
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
 
@@ -296,10 +280,11 @@ locals {
       }
     ]
   }
+
   eks_managed_node_groups = merge(
     {
       default_ng_16_09_24 = local.default_ng_16_09_24,
-      # default_ng_10_10_25 = local.default_ng_10_10_25,
+      default_ng_10_10_25 = local.default_ng_10_10_25,
       monitoring_ng_19_03_25 = local.monitoring_ng_19_03_25
     },
   terraform.workspace == "manager" ? { thanos_ng_17_12_24 = local.thanos_ng_17_12_24 } : {})
