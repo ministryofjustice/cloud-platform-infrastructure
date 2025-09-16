@@ -72,7 +72,7 @@ var _ = Describe("logging", Ordered, func() {
 				},
 			}
 
-			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", helloVar)
+			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment-v1-default-cert.yaml.tmpl", "helloworld-deployment-v1-default-cert.yaml.tmpl", helloVar)
 			Expect(err).ToNot(HaveOccurred())
 
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)

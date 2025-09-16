@@ -58,7 +58,7 @@ var _ = Describe("ingress-controllers", Serial, func() {
 				"namespace": namespaceName,
 			}
 
-			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment-v1.yaml.tmpl", "helloworld-deployment-v1.yaml.tmpl", TemplateVars)
+			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment-v1-default-cert.yaml.tmpl", "helloworld-deployment-v1-default-cert.yaml.tmpl", TemplateVars)
 			if err != nil {
 				Fail("Failed to create helloworld deployment: " + err.Error())
 			}
