@@ -40,7 +40,7 @@ locals {
 
   /* Create a map of Availability Zones with corresponding VPC Endpoint IDs */
   az_to_endpoint_id = {
-    for sync in module.cloud-platform-firewall.status[0].sync_states :
+    for sync in module.inspection-firewall.status[0].sync_states :
     sync.availability_zone => sync.attachment[0].endpoint_id
   }
 

@@ -116,3 +116,32 @@ module "non_prod_modsec_ingress_controllers_v1" {
 
   depends_on = [module.ingress_controllers_v1]
 }
+
+module "ingress_controllers_laa" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.16.0"
+
+  count = terraform.workspace == "live" ? 1 : 0
+
+  replica_count            = terraform.workspace == "live" ? "3" : "1"
+  controller_name          = "internal-laa"
+  proxy_response_buffering = "on"
+  enable_anti_affinity     = terraform.workspace == "live" ? true : false
+  enable_latest_tls        = true
+  cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+
+  # Enable this when we remove the module "ingress_controllers"
+  enable_external_dns_annotation = false
+
+  internal_load_balancer = true
+
+  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "2Gi" : "512Mi"
+  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "1Gi"
+
+  default_tags = local.default_tags
+
+  depends_on = [
+    module.label_pods_controller
+  ]
+}

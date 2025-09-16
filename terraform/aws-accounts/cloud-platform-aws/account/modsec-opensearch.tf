@@ -425,6 +425,50 @@ resource "elasticsearch_opensearch_roles_mapping" "all_org_members" {
   ]
 }
 
+# Role for security teams
+resource "elasticsearch_opensearch_role" "org_sec_audit_modsec_logs" {
+  role_name   = "organisation_security_auditor"
+  description = "role for all org sec auditor github users"
+
+  cluster_permissions = [
+    "search",
+    "data_access",
+    "read",
+    "opensearch_dashboards_all_read",
+    "get",
+    "cluster:admin/opendistro/alerting/alerts/get",
+    "cluster:admin/opendistro/alerting/alerts/ack",
+    "cluster:admin/opendistro/alerting/monitors/get",
+    "cluster:admin/opendistro/alerting/monitors/search",
+    "cluster:admin/opensearch/notifications/configs/get"
+  ]
+
+  index_permissions {
+    index_patterns  = ["*"]
+    allowed_actions = ["read", "search", "data_access"]
+  }
+
+  index_permissions {
+    index_patterns  = ["live_k8s_modsec_ingress-*"]
+    allowed_actions = ["read", "search", "data_access"]
+  }
+
+  tenant_permissions {
+    tenant_patterns = ["global_tenant"]
+    allowed_actions = ["kibana_all_read"]
+  }
+}
+
+resource "elasticsearch_opensearch_roles_mapping" "org_sec_audit_modsec_logs" {
+  role_name     = "organisation_security_auditor"
+  description   = "Mapping AWS IAM roles to ES role organisation-security-auditor"
+  backend_roles = ["organisation-security-auditor"]
+  depends_on = [
+    aws_opensearch_domain_saml_options.live_modsec_audit,
+    elasticsearch_opensearch_role.org_sec_audit_modsec_logs
+  ]
+}
+
 module "live_mod_sec_opensearch_monitoring" {
   source                                   = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.2"
   alarm_name_prefix                        = "CP-live-mod-sec-"

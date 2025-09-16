@@ -319,17 +319,43 @@ resource "elasticsearch_opensearch_role" "org_sec_audit_app_logs" {
   role_name   = "organisation-security-auditor"
   description = "role for all org sec auditor github users"
 
-  cluster_permissions = ["*"]
+  cluster_permissions = [
+    "search",
+    "data_access",
+    "read",
+    "opensearch_dashboards_all_read",
+    "get",
+    "cluster:admin/opendistro/alerting/alerts/get",
+    "cluster:admin/opendistro/alerting/alerts/ack",
+    "cluster:admin/opendistro/alerting/monitor/get",
+    "cluster:admin/opendistro/alerting/monitor/write",
+    "cluster:admin/opendistro/alerting/monitor/search",
+    "cluster:admin/opendistro/alerting/monitor/execute",
+    "cluster:admin/opensearch/notifications/configs/get",
+    "cluster:admin/opendistro/reports/definition/create",
+    "cluster:admin/opendistro/reports/definition/update",
+    "cluster:admin/opendistro/reports/definition/on_demand",
+    "cluster:admin/opendistro/reports/definition/delete",
+    "cluster:admin/opendistro/reports/definition/get",
+    "cluster:admin/opendistro/reports/definition/list",
+    "cluster:admin/opendistro/reports/menu/download",
+    "cluster:admin/opendistro/reports/instance/get",
+    "cluster:admin/opendistro/reports/instance/list",
+  ]
 
   index_permissions {
-    index_patterns          = ["*"]
-    allowed_actions         = ["cluster_all", "indices_all", "unlimited"]
-    document_level_security = "{\"match_all\": {}}"
+    index_patterns  = ["*"]
+    allowed_actions = ["read", "search", "data_access", "indices:monitor/settings/get"]
+  }
+
+  index_permissions {
+    index_patterns  = ["live_kubernetes_cluster-*"]
+    allowed_actions = ["read", "search", "data_access"]
   }
 
   tenant_permissions {
     tenant_patterns = ["global_tenant"]
-    allowed_actions = ["kibana_all_write"]
+    allowed_actions = ["kibana_all_read"]
   }
 }
 
