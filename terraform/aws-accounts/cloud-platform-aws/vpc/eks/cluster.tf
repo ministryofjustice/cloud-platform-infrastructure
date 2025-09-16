@@ -75,11 +75,6 @@ locals {
     default = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
   }
 
-  arm_node_size = {
-    arm     = ["m8g.xlarge", "m8g.2xlarge", "m7g.xlarge"]
-    default = ["m8g.xlarge", "m8g.2xlarge", "m7g.xlarge"]
-  }
-
   dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
 
   tags = {
