@@ -71,7 +71,7 @@ var _ = Describe("ingress-controllers", Serial, func() {
 			GinkgoWriter.Printf("Checking that the ingress is available at %s\n", url)
 
 			jobVar := map[string]interface{}{
-				"jobName":    "smoketest-internal-ingress",
+				"jobName":   "smoketest-internal-ingress",
 				"host":      host,
 				"namespace": namespaceName,
 			}
