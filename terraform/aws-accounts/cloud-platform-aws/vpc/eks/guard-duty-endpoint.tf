@@ -1,7 +1,7 @@
 resource "aws_security_group" "guardduty_vpce" {
   name        = "guardduty-vpce-sg"
   description = "Security group for GuardDuty VPC endpoint"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = data.aws_vpc.selected.id
 
   ingress {
     from_port   = 443
@@ -24,7 +24,7 @@ resource "aws_security_group" "guardduty_vpce" {
 
 # GuardDuty interface endpoint
 resource "aws_vpc_endpoint" "guardduty_runtime" {
-  vpc_id            = module.vpc.vpc_id
+  vpc_id            = data.aws_vpc.selected.id
   vpc_endpoint_type = "Interface"
 
   service_name = "com.amazonaws.eu-west-2.guardduty-data"
