@@ -1,4 +1,4 @@
-``module "starter_pack" {
+module "starter_pack" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-starter-pack?ref=0.3.1"
 
   enable_starter_pack = lookup(local.prod_2_workspace, terraform.workspace, false) ? false : true
