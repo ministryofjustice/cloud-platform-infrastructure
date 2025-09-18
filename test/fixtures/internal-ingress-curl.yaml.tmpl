@@ -8,9 +8,9 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-      - name: helloworld
-        image: bitnamilegacy/nginx:1.25-debian-11
-        command: ["/bin/bash", "-c", "for i in {1..100}; do echo -n 'hello, world {{ .namespace }}' $(date +\"%Y-%m-%d %H:%M:%S,%3N\") '\n'; done"]
+      - name: smoketest-internal-ingress
+        image: ministryofjustice/curl-jq:1
+        command: ["/bin/sh", "-c", "curl -i https://{{ .host }}"]
         securityContext:
           allowPrivilegeEscalation: false
           runAsNonRoot: true
