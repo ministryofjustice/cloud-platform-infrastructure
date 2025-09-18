@@ -353,7 +353,7 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.18.9"
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?feature/test-guarduty-agent"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
@@ -364,5 +364,6 @@ module "aws_eks_addons" {
   addon_vpc_cni_version    = "v1.19.6-eksbuild.7"
   addon_coredns_version    = "v1.11.4-eksbuild.14"
   addon_kube_proxy_version = "v1.31.10-eksbuild.2"
+  addon_guardduty_agent    = "v1.5.0-eksbuild.1"
 }
 
