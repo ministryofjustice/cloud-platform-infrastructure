@@ -38,14 +38,3 @@ resource "aws_vpc_endpoint" "guardduty_runtime" {
     Name = "guardduty-runtime-endpoint"
   }
 }
-
-data "aws_subnets" "eks_private" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.selected.id]
-  }
-
-  tags = {
-    SubnetType = "EKS-Private"
-  }
-}
