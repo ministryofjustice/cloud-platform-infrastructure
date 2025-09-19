@@ -17,7 +17,7 @@ import (
 var _ = Describe("ingress-controllers", Serial, func() {
 	var (
 		namespaceName, host string
-		options                  *k8s.KubectlOptions
+		options             *k8s.KubectlOptions
 	)
 
 	BeforeEach(func() {
@@ -42,28 +42,28 @@ var _ = Describe("ingress-controllers", Serial, func() {
 	})
 
 	Context("when an ingress resource is deployed using invalid ingress class", func() {
-	       It("should fail with gatekeeper deny msg", func() {
-		       setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
-		       class := "bad-ingress-class"
+		It("should fail with gatekeeper deny msg", func() {
+			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
+			class := "bad-ingress-class"
 
-		       TemplateVars := map[string]interface{}{
-			       "ingress_annotations": map[string]string{
-				       "external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
-				       "external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
-			       },
-			       "host":      host,
-			       "class":     class,
-			       "namespace": namespaceName,
-		       }
+			TemplateVars := map[string]interface{}{
+				"ingress_annotations": map[string]string{
+					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
+					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
+				},
+				"host":      host,
+				"class":     class,
+				"namespace": namespaceName,
+			}
 
-		       tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment-v1-default-cert.yaml.tmpl", "helloworld-deployment-v1-default-cert.yaml.tmpl", TemplateVars)
-		       if err != nil {
-			       Fail("Failed to create helloworld deployment: " + err.Error())
-		       }
+			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment-v1-default-cert.yaml.tmpl", "helloworld-deployment-v1-default-cert.yaml.tmpl", TemplateVars)
+			if err != nil {
+				Fail("Failed to create helloworld deployment: " + err.Error())
+			}
 
-		       err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
-		       Expect(err).ToNot(BeNil())
-		       Expect(err.Error()).To(ContainSubstring("denied the request: [k8singressclassname]"))
-	       })
+			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("denied the request: [k8singressclassname]"))
+		})
 	})
 })
