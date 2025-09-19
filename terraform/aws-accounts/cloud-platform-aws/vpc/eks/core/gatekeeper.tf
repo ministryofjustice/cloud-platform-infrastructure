@@ -1,5 +1,5 @@
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.16.11"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.17.0"
 
   dryrun_map = {
     service_type                       = false,
@@ -22,6 +22,7 @@ module "gatekeeper" {
     lock_priv_capabilities        = true,
     allow_duplicate_hostname_yaml = false,
     block_ingresses               = true,
+    ingress_valid_classname       = false,
   }
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
