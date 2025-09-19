@@ -159,6 +159,7 @@ module "ingress_controllers_internal" {
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+  default_cert             = "ingress-controllers/internal-certificate"
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = false
@@ -188,6 +189,7 @@ module "ingress_controllers_internal_non_prod" {
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+  default_cert             = "ingress-controllers/internal-non-prod-certificate"
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = false
