@@ -1,5 +1,5 @@
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.16.11"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=guardduty-agent"
 
   dryrun_map = {
     service_type                       = false,
