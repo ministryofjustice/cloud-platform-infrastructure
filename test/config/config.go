@@ -181,7 +181,7 @@ func (c *Config) ExpectedManagerPromRules() {
 // ExpectedNamespaces returns a slice of all the namespaces
 // that are expected to be in the cluster.
 func (c *Config) ExpectedNamespaces() {
-	c.Namespaces = append(c.Namespaces, "cert-manager", "ingress-controllers", "logging", "monitoring", "gatekeeper-system", "velero", "calico-system", "calico-apiserver", "tigera-operator", "trivy-system", "external-secrets-operator", "cloud-platform-label-pods", "kuberos", "kube-system", "default")
+	c.Namespaces = append(c.Namespaces, "amazon-guardduty", "cert-manager", "ingress-controllers", "logging", "monitoring", "gatekeeper-system", "velero", "calico-system", "calico-apiserver", "tigera-operator", "trivy-system", "external-secrets-operator", "cloud-platform-label-pods", "kuberos", "kube-system", "default")
 }
 
 // ExpectedServices returns a slice of all the Services
