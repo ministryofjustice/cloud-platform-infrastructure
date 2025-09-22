@@ -1,5 +1,5 @@
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.14.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.15.11"
 
   replica_count            = terraform.workspace == "live" ? "30" : "3"
   controller_name          = "default"
@@ -24,7 +24,7 @@ module "ingress_controllers_v1" {
 }
 
 module "non_prod_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.14.7"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.15.11"
   count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "6"
@@ -118,7 +118,7 @@ module "non_prod_modsec_ingress_controllers_v1" {
 }
 
 module "ingress_controllers_laa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.16.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.17.0"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -130,6 +130,66 @@ module "ingress_controllers_laa" {
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+
+  # Enable this when we remove the module "ingress_controllers"
+  enable_external_dns_annotation = false
+
+  internal_load_balancer = true
+
+  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "2Gi" : "512Mi"
+  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "1Gi"
+
+  default_tags = local.default_tags
+
+  depends_on = [
+    module.label_pods_controller
+  ]
+}
+
+module "ingress_controllers_internal" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.17.0"
+
+  count = terraform.workspace == "live" ? 1 : 0
+
+  replica_count            = terraform.workspace == "live" ? "3" : "1"
+  controller_name          = "internal"
+  proxy_response_buffering = "on"
+  enable_anti_affinity     = terraform.workspace == "live" ? true : false
+  enable_latest_tls        = true
+  cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+  default_cert             = "ingress-controllers/internal-certificate"
+
+  # Enable this when we remove the module "ingress_controllers"
+  enable_external_dns_annotation = false
+
+  internal_load_balancer = true
+
+  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "2Gi" : "512Mi"
+  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "1Gi"
+
+  default_tags = local.default_tags
+
+  depends_on = [
+    module.label_pods_controller
+  ]
+}
+
+module "ingress_controllers_internal_non_prod" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.17.0"
+
+  count = terraform.workspace == "live" ? 1 : 0
+
+  replica_count            = terraform.workspace == "live" ? "2" : "1"
+  controller_name          = "internal-non-prod"
+  proxy_response_buffering = "on"
+  enable_anti_affinity     = false
+  enable_latest_tls        = true
+  cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+  is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
+  live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+  default_cert             = "ingress-controllers/internal-non-prod-certificate"
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = false

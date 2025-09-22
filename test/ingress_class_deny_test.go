@@ -3,7 +3,6 @@ package integration_tests
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 
@@ -17,15 +16,14 @@ import (
 
 var _ = Describe("ingress-controllers", Serial, func() {
 	var (
-		namespaceName, host, url string
-		options                  *k8s.KubectlOptions
+		namespaceName, host string
+		options             *k8s.KubectlOptions
 	)
 
 	BeforeEach(func() {
 		namespaceName = fmt.Sprintf("%s-ing-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 		host = fmt.Sprintf("%s.apps.%s.%s", namespaceName, c.ClusterName, domain)
 		options = k8s.NewKubectlOptions("", "", namespaceName)
-		url = fmt.Sprintf("https://%s", host)
 
 		nsObject := metav1.ObjectMeta{
 			Name: namespaceName,
@@ -43,10 +41,10 @@ var _ = Describe("ingress-controllers", Serial, func() {
 		Expect(err).ToNot(HaveOccurred())
 	})
 
-	Context("when an ingress resource is deployed using 'default' ingress controller", func() {
-		It("should expose the service to the internet", func() {
+	Context("when an ingress resource is deployed using invalid ingress class", func() {
+		It("should fail with gatekeeper deny msg", func() {
 			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
-			class := "default"
+			class := "bad-ingress-class"
 
 			TemplateVars := map[string]interface{}{
 				"ingress_annotations": map[string]string{
@@ -64,17 +62,8 @@ var _ = Describe("ingress-controllers", Serial, func() {
 			}
 
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
-			Expect(err).To(BeNil())
-
-			k8s.WaitUntilIngressAvailable(GinkgoT(), options, "integration-test-app-ing", 8, 20*time.Second)
-
-			GinkgoWriter.Printf("Checking that the ingress is available at %s\n", url)
-			Eventually(func() int {
-				s, err := helpers.HttpStatusCode(url)
-				Expect(err).To(BeNil())
-
-				return s
-			}, "8m", "30s").Should(Equal(200))
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring("denied the request: [k8singressclassname]"))
 		})
 	})
 })

@@ -22,6 +22,10 @@ var _ = Describe("ingress-controllers", Serial, func() {
 	)
 
 	BeforeEach(func() {
+		if !(c.ClusterName == "live") {
+			Skip(fmt.Sprintf("Internal ingress class is not deployed on cluster: %s", c.ClusterName))
+		}
+
 		namespaceName = fmt.Sprintf("%s-ing-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 		host = fmt.Sprintf("%s.apps.%s.%s", namespaceName, c.ClusterName, domain)
 		options = k8s.NewKubectlOptions("", "", namespaceName)
@@ -43,10 +47,10 @@ var _ = Describe("ingress-controllers", Serial, func() {
 		Expect(err).ToNot(HaveOccurred())
 	})
 
-	Context("when an ingress resource is deployed using 'default' ingress controller", func() {
-		It("should expose the service to the internet", func() {
+	Context("when an ingress resource is deployed using 'internal-laa' ingress controller", func() {
+		It("should expose the service in cluster vpc", func() {
 			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
-			class := "default"
+			class := "internal-laa"
 
 			TemplateVars := map[string]interface{}{
 				"ingress_annotations": map[string]string{
@@ -69,12 +73,23 @@ var _ = Describe("ingress-controllers", Serial, func() {
 			k8s.WaitUntilIngressAvailable(GinkgoT(), options, "integration-test-app-ing", 8, 20*time.Second)
 
 			GinkgoWriter.Printf("Checking that the ingress is available at %s\n", url)
-			Eventually(func() int {
-				s, err := helpers.HttpStatusCode(url)
-				Expect(err).To(BeNil())
 
-				return s
-			}, "8m", "30s").Should(Equal(200))
+			jobVar := map[string]interface{}{
+				"jobName":   "smoketest-internal-ingress",
+				"host":      host,
+				"namespace": namespaceName,
+			}
+
+			tpl, err = helpers.TemplateFile("./fixtures/internal-ingress-curl.yaml.tmpl", "internal-ingress-curl.yaml.tmpl", jobVar)
+			if err != nil {
+				Fail("Failed to create internal ingress curl job: " + err.Error())
+			}
+
+			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
+			Expect(err).To(BeNil())
+
+			err = k8s.WaitUntilJobSucceedE(GinkgoT(), options, "smoketest-internal-ingress", 10, 20*time.Second)
+			Expect(err).To(BeNil())
 		})
 	})
 })
