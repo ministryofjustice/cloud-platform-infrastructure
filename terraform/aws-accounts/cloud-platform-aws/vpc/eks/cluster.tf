@@ -130,9 +130,9 @@ locals {
   }
 
   default_ng_10_10_25 = {
-    desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_size     = 120
-    min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+    desired_size = 0
+    max_size     = 1
+    min_size     = 0
 
     block_device_mappings = {
       xvda = {
@@ -279,10 +279,12 @@ locals {
   eks_managed_node_groups = merge(
     {
       default_ng_16_09_24 = local.default_ng_16_09_24,
-      default_ng_10_10_25 = local.default_ng_10_10_25,
       monitoring_ng_19_03_25 = local.monitoring_ng_19_03_25
     },
-  terraform.workspace == "manager" ? { thanos_ng_17_12_24 = local.thanos_ng_17_12_24 } : {})
+  terraform.workspace == "live-2" ? { default_ng_10_10_25 = local.default_ng_10_10_25 } : {},
+  terraform.workspace == "manager" ? { thanos_ng_17_12_24 = local.thanos_ng_17_12_24 } : {},
+  #terraform.workspace == "manager" ? { default_ng_10_10_25 = local.default_ng_10_10_25 } : {},
+  )
 }
 
 module "eks" {
