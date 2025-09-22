@@ -54,29 +54,29 @@ module "cloud-platform-firewall-policy" {
   }
 
   stateful_rule_group_reference = [
-    { 
-      priority = 1
+    {
+      priority     = 1
       resource_arn = "arn:aws:network-firewall:eu-west-2:aws-managed:stateful-rulegroup/AttackInfrastructureStrictOrder"
       override = {
         action = "DROP_TO_ALERT"
       }
     },
     {
-      priority = 2
+      priority     = 2
       resource_arn = "arn:aws:network-firewall:eu-west-2:aws-managed:stateful-rulegroup/MalwareDomainsStrictOrder"
       override = {
         action = "DROP_TO_ALERT"
       }
     },
     {
-      priority = 3
+      priority     = 3
       resource_arn = "arn:aws:network-firewall:eu-west-2:aws-managed:stateful-rulegroup/BotNetCommandAndControlDomainsStrictOrder"
       override = {
         action = "DROP_TO_ALERT"
       }
     },
     {
-      priority = 10
+      priority     = 10
       resource_arn = module.cloud-platform-firewall-rule-group.arn
     }
   ]
