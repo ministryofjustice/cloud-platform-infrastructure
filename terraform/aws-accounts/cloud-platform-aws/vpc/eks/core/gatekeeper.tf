@@ -22,6 +22,8 @@ module "gatekeeper" {
     lock_priv_capabilities        = true,
     allow_duplicate_hostname_yaml = false,
     block_ingresses               = true,
+    ingress_valid_classname       = false,
+    ingress_internal_class_domain = false,
   }
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
