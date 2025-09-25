@@ -6,7 +6,6 @@ data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
 
-
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
@@ -26,6 +25,7 @@ locals {
     manager = "4"
     default = "3"
   }
+
   # Default node group minimum capacity
   default_ng_min_count = {
     live    = "65"
@@ -41,6 +41,7 @@ locals {
     manager = "4"
     default = "3"
   }
+
   # Monitoring node group minimum capacity
   default_mon_min_count = {
     live    = "4"
@@ -48,6 +49,23 @@ locals {
     manager = "4"
     default = "3"
   }
+
+  # Number of desired node for new node groups
+  # upgrade_desired_size = {
+  #   live    = "15"
+  #   live-2  = "5"
+  #   manager = "5"
+  #   default = "5"
+  # }
+
+  # Minimum number of nodes for new node groups
+  # upgrade_min_size = {
+  #   live    = "5"
+  #   live-2  = "2"
+  #   manager = "4"
+  #   default = "2"
+  # }
+
   # To manage different cluster versions
   cluster_version = {
     live    = "1.31"
@@ -83,7 +101,7 @@ locals {
     Domain    = local.fqdn
   }
 
-  default_ng_16_09_24 = {
+  default_ng_10_10_25 = {
     desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_size     = 120
     min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
@@ -102,16 +120,16 @@ locals {
       }
     }
 
-    subnet_ids           = data.aws_subnets.eks_private.ids
-    bootstrap_extra_args = "--use-max-pods false"
-    kubelet_extra_args   = "--max-pods=110"
-    name                 = "${terraform.workspace}-def-ng"
+    subnet_ids = data.aws_subnets.eks_private.ids
+    name       = "${terraform.workspace}-def-ng"
 
     create_security_group  = false
     create_launch_template = true
-    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-140824.tpl", {
+
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
+
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
@@ -129,7 +147,7 @@ locals {
     }
   }
 
-  monitoring_ng_19_03_25 = {
+  monitoring_ng_10_10_25 = {
     desired_size = lookup(local.default_mon_desired_count, terraform.workspace, local.default_mon_desired_count["default"])
     max_size     = 6
     min_size     = lookup(local.default_mon_min_count, terraform.workspace, local.default_mon_min_count["default"])
@@ -147,13 +165,12 @@ locals {
       }
     }
 
-
     subnet_ids = data.aws_subnets.eks_private.ids
     name       = "${terraform.workspace}-mon-ng"
 
     create_security_group  = false
     create_launch_template = true
-    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-140824.tpl", {
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
@@ -179,7 +196,7 @@ locals {
     ]
   }
 
-  thanos_ng_17_12_24 = {
+  thanos_ng_10_10_25 = {
     desired_size = 1
     max_size     = 1
     min_size     = 1
@@ -203,7 +220,7 @@ locals {
 
     create_security_group  = false
     create_launch_template = true
-    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-140824.tpl", {
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
@@ -229,15 +246,19 @@ locals {
       }
     ]
   }
+
   eks_managed_node_groups = merge(
-    { default_ng_16_09_24 = local.default_ng_16_09_24, monitoring_ng_19_03_25 = local.monitoring_ng_19_03_25 },
-  terraform.workspace == "manager" ? { thanos_ng_17_12_24 = local.thanos_ng_17_12_24 } : {})
+    {
+      default_ng_10_10_25    = local.default_ng_10_10_25,
+      monitoring_ng_10_10_25 = local.monitoring_ng_10_10_25
+    },
+    terraform.workspace == "manager" ? { thanos_ng_10_10_25 = local.thanos_ng_10_10_25 } : {}
+  )
 }
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "18.31.2"
-
 
   cluster_name              = terraform.workspace
   subnet_ids                = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids), tolist(data.aws_subnets.eks_private.ids))
@@ -347,8 +368,6 @@ module "eks" {
   tags = local.tags
 }
 
-
-
 #######################
 # EKS Cluster add-ons #
 #######################
@@ -360,9 +379,7 @@ module "aws_eks_addons" {
   cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   addon_tags              = local.tags
 
-
   addon_vpc_cni_version    = "v1.19.6-eksbuild.7"
   addon_coredns_version    = "v1.11.4-eksbuild.14"
   addon_kube_proxy_version = "v1.31.10-eksbuild.2"
 }
-
