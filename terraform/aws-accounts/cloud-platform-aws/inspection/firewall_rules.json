@@ -1,33 +1,47 @@
 {
-  "001_allow_cp_to_ecp_2484": {
+  "001_allow_cp_to_ecp_db_lb_2484": {
+    "action": "PASS",
+    "source_ip": "$HOME_NET",
+    "destination_ip": "10.205.10.0/24",
+    "destination_port": "2484",
+    "protocol": "TCP"
+  },
+  "001_allow_cp_to_ecp_db3_2484": {
+    "action": "PASS",
+    "source_ip": "$HOME_NET",
+    "destination_ip": "10.205.11.0/24",
+    "destination_port": "2484",
+    "protocol": "TCP"
+  },
+  "001_allow_cp_to_ecp_db1_2484": {
     "action": "PASS",
     "source_ip": "$HOME_NET",
     "destination_ip": "10.205.14.0/24",
     "destination_port": "2484",
     "protocol": "TCP"
   },
-  "002_deny_cp_to_ecp": {
+  "0020_deny_cp_to_ecp": {
     "action": "DROP",
     "source_ip": "$HOME_NET",
     "destination_ip": "10.205.0.0/20",
     "destination_port": "ANY",
     "protocol": "IP"
   },
-  "003_drop_ecp_to_cp": {
+  "0030_drop_ecp_to_cp": {
     "action": "DROP",
     "source_ip": "10.205.0.0/20",
     "destination_ip": "$HOME_NET",
     "destination_port": "ANY",
     "protocol": "IP"
   },
-  "004_allow_cp_to_others": {
+  "0040_allow_cp_to_others": {
     "action": "PASS",
     "source_ip": "$HOME_NET",
     "destination_ip": "$EXTERNAL_NET",
     "destination_port": "ANY",
     "protocol": "IP"
   },
-  "005_allow_others_to_cp": {
+  "0050_allow_others_to_cp": {
     "action": "PASS",
     "source_ip": "$EXTERNAL_NET",
     "destination_ip": "$HOME_NET",
