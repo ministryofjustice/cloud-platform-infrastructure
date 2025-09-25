@@ -120,8 +120,8 @@ locals {
       }
     }
 
-    subnet_ids           = data.aws_subnets.eks_private.ids
-    name                 = "${terraform.workspace}-def-ng"
+    subnet_ids = data.aws_subnets.eks_private.ids
+    name       = "${terraform.workspace}-def-ng"
 
     create_security_group  = false
     create_launch_template = true
@@ -249,10 +249,10 @@ locals {
 
   eks_managed_node_groups = merge(
     {
-      default_ng_10_10_25 = local.default_ng_10_10_25,
+      default_ng_10_10_25    = local.default_ng_10_10_25,
       monitoring_ng_10_10_25 = local.monitoring_ng_10_10_25
     },
-  terraform.workspace == "manager" ? { thanos_ng_10_10_25 = local.thanos_ng_10_10_25 } : {}
+    terraform.workspace == "manager" ? { thanos_ng_10_10_25 = local.thanos_ng_10_10_25 } : {}
   )
 }
 
