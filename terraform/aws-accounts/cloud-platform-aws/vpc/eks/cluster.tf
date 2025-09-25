@@ -51,20 +51,20 @@ locals {
   }
 
   # Number of desired node for new node groups
-  upgrade_desired_size = {
-    live    = "15"
-    live-2  = "5"
-    manager = "5"
-    default = "5"
-  }
+  # upgrade_desired_size = {
+  #   live    = "15"
+  #   live-2  = "5"
+  #   manager = "5"
+  #   default = "5"
+  # }
 
   # Minimum number of nodes for new node groups
-  upgrade_min_size = {
-    live    = "5"
-    live-2  = "2"
-    manager = "4"
-    default = "2"
-  }
+  # upgrade_min_size = {
+  #   live    = "5"
+  #   live-2  = "2"
+  #   manager = "4"
+  #   default = "2"
+  # }
 
   # To manage different cluster versions
   cluster_version = {
