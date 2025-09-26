@@ -1,6 +1,6 @@
 module "concourse" {
   count  = lookup(local.manager_workspace, terraform.workspace, false) ? 1 : 0
-  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.36.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-concourse?ref=1.37.0"
 
   concourse_hostname                                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   github_auth_client_id                               = data.aws_ssm_parameter.components["github_auth_client_id"].value
@@ -31,6 +31,7 @@ module "concourse" {
   github_cloud_platform_concourse_bot_app_id          = data.aws_ssm_parameter.components["github_cloud_platform_concourse_bot_app_id"].value
   github_cloud_platform_concourse_bot_installation_id = data.aws_ssm_parameter.components["github_cloud_platform_concourse_bot_installation_id"].value
   github_cloud_platform_concourse_bot_pem_file        = data.aws_ssm_parameter.components["github_cloud_platform_concourse_bot_pem_file"].value
+  kraken_github_token                                 = data.aws_ssm_parameter.components["kraken_github_token"].value
 
   hoodaw_host                  = data.aws_ssm_parameter.components["hoodaw_host"].value
   hoodaw_api_key               = data.aws_ssm_parameter.components["hoodaw_api_key"].value

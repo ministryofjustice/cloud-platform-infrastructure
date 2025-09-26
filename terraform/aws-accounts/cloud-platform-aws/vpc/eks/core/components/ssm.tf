@@ -32,7 +32,8 @@ locals {
     "pagerduty_config",
     "github_cloud_platform_concourse_bot_app_id",
     "github_cloud_platform_concourse_bot_installation_id",
-    "github_cloud_platform_concourse_bot_pem_file"
+    "github_cloud_platform_concourse_bot_pem_file",
+    "kraken_github_token",
   ]
 }
 
