@@ -2,7 +2,7 @@ locals {
   firewall_endpoints = {
     for state in module.cloud-platform-firewall.status[0].sync_states :
     state.availability_zone => state.attachment[0].endpoint_id
-  }  
+  }
 }
 
 // Route internet bound traffic from firewall to NAT Gateways (one per AZ since one_nat_gateway_per_az = true)
