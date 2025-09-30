@@ -118,7 +118,7 @@ module "non_prod_modsec_ingress_controllers_v1" {
 }
 
 module "ingress_controllers_laa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.17.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.0"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -147,7 +147,7 @@ module "ingress_controllers_laa" {
 }
 
 module "ingress_controllers_internal" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.17.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.0"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -162,7 +162,7 @@ module "ingress_controllers_internal" {
   default_cert             = "ingress-controllers/internal-certificate"
 
   # Enable this when we remove the module "ingress_controllers"
-  enable_external_dns_annotation = false
+  enable_external_dns_annotation = true
 
   internal_load_balancer = true
 
@@ -177,7 +177,7 @@ module "ingress_controllers_internal" {
 }
 
 module "ingress_controllers_internal_non_prod" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.17.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.0"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -192,7 +192,7 @@ module "ingress_controllers_internal_non_prod" {
   default_cert             = "ingress-controllers/internal-non-prod-certificate"
 
   # Enable this when we remove the module "ingress_controllers"
-  enable_external_dns_annotation = false
+  enable_external_dns_annotation = true
 
   internal_load_balancer = true
 
