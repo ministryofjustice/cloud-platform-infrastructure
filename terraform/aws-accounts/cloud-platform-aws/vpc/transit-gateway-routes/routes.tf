@@ -23,7 +23,8 @@ locals {
     "10.206.0.0/20",  # LAA Platform UAT
     "10.205.0.0/20",  # LAA Platform Prod
     "10.204.0.0/20",  # LAA Platform Stage
-    "10.201.128.0/17" # Analytical Platform Preprod
+    "10.200.96.0/19", # Analytical Platform Compute Test
+    "10.201.128.0/17", # Analytical Platform Compute Production
   ]
 }
 
