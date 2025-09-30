@@ -7,7 +7,7 @@ resource "aws_security_group" "guardduty_vpce" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/16"] 
+    cidr_blocks = ["172.20.0.0/16"] 
   }
 
   egress {
