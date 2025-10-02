@@ -196,7 +196,7 @@ func (c *Config) ExpectedServices() {
 
 // ExpectedDaemonSets populates the 'Daemonsets' object in the 'Config' struct.
 func (c *Config) ExpectedDaemonSets() {
-	c.Daemonsets = append(c.Daemonsets, "amazon-guardduty-agent", "fluent-bit", "prometheus-operator-prometheus-node-exporter", "calico-node", "csi-node-driver", "aws-node", "ebs-csi-node")
+	c.Daemonsets = append(c.Daemonsets, "aws-guardduty-agent", "fluent-bit", "prometheus-operator-prometheus-node-exporter", "calico-node", "csi-node-driver", "aws-node", "ebs-csi-node")
 
 	if strings.Contains(strings.ToLower(c.ClusterName), "live") || strings.Contains(strings.ToLower(c.ClusterName), "manager") {
 		c.Daemonsets = append(c.Daemonsets, "node-agent")
