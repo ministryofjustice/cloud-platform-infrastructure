@@ -26,8 +26,8 @@ locals {
     networkpolicies               = "https://raw.githubusercontent.com/projectcalico/calico/v3.29.6/libcalico-go/config/crd/crd.projectcalico.org_networkpolicies.yaml"
     networksets                   = "https://raw.githubusercontent.com/projectcalico/calico/v3.29.6/libcalico-go/config/crd/crd.projectcalico.org_networksets.yaml"
     bgpfilters                    = "https://raw.githubusercontent.com/projectcalico/calico/v3.29.6/libcalico-go/config/crd/crd.projectcalico.org_bgpfilters.yaml"
-    #tiers                         = "https://raw.githubusercontent.com/projectcalico/calico/v3.29.6/libcalico-go/config/crd/crd.projectcalico.org_tiers.yaml"
-    #adminnetworkpolicies          = "https://raw.githubusercontent.com/projectcalico/calico/v3.29.6/libcalico-go/config/crd/policy.networking.k8s.io_adminnetworkpolicies.yaml"
+    tiers                         = "https://raw.githubusercontent.com/projectcalico/calico/v3.29.6/libcalico-go/config/crd/crd.projectcalico.org_tiers.yaml"
+    adminnetworkpolicies          = "https://raw.githubusercontent.com/projectcalico/calico/v3.29.6/libcalico-go/config/crd/policy.networking.k8s.io_adminnetworkpolicies.yaml"
   }
 }
 
