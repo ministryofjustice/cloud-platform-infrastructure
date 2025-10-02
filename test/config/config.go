@@ -218,7 +218,7 @@ func (c *Config) ExpectedServiceMonitors() {
 
 		"monitoring": {"prometheus-operator-prometheus-node-exporter", "prometheus-operator-kube-p-alertmanager", "prometheus-operator-kube-p-apiserver", "prometheus-operator-kube-p-coredns", "prometheus-operator-grafana", "prometheus-operator-kube-state-metrics", "prometheus-operator-kube-p-kubelet", "prometheus-operator-kube-p-prometheus", "prometheus-operator-kube-p-operator", "prometheus-operator-prometheus-node-exporter"},
 
-		"amazon-guardduty": {"amazon-guardduty-agent"},
+		"amazon-guardduty": {"aws-guardduty-agent"},
 	}
 
 	// Manager cluster contains a concourse service. This service doesn't exist on any other cluster (including test)
