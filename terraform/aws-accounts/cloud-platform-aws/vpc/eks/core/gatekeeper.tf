@@ -1,5 +1,5 @@
 module "gatekeeper" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=1.18.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-gatekeeper?ref=guardduty-agent"
 
   dryrun_map = {
     service_type                       = false,
@@ -39,4 +39,3 @@ module "gatekeeper" {
   audit_mem_limit      = terraform.workspace == "live" ? "16Gi" : "1Gi"
   audit_mem_req        = terraform.workspace == "live" ? "4Gi" : "512Mi"
 }
-
