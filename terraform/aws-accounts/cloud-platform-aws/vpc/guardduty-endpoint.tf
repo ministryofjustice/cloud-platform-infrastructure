@@ -1,9 +1,9 @@
 module "aws_vpc_endpoints" {
   source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
 
-  version="6.0.0"
+  version = "6.0.0"
 
-  vpc_id             = module.vpc.vpc_id
+  vpc_id = module.vpc.vpc_id
 
   endpoints = {
     guardduty = {
@@ -11,7 +11,7 @@ module "aws_vpc_endpoints" {
       private_dns_enabled = true
       security_group_ids  = [aws_security_group.guardduty_vpce.id]
       subnet_ids          = aws_subnet.eks_private[*].id
-      tags                = { Name = "${terraform.workspace}-runtime-monitoring-endpoint"}
+      tags                = { Name = "${terraform.workspace}-runtime-monitoring-endpoint" }
     },
   }
 
@@ -29,7 +29,7 @@ resource "aws_security_group" "guardduty_vpce" {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["172.20.0.0/16"] 
+    cidr_blocks = ["172.20.0.0/16"]
   }
 
   egress {
