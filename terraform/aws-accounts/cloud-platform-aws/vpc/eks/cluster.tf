@@ -372,14 +372,15 @@ module "eks" {
 # EKS Cluster add-ons #
 #######################
 module "aws_eks_addons" {
-  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.19.0"
+  source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.20.0"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
   eks_cluster_id          = module.eks.cluster_id
   cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   addon_tags              = local.tags
 
-  addon_vpc_cni_version    = "v1.19.6-eksbuild.7"
-  addon_coredns_version    = "v1.11.4-eksbuild.14"
-  addon_kube_proxy_version = "v1.31.10-eksbuild.2"
+  addon_vpc_cni_version         = "v1.19.6-eksbuild.7"
+  addon_coredns_version         = "v1.11.4-eksbuild.14"
+  addon_kube_proxy_version      = "v1.31.10-eksbuild.2"
+  addon_guardduty_agent_version = "v1.11.0-eksbuild.4"
 }
