@@ -151,6 +151,7 @@ var _ = Describe("Namespaces", func() {
 				"kube-public",
 				"kube-node-lease",
 				"default",
+				"amazon-guardduty",
 			}
 
 		out:
