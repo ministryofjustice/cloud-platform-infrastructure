@@ -1,4 +1,4 @@
-module "aws_vpc_endpoints" {
+module "aws_s3_vpce" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
   version = "6.0.0"
 
