@@ -323,8 +323,8 @@ module "aws_scheduler" {
 
   rds_schedule_expression_stop  = "cron(0 22 ? * * *)"
   rds_schedule_expression_start = "cron(0 06 ? * * *)"
-  rds_target_tag_key            = "cloud-platform-rds-auto-shutdown"
-  rds_target_tag_value          = "Schedule RDS Stop/Start during non-business hours for cost saving"
+  rds_target_tag_key            = "cloud-platform-rds-auto-shutdown-disabled"
+  rds_target_tag_value          = "Schedule RDS Stop/Start during non-business hours for cost saving disabled"
 }
 
 resource "null_resource" "test_pr" {
