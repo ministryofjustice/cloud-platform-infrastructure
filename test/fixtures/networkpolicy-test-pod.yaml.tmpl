@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .podName }}
+  namespace: {{ .namespace }}
+  labels:
+    app: {{ .podName }}
+    test-type: networkpolicy
+spec:
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+  containers:
+  - name: test-container
+    image: busybox:1
+    command: 
+    - sh
+    - -c
+    - |
+      # Start busybox HTTP server on port 8080
+      while true; do
+        { echo -e 'HTTP/1.1 200 OK\r\n\r\nHello from {{ .podName }}'; } | nc -l -p 8080
+      done
+    ports:
+    - containerPort: 8080
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: false
+      capabilities:
+        drop:
+        - ALL
