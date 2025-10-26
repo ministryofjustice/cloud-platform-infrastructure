@@ -12,7 +12,7 @@ locals {
 
 module "cloud-platform-firewall" {
   source              = "terraform-aws-modules/network-firewall/aws//modules/firewall"
-  version             = "1.0.2"
+  version             = "2.0.2"
   description         = "Network firewall positioned to secure flows between Cloud Platform VPC and the Internet"
   firewall_policy_arn = module.cloud-platform-firewall-policy.arn
   name                = "${local.vpc_name}-firewall"
@@ -42,7 +42,7 @@ module "cloud-platform-firewall" {
 
 module "cloud-platform-firewall-policy" {
   source      = "terraform-aws-modules/network-firewall/aws//modules/policy"
-  version     = "1.0.2"
+  version     = "2.0.2"
   description = "Firewall policy intended for cloud-platform-egress-firewall"
   name        = "${local.vpc_name}-firewall-policy"
 
@@ -84,7 +84,7 @@ module "cloud-platform-firewall-policy" {
 
 module "cloud-platform-firewall-rule-group" {
   source      = "terraform-aws-modules/network-firewall/aws//modules/rule-group"
-  version     = "1.0.2"
+  version     = "2.0.2"
   capacity    = 5000
   description = "Stateful rule group configured to control traffic between Cloud Platform and the Internet."
   name        = "${local.vpc_name}-firewall-stateful-rules"
