@@ -21,23 +21,23 @@ module "cloud-platform-firewall" {
   delete_protection   = false
 
   # Logging configuration
-  create_logging_configuration = true
-  logging_configuration_destination_config = [
-    {
-      log_destination = {
-        logGroup = aws_cloudwatch_log_group.logs.name
-      }
-      log_destination_type = "CloudWatchLogs"
-      log_type             = "ALERT"
-    },
-    {
-      log_destination = {
-        logGroup = aws_cloudwatch_log_group.logs.name
-      }
-      log_destination_type = "CloudWatchLogs"
-      log_type             = "FLOW"
-    }
-  ]
+  create_logging_configuration = false
+  # logging_configuration_destination_config = [
+  #   {
+  #     log_destination = {
+  #       logGroup = aws_cloudwatch_log_group.logs.name
+  #     }
+  #     log_destination_type = "CloudWatchLogs"
+  #     log_type             = "ALERT"
+  #   },
+  #   {
+  #     log_destination = {
+  #       logGroup = aws_cloudwatch_log_group.logs.name
+  #     }
+  #     log_destination_type = "CloudWatchLogs"
+  #     log_type             = "FLOW"
+  #   }
+  # ]
 }
 
 module "cloud-platform-firewall-policy" {
@@ -107,7 +107,7 @@ module "cloud-platform-firewall-rule-group" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "logs" {
-  name_prefix       = "${local.vpc_name}-firewall-logs"
-  retention_in_days = 7
-}
+# resource "aws_cloudwatch_log_group" "logs" {
+#   name_prefix       = "${local.vpc_name}-firewall-logs"
+#   retention_in_days = 7
+# }
