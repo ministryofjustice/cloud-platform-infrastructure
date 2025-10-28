@@ -138,6 +138,7 @@ locals {
       "cloud-platform.justice.gov.uk/default-ng" = "true"
       Cluster                                    = terraform.workspace
       Domain                                     = local.fqdn
+      network                                    = "calico"
     }
 
     tags = {
@@ -181,6 +182,7 @@ locals {
       "cloud-platform.justice.gov.uk/monitoring-ng" = "true"
       Cluster                                       = terraform.workspace
       Domain                                        = local.fqdn
+      network                                       = "calico"
     }
     tags = {
       monitoring_ng = "true"
