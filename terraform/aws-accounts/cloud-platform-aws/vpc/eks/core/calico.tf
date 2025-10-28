@@ -44,7 +44,9 @@ resource "kubectl_manifest" "calico_crds" {
 
 
 module "tigera_calico" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-tigera-calico?ref=0.3.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-tigera-calico?ref=calico-node-group"
+
+  enable_clusterwide_policies = true
 
   depends_on = [
     kubectl_manifest.calico_crds
