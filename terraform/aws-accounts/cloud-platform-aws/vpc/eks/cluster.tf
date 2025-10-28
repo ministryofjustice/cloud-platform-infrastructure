@@ -194,6 +194,7 @@ locals {
       business-unit = "platforms"
     }
   }
+
   monitoring_ng_10_10_25 = {
     desired_size = lookup(local.default_mon_desired_count, terraform.workspace, local.default_mon_desired_count["default"])
     max_size     = 6
@@ -244,7 +245,7 @@ locals {
     ]
   }
 
-    monitoring_ng_cilium = {
+  monitoring_ng_cilium = {
     desired_size = lookup(local.default_mon_desired_count, terraform.workspace, local.default_mon_desired_count["default"])
     max_size     = 6
     min_size     = lookup(local.default_mon_min_count, terraform.workspace, local.default_mon_min_count["default"])
@@ -349,6 +350,8 @@ locals {
     {
       default_ng_10_10_25    = local.default_ng_10_10_25,
       monitoring_ng_10_10_25 = local.monitoring_ng_10_10_25
+      default_ng_cilium      = local.default_ng_cilium
+      monitoring_ng_cilium   = local.monitoring_ng_cilium
     },
     terraform.workspace == "manager" ? { thanos_ng_10_10_25 = local.thanos_ng_10_10_25 } : {}
   )
