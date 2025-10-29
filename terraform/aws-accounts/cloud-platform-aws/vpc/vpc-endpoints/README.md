@@ -12,20 +12,21 @@ The Cloud Platform VPC already has private route tables.
 ## The S3 Gateway Endpoint resource uses this value to determine routing:
 
 ```module "aws_vpc_endpoints" {
-source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-version = "6.0.0"
+  source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+  version = "6.0.0"
 
-vpc_id = module.vpc.vpc_id
+  vpc_id = module.vpc.vpc_id
 
-endpoints = {
-s3 = {
-service = "s3"
-service_type = "Gateway"
-route_table_ids = local.private_route_table_ids
-tags = { Name = "${terraform.workspace}-s3-vpce" }
-}
-}
+  endpoints = {
+    s3 = {
+      service         = "s3"
+      service_type    = "Gateway"
+      route_table_ids = local.private_route_table_ids
+      tags            = { Name = "${terraform.workspace}-s3-vpce" }
+    }
+  }
 }```
+
 
 No manual route table updates are required — the module handles this automatically.
 
