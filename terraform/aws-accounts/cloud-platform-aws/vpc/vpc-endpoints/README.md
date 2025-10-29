@@ -2,7 +2,6 @@
 
 This code configures the Cloud Platform VPCs to use S3 Gateway Endpoints, ensuring traffic between workloads and Amazon S3 stays within the AWS network. This improves security, resilience, and reduces NAT Gateway egress costs.
 
-
 ## How S3 Gateway Endpoints work on the Cloud Platform
 
 S3 Gateway Endpoints allow private subnets to reach S3 without public internet routing.
@@ -13,21 +12,20 @@ The Cloud Platform VPC already has private route tables.
 ## The S3 Gateway Endpoint resource uses this value to determine routing:
 
 `module "aws_vpc_endpoints" {
-  source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "6.0.0"
+source = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
+version = "6.0.0"
 
-  vpc_id = module.vpc.vpc_id
+vpc_id = module.vpc.vpc_id
 
-  endpoints = {
-    s3 = {
-      service         = "s3"
-      service_type    = "Gateway"
-      route_table_ids = local.private_route_table_ids
-      tags            = { Name = "${terraform.workspace}-s3-vpce" }
-    }
-  }
+endpoints = {
+s3 = {
+service = "s3"
+service_type = "Gateway"
+route_table_ids = local.private_route_table_ids
+tags = { Name = "${terraform.workspace}-s3-vpce" }
+}
+}
 }`
-
 
 No manual route table updates are required — the module handles this automatically.
 
@@ -38,7 +36,6 @@ No manual route table updates are required — the module handles this automatic
 - No disruption to existing S3 access
 
 - No action required by service teams
-
 
 ## Validation
 
