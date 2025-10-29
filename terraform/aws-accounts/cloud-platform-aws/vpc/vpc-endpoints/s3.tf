@@ -6,10 +6,10 @@ module "aws_s3_vpce" {
 
   endpoints = {
     s3 = {
-      service             = "s3"
-      service_type        = "Gateway"
-      route_table_ids     = module.vpc.private_route_table_ids
-      tags                = { Name = "${terraform.workspace}-s3-vpce" }
+      service         = "s3"
+      service_type    = "Gateway"
+      route_table_ids = module.vpc.private_route_table_ids
+      tags            = { Name = "${terraform.workspace}-s3-vpce" }
     }
   }
 
