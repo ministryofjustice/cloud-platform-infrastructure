@@ -27,6 +27,7 @@ The Cloud Platform VPC already has private route tables.
   }
 }
 ```
+
 No manual route table updates are required — the module handles this automatically.
 
 ## Expected Behaviour
