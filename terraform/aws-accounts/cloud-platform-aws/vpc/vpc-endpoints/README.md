@@ -25,9 +25,8 @@ The Cloud Platform VPC already has private route tables.
       tags            = { Name = "${terraform.workspace}-s3-vpce" }
     }
   }
-}```
-
-
+}
+```
 No manual route table updates are required — the module handles this automatically.
 
 ## Expected Behaviour
