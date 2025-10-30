@@ -25,8 +25,8 @@ module "s3" {
 }
 
 module "firehose_rds_live_logs_to_xsiam" {
-  source                    = "github.com/ministryofjustice/cloud-platform-terraform-firehose-data-stream?ref=1.1.0"
-  destination_bucket_arn    = module.s3.bucket_arn
+  source                 = "github.com/ministryofjustice/cloud-platform-terraform-firehose-data-stream?ref=1.1.0"
+  destination_bucket_arn = module.s3.bucket_arn
 
   depends_on = [
     module.s3
