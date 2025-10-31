@@ -221,14 +221,14 @@ data "aws_iam_policy_document" "cp_cloudfront_logs_queue_policy_document" {
     condition {
       test     = "ArnEquals"
       variable = "aws:SourceArn"
-      values   = [data.terraform_remote_state.components_live.outputs.s3_bucket_cloudfront_logs_arn]
+      values   = [module.cloudfront_cortex_logs.bucket_arn]
     }
   }
 }
 
 # S3 bucket event notification for updates from cloudfront logs bucket
 resource "aws_s3_bucket_notification" "cp_cloudfront_logs_bucket_notification" {
-  bucket = data.terraform_remote_state.components_live.outputs.s3_bucket_cloudfront_logs_name
+  bucket = module.cloudfront_cortex_logs.bucket_arn
   queue {
     queue_arn = aws_sqs_queue.cp_cloudfront_logs_queue.arn
     events    = ["s3:ObjectCreated:*"] # Events to trigger the notification
