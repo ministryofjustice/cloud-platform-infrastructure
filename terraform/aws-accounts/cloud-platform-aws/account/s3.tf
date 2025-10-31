@@ -11,7 +11,6 @@ module "cloudfront_cortex_logs" {
   environment_name       = var.environment
   infrastructure_support = var.infrastructure_support
   namespace              = "cloud-platofrom-infrastructure"
-  versioning             = var.versioning
 }
 
 resource "aws_s3_bucket_ownership_controls" "cloudfront_cortex_logs" {
