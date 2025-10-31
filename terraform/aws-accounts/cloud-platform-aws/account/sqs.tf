@@ -270,7 +270,9 @@ data "aws_iam_policy_document" "sqs_queue_read_document" {
       data.terraform_remote_state.live-1.outputs.route53_query_log_bucket_arn,
       "${data.terraform_remote_state.live-1.outputs.route53_query_log_bucket_arn}/*",
       data.terraform_remote_state.components_live.outputs.s3_bucket_application_logs_arn,
-      "${data.terraform_remote_state.components_live.outputs.s3_bucket_application_logs_arn}/*"
+      "${data.terraform_remote_state.components_live.outputs.s3_bucket_application_logs_arn}/*",
+      module.cloudfront_cortex_logs.bucket_arn,
+      "${module.cloudfront_cortex_logs.bucket_arn}/*",
     ]
   }
 }
