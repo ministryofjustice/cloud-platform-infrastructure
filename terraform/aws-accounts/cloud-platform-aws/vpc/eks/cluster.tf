@@ -23,7 +23,7 @@ locals {
     live    = "65"
     live-2  = "7"
     manager = "4"
-    default = "3"
+    default = "65"
   }
 
   # Default node group minimum capacity
@@ -31,7 +31,7 @@ locals {
     live    = "65"
     live-2  = "2"
     manager = "4"
-    default = "2"
+    default = "65"
   }
 
   # Monitoring node group desired capacity
@@ -78,14 +78,14 @@ locals {
     live    = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
     live-2  = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
     manager = ["m6a.2xlarge", "m6a.4xlarge", "m6i.2xlarge"]
-    default = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
+    default = ["r6i.2xlarge", "r6i.xlarge", "r5.2xlarge"]
   }
 
   monitoring_node_size = {
     live    = ["r7i.12xlarge", "r6i.12xlarge", "r7i.16xlarge", "r6i.16xlarge"]
     live-2  = ["r6i.2xlarge", "r5a.2xlarge"]
     manager = ["t3a.medium", "t3.medium"]
-    default = ["t3a.medium", "t3.medium"]
+    default = ["r7i.12xlarge", "r6i.12xlarge", "r7i.16xlarge", "r6i.16xlarge"]
   }
 
   thanos_node_size = {
