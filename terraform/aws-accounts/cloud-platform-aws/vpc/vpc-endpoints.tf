@@ -37,13 +37,6 @@ module "aws_vpc_endpoints" {
   vpc_id = module.vpc.vpc_id
 
   endpoints = {
-    # S3 Gateway endpoint — routes traffic internally to avoid NAT
-    s3 = {
-      service         = "s3"
-      service_type    = "Gateway"
-      route_table_ids = module.vpc.private_route_table_ids
-      tags            = { Name = "${terraform.workspace}-s3-vpce" }
-    }
 
     # GuardDuty Interface endpoint — private connection for GuardDuty data
     guardduty = {
