@@ -1,29 +1,22 @@
 {
-  "0001_allow_cp_to_ecp_db_lb_2484": {
+  "001_allow_cp_to_ecp_db_lb_2484": {
     "action": "PASS",
     "source_ip": "$HOME_NET",
     "destination_ip": "10.205.10.0/24",
     "destination_port": "2484",
     "protocol": "TCP"
   },
-  "0002_allow_cp_to_ecp_db3_2484": {
+  "001_allow_cp_to_ecp_db3_2484": {
     "action": "PASS",
     "source_ip": "$HOME_NET",
     "destination_ip": "10.205.11.0/24",
     "destination_port": "2484",
     "protocol": "TCP"
   },
-  "0003_allow_cp_to_ecp_db1_2484": {
+  "001_allow_cp_to_ecp_db1_2484": {
     "action": "PASS",
     "source_ip": "$HOME_NET",
     "destination_ip": "10.205.14.0/24",
-    "destination_port": "2484",
-    "protocol": "TCP"
-  },
-  "0004_allow_cp_to_ecp_db2_2484": {
-    "action": "PASS",
-    "source_ip": "$HOME_NET",
-    "destination_ip": "10.205.15.0/24",
     "destination_port": "2484",
     "protocol": "TCP"
   },

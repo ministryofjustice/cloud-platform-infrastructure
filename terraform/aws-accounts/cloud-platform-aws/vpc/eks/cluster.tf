@@ -68,10 +68,10 @@ locals {
 
   # To manage different cluster versions
   cluster_version = {
-    live    = "1.32"
-    live-2  = "1.32"
-    manager = "1.32"
-    default = "1.32"
+    live    = "1.31"
+    live-2  = "1.31"
+    manager = "1.31"
+    default = "1.31"
   }
 
   node_size = {
@@ -380,7 +380,7 @@ module "aws_eks_addons" {
   addon_tags              = local.tags
 
   addon_vpc_cni_version         = "v1.20.2-eksbuild.1"
-  addon_coredns_version         = "v1.11.4-eksbuild.22"
-  addon_kube_proxy_version      = "v1.31.10-eksbuild.12"
+  addon_coredns_version         = "v1.11.4-eksbuild.14"
+  addon_kube_proxy_version      = "v1.31.10-eksbuild.2"
   addon_guardduty_agent_version = "v1.11.0-eksbuild.4"
 }

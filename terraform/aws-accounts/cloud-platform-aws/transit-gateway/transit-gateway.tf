@@ -26,7 +26,6 @@ locals {
       "10.205.10.0/24" = aws_ec2_transit_gateway_peering_attachment_accepter.laa-ecp-prod-tgw.id,
       "10.205.11.0/24" = aws_ec2_transit_gateway_peering_attachment_accepter.laa-ecp-prod-tgw.id,
       "10.205.14.0/24" = aws_ec2_transit_gateway_peering_attachment_accepter.laa-ecp-prod-tgw.id,
-      "10.205.15.0/24" = aws_ec2_transit_gateway_peering_attachment_accepter.laa-ecp-prod-tgw.id,
       "172.20.0.0/16"  = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment["live_1"].id,
       "10.195.0.0/16"  = module.cloud-platform-transit-gateway.ec2_transit_gateway_vpc_attachment["live_2"].id
     },

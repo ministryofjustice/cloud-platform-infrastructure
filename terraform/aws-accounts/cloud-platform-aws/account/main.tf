@@ -160,25 +160,6 @@ resource "aws_route53_record" "cloud_platform_justice_gov_uk_TXT" {
   records = ["google-site-verification=IorKX8xdhHmAEnI4O1LtGPgQwQiFtRJpPFABmzyCN1E"]
 }
 
-# PagerDuty Status page verification records
-locals {
-  pagerduty_records = {
-    "mail_cname"   = { name = "em7871.status.cloud-platform.service.justice.gov.uk", type = "CNAME", ttl = 300, records = ["u31181182.wl183.sendgrid.net"] }
-    "dkim1"        = { name = "pdt._domainkey.status.cloud-platform.service.justice.gov.uk", type = "CNAME", ttl = 300, records = ["pdt.domainkey.u31181182.wl183.sendgrid.net"] }
-    "dkim2"        = { name = "pdt2._domainkey.status.cloud-platform.service.justice.gov.uk", type = "CNAME", ttl = 300, records = ["pdt2.domainkey.u31181182.wl183.sendgrid.net"] }
-    "http-traffic" = { name = "status.cloud-platform.service.justice.gov.uk", type = "CNAME", ttl = 300, records = ["cd-6702f1611f3608e5724393c37ba1ff3c.hosted-status.pagerduty.com"] }
-  }
-}
-
-resource "aws_route53_record" "pagerduty_records" {
-  for_each = local.pagerduty_records
-  zone_id  = aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
-  name     = each.value.name
-  type     = each.value.type
-  ttl      = each.value.ttl
-  records  = each.value.records
-}
-
 ##############
 # S3 buckets #
 ##############
@@ -323,8 +304,8 @@ module "aws_scheduler" {
 
   rds_schedule_expression_stop  = "cron(0 22 ? * * *)"
   rds_schedule_expression_start = "cron(0 06 ? * * *)"
-  rds_target_tag_key            = "cloud-platform-rds-auto-shutdown-disabled"
-  rds_target_tag_value          = "Schedule RDS Stop/Start during non-business hours for cost saving disabled"
+  rds_target_tag_key            = "cloud-platform-rds-auto-shutdown"
+  rds_target_tag_value          = "Schedule RDS Stop/Start during non-business hours for cost saving"
 }
 
 resource "null_resource" "test_pr" {
