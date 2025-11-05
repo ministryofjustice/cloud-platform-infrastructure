@@ -228,7 +228,7 @@ data "aws_iam_policy_document" "cp_cloudfront_logs_queue_policy_document" {
 
 # S3 bucket event notification for updates from cloudfront logs bucket
 resource "aws_s3_bucket_notification" "cp_cloudfront_logs_bucket_notification" {
-  bucket = module.cloudfront_cortex_logs.bucket_arn
+  bucket = module.cloudfront_cortex_logs.bucket_name
   queue {
     queue_arn = aws_sqs_queue.cp_cloudfront_logs_queue.arn
     events    = ["s3:ObjectCreated:*"] # Events to trigger the notification
