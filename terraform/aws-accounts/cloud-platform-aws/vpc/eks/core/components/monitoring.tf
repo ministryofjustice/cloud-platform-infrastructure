@@ -1,5 +1,5 @@
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.30.4"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.31.0"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? data.aws_ssm_parameter.components["pagerduty_config"].value : "dummy"
@@ -11,8 +11,11 @@ module "monitoring" {
   enable_large_nodesgroup       = lookup(local.live_workspace, terraform.workspace, false)
 
   # The largegroup cpu and memory requests are valid only if the large_nodegroup is enabled.
-  large_nodesgroup_cpu_requests              = terraform.workspace == "live" ? "14000m" : "1300m"
-  large_nodesgroup_memory_requests           = terraform.workspace == "live" ? "180000Mi" : "14000Mi"
+  large_nodesgroup_cpu_requests    = terraform.workspace == "live" ? "14000m" : "1300m"
+  large_nodesgroup_memory_requests = terraform.workspace == "live" ? "180000Mi" : "14000Mi"
+  operator_storage_class           = terraform.workspace == "live" ? "io1-expand" : "gp2-expand"
+  operator_storage_size            = terraform.workspace == "live" ? "750Gi" : "75Gi"
+
   enable_prometheus_affinity_and_tolerations = true
 
   enable_thanos_helm_chart   = lookup(local.prod_2_workspace, terraform.workspace, false)
