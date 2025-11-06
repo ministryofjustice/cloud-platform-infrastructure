@@ -13,7 +13,7 @@ module "monitoring" {
   # The largegroup cpu and memory requests are valid only if the large_nodegroup is enabled.
   large_nodesgroup_cpu_requests    = terraform.workspace == "live" ? "14000m" : "1300m"
   large_nodesgroup_memory_requests = terraform.workspace == "live" ? "180000Mi" : "14000Mi"
-  operator_storage_class_name      = terraform.workspace == "live" ? "io1-expand" : "gp2-expand"
+  operator_storage_class           = terraform.workspace == "live" ? "io1-expand" : "gp2-expand"
   operator_storage_size            = terraform.workspace == "live" ? "750Gi" : "75Gi"
 
   enable_prometheus_affinity_and_tolerations = true
