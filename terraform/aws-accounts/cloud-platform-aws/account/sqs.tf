@@ -268,8 +268,8 @@ data "aws_iam_policy_document" "modsec_logs_queue_policy_document" {
     condition {
       test     = "ArnEquals"
       variable = "aws:SourceArn"
-      values   = [data.terraform_remote_state.components_live.outputs.s3_bucket_modsec_logs_arn,
-                  data.terraform_remote_state.components_live.outputs.s3_bucket_non_prod_modsec_logs_arn]
+      values = [data.terraform_remote_state.components_live.outputs.s3_bucket_modsec_logs_arn,
+      data.terraform_remote_state.components_live.outputs.s3_bucket_non_prod_modsec_logs_arn]
     }
   }
 }
