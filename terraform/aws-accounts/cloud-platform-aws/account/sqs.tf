@@ -235,6 +235,63 @@ resource "aws_s3_bucket_notification" "cp_cloudfront_logs_bucket_notification" {
   }
 }
 
+#### Modsec logs from live EKS cluster
+
+# SQS Queue to present the modsec logs bucket updates
+resource "aws_sqs_queue" "cp_modsec_logs_queue" {
+  name                       = "cp_modsec_logs_queue"
+  sqs_managed_sse_enabled    = true   # Using managed encryption
+  delay_seconds              = 0      # The default is 0 but can be up to 15 minutes
+  max_message_size           = 262144 # 256k which is the max size
+  message_retention_seconds  = 345600 # This is 4 days. The max is 14 days
+  visibility_timeout_seconds = 30     # This is only useful for queues that have multiple subscribers
+}
+
+# This policy grants queue send message from the modsec logs bucket
+resource "aws_sqs_queue_policy" "modsec_logs_queue_policy" {
+  queue_url = aws_sqs_queue.cp_modsec_logs_queue.id
+  policy    = data.aws_iam_policy_document.modsec_logs_queue_policy_document.json
+}
+
+data "aws_iam_policy_document" "modsec_logs_queue_policy_document" {
+  statement {
+    sid    = "AllowSendMessage"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["s3.amazonaws.com"]
+    }
+    actions = ["sqs:SendMessage"]
+    resources = [
+      aws_sqs_queue.cp_modsec_logs_queue.arn
+    ]
+    condition {
+      test     = "ArnEquals"
+      variable = "aws:SourceArn"
+      values = [data.terraform_remote_state.components_live.outputs.s3_bucket_modsec_logs_arn,
+      data.terraform_remote_state.components_live.outputs.s3_bucket_non_prod_modsec_logs_arn]
+    }
+  }
+}
+
+# S3 bucket event notification for updates from the modsec logs bucket
+resource "aws_s3_bucket_notification" "modsec_logs_bucket_notification" {
+  bucket = data.terraform_remote_state.components_live.outputs.s3_bucket_modsec_logs_name
+  queue {
+    queue_arn = aws_sqs_queue.cp_modsec_logs_queue.arn
+    events    = ["s3:ObjectCreated:*"] # Events to trigger the notification
+  }
+}
+
+# S3 bucket event notification for updates from the non-prod modsec logs bucket
+resource "aws_s3_bucket_notification" "non_prod_modsec_logs_bucket_notification" {
+  bucket = data.terraform_remote_state.components_live.outputs.s3_bucket_non_prod_modsec_logs_name
+  queue {
+    queue_arn = aws_sqs_queue.cp_modsec_logs_queue.arn
+    events    = ["s3:ObjectCreated:*"] # Events to trigger the notification
+  }
+}
+
 ##### IAM User & Resources to access the sqs queue and read cloudtrail, flowlogs, Route53 Resolver query, application and cloudfront log buckets
 
 # Create an IAM policy document to allow access to the SQS Queue and cloudtrail bucket
@@ -255,7 +312,8 @@ data "aws_iam_policy_document" "sqs_queue_read_document" {
       aws_sqs_queue.cp_vpc_flowlogs_log_queue.arn,
       aws_sqs_queue.cp_route53_log_queue.arn,
       aws_sqs_queue.cp_application_logs_queue.arn,
-      aws_sqs_queue.cp_cloudfront_logs_queue.arn
+      aws_sqs_queue.cp_cloudfront_logs_queue.arn,
+      aws_sqs_queue.cp_modsec_logs_queue.arn
     ]
   }
   statement {
@@ -272,7 +330,11 @@ data "aws_iam_policy_document" "sqs_queue_read_document" {
       data.terraform_remote_state.components_live.outputs.s3_bucket_application_logs_arn,
       "${data.terraform_remote_state.components_live.outputs.s3_bucket_application_logs_arn}/*",
       module.cloudfront_cortex_logs.bucket_arn,
-      "${module.cloudfront_cortex_logs.bucket_arn}/*"
+      "${module.cloudfront_cortex_logs.bucket_arn}/*",
+      data.terraform_remote_state.components_live.outputs.s3_bucket_modsec_logs_arn,
+      "${data.terraform_remote_state.components_live.outputs.s3_bucket_modsec_logs_arn}/*",
+      data.terraform_remote_state.components_live.outputs.s3_bucket_non_prod_modsec_logs_arn,
+      "${data.terraform_remote_state.components_live.outputs.s3_bucket_non_prod_modsec_logs_arn}/*"
     ]
   }
 }
