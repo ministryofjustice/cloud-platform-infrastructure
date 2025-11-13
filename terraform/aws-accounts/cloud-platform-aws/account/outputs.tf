@@ -23,3 +23,14 @@ output "concourse_environments_live-reports_bucket" {
   value       = module.s3_bucket_environments_live_reports.s3_bucket_id
   description = "S3 bucket arn for environmnts-live-reports"
 }
+
+output "cortex_xsiam_role_arn" {
+  description = "ARN of the Cortex XSIAM log collection role"
+  value       = aws_iam_role.cortex_xsiam_role.arn
+}
+
+output "cortex_xsiam_external_id" {
+  description = "External ID for Cortex XSIAM role assumption"
+  value       = random_uuid.cortex_xsiam.result
+  sensitive   = true
+}
