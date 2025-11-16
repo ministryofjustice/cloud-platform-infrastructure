@@ -8,7 +8,7 @@ locals {
 # Create OpenSearch Snapshot S3 repository
 module "s3_bucket_live_app_log" {
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = "4.3.0"
+  version = "5.8.2"
 
   bucket = "${local.live_app_logs_domain}-snapshot-s3-repository"
 
