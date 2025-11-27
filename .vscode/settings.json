@@ -1,0 +1,5 @@
+{
+  "yaml.schemas": {
+    "https://raw.githubusercontent.com/awslabs/goformation/master/schema/cloudformation.schema.json": "file:///Users/jack.stockley/repo/cloud-platform/cloud-platform-infrastructure/cloudformation/aws-account-baseline-templates/aws-config-cloudtrail-logging/aws-config-enable-rules.yaml"
+  }
+}
