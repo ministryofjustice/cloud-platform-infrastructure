@@ -33,7 +33,7 @@ provider "aws" {
 ###########################
 
 module "baselines" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=add-lambda-tagging"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-awsaccounts-baselines?ref=0.3.0"
 
   enable_logging           = true
   enable_slack_integration = true
