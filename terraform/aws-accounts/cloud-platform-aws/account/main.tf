@@ -332,3 +332,4 @@ resource "null_resource" "test_pr" {
     command = "echo 'Hello, Cloud Platform!'"
   }
 }
+
