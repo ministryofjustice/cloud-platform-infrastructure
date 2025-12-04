@@ -38,6 +38,12 @@ module "aws_vpc_endpoints" {
 
   endpoints = {
 
+    s3 = {
+      service      = "s3"
+      service_type = "Gateway"
+      tags         = { Name = "${terraform.workspace}-s3-vpce" }
+    }
+
     # GuardDuty Interface endpoint — private connection for GuardDuty data
     guardduty = {
       service             = "guardduty-data"
