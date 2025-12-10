@@ -101,6 +101,52 @@ locals {
     Domain    = local.fqdn
   }
 
+  default_ng_10_12_25 = {
+    desired_size = 1 # hardcoded to 1 for initial creation and update to lookup workspace after upgrade complete
+    max_size     = 120
+    min_size     = 1
+
+    block_device_mappings = {
+      xvda = {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = 200
+          volume_type           = "gp3"
+          iops                  = 0
+          encrypted             = false
+          kms_key_id            = ""
+          delete_on_termination = true
+        }
+      }
+    }
+
+    subnet_ids = data.aws_subnets.eks_private.ids
+    name       = "${terraform.workspace}-def-ng"
+
+    create_security_group  = false
+    create_launch_template = true
+
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {
+      dockerhub_credentials = local.dockerhub_credentials
+    })
+
+    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+
+    instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
+    labels = {
+      Terraform                                  = "true"
+      "cloud-platform.justice.gov.uk/default-ng" = "true"
+      Cluster                                    = terraform.workspace
+      Domain                                     = local.fqdn
+    }
+
+    tags = {
+      default_ng    = "true"
+      application   = "moj-cloud-platform"
+      business-unit = "platforms"
+    }
+  }
+
   default_ng_10_10_25 = {
     desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
     max_size     = 120
@@ -249,6 +295,7 @@ locals {
 
   eks_managed_node_groups = merge(
     {
+      default_ng_10_12_25    = local.default_ng_10_12_25,
       default_ng_10_10_25    = local.default_ng_10_10_25,
       monitoring_ng_10_10_25 = local.monitoring_ng_10_10_25
     },
