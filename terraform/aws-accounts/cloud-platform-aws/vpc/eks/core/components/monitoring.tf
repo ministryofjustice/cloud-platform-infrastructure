@@ -1,5 +1,5 @@
 module "monitoring" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.34.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-monitoring?ref=3.35.0"
 
   alertmanager_slack_receivers  = local.enable_alerts ? var.alertmanager_slack_receivers : [{ severity = "dummy", webhook = "https://dummy.slack.com", channel = "#dummy-alarms" }]
   pagerduty_config              = local.enable_alerts ? data.aws_ssm_parameter.components["pagerduty_config"].value : "dummy"
@@ -15,6 +15,7 @@ module "monitoring" {
   large_nodesgroup_memory_requests = terraform.workspace == "live" ? "180000Mi" : "14000Mi"
   operator_storage_class           = terraform.workspace == "live" ? "io1-expand" : "gp2-expand"
   operator_storage_size            = terraform.workspace == "live" ? "750Gi" : "75Gi"
+  thanos_storage_class             = terraform.workspace == "live" ? "io1-expand" : "gp2-expand"
 
   enable_prometheus_affinity_and_tolerations = true
 
