@@ -2,19 +2,19 @@
 # EKS Cluster #
 ###############
 
-data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
-}
+# data "aws_eks_cluster" "cluster" {
+#   name = module.eks.cluster_name
+# }
 
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.cluster.name]
-    command     = "aws"
-  }
-}
+# provider "kubernetes" {
+#   host                   = data.aws_eks_cluster.cluster.endpoint
+#   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
+#   exec {
+#     api_version = "client.authentication.k8s.io/v1beta1"
+#     args        = ["eks", "get-token", "--cluster-name", data.aws_eks_cluster.cluster.name]
+#     command     = "aws"
+#   }
+# }
 
 locals {
   # desired_capacity change is a manual step after initial cluster creation (when no cluster-autoscaler)
@@ -130,7 +130,9 @@ locals {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
     labels = {
@@ -174,7 +176,9 @@ locals {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
     instance_types               = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
     labels = {
       Terraform                                     = "true"
@@ -187,13 +191,13 @@ locals {
       application   = "moj-cloud-platform"
       business-unit = "platforms"
     }
-    taints = [
-      {
+    taints = {
+      monitoring-node = {
         key    = "monitoring-node"
-        value  = true
+        value  = "true"
         effect = "NO_SCHEDULE"
       }
-    ]
+    }
   }
 
   thanos_ng_10_10_25 = {
@@ -224,7 +228,9 @@ locals {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    iam_role_additional_policies = {
+      AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+    }
     instance_types               = lookup(local.thanos_node_size, terraform.workspace, local.thanos_node_size["default"])
     labels = {
       "topology.kubernetes.io/zone"             = "eu-west-2a"
@@ -238,13 +244,13 @@ locals {
       application   = "moj-cloud-platform"
       business-unit = "platforms"
     }
-    taints = [
-      {
+    taints = {
+      thanos-node = {
         key    = "thanos-node"
-        value  = true
+        value  = "true"
         effect = "NO_SCHEDULE"
       }
-    ]
+    }
   }
 
   eks_managed_node_groups = merge(
@@ -258,18 +264,21 @@ locals {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "18.31.2"
+  version = "21.10.1"
 
-  cluster_name              = terraform.workspace
+  name                      = terraform.workspace
   subnet_ids                = concat(tolist(data.aws_subnets.private.ids), tolist(data.aws_subnets.public.ids), tolist(data.aws_subnets.eks_private.ids))
   vpc_id                    = data.aws_vpc.selected.id
-  cluster_version           = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
+  kubernetes_version        = lookup(local.cluster_version, terraform.workspace, local.cluster_version["default"])
   enable_irsa               = true
-  cluster_enabled_log_types = var.cluster_enabled_log_types
+  enabled_log_types         = var.cluster_enabled_log_types
+
+  endpoint_public_access = true
+  endpoint_public_access_cidrs = ["86.134.11.50/32"]
 
   cloudwatch_log_group_retention_in_days = var.cluster_log_retention_in_days
-  cluster_security_group_description     = "EKS cluster security group."
-  cluster_security_group_name            = terraform.workspace
+  security_group_description             = "EKS cluster security group."
+  security_group_name                    = terraform.workspace
 
   create_node_security_group = false
   node_security_group_id     = aws_security_group.node.id
@@ -279,91 +288,11 @@ module "eks" {
 
   eks_managed_node_groups = local.eks_managed_node_groups
 
-  iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+  iam_role_additional_policies = {
+    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
 
-  # Out of the box you can't specify groups to map, just users. Some people did some workarounds
-  # we can explore later: https://ygrene.tech/mapping-iam-groups-to-eks-user-access-66fd745a6b77
-  manage_aws_auth_configmap = true
-  aws_auth_users = [
-    {
-      userarn  = "arn:aws:iam::754256621582:user/SabluMiah"
-      username = "SabluMiah"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/JackStockley"
-      username = "JackStockley"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/SteveWilliams"
-      username = "SteveWilliams"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/TomSmith"
-      username = "TomSmith"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/cloud-platform/manager-concourse"
-      username = "manager-concourse"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/KyTruong"
-      username = "KyTruong"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/MikeBell"
-      username = "MikeBell"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/DavidElliott"
-      username = "DavidElliott"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/TariqMahmood"
-      username = "TariqMahmood"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/TimCheung"
-      username = "TimCheung"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/FolarinOyenuga"
-      username = "FolarinOyenuga"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/EmmaTerry"
-      username = "EmmaTerry"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/WajidFarid"
-      username = "WajidFarid"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::754256621582:user/ZuriGuardiola"
-      username = "ZuriGuardiola"
-      groups   = ["system:masters"]
-    }
-  ]
-
-  aws_auth_roles = [
-    {
-      rolearn  = "arn:aws:iam::754256621582:role/AWSReservedSSO_AdministratorAccess_ae2d551dbf676d8f"
-      username = "{{SessionName}}"
-      groups   = ["system:masters"]
-    },
-  ]
+  enable_cluster_creator_admin_permissions = true
 
   tags = local.tags
 }
@@ -375,7 +304,7 @@ module "aws_eks_addons" {
   source                  = "github.com/ministryofjustice/cloud-platform-terraform-eks-add-ons?ref=1.20.0"
   depends_on              = [module.eks.cluster]
   cluster_name            = terraform.workspace
-  eks_cluster_id          = module.eks.cluster_id
+  eks_cluster_id          = module.eks.cluster_name
   cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   addon_tags              = local.tags
 
@@ -384,3 +313,28 @@ module "aws_eks_addons" {
   addon_kube_proxy_version      = "v1.32.9-eksbuild.2"
   addon_guardduty_agent_version = "v1.12.1-eksbuild.2"
 }
+
+
+##########################
+# EKS Users Access Setup #
+##########################
+
+# resource "aws_eks_access_policy_association" "EmmaTerry" {
+#   cluster_name  = module.eks.cluster_name
+#   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+#   principal_arn = "arn:aws:iam::754256621582:user/EmmaTerry"
+
+#   access_scope {
+#     type = "cluster"
+#   }
+# }
+
+# resource "aws_eks_access_policy_association" "SteveWilliams" {
+#   cluster_name  = module.eks.cluster_name
+#   policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+#   principal_arn = "arn:aws:iam::754256621582:user/SteveWilliams"
+
+#   access_scope {
+#     type = "cluster"
+#   }
+# }

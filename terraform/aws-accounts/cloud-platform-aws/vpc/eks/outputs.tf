@@ -1,13 +1,3 @@
-# output "eks_worker_iam_role_arn" {
-#   value       = module.eks.worker_iam_role_arn
-#   description = "Default IAM role ARN for EKS worker groups"
-# }
-
-# output "eks_worker_iam_role_name" {
-#   value       = module.eks.worker_iam_role_name
-#   description = "Default IAM role name for EKS worker groups"
-# }
-
 output "vpc_id" {
   value       = data.aws_vpc.selected.id
   description = "VPC ID for current cluster/terraform workspace"
@@ -67,7 +57,7 @@ output "cluster_oidc_issuer_url" {
 }
 
 output "cluster_id" {
-  value       = module.eks.cluster_id
+  value       = module.eks.cluster_name
   description = "The name/id of the EKS cluster. Will block on cluster creation until the cluster is really ready."
 }
 output "cluster_endpoint" {
