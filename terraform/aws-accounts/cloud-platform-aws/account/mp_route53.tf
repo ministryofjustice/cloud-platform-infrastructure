@@ -6,9 +6,9 @@ resource "aws_route53_record" "temp_cloud_platform" {
   type    = "NS"
   ttl     = 300
   records = [
-    "ns-439.awsdns-54.com.",
-    "ns-1019.awsdns-63.net.",
-    "ns-1033.awsdns-01.org.",
-    "ns-1938.awsdns-50.co.uk.",
+    "ns-1471.awsdns-55.org.",
+    "ns-605.awsdns-11.net.",
+    "ns-1805.awsdns-33.co.uk.",
+    "ns-282.awsdns-35.com.",
   ]
 }
