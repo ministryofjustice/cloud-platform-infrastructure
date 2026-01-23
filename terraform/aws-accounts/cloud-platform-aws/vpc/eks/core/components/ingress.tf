@@ -40,8 +40,8 @@ module "non_prod_ingress_controllers_v1" {
 
   enable_external_dns_annotation = false // this creates the wildcards in external dns
 
-  memory_requests = "5Gi"
-  memory_limits   = "20Gi"
+  memory_requests = "1Gi"
+  memory_limits   = "1Gi"
 
   default_tags = local.default_tags
 
