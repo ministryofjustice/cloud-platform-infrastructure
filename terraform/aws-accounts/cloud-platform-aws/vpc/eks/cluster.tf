@@ -200,7 +200,7 @@ locals {
 
   data_platform_containment_26_01_26 = {
     desired_size = 6
-    max_size     = 60
+    max_size     = 10
     min_size     = 4
     block_device_mappings = {
       xvda = {
