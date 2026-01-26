@@ -196,6 +196,57 @@ locals {
     ]
   }
 
+
+
+  data_platform_containment_26_01_26 = {
+    desired_size = 6
+    max_size     = 60
+    min_size     = 4
+    block_device_mappings = {
+      xvda = {
+        device_name = "/dev/xvda"
+        ebs = {
+          volume_size           = 140
+          volume_type           = "gp3"
+          iops                  = 0
+          encrypted             = false
+          kms_key_id            = ""
+          delete_on_termination = true
+        }
+      }
+    }
+
+    subnet_ids = data.aws_subnets.eks_private.ids
+    name       = "${terraform.workspace}-data-platform-ng"
+
+    create_security_group  = false
+    create_launch_template = true
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {
+      dockerhub_credentials = local.dockerhub_credentials
+    })
+
+    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    instance_types               = ["r8i.2xlarge, r7i.2xlarge, r6i.2xlarge"]
+    labels = {
+      Terraform                                     = "true"
+      "cloud-platform.justice.gov.uk/data-platform-containment-ng" = "true"
+      Cluster                                       = terraform.workspace
+      Domain                                        = local.fqdn
+    }
+    tags = {
+      data-platform-containment-ng = "true"
+      application   = "moj-cloud-platform"
+      business-unit = "platforms"
+    }
+    taints = [
+      {
+        key    = "data-platform-containment-node"
+        value  = true
+        effect = "NO_SCHEDULE"
+      }
+    ]
+  }
+
   thanos_ng_10_10_25 = {
     desired_size = 1
     max_size     = 1
@@ -252,7 +303,8 @@ locals {
       default_ng_10_12_25    = local.default_ng_10_12_25,
       monitoring_ng_10_10_25 = local.monitoring_ng_10_10_25
     },
-    terraform.workspace == "manager" ? { thanos_ng_10_10_25 = local.thanos_ng_10_10_25 } : {}
+    terraform.workspace == "manager" ? { thanos_ng_10_10_25 = local.thanos_ng_10_10_25 } : {},
+    terraform.workspace == "live" ? { data_platform_containment_26_01_26 = local.data_platform_containment_26_01_26 } : {}
   )
 }
 
