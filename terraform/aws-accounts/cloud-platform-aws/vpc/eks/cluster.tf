@@ -196,9 +196,7 @@ locals {
     ]
   }
 
-
-
-  data_platform_containment_26_01_26 = {
+  containment_ng_27_01_26 = {
     desired_size = 6
     max_size     = 10
     min_size     = 4
@@ -217,7 +215,7 @@ locals {
     }
 
     subnet_ids = data.aws_subnets.eks_private.ids
-    name       = "${terraform.workspace}-data-platform-ng"
+    name       = "${terraform.workspace}-containment-ng"
 
     create_security_group  = false
     create_launch_template = true
@@ -226,21 +224,21 @@ locals {
     })
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
-    instance_types               = ["r8i.2xlarge", "r7i.2xlarge", "r6i.2xlarge"]
+    instance_types               = ["r8i.4xlarge", "r7i.4xlarge", "r6i.4xlarge"]
     labels = {
-      Terraform                                                    = "true"
-      "cloud-platform.justice.gov.uk/data-platform-containment-ng" = "true"
-      Cluster                                                      = terraform.workspace
-      Domain                                                       = local.fqdn
+      Terraform                                      = "true"
+      "cloud-platform.justice.gov.uk/containment-ng" = "true"
+      Cluster                                        = terraform.workspace
+      Domain                                         = local.fqdn
     }
     tags = {
-      data-platform-containment-ng = "true"
-      application                  = "moj-cloud-platform"
-      business-unit                = "platforms"
+      containment_ng = "true"
+      application    = "moj-cloud-platform"
+      business-unit  = "platforms"
     }
     taints = [
       {
-        key    = "data-platform-containment-node"
+        key    = "containment-node"
         value  = true
         effect = "NO_SCHEDULE"
       }
@@ -304,7 +302,7 @@ locals {
       monitoring_ng_10_10_25 = local.monitoring_ng_10_10_25
     },
     terraform.workspace == "manager" ? { thanos_ng_10_10_25 = local.thanos_ng_10_10_25 } : {},
-    terraform.workspace == "live" ? { data_platform_containment_26_01_26 = local.data_platform_containment_26_01_26 } : {}
+    terraform.workspace == "live" ? { containment_ng_27_01_26 = local.containment_ng_27_01_26 } : {}
   )
 }
 
