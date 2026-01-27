@@ -226,15 +226,15 @@ locals {
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
     instance_types               = ["r8i.4xlarge", "r7i.4xlarge", "r6i.4xlarge"]
     labels = {
-      Terraform                                                    = "true"
+      Terraform                                      = "true"
       "cloud-platform.justice.gov.uk/containment-ng" = "true"
-      Cluster                                                      = terraform.workspace
-      Domain                                                       = local.fqdn
+      Cluster                                        = terraform.workspace
+      Domain                                         = local.fqdn
     }
     tags = {
       containment_ng = "true"
-      application                  = "moj-cloud-platform"
-      business-unit                = "platforms"
+      application    = "moj-cloud-platform"
+      business-unit  = "platforms"
     }
     taints = [
       {
