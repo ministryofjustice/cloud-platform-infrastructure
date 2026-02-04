@@ -13,8 +13,8 @@ module "ingress_controllers_v1" {
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
 
-  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "8Gi" : "512Mi"
-  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "8Gi" : "2Gi"
+  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "12Gi" : "512Mi"
+  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "12Gi" : "2Gi"
 
   default_tags = local.default_tags
 
