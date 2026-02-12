@@ -199,7 +199,7 @@ locals {
   containment_ng_27_01_26 = {
     desired_size = 6
     max_size     = 10
-    min_size     = 4
+    min_size     = 3
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
