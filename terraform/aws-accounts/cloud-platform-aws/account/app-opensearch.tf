@@ -406,7 +406,7 @@ resource "elasticsearch_opensearch_role" "all_org_members_app_logs" {
 
   index_permissions {
     index_patterns  = ["live_kubernetes_cluster-*"]
-    allowed_actions = ["read", "search", "data_access"]
+    allowed_actions = ["read", "search", "data_access", "indices:monitor/settings/get"]
 
     document_level_security = "{\"terms\": { \"github_teams.keyword\": [$${user.roles}]}}"
   }
