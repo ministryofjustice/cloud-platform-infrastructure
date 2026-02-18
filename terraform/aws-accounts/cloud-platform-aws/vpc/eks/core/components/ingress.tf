@@ -118,7 +118,7 @@ module "non_prod_modsec_ingress_controllers_v1" {
 }
 
 module "ingress_controllers_laa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -147,7 +147,7 @@ module "ingress_controllers_laa" {
 }
 
 module "ingress_controllers_internal" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -177,7 +177,7 @@ module "ingress_controllers_internal" {
 }
 
 module "ingress_controllers_internal_non_prod" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
 
   count = terraform.workspace == "live" ? 1 : 0
 
