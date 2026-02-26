@@ -178,6 +178,12 @@ func (c *Config) ExpectedManagerPromRules() {
 		"prometheus-operator-manager-custom-kubernetes-apps.rules")
 }
 
+// ExpectedLivePromRules returns a slice of additional Prometheus rules expected to be in the live cluster.
+func (c *Config) ExpectedLivePromRules() {
+	c.PrometheusRules = append(c.PrometheusRules,
+		"ingress-controller-apps-live-only.rules")
+}
+
 // ExpectedNamespaces returns a slice of all the namespaces
 // that are expected to be in the cluster.
 func (c *Config) ExpectedNamespaces() {
