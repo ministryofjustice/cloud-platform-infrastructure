@@ -1,5 +1,5 @@
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.15.11"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
 
   replica_count            = terraform.workspace == "live" ? "30" : "3"
   controller_name          = "default"
