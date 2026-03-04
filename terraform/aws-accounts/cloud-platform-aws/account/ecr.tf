@@ -119,3 +119,51 @@ EOF
   environment_name       = var.environment
   infrastructure_support = var.infrastructure_support
 }
+
+module "ecr_credentials_ingress_validator" {
+  source    = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=7.1.0"
+  repo_name = "cloud-platform-terraform-ingress-validator"
+
+  oidc_providers      = ["github"]
+  github_repositories = ["cloud-platform-terraform-ingress-validator"]
+
+  lifecycle_policy = <<EOF
+{
+    "rules": [
+        {
+            "rulePriority": 1,
+            "description": "Expire untagged images older than 14 days",
+            "selection": {
+                "tagStatus": "untagged",
+                "countType": "sinceImagePushed",
+                "countUnit": "days",
+                "countNumber": 14
+            },
+            "action": {
+                "type": "expire"
+            }
+        },
+        {
+            "rulePriority": 2,
+            "description": "Keep the newest 10 images and mark the rest for expiration",
+            "selection": {
+                "tagStatus": "any",
+                "countType": "imageCountMoreThan",
+                "countNumber": 10
+            },
+            "action": {
+                "type": "expire"
+            }
+        }
+    ]
+}
+EOF
+
+  business_unit          = var.business_unit
+  application            = var.application
+  is_production          = var.is_production
+  team_name              = var.team_name
+  namespace              = "cloud-platform-terraform-ingress-validator"
+  environment_name       = var.environment
+  infrastructure_support = var.infrastructure_support
+}
