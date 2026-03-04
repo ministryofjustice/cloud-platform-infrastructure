@@ -120,12 +120,12 @@ EOF
   infrastructure_support = var.infrastructure_support
 }
 
-module "ecr_credentials_nginx_config_validator" {
+module "ecr_credentials_ingress_validator" {
   source    = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=7.1.0"
   repo_name = "cloud-platform-terraform-ingress-validator"
 
   oidc_providers      = ["github"]
-  github_repositories = ["cloud-platform-nginx-config-validator"]
+  github_repositories = ["cloud-platform-terraform-ingress-validator"]
 
   lifecycle_policy = <<EOF
 {
