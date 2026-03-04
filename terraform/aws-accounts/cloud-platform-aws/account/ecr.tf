@@ -122,7 +122,7 @@ EOF
 
 module "ecr_credentials_nginx_config_validator" {
   source    = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=7.1.0"
-  repo_name = "cloud-platform-nginx-config-validator"
+  repo_name = "cloud-platform-terraform-ingress-validator"
 
   oidc_providers      = ["github"]
   github_repositories = ["cloud-platform-nginx-config-validator"]
@@ -163,7 +163,7 @@ EOF
   application            = var.application
   is_production          = var.is_production
   team_name              = var.team_name
-  namespace              = "cloud-platform-nginx-config-validator"
+  namespace              = "cloud-platform-terraform-ingress-validator"
   environment_name       = var.environment
   infrastructure_support = var.infrastructure_support
 }
