@@ -122,10 +122,10 @@ EOF
 
 module "ecr_credentials_ingress_validator" {
   source    = "github.com/ministryofjustice/cloud-platform-terraform-ecr-credentials?ref=7.1.0"
-  repo_name = "cloud-platform-terraform-ingress-validator"
+  repo_name = "cloud-platform-terraform-ingress-validation-controller"
 
   oidc_providers      = ["github"]
-  github_repositories = ["cloud-platform-terraform-ingress-validator"]
+  github_repositories = ["cloud-platform-terraform-ingress-validation-controller"]
 
   lifecycle_policy = <<EOF
 {
@@ -163,7 +163,7 @@ EOF
   application            = var.application
   is_production          = var.is_production
   team_name              = var.team_name
-  namespace              = "cloud-platform-terraform-ingress-validator"
+  namespace              = "cloud-platform-terraform-ingress-validation-controller"
   environment_name       = var.environment
   infrastructure_support = var.infrastructure_support
 }
