@@ -109,7 +109,7 @@ module "modsec_ingress_controllers_v1" {
 # modsec class validation controller               #
 ####################################################
 
-module "default_ingress_controllers_validator" {
+module "modsec_ingress_controllers_validator" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-validation-controller"
 
   replica_count        = "3"
