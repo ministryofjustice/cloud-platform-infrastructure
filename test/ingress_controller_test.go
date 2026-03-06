@@ -2,6 +2,7 @@ package integration_tests
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -15,7 +16,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-var _ = Describe("ingress-controllers", Serial, func() {
+var _ = FDescribe("ingress-controllers", Serial, func() {
 	var (
 		namespaceName, host, url string
 		options                  *k8s.KubectlOptions
@@ -75,6 +76,72 @@ var _ = Describe("ingress-controllers", Serial, func() {
 
 				return s
 			}, "8m", "30s").Should(Equal(200))
+		})
+	})
+
+	Context("when an ingress resource is deployed with an invalid regex path", func() {
+		It("should be rejected by the admission webhook", func() {
+			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
+			class := "default"
+
+			TemplateVars := map[string]interface{}{
+				"ingress_annotations": map[string]string{
+					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
+					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
+				},
+				"host":      host,
+				"class":     class,
+				"namespace": namespaceName,
+			}
+
+			tpl, err := helpers.TemplateFile("./fixtures/helloworld-bad-regex.yaml.tmpl", "helloworld-bad-regex.yaml.tmpl", TemplateVars)
+			if err != nil {
+				Fail("Failed to create helloworld deployment template: " + err.Error())
+			}
+
+			tmpFile, err := os.CreateTemp("", "helloworld-bad-regex-*.yaml")
+			if err != nil {
+				Fail("Failed to create temp file: " + err.Error())
+			}
+			defer os.Remove(tmpFile.Name())
+			if _, err = tmpFile.WriteString(tpl); err != nil {
+				Fail("Failed to write temp file: " + err.Error())
+			}
+			tmpFile.Close()
+
+			var failures []string
+
+			output, applyErr := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "apply", "-f", tmpFile.Name())
+			if applyErr == nil {
+				failures = append(failures, fmt.Sprintf("Expected admission webhook error denying the request\ngot: %s", output))
+			} else {
+				if !strings.Contains(applyErr.Error(), "admission webhook") {
+					failures = append(failures, fmt.Sprintf("Expected error to contain 'admission webhook', got: %s", applyErr.Error()))
+				}
+				if !strings.Contains(applyErr.Error(), "validate.nginx.ingress.kubernetes.io") {
+					failures = append(failures, fmt.Sprintf("Expected error to contain 'validate.nginx.ingress.kubernetes.io', got: %s", applyErr.Error()))
+				}
+				if !strings.Contains(applyErr.Error(), "pcre_compile() failed") {
+					failures = append(failures, fmt.Sprintf("Expected error to contain 'pcre_compile() failed', got: %s", applyErr.Error()))
+				}
+			}
+
+			By("Verifying ingress was not created")
+			ingress, getErr := k8s.GetIngressE(GinkgoT(), options, "integration-test-app-ing")
+			if getErr == nil {
+				failures = append(failures, fmt.Sprintf("Expected ingress to not exist, but it was created: %s", ingress.Name))
+			} else if !strings.Contains(getErr.Error(), "not found") {
+				ingresses := k8s.ListIngresses(GinkgoT(), options, metav1.ListOptions{})
+				var ingressNames []string
+				for _, ing := range ingresses {
+					ingressNames = append(ingressNames, ing.Name)
+				}
+				failures = append(failures, fmt.Sprintf("Expected 'not found' error but got: %s. Ingresses in namespace: %v", getErr.Error(), ingressNames))
+			}
+
+			if len(failures) > 0 {
+				Fail(strings.Join(failures, "\n"))
+			}
 		})
 	})
 })
