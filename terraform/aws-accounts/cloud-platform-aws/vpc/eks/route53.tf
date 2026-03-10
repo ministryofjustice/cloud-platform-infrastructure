@@ -43,8 +43,8 @@ resource "aws_route53_record" "parent_zone_internal_ns" {
 }
 
 resource "aws_route53_zone" "beta_ingress_controller_zone" {
-  count = local.is_live_cluster ? 1 : 0
-  name = "beta.cloud-platform.service.justice.gov.uk"
+  count         = local.is_live_cluster ? 1 : 0
+  name          = "beta.cloud-platform.service.justice.gov.uk"
   force_destroy = true
 }
 
