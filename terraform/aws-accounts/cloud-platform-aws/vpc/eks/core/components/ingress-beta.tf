@@ -11,7 +11,7 @@ module "beta_ingress_controllers" {
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
 
-  default_cert             = "ingress-controllers/beta-certificate"
+  default_cert = "ingress-controllers/beta-certificate"
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
