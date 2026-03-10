@@ -1,5 +1,5 @@
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=ref=1.18.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
 
   replica_count            = terraform.workspace == "live" ? "30" : "3"
   controller_name          = "default"
@@ -23,28 +23,6 @@ module "ingress_controllers_v1" {
   ]
 }
 
-#######################################
-# default class validation controller #
-#######################################
-module "default_ingress_controllers_validator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-validation-controller"
-
-  replica_count        = "3"
-  controller_name      = "default"
-  enable_anti_affinity = terraform.workspace == "live" ? true : false
-  memory_requests      = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "512Mi"
-  memory_limits        = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
-  cluster              = terraform.workspace
-  validator_registry   = "754256621582.dkr.ecr.eu-west-2.amazonaws.com"
-  validator_image      = "webops/cloud-platform-terraform-ingress-validation-controller"
-  validator_tag        = "ff3f53388052256d48606739aaa65092c234f1c8"
-  validator_digest     = "sha256:86586f2105b2d5c57e0c0c45e2216f6ad666992402122455138402c6e1d6caeb"
-
-  default_tags = local.default_tags
-
-  depends_on = [module.ingress_controllers_v1]
-
-}
 
 module "non_prod_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
@@ -74,7 +52,7 @@ module "non_prod_ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=ref=1.18.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
@@ -105,29 +83,6 @@ module "modsec_ingress_controllers_v1" {
   depends_on = [module.ingress_controllers_v1]
 }
 
-####################################################
-# modsec class validation controller               #
-####################################################
-
-module "modsec_ingress_controllers_validator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-validation-controller"
-
-  replica_count        = "3"
-  controller_name      = "modsec"
-  enable_anti_affinity = terraform.workspace == "live" ? true : false
-  memory_requests      = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "512Mi"
-  memory_limits        = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
-  cluster              = terraform.workspace
-  validator_registry   = "754256621582.dkr.ecr.eu-west-2.amazonaws.com"
-  validator_image      = "webops/cloud-platform-terraform-ingress-validation-controller"
-  validator_tag        = "ff3f53388052256d48606739aaa65092c234f1c8"
-  validator_digest     = "sha256:86586f2105b2d5c57e0c0c45e2216f6ad666992402122455138402c6e1d6caeb"
-
-  default_tags = local.default_tags
-
-  depends_on = [module.ingress_controllers_v1]
-
-}
 module "non_prod_modsec_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
 
