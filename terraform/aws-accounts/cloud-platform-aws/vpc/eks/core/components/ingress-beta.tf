@@ -1,3 +1,7 @@
+############################################################
+# beta class ingress controller - modsec and owasp enabled #
+############################################################
+
 module "beta_ingress_controllers" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.20.0"
   count  = terraform.workspace == "live" ? 1 : 0
@@ -9,15 +13,16 @@ module "beta_ingress_controllers" {
   enable_latest_tls        = true
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
-  live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+  enable_modsec            = true
+  enable_owasp             = true
 
   default_cert = "ingress-controllers/beta-certificate"
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
 
-  memory_requests = "1Gi"
-  memory_limits   = "2Gi"
+  memory_requests = "2Gi"
+  memory_limits   = "4Gi"
 
   default_tags = local.default_tags
 
@@ -29,17 +34,17 @@ module "beta_ingress_controllers" {
 
 
 #######################################
-# beta class validation controller #
+# beta class validation controller    #
 #######################################
+
 module "default_ingress_controllers_validator" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-validation-controller?ref=0.1.0"
   count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count        = "3"
   controller_name      = "beta"
-  enable_anti_affinity = terraform.workspace == "live" ? true : false
-  memory_requests      = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "512Mi"
-  memory_limits        = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
+  memory_requests      = "2Gi"
+  memory_limits        = "4Gi"
   cluster              = terraform.workspace
   validator_registry   = "754256621582.dkr.ecr.eu-west-2.amazonaws.com"
   validator_image      = "webops/cloud-platform-terraform-ingress-validation-controller"
