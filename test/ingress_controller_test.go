@@ -16,7 +16,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-var _ = FDescribe("ingress-controllers", Serial, func() {
+var _ = Describe("ingress-controllers", Serial, func() {
 	var (
 		namespaceName, host, url string
 		options                  *k8s.KubectlOptions
