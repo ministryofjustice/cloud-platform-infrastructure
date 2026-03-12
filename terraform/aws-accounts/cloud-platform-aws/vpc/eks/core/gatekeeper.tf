@@ -26,6 +26,7 @@ module "gatekeeper" {
     ingress_internal_class_domain = false,
     pod_memory_ratio              = false,
     block_snippet_annotations     = true, # we are running it dryrun for live clusters to monitor the number of violations before enforcing it.
+    ingress_beta_class_domain     = false,
   }
 
   cluster_domain_name                  = data.terraform_remote_state.cluster.outputs.cluster_domain_name
