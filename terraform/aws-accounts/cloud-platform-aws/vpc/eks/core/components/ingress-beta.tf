@@ -3,10 +3,11 @@
 ############################################################
 
 module "beta_ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.20.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=2.0.1"
   count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "3"
+  is_non_prod_modsec       = true
   controller_name          = "beta"
   proxy_response_buffering = "on"
   enable_anti_affinity     = terraform.workspace == "live" ? true : false
@@ -20,6 +21,10 @@ module "beta_ingress_controllers" {
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
+
+  opensearch_app_logs_host     = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
+  opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
+  cluster                      = terraform.workspace
 
   memory_requests = "2Gi"
   memory_limits   = "4Gi"
