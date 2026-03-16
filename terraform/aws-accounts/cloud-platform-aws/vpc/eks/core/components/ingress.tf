@@ -206,3 +206,25 @@ module "ingress_controllers_internal_non_prod" {
     module.label_pods_controller
   ]
 }
+
+## Secrets Manager module for Chainguard pull secret management
+## Depends on eso module and ingress default class module
+
+module "chainguard_secret" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-secrets-manager?ref=3.0.7"
+
+  eks_cluster_name = var.eks_cluster_name
+  namespace        = "ingress-controllers"
+  secrets = {
+    "chainguard-creds" = {
+      description             = "chainguard registry pull secret"
+      recovery_window_in_days = 7
+      k8s_secret_name         = "chainguard-creds"
+    },
+  }
+
+  depends_on = [
+    module.ingress_controllers_v1,
+    module.external_secrets_operator
+  ]
+}
