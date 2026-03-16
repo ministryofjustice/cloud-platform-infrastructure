@@ -28,7 +28,7 @@ module "non_prod_ingress_controllers_v1" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
   count  = terraform.workspace == "live" ? 1 : 0
 
-  replica_count            = "6"
+  replica_count            = "15"
   controller_name          = "default-non-prod"
   enable_cross_zone_lb     = false
   enable_anti_affinity     = terraform.workspace == "live" ? true : false
@@ -41,8 +41,8 @@ module "non_prod_ingress_controllers_v1" {
 
   enable_external_dns_annotation = false // this creates the wildcards in external dns
 
-  memory_requests = "1Gi"
-  memory_limits   = "1Gi"
+  memory_requests = "10Gi"
+  memory_limits   = "10Gi"
 
   default_tags = local.default_tags
 
