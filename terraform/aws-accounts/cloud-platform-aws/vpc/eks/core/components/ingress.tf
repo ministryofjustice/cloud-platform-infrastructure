@@ -213,15 +213,23 @@ module "ingress_controllers_internal_non_prod" {
 module "chainguard_secret" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-secrets-manager?ref=3.0.7"
 
-  eks_cluster_name = var.eks_cluster_name
+  eks_cluster_name = terraform.workspace
   namespace        = "ingress-controllers"
   secrets = {
-    "chainguard-creds" = {
+    "chainguard-creds-${terraform.workspace}" = {
       description             = "chainguard registry pull secret"
       recovery_window_in_days = 7
       k8s_secret_name         = "chainguard-creds"
     },
   }
+
+  # Tags
+  business_unit          = "Platforms"
+  application            = "cloud-platform-infrastructure"
+  is_production          = "true"
+  team_name              = "webops"
+  environment_name       = terraform.workspace
+  infrastructure_support = "Cloud Platform"
 
   depends_on = [
     module.ingress_controllers_v1,
