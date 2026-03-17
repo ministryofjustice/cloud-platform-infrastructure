@@ -175,3 +175,24 @@ locals {
     source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
   }
 }
+
+data "aws_ssm_parameter" "chainguard_registry_credentials" {
+  name = "/cloud-platform/infrastructure/account/chainguard_registry_credentials"
+}
+
+resource "kubernetes_secret" "chainguard_creds" {
+  metadata {
+    name      = "chainguard-creds"
+    namespace = "ingress-controllers"
+  }
+
+  data = {
+    ".dockerconfigjson" = data.aws_ssm_parameter.chainguard_registry_credentials.value
+  }
+
+  type = "kubernetes.io/dockerconfigjson"
+
+  depends_on = [
+    module.ingress_controllers_v1
+  ]
+}
