@@ -31,3 +31,16 @@ data "aws_ssm_parameter" "account" {
   name = "/cloud-platform/infrastructure/account/${each.value}"
 
 }
+
+# SSM parameter for Chainguard docker registry credentials
+resource "aws_ssm_parameter" "chainguard_registry_credentials" {
+  name        = "/cloud-platform/infrastructure/account/chainguard_registry_credentials"
+  type        = "SecureString"
+  value       = "PLACEHOLDER"
+  description = "infrastructure/account terraform secret: chainguard_registry_credentials"
+
+  overwrite = true
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
