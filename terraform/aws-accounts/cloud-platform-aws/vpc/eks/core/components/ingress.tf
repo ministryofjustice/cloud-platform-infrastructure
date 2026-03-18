@@ -1,5 +1,5 @@
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=chainguard-values-logic"
 
   replica_count            = terraform.workspace == "live" ? "30" : "3"
   controller_name          = "default"
@@ -15,6 +15,8 @@ module "ingress_controllers_v1" {
 
   memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "10Gi" : "512Mi"
   memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "10Gi" : "2Gi"
+
+  enable_chainguard = false
 
   default_tags = local.default_tags
 
@@ -52,7 +54,7 @@ module "non_prod_ingress_controllers_v1" {
 }
 
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=chainguard-values-logic"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
@@ -73,6 +75,8 @@ module "modsec_ingress_controllers_v1" {
   fluent_bit_version           = "4.0.2-amd64"
 
   default_tags = local.default_tags
+
+  enable_chainguard = false
 
   # Required variables for tags in S3-Bucket submodule
   business_unit = local.default_tags["business-unit"]
