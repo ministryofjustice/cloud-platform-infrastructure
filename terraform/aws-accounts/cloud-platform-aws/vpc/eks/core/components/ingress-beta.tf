@@ -42,7 +42,7 @@ module "beta_ingress_controllers" {
 # beta class validation controller    #
 #######################################
 
-module "default_ingress_controllers_validator" {
+module "beta_ingress_controllers_validator" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-validation-controller?ref=0.1.0"
   count  = terraform.workspace == "live" ? 1 : 0
 
