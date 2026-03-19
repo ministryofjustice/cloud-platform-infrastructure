@@ -3,7 +3,7 @@
 ############################################################
 
 module "beta_ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=2.0.1"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.1.0"
   count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "3"
@@ -30,6 +30,8 @@ module "beta_ingress_controllers" {
   memory_limits   = "4Gi"
 
   default_tags = local.default_tags
+
+  enable_chainguard = true
 
   depends_on = [
     module.label_pods_controller
