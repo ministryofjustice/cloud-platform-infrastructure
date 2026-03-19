@@ -1,0 +1,147 @@
+package integration_tests
+
+import (
+	"fmt"
+	"os"
+	"strings"
+	"time"
+
+	. "github.com/onsi/ginkgo/v2"
+
+	"github.com/gruntwork-io/terratest/modules/k8s"
+	"github.com/gruntwork-io/terratest/modules/random"
+	. "github.com/onsi/gomega"
+
+	"github.com/ministryofjustice/cloud-platform-infrastructure/test/helpers"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+var _ = FDescribe("ingress-controllers", Serial, func() {
+	var (
+		namespaceName, host, url string
+		options                  *k8s.KubectlOptions
+	)
+
+	BeforeEach(func() {
+		namespaceName = fmt.Sprintf("%s-ing-%s", c.Prefix, strings.ToLower(random.UniqueId()))
+		host = fmt.Sprintf("%s.beta.cloud-platform.service.justice.gov.uk", namespaceName)
+		options = k8s.NewKubectlOptions("", "", namespaceName)
+		url = fmt.Sprintf("https://%s", host)
+
+		nsObject := metav1.ObjectMeta{
+			Name: namespaceName,
+			Labels: map[string]string{
+				"pod-security.kubernetes.io/enforce": "restricted",
+			},
+		}
+
+		err := k8s.CreateNamespaceWithMetadataE(GinkgoT(), options, nsObject)
+		Expect(err).ToNot(HaveOccurred())
+	})
+
+	AfterEach(func() {
+		err := k8s.DeleteNamespaceE(GinkgoT(), options, namespaceName)
+		Expect(err).ToNot(HaveOccurred())
+	})
+
+	Context("when an ingress resource is deployed using 'default' ingress controller", func() {
+		It("should expose the service to the internet", func() {
+			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
+			class := "beta"
+
+			TemplateVars := map[string]interface{}{
+				"ingress_annotations": map[string]string{
+					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
+					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
+				},
+				"host":      host,
+				"class":     class,
+				"namespace": namespaceName,
+			}
+
+			tpl, err := helpers.TemplateFile("./fixtures/helloworld-deployment-v1-default-cert.yaml.tmpl", "helloworld-deployment-v1-default-cert.yaml.tmpl", TemplateVars)
+			if err != nil {
+				Fail("Failed to create helloworld deployment: " + err.Error())
+			}
+
+			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
+			Expect(err).To(BeNil())
+
+			k8s.WaitUntilIngressAvailable(GinkgoT(), options, "integration-test-app-ing", 8, 20*time.Second)
+
+			GinkgoWriter.Printf("Checking that the ingress is available at %s\n", url)
+			Eventually(func() int {
+				s, err := helpers.HttpStatusCode(url)
+				Expect(err).To(BeNil())
+
+				return s
+			}).Should(Equal(200))
+		})
+	})
+
+	Context("when an ingress resource is deployed with an invalid regex path", func() {
+		It("should be rejected by the admission webhook", func() {
+			setIdentifier := "integration-test-app-ing-" + namespaceName + "-green"
+			class := "beta"
+
+			TemplateVars := map[string]interface{}{
+				"ingress_annotations": map[string]string{
+					"external-dns.alpha.kubernetes.io/aws-weight":     "\"100\"",
+					"external-dns.alpha.kubernetes.io/set-identifier": setIdentifier,
+				},
+				"host":      host,
+				"class":     class,
+				"namespace": namespaceName,
+			}
+
+			tpl, err := helpers.TemplateFile("./fixtures/helloworld-bad-regex.yaml.tmpl", "helloworld-bad-regex.yaml.tmpl", TemplateVars)
+			if err != nil {
+				Fail("Failed to create helloworld deployment template: " + err.Error())
+			}
+
+			tmpFile, err := os.CreateTemp("", "helloworld-bad-regex-*.yaml")
+			if err != nil {
+				Fail("Failed to create temp file: " + err.Error())
+			}
+			defer os.Remove(tmpFile.Name())
+			if _, err = tmpFile.WriteString(tpl); err != nil {
+				Fail("Failed to write temp file: " + err.Error())
+			}
+			tmpFile.Close()
+
+			var failures []string
+
+			output, applyErr := k8s.RunKubectlAndGetOutputE(GinkgoT(), options, "apply", "-f", tmpFile.Name())
+			if applyErr == nil {
+				failures = append(failures, fmt.Sprintf("Expected admission webhook error denying the request\ngot: %s", output))
+			} else {
+				if !strings.Contains(applyErr.Error(), "admission webhook") {
+					failures = append(failures, fmt.Sprintf("Expected error to contain 'admission webhook', got: %s", applyErr.Error()))
+				}
+				if !strings.Contains(applyErr.Error(), "validate.nginx.ingress.kubernetes.io") {
+					failures = append(failures, fmt.Sprintf("Expected error to contain 'validate.nginx.ingress.kubernetes.io', got: %s", applyErr.Error()))
+				}
+				if !strings.Contains(applyErr.Error(), "pcre_compile() failed") {
+					failures = append(failures, fmt.Sprintf("Expected error to contain 'pcre_compile() failed', got: %s", applyErr.Error()))
+				}
+			}
+
+			By("Verifying ingress was not created")
+			ingress, getErr := k8s.GetIngressE(GinkgoT(), options, "integration-test-app-ing")
+			if getErr == nil {
+				failures = append(failures, fmt.Sprintf("Expected ingress to not exist, but it was created: %s", ingress.Name))
+			} else if !strings.Contains(getErr.Error(), "not found") {
+				ingresses := k8s.ListIngresses(GinkgoT(), options, metav1.ListOptions{})
+				var ingressNames []string
+				for _, ing := range ingresses {
+					ingressNames = append(ingressNames, ing.Name)
+				}
+				failures = append(failures, fmt.Sprintf("Expected 'not found' error but got: %s. Ingresses in namespace: %v", getErr.Error(), ingressNames))
+			}
+
+			if len(failures) > 0 {
+				Fail(strings.Join(failures, "\n"))
+			}
+		})
+	})
+})
