@@ -1,20 +1,22 @@
-module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.14.0"
+## Disabling trivy-operator whilst platform trivy services are under security review 
 
-  cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
+# module "trivy-operator" {
+#   source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.14.0"
 
-  # job concurrency limit and scanner report ttl need balancing to
-  # ensure report completeness across the cluster
-  job_concurrency_limit = 4
-  scanner_report_ttl    = "48h"
+#   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
+#   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 
-  scan_job_timeout    = "10m"
-  trivy_timeout       = "10m0s"
-  severity_list       = "HIGH,CRITICAL"
-  enable_trivy_server = "true"
+#   # job concurrency limit and scanner report ttl need balancing to
+#   # ensure report completeness across the cluster
+#   job_concurrency_limit = 4
+#   scanner_report_ttl    = "48h"
 
-  depends_on = [
-    module.label_pods_controller
-  ]
-}
+#   scan_job_timeout    = "10m"
+#   trivy_timeout       = "10m0s"
+#   severity_list       = "HIGH,CRITICAL"
+#   enable_trivy_server = "true"
+
+#   depends_on = [
+#     module.label_pods_controller
+#   ]
+# }
