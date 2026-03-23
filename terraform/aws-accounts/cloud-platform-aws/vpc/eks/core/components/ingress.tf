@@ -180,7 +180,7 @@ module "ingress_controllers_internal" {
 }
 
 module "ingress_controllers_internal_non_prod" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.0.0"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -193,6 +193,7 @@ module "ingress_controllers_internal_non_prod" {
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
   default_cert             = "ingress-controllers/internal-non-prod-certificate"
+  enable_chainguard        = false
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
