@@ -121,7 +121,7 @@ module "non_prod_modsec_ingress_controllers_v1" {
 }
 
 module "ingress_controllers_laa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.0.0"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -133,6 +133,7 @@ module "ingress_controllers_laa" {
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
+  enable_chainguard        = false
 
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = false
