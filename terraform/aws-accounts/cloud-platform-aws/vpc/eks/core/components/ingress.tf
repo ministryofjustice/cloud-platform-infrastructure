@@ -25,7 +25,7 @@ module "ingress_controllers_v1" {
 
 
 module "non_prod_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.1.0"
   count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "15"
@@ -38,7 +38,7 @@ module "non_prod_ingress_controllers_v1" {
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
-  enable_chainguard        = false
+  enable_chainguard        = true
 
   enable_external_dns_annotation = false // this creates the wildcards in external dns
 
