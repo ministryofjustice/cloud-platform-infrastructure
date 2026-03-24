@@ -26,6 +26,11 @@ var _ = Describe("modsec-non-prod-ingress-controller", Serial, func() {
 	)
 
 	BeforeEach(func() {
+
+		if !(c.ClusterName == "live") {
+			Skip(fmt.Sprintf("modsec-non-prod ingress class is not deployed on cluster: %s", c.ClusterName))
+		}
+
 		namespaceName = fmt.Sprintf("%s-modsec-%s", c.Prefix, strings.ToLower(random.UniqueId()))
 		host = fmt.Sprintf("%s.apps.%s.%s", namespaceName, c.ClusterName, domain)
 
