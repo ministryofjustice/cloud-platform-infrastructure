@@ -42,3 +42,13 @@ resource "aws_route53_record" "cloud-platform_justice_gov_uk_NS" {
   records = data.aws_route53_zone.cloud_platform_justice_gov_uk.name_servers
 }
 
+resource "aws_route53_zone" "integrationtest_service_justice_gov_uk" {
+  name     = "integrationtest.service.justice.gov.uk"
+  provider = aws.dsd
+}
+
+import {
+  to = aws_route53_zone.integrationtest_service_justice_gov_uk
+  id = "Z02429076QQMAO8KXV68"
+}
+
