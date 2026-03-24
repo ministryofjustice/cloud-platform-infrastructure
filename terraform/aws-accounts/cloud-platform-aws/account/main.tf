@@ -180,7 +180,7 @@ resource "aws_route53_record" "pagerduty_records" {
 }
 
 resource "aws_route53_zone" "integrationtest_service_justice_gov_uk" {
-  name = "integrationtest-service.justice.gov.uk."
+  name = "integrationtest.service.justice.gov.uk."
 
 }
 
