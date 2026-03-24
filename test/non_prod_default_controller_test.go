@@ -23,7 +23,6 @@ var _ = Describe("default-non-prod-ingress-controllers", Serial, func() {
 	)
 
 	BeforeEach(func() {
-
 		if !(c.ClusterName == "live") {
 			Skip(fmt.Sprintf("default-non-prod ingress class is not deployed on cluster: %s", c.ClusterName))
 		}
