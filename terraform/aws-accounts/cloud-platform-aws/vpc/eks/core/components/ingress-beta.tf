@@ -3,7 +3,7 @@
 ############################################################
 
 module "beta_ingress_controllers" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.2.0"
   count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "3"
