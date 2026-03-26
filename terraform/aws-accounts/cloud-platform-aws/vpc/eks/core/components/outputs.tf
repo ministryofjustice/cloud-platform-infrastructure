@@ -42,8 +42,3 @@ output "s3_bucket_modsec_logs_name" {
   description = "S3 bucket name for ModSecurity logs"
   value       = module.modsec_ingress_controllers_v1.s3_bucket_modsec_logs_name
 }
-
-output "fluent_bit_beta_irsa_arn" {
-  description = "IAM Role ARN for Fluent Bit Beta IRSA"
-  value       = length(module.beta_ingress_controllers) > 0 ? module.beta_ingress_controllers[0].fluent_bit_modsec_irsa_arn : null
-}
