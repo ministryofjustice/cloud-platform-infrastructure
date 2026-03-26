@@ -25,6 +25,7 @@ module "beta_ingress_controllers" {
   opensearch_app_logs_host     = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
   cluster                      = terraform.workspace
+  fluent_bit_version           = "4.0.2-amd64"
 
   memory_requests = "2Gi"
   memory_limits   = "4Gi"
