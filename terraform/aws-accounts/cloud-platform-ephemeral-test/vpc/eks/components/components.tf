@@ -198,23 +198,3 @@ module "velero" {
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
-
-module "trivy-operator" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-trivy-operator?ref=0.5.1"
-
-  depends_on = [
-    module.monitoring.prometheus_operator_crds_status
-  ]
-
-  cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
-  eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
-
-  dockerhub_username = var.dockerhub_username
-  dockerhub_password = var.dockerhub_password
-
-  job_concurrency_limit = 1
-  scan_job_timeout      = "10m"
-  trivy_timeout         = "10m0s"
-  severity_list         = "HIGH,CRITICAL"
-  enable_trivy_server   = "true"
-}
