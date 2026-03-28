@@ -32,7 +32,7 @@ resource "aws_security_group" "guardduty_vpce" {
 
 module "aws_vpc_endpoints" {
   source  = "terraform-aws-modules/vpc/aws//modules/vpc-endpoints"
-  version = "6.0.0"
+  version = "6.5.1"
 
   vpc_id = module.vpc.vpc_id
 
