@@ -196,3 +196,9 @@ resource "kubernetes_secret" "chainguard_creds" {
     module.ingress_controllers_v1
   ]
 }
+
+resource "null_resource" "test_pr" {
+  provisioner "local-exec" {
+    command = "echo 'Hello, Cloud Platform!'"
+  }
+}
