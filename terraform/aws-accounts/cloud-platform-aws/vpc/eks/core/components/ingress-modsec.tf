@@ -39,6 +39,8 @@ module "modsec_ingress_controllers_validator" {
   memory_requests    = "2Gi"
   memory_limits      = "4Gi"
   cluster            = terraform.workspace
+  enable_modsec      = true
+  enable_owasp       = true
   validator_registry = "754256621582.dkr.ecr.eu-west-2.amazonaws.com"
   validator_image    = "webops/cloud-platform-terraform-ingress-validation-controller"
   validator_tag      = "ff3f53388052256d48606739aaa65092c234f1c8"
