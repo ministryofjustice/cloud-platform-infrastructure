@@ -26,7 +26,6 @@ module "ingress_controllers_v1" {
 
 module "default_ingress_controllers_validator" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-validation-controller?ref=0.1.0"
-  count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count      = "3"
   controller_name    = "default"
