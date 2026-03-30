@@ -1,5 +1,5 @@
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.0.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.1.0"
 
   replica_count            = terraform.workspace == "live" ? "30" : "3"
   controller_name          = "default"
@@ -15,7 +15,7 @@ module "ingress_controllers_v1" {
 
   memory_requests   = lookup(local.live_workspace, terraform.workspace, false) ? "10Gi" : "512Mi"
   memory_limits     = lookup(local.live_workspace, terraform.workspace, false) ? "10Gi" : "2Gi"
-  enable_chainguard = false
+  enable_chainguard = true
 
   default_tags = local.default_tags
 
