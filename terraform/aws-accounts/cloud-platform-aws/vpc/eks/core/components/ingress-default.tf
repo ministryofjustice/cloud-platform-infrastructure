@@ -1,5 +1,5 @@
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=1.18.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.0.0"
 
   replica_count            = terraform.workspace == "live" ? "30" : "3"
   controller_name          = "default"
@@ -13,8 +13,9 @@ module "ingress_controllers_v1" {
   # Enable this when we remove the module "ingress_controllers"
   enable_external_dns_annotation = true
 
-  memory_requests = lookup(local.live_workspace, terraform.workspace, false) ? "10Gi" : "512Mi"
-  memory_limits   = lookup(local.live_workspace, terraform.workspace, false) ? "10Gi" : "2Gi"
+  memory_requests   = lookup(local.live_workspace, terraform.workspace, false) ? "10Gi" : "512Mi"
+  memory_limits     = lookup(local.live_workspace, terraform.workspace, false) ? "10Gi" : "2Gi"
+  enable_chainguard = false
 
   default_tags = local.default_tags
 
