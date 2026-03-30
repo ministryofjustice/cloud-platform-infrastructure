@@ -1,5 +1,5 @@
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.0.0"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
@@ -13,7 +13,7 @@ module "modsec_ingress_controllers_v1" {
   enable_latest_tls        = true
   memory_requests          = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "512Mi"
   memory_limits            = lookup(local.live_workspace, terraform.workspace, false) ? "20Gi" : "2Gi"
-  enable_chainguard        = true
+  enable_chainguard        = false
 
   opensearch_app_logs_host     = lookup(var.opensearch_app_host_map, terraform.workspace, "placeholder-opensearch")
   opensearch_modsec_audit_host = lookup(var.elasticsearch_modsec_audit_hosts_maps, terraform.workspace, "placeholder-elasticsearch")
