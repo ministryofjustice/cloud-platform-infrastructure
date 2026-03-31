@@ -29,7 +29,7 @@ module "default_ingress_controllers_validator" {
 
   replica_count      = "3"
   controller_name    = "default"
-  memory_requests    = "2Gi"
+  memory_requests    = "3Gi"
   memory_limits      = "4Gi"
   cluster            = terraform.workspace
   validator_registry = "754256621582.dkr.ecr.eu-west-2.amazonaws.com"
