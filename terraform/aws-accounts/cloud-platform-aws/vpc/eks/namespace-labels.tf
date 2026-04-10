@@ -17,6 +17,8 @@ resource "kubernetes_annotations" "kube_system_ns" {
     "cloud-platform.justice.gov.uk/slack-channel" = "cloud-platform"
     "cloud-platform-out-of-hours-alert"           = "true"
   }
+
+  depends_on = [module.aws_eks_addons]
 }
 
 resource "kubernetes_labels" "kube_system_ns" {
@@ -33,6 +35,8 @@ resource "kubernetes_labels" "kube_system_ns" {
     "cloud-platform.justice.gov.uk/environment-name" = "production"
     "pod-security.kubernetes.io/enforce"             = "privileged"
   }
+
+  depends_on = [module.aws_eks_addons]
 }
 
 ################################
@@ -48,6 +52,8 @@ resource "kubernetes_labels" "default_ns" {
   labels = {
     "pod-security.kubernetes.io/enforce" = "restricted"
   }
+
+  depends_on = [module.aws_eks_addons]
 }
 
 resource "kubernetes_labels" "kube_public_ns" {
@@ -59,6 +65,8 @@ resource "kubernetes_labels" "kube_public_ns" {
   labels = {
     "pod-security.kubernetes.io/enforce" = "restricted"
   }
+  
+  depends_on = [module.aws_eks_addons]
 }
 
 resource "kubernetes_labels" "kube_node_lease_ns" {
@@ -70,4 +78,6 @@ resource "kubernetes_labels" "kube_node_lease_ns" {
   labels = {
     "pod-security.kubernetes.io/enforce" = "restricted"
   }
+  
+  depends_on = [module.aws_eks_addons]
 }
