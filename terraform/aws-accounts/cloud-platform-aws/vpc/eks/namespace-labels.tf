@@ -65,7 +65,7 @@ resource "kubernetes_labels" "kube_public_ns" {
   labels = {
     "pod-security.kubernetes.io/enforce" = "restricted"
   }
-  
+
   depends_on = [module.aws_eks_addons]
 }
 
@@ -78,6 +78,6 @@ resource "kubernetes_labels" "kube_node_lease_ns" {
   labels = {
     "pod-security.kubernetes.io/enforce" = "restricted"
   }
-  
+
   depends_on = [module.aws_eks_addons]
 }
