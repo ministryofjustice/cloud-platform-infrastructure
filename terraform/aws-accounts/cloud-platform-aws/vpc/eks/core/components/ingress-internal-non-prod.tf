@@ -1,5 +1,5 @@
 module "ingress_controllers_internal_non_prod" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=remove-namespace"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -44,7 +44,5 @@ module "internal_non_prod_ingress_controllers_validator" {
   validator_digest   = "sha256:86586f2105b2d5c57e0c0c45e2216f6ad666992402122455138402c6e1d6caeb"
 
   default_tags = local.default_tags
-
-  depends_on = [module.ingress_controllers_v1]
 
 }

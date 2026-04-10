@@ -1,5 +1,5 @@
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.1.2"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=remove-namespace"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
@@ -28,7 +28,6 @@ module "modsec_ingress_controllers_v1" {
   is_production = local.default_tags["is-production"]
   team_name     = local.default_tags["owner"]
 
-  depends_on = [module.ingress_controllers_v1]
 }
 
 module "modsec_ingress_controllers_validator" {
@@ -48,5 +47,4 @@ module "modsec_ingress_controllers_validator" {
 
   default_tags = local.default_tags
 
-  depends_on = [module.ingress_controllers_v1]
 }

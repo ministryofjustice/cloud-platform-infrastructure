@@ -1,5 +1,5 @@
 module "ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=remove-namespace"
 
   replica_count            = terraform.workspace == "live" ? "30" : "3"
   controller_name          = "default"
@@ -39,5 +39,4 @@ module "default_ingress_controllers_validator" {
 
   default_tags = local.default_tags
 
-  depends_on = [module.ingress_controllers_v1]
 }

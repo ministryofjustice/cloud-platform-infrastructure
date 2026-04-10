@@ -1,5 +1,5 @@
 module "ingress_controllers_laa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=remove-namespace"
 
   count = terraform.workspace == "live" ? 1 : 0
 
@@ -44,5 +44,4 @@ module "internal_laa_ingress_controllers_validator" {
 
   default_tags = local.default_tags
 
-  depends_on = [module.ingress_controllers_v1]
 }

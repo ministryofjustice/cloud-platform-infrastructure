@@ -1,5 +1,5 @@
 module "non_prod_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.1.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=remove-namespace"
   count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "15"
@@ -42,5 +42,4 @@ module "default_non_prod_ingress_controllers_validator" {
 
   default_tags = local.default_tags
 
-  depends_on = [module.ingress_controllers_v1]
 }
