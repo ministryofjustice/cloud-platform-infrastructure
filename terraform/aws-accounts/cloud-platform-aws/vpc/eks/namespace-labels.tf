@@ -3,6 +3,7 @@
 #####################################
 
 resource "kubernetes_annotations" "kube_system_ns" {
+  depends_on = [module.aws_eks_addons]
   api_version = "v1"
   kind        = "Namespace"
   metadata {
@@ -20,6 +21,7 @@ resource "kubernetes_annotations" "kube_system_ns" {
 }
 
 resource "kubernetes_labels" "kube_system_ns" {
+  depends_on  = [module.aws_eks_addons]
   api_version = "v1"
   kind        = "Namespace"
   metadata {
@@ -40,6 +42,7 @@ resource "kubernetes_labels" "kube_system_ns" {
 ################################
 
 resource "kubernetes_labels" "default_ns" {
+  depends_on  = [module.aws_eks_addons]
   api_version = "v1"
   kind        = "Namespace"
   metadata {
@@ -51,6 +54,7 @@ resource "kubernetes_labels" "default_ns" {
 }
 
 resource "kubernetes_labels" "kube_public_ns" {
+  depends_on  = [module.aws_eks_addons]
   api_version = "v1"
   kind        = "Namespace"
   metadata {
@@ -62,6 +66,7 @@ resource "kubernetes_labels" "kube_public_ns" {
 }
 
 resource "kubernetes_labels" "kube_node_lease_ns" {
+  depends_on  = [module.aws_eks_addons]
   api_version = "v1"
   kind        = "Namespace"
   metadata {
