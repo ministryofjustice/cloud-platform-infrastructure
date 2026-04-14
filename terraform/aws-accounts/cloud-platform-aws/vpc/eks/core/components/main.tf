@@ -193,6 +193,6 @@ resource "kubernetes_secret" "chainguard_creds" {
   type = "kubernetes.io/dockerconfigjson"
 
   depends_on = [
-    module.ingress_controllers_v1
+    kubernetes_namespace.ingress_controllers
   ]
 }

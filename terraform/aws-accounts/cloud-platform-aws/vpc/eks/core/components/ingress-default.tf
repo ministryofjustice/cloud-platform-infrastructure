@@ -47,7 +47,8 @@ module "ingress_controllers_v1" {
 
   depends_on = [
     module.label_pods_controller,
-    resource.kubernetes_namespace.ingress_controllers
+    resource.kubernetes_namespace.ingress_controllers,
+    kubernetes_secret.chainguard_creds
   ]
 }
 
