@@ -27,7 +27,7 @@ module "ingress_controllers_v1" {
 module "default_ingress_controllers_validator" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-validation-controller?ref=0.1.0"
 
-  replica_count      = "3"
+  replica_count      = "6"
   controller_name    = "default"
   memory_requests    = "3Gi"
   memory_limits      = "4Gi"
