@@ -124,7 +124,7 @@ locals {
     create_security_group  = false
     create_launch_template = true
 
-    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl")
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {})
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
 
@@ -166,7 +166,7 @@ locals {
 
     create_security_group  = false
     create_launch_template = true
-    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl")
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {})
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
     instance_types               = lookup(local.monitoring_node_size, terraform.workspace, local.monitoring_node_size["default"])
@@ -213,7 +213,7 @@ locals {
 
     create_security_group  = false
     create_launch_template = true
-    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl")
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {})
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
     instance_types               = ["r8i.4xlarge", "r7i.4xlarge", "r6i.4xlarge"]
@@ -261,7 +261,7 @@ locals {
 
     create_security_group  = false
     create_launch_template = true
-    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl")
+    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {})
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
     instance_types               = lookup(local.thanos_node_size, terraform.workspace, local.thanos_node_size["default"])
