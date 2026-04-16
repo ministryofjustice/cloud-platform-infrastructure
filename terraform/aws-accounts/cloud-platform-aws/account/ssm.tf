@@ -44,3 +44,17 @@ resource "aws_ssm_parameter" "chainguard_registry_credentials" {
     ignore_changes = [value]
   }
 }
+
+# SSM parameter for DockerHub registry credentials
+resource "aws_ssm_parameter" "dockerhub_credentials" {
+  name        = "/cloud-platform/infrastructure/account/dockerhub_credentials"
+  type        = "SecureString"
+  value       = "PLACEHOLDER"
+  description = "infrastructure/account terraform secret: dockerhub_credentials"
+
+  overwrite = true
+
+  lifecycle {
+    ignore_changes = [value]
+  }
+}
