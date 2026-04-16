@@ -1,22 +1,20 @@
 #!/bin/bash
+#!/bin/bash
 set -o xtrace
+
+DOCKERHUB_CREDS=$(aws ssm get-parameter \
+  --name "/cloud-platform/infrastructure/account/dockerhub_credentials" \
+  --with-decryption \
+  --query "Parameter.Value" \
+  --output text \
+  --region eu-west-2)
 
 mkdir -p "/root/.docker"
 cat << EOF > /root/.docker/config.json
 {
   "auths": {
     "https://index.docker.io/v1/": {
-      "auth": "${dockerhub_credentials}"
-    }
-  }
-}
-EOF
-mkdir -p "/var/lib/kubelet/.docker"
-cat << EOF > /var/lib/kubelet/config.json
-{
-  "auths": {
-    "https://index.docker.io/v1/": {
-      "auth": "${dockerhub_credentials}"
+      "auth": "$DOCKERHUB_CREDS"
     }
   }
 }
