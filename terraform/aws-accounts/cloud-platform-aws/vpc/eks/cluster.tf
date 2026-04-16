@@ -93,7 +93,7 @@ locals {
     default = ["m6a.xlarge", "m6a.2xlarge", "m6i.xlarge"]
   }
 
-  dockerhub_credentials = base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}")
+  dockerhub_credentials = sensitive(base64encode("${var.cp_dockerhub_user}:${var.cp_dockerhub_token}"))
 
   tags = {
     Terraform = "true"

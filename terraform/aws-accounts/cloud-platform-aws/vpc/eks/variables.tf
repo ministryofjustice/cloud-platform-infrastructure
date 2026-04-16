@@ -6,6 +6,7 @@ variable "cp_dockerhub_user" {
 variable "cp_dockerhub_token" {
   description = "DockerHub token for the Cloud Platform user"
   type        = string
+  sensitive   = true
 }
 
 variable "enable_oidc_associate" {
