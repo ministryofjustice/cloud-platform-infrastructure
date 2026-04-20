@@ -299,9 +299,9 @@ locals {
   # New node groups
 
   default_ng_20_04_26 = {
-    desired_size = local.upgrade_desired_size
+    desired_size = lookup(local.upgrade_desired_size, terraform.workspace, local.upgrade_desired_size["default"])
     max_size     = 120
-    min_size     = local.upgrade_min_size
+    min_size     = lookup(local.upgrade_min_size, terraform.workspace, local.upgrade_min_size["default"])
 
     block_device_mappings = {
       xvda = {
@@ -343,9 +343,9 @@ locals {
   }
 
   monitoring_ng_20_04_26 = {
-    desired_size = local.upgrade_desired_size
+    desired_size = lookup(local.upgrade_desired_size, terraform.workspace, local.upgrade_desired_size["default"])
     max_size     = 6
-    min_size     = local.upgrade_min_size
+    min_size     = lookup(local.upgrade_min_size, terraform.workspace, local.upgrade_min_size["default"])
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
@@ -390,9 +390,9 @@ locals {
   }
 
   containment_ng_20_04_26 = {
-    desired_size = local.upgrade_desired_size
+    desired_size = lookup(local.upgrade_desired_size, terraform.workspace, local.upgrade_desired_size["default"])
     max_size     = 10
-    min_size     = local.upgrade_min_size
+    min_size     = lookup(local.upgrade_min_size, terraform.workspace, local.upgrade_min_size["default"])
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
