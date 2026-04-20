@@ -296,7 +296,7 @@ locals {
     ]
   }
 
-# New node groups
+  # New node groups
 
   default_ng_20_04_26 = {
     desired_size = local.upgrade_desired_size
@@ -363,8 +363,8 @@ locals {
     subnet_ids = data.aws_subnets.eks_private.ids
     name       = "${terraform.workspace}-mon-ng"
 
-    create_security_group  = false
-    create_launch_template = true
+    create_security_group   = false
+    create_launch_template  = true
     pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {})
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
@@ -410,8 +410,8 @@ locals {
     subnet_ids = data.aws_subnets.eks_private.ids
     name       = "${terraform.workspace}-containment-ng"
 
-    create_security_group  = false
-    create_launch_template = true
+    create_security_group   = false
+    create_launch_template  = true
     pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-200426.tpl", {})
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
@@ -458,8 +458,8 @@ locals {
     subnet_ids = data.aws_subnets.thanos_nodegroup_az.ids
     name       = "${terraform.workspace}-thanos-ng"
 
-    create_security_group  = false
-    create_launch_template = true
+    create_security_group   = false
+    create_launch_template  = true
     pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-200426.tpl", {})
 
     iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
