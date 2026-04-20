@@ -492,7 +492,7 @@ locals {
       monitoring_ng_10_10_25 = local.monitoring_ng_10_10_25,
       monitoring_ng_20_04_26 = local.monitoring_ng_20_04_26,
     },
-    terraform.workspace == "manager" ? { thanos_ng_10_10_25 = local.thanos_ng_10_10_25} : {},
+    terraform.workspace == "manager" ? { thanos_ng_10_10_25 = local.thanos_ng_10_10_25 } : {},
     terraform.workspace == "manager" ? { thanos_ng_20_04_26 = local.thanos_ng_20_04_26 } : {},
     terraform.workspace == "live" ? { containment_ng_27_01_26 = local.containment_ng_27_01_26 } : {},
     terraform.workspace == "live" ? { containment_ng_20_04_26 = local.containment_ng_20_04_26 } : {},
