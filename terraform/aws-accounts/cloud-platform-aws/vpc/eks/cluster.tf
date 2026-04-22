@@ -52,7 +52,7 @@ locals {
 
   # Number of desired node for new node groups
   upgrade_desired_size = {
-    live    = "15"
+    live    = "20"
     live-2  = "5"
     manager = "5"
     default = "5"
@@ -60,9 +60,31 @@ locals {
 
   # Minimum number of nodes for new node groups
   upgrade_min_size = {
-    live    = "5"
+    live    = "20"
     live-2  = "2"
     manager = "4"
+    default = "2"
+  }
+
+  # Maximum number of nodes for new node groups
+  upgrade_max_size = {
+    live    = "20"
+    live-2  = "6"
+    manager = "6"
+    default = "6"
+  }
+
+  temp_max_size = {
+    live    = "120"
+    live-2  = "120"
+    manager = "1"
+    default = "6"
+  }
+
+  temp_min_size = {
+    live    = "65"
+    live-2  = "2"
+    manager = "1"
     default = "2"
   }
 
@@ -103,8 +125,8 @@ locals {
 
   default_ng_10_12_25 = {
     desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_size     = 120
-    min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+    max_size     = lookup(local.temp_max_size, terraform.workspace, local.temp_max_size["default"])
+    min_size     = lookup(local.temp_min_size, terraform.workspace, local.temp_min_size["default"])
 
     block_device_mappings = {
       xvda = {
@@ -344,7 +366,7 @@ locals {
 
   monitoring_ng_20_04_26 = {
     desired_size = lookup(local.upgrade_desired_size, terraform.workspace, local.upgrade_desired_size["default"])
-    max_size     = 6
+    max_size     = lookup(local.upgrade_max_size, terraform.workspace, local.upgrade_max_size["default"])
     min_size     = lookup(local.upgrade_min_size, terraform.workspace, local.upgrade_min_size["default"])
     block_device_mappings = {
       xvda = {
@@ -390,9 +412,9 @@ locals {
   }
 
   containment_ng_20_04_26 = {
-    desired_size = lookup(local.upgrade_desired_size, terraform.workspace, local.upgrade_desired_size["default"])
+    desired_size = 3
     max_size     = 10
-    min_size     = lookup(local.upgrade_min_size, terraform.workspace, local.upgrade_min_size["default"])
+    min_size     = 3
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
