@@ -398,9 +398,9 @@ locals {
   }
 
   containment_ng_20_04_26 = {
-    desired_size = lookup(local.upgrade_desired_size, terraform.workspace, local.upgrade_desired_size["default"])
-    max_size     = lookup(local.upgrade_max_size, terraform.workspace, local.upgrade_max_size["default"])
-    min_size     = lookup(local.upgrade_min_size, terraform.workspace, local.upgrade_min_size["default"])
+    desired_size = 3
+    max_size     = 10
+    min_size     = 3
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
