@@ -66,7 +66,7 @@ locals {
     default = "2"
   }
 
- # Maximum number of nodes for new node groups
+  # Maximum number of nodes for new node groups
   upgrade_max_size = {
     live    = "20"
     live-2  = "6"
