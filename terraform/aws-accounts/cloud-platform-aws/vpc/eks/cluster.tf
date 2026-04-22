@@ -52,7 +52,7 @@ locals {
 
   # Number of desired node for new node groups
   upgrade_desired_size = {
-    live    = "15"
+    live    = "20"
     live-2  = "5"
     manager = "5"
     default = "5"
@@ -60,10 +60,18 @@ locals {
 
   # Minimum number of nodes for new node groups
   upgrade_min_size = {
-    live    = "5"
+    live    = "20"
     live-2  = "2"
     manager = "4"
     default = "2"
+  }
+
+ # Maximum number of nodes for new node groups
+  upgrade_max_size = {
+    live    = "20"
+    live-2  = "6"
+    manager = "6"
+    default = "6"
   }
 
   # To manage different cluster versions
@@ -344,7 +352,7 @@ locals {
 
   monitoring_ng_20_04_26 = {
     desired_size = lookup(local.upgrade_desired_size, terraform.workspace, local.upgrade_desired_size["default"])
-    max_size     = 6
+    max_size     = lookup(local.upgrade_max_size, terraform.workspace, local.upgrade_max_size["default"])
     min_size     = lookup(local.upgrade_min_size, terraform.workspace, local.upgrade_min_size["default"])
     block_device_mappings = {
       xvda = {
@@ -391,7 +399,7 @@ locals {
 
   containment_ng_20_04_26 = {
     desired_size = lookup(local.upgrade_desired_size, terraform.workspace, local.upgrade_desired_size["default"])
-    max_size     = 10
+    max_size     = lookup(local.upgrade_max_size, terraform.workspace, local.upgrade_max_size["default"])
     min_size     = lookup(local.upgrade_min_size, terraform.workspace, local.upgrade_min_size["default"])
     block_device_mappings = {
       xvda = {
