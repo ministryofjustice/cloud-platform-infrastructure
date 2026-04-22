@@ -75,17 +75,17 @@ locals {
   }
 
   temp_max_size = {
-    live    = "6"
-    live-2  = "6"
+    live    = "120"
+    live-2  = "120"
     manager = "1"
     default = "6"
   }
 
   temp_min_size = {
-    live    = "4"
-    live-2  = "3"
+    live    = "65"
+    live-2  = "2"
     manager = "1"
-    default = "4"
+    default = "2"
   }
 
   # To manage different cluster versions
@@ -125,8 +125,8 @@ locals {
 
   default_ng_10_12_25 = {
     desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_size     = 120
-    min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
+    max_size     = lookup(local.temp_max_size, terraform.workspace, local.temp_max_size["default"])
+    min_size     = lookup(local.temp_min_size, terraform.workspace, local.temp_min_size["default"])
 
     block_device_mappings = {
       xvda = {
@@ -171,8 +171,8 @@ locals {
 
   monitoring_ng_10_10_25 = {
     desired_size = lookup(local.default_mon_desired_count, terraform.workspace, local.default_mon_desired_count["default"])
-    max_size     = lookup(local.temp_max_size, terraform.workspace, local.temp_max_size["default"])
-    min_size     = lookup(local.temp_min_size, terraform.workspace, local.temp_min_size["default"])
+    max_size     = 6
+    min_size     = lookup(local.default_mon_min_count, terraform.workspace, local.default_mon_min_count["default"])
     block_device_mappings = {
       xvda = {
         device_name = "/dev/xvda"
