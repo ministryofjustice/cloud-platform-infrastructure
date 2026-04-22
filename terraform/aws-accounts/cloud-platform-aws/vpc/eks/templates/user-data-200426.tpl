@@ -19,6 +19,17 @@ cat << EOF > /root/.docker/config.json
 }
 EOF
 
+mkdir -p "/var/lib/kubelet/.docker"
+cat << EOF > /var/lib/kubelet/config.json
+{
+  "auths": {
+    "https://index.docker.io/v1/": {
+      "auth": "$DOCKERHUB_CREDS"
+    }
+  }
+}
+EOF
+
 ### The following sets the Garbage collection thresholds to clean up the container images cache at a specified percent of disk usage
 KUBELET_CONFIG=/etc/kubernetes/kubelet/config.json
 
