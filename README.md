@@ -1,4 +1,4 @@
-# Cloud Platform Infrastructure
+# Cloud Platform Infrastructure 
 
 ## Introduction
 
