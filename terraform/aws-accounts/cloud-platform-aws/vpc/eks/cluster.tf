@@ -88,6 +88,20 @@ locals {
     default = "2"
   }
 
+  temp_ng_20_04_26_max_size = {
+    live    = "3"
+    live-2  = "120"
+    manager = "120"
+    default = "6"
+  }
+
+  temp_ng_20_04_26_min_size = {
+    live    = "3"
+    live-2  = "2"
+    manager = "4"
+    default = "2"
+  }
+
   # To manage different cluster versions
   cluster_version = {
     live    = "1.33"
@@ -322,8 +336,8 @@ locals {
 
   default_ng_20_04_26 = {
     desired_size = lookup(local.upgrade_desired_size, terraform.workspace, local.upgrade_desired_size["default"])
-    max_size     = 3
-    min_size     = 3
+    max_size     = lookup(local.temp_ng_20_04_26_max_size, terraform.workspace, local.temp_ng_20_04_26_max_size["default"])
+    min_size     = lookup(local.temp_ng_20_04_26_min_size, terraform.workspace, local.temp_ng_20_04_26_min_size["default"])
 
     block_device_mappings = {
       xvda = {
