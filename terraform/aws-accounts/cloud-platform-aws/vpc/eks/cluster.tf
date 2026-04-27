@@ -75,14 +75,14 @@ locals {
   }
 
   temp_max_size = {
-    live    = "120"
+    live    = "150"
     live-2  = "120"
     manager = "1"
     default = "6"
   }
 
   temp_min_size = {
-    live    = "65"
+    live    = "120"
     live-2  = "2"
     manager = "1"
     default = "2"
@@ -322,8 +322,8 @@ locals {
 
   default_ng_20_04_26 = {
     desired_size = lookup(local.upgrade_desired_size, terraform.workspace, local.upgrade_desired_size["default"])
-    max_size     = 120
-    min_size     = lookup(local.upgrade_min_size, terraform.workspace, local.upgrade_min_size["default"])
+    max_size     = 3
+    min_size     = 3
 
     block_device_mappings = {
       xvda = {
