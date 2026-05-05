@@ -179,7 +179,7 @@ locals {
     tags = {
       default_ng    = "true"
       application   = "moj-cloud-platform"
-      business-unit = "platforms"
+      business-unit = "Platforms"
     }
   }
 
@@ -221,7 +221,7 @@ locals {
     tags = {
       monitoring_ng = "true"
       application   = "moj-cloud-platform"
-      business-unit = "platforms"
+      business-unit = "Platforms"
     }
     taints = [
       {
@@ -270,7 +270,7 @@ locals {
     tags = {
       containment_ng = "true"
       application    = "moj-cloud-platform"
-      business-unit  = "platforms"
+      business-unit  = "Platforms"
     }
     taints = [
       {
@@ -321,7 +321,7 @@ locals {
     tags = {
       monitoring_ng = "true"
       application   = "moj-cloud-platform"
-      business-unit = "platforms"
+      business-unit = "Platforms"
     }
     taints = [
       {
@@ -374,7 +374,7 @@ locals {
     tags = {
       default_ng    = "true"
       application   = "moj-cloud-platform"
-      business-unit = "platforms"
+      business-unit = "Platforms"
     }
   }
 
@@ -414,7 +414,7 @@ locals {
     tags = {
       monitoring_ng = "true"
       application   = "moj-cloud-platform"
-      business-unit = "platforms"
+      business-unit = "Platforms"
     }
     taints = [
       {
@@ -461,7 +461,7 @@ locals {
     tags = {
       containment_ng = "true"
       application    = "moj-cloud-platform"
-      business-unit  = "platforms"
+      business-unit  = "Platforms"
     }
     taints = [
       {
@@ -510,7 +510,7 @@ locals {
     tags = {
       monitoring_ng = "true"
       application   = "moj-cloud-platform"
-      business-unit = "platforms"
+      business-unit = "Platforms"
     }
     taints = [
       {
