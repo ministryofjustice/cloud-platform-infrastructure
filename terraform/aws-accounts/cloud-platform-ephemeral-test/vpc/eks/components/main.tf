@@ -19,7 +19,7 @@ provider "aws" {
   profile = "moj-et"
   default_tags {
     tags = {
-      business-unit = "Platforms"
+      business-unit = "OCTO"
       application   = "cloud-platform-aws/vpc/eks/components"
       is-production = "false"
       owner         = "Cloud Platform: platforms@digital.justice.gov.uk"

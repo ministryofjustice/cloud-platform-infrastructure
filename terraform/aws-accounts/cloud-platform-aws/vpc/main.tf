@@ -18,7 +18,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      business-unit = "Platforms"
+      business-unit = "OCTO"
       application   = "cloud-platform-aws/vpc"
       is-production = "true"
       owner         = "Cloud Platform: platforms@digital.justice.gov.uk"

@@ -100,7 +100,7 @@ resource "aws_cloudwatch_log_group" "live_1_log_group" {
   tags = {
     Terraform     = "true"
     application   = "cloud-platform-live"
-    business-unit = "Platforms"
+    business-unit = "OCTO"
     is-production = "true"
     owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
     source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
@@ -114,7 +114,7 @@ resource "aws_cloudwatch_log_group" "live_1_search_slow_log_group" {
   tags = {
     Terraform     = "true"
     application   = "cloud-platform-live"
-    business-unit = "Platforms"
+    business-unit = "OCTO"
     is-production = "true"
     owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
     source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
@@ -129,7 +129,7 @@ resource "aws_cloudwatch_log_group" "live_1_index_slow_log_group" {
   tags = {
     Terraform     = "true"
     application   = "cloud-platform-live"
-    business-unit = "Platforms"
+    business-unit = "OCTO"
     is-production = "true"
     owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
     source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"

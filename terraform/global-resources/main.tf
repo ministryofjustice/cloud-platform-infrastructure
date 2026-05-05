@@ -24,7 +24,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      business-unit = "Platforms"
+      business-unit = "OCTO"
       application   = "global-resources"
       is-production = "true"
       owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
@@ -41,7 +41,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      business-unit = "Platforms"
+      business-unit = "OCTO"
       application   = "global-resources"
       is-production = "true"
       owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
@@ -57,7 +57,7 @@ provider "aws" {
 
   default_tags {
     tags = {
-      business-unit = "Platforms"
+      business-unit = "OCTO"
       application   = "global-resources"
       is-production = "true"
       owner         = "Cloud Platform: platforms@digital.justice.gov.uk"

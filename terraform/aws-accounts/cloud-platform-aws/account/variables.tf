@@ -66,7 +66,7 @@ variable "github_token" {
 
 variable "business_unit" {
   type    = string
-  default = "Platforms"
+  default = "OCTO"
 }
 
 variable "application" {

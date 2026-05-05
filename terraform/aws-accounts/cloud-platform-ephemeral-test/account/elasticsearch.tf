@@ -55,7 +55,7 @@
 #   tags = {
 #     Terraform     = "true"
 #     application   = "cloud-platform-test"
-#     business-unit = "Platforms"
+#     business-unit = "OCTO"
 #     is-production = "true"
 #     owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
 #     source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"

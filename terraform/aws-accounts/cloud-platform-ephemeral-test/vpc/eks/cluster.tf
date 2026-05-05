@@ -75,7 +75,7 @@ locals {
     additional_tags = {
       default_ng    = "true"
       application   = "moj-cloud-platform"
-      business-unit = "platforms"
+      business-unit = "OCTO"
     }
   }
 
@@ -99,7 +99,7 @@ locals {
     additional_tags = {
       monitoring_ng = "true"
       application   = "moj-cloud-platform"
-      business-unit = "platforms"
+      business-unit = "OCTO"
     }
     taints = [
       {

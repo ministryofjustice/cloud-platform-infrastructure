@@ -93,7 +93,7 @@ resource "aws_ec2_transit_gateway_route_table" "this" {
   transit_gateway_id = module.cloud-platform-transit-gateway.ec2_transit_gateway_id
   tags = {
     Name          = each.key
-    business-unit = "Platforms"
+    business-unit = "OCTO"
     application   = "cloud-platform-aws/transit-gateway"
     is-production = "true"
     owner         = "Cloud Platform: platforms@digital.justice.gov.uk"

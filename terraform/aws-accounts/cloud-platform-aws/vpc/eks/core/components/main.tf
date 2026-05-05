@@ -168,7 +168,7 @@ locals {
   }
 
   default_tags = {
-    business-unit = "Platforms"
+    business-unit = "OCTO"
     application   = "cloud-platform-aws/vpc/eks/core/components"
     is-production = "true"
     owner         = "Cloud Platform: platforms@digital.justice.gov.uk"

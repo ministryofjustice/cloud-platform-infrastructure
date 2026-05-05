@@ -10,7 +10,7 @@ resource "kubernetes_annotations" "kube_system_ns" {
   }
   field_manager = "TerraformAnnotations"
   annotations = {
-    "cloud-platform.justice.gov.uk/business-unit" = "Platforms"
+    "cloud-platform.justice.gov.uk/business-unit" = "OCTO"
     "cloud-platform.justice.gov.uk/application"   = "Cloud Platform"
     "cloud-platform.justice.gov.uk/owner"         = "Cloud Platform: platforms@digital.justice.gov.uk"
     "cloud-platform.justice.gov.uk/source-code"   = "https://github.com/ministryofjustice/cloud-platform-infrastructure"
