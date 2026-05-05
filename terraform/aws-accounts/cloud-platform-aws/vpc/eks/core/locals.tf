@@ -25,4 +25,13 @@ locals {
     live   = ["arn:aws:route53:::hostedzone/*"]
     live-2 = ["arn:aws:route53:::hostedzone/*"]
   }
+
+  default_tags = {
+    business-unit = "OCTO"
+    application   = "cloud-platform-aws/vpc/eks/core"
+    is-production = "true"
+    owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
+    source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+    service-area  = "Hosting"
+  }
 }

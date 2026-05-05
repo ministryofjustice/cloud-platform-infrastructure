@@ -173,6 +173,7 @@ locals {
     is-production = "true"
     owner         = "Cloud Platform: platforms@digital.justice.gov.uk"
     source-code   = "github.com/ministryofjustice/cloud-platform-infrastructure"
+    service-area  = "Hosting"
   }
 }
 
