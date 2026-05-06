@@ -1,5 +1,5 @@
 module "modsec_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.2.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.3.0"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec"
