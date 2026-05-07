@@ -77,14 +77,14 @@ locals {
   temp_max_size = {
     live    = "150"
     live-2  = "120"
-    manager = "1"
+    manager = "10"
     default = "6"
   }
 
   temp_min_size = {
     live    = "120"
-    live-2  = "2"
-    manager = "1"
+    live-2  = "3"
+    manager = "7" # To accommodate concourse worker pods anti-affinity rules
     default = "2"
   }
 
