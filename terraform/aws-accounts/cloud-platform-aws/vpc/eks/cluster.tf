@@ -332,7 +332,7 @@ locals {
     ]
   }
 
-  # New node groups
+  # Remaining node groups to drain in manager and live-2 clusters 07/05/2026
   monitoring_ng_20_04_26 = {
     desired_size = lookup(local.upgrade_desired_size, terraform.workspace, local.upgrade_desired_size["default"])
     max_size     = lookup(local.upgrade_max_size, terraform.workspace, local.upgrade_max_size["default"])
