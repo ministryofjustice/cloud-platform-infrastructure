@@ -52,7 +52,7 @@ locals {
 
   # Number of desired node for new node groups
   upgrade_desired_size = {
-    live    = "20"
+    live    = "1"
     live-2  = "5"
     manager = "5"
     default = "5"
@@ -60,7 +60,7 @@ locals {
 
   # Minimum number of nodes for new node groups
   upgrade_min_size = {
-    live    = "20"
+    live    = "1"
     live-2  = "2"
     manager = "4"
     default = "2"
@@ -68,7 +68,7 @@ locals {
 
   # Maximum number of nodes for new node groups
   upgrade_max_size = {
-    live    = "20"
+    live    = "1"
     live-2  = "6"
     manager = "6"
     default = "6"
