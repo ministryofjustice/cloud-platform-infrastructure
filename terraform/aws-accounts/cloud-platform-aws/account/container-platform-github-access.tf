@@ -68,12 +68,13 @@ resource "aws_iam_role" "container_platform_github_access" {
   assume_role_policy = data.aws_iam_policy_document.container_platform_github_access_assume_role.json
 
   tags = {
-    business-unit          = "Platforms"
+    business-unit          = "OCTO"
     application            = "container-platform-github-access"
     is-production          = "true"
     owner                  = "Cloud Platform: platforms@digital.justice.gov.uk"
     infrastructure-support = "Cloud Platform: platforms@digital.justice.gov.uk"
     source-code            = "github.com/ministryofjustice/container-platform-github-access"
+    service-area           = "Hosting"
   }
 }
 
