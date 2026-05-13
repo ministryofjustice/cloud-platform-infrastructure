@@ -23,7 +23,7 @@ locals {
     live    = "85"
     live-2  = "7"
     manager = "4"
-    default = "3"
+    default = "5"
   }
 
   # Default node group minimum capacity
