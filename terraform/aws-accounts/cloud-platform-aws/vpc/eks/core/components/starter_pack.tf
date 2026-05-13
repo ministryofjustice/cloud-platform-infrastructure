@@ -6,6 +6,8 @@ module "starter_pack" {
 
   depends_on = [
     module.ingress_controllers_v1,
-    module.modsec_ingress_controllers_v1
+    module.modsec_ingress_controllers_v1,
+    module.internal_ingress_controllers_validator,
+    module.modsec_ingress_controllers_validator
   ]
 }

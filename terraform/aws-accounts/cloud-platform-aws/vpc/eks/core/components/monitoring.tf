@@ -33,6 +33,8 @@ module "monitoring" {
 
   depends_on = [
     module.ingress_controllers_v1,
-    module.modsec_ingress_controllers_v1
+    module.modsec_ingress_controllers_v1,
+    module.default_ingress_controllers_validator,
+    module.modsec_ingress_controllers_validator
   ]
 }
