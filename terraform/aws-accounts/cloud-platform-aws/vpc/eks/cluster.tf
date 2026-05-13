@@ -20,7 +20,7 @@ locals {
   # desired_capacity change is a manual step after initial cluster creation (when no cluster-autoscaler)
   # https://github.com/terraform-aws-modules/terraform-aws-eks/issues/835
   node_groups_count = {
-    live    = "65"
+    live    = "85"
     live-2  = "7"
     manager = "4"
     default = "3"
@@ -28,9 +28,9 @@ locals {
 
   # Default node group minimum capacity
   default_ng_min_count = {
-    live    = "65"
-    live-2  = "2"
-    manager = "4"
+    live    = "85"
+    live-2  = "3"
+    manager = "7" # To accommodate concourse worker pods anti-affinity rules
     default = "2"
   }
 
@@ -48,58 +48,6 @@ locals {
     live-2  = "3"
     manager = "4"
     default = "3"
-  }
-
-  # Number of desired node for new node groups
-  upgrade_desired_size = {
-    live    = "1"
-    live-2  = "5"
-    manager = "5"
-    default = "5"
-  }
-
-  # Minimum number of nodes for new node groups
-  upgrade_min_size = {
-    live    = "1"
-    live-2  = "2"
-    manager = "4"
-    default = "2"
-  }
-
-  # Maximum number of nodes for new node groups
-  upgrade_max_size = {
-    live    = "1"
-    live-2  = "6"
-    manager = "6"
-    default = "6"
-  }
-
-  temp_max_size = {
-    live    = "150"
-    live-2  = "120"
-    manager = "10"
-    default = "6"
-  }
-
-  temp_min_size = {
-    live    = "85"
-    live-2  = "3"
-    manager = "7" # To accommodate concourse worker pods anti-affinity rules
-    default = "2"
-  }
-
-  temp_ng_20_04_26_max_size = {
-    live    = "3"
-    live-2  = "120"
-    manager = "120"
-    default = "6"
-  }
-
-  temp_ng_20_04_26_min_size = {
-    live    = "3"
-    live-2  = "2"
-    manager = "4"
-    default = "2"
   }
 
   # To manage different cluster versions
@@ -139,8 +87,8 @@ locals {
 
   default_ng_10_12_25 = {
     desired_size = lookup(local.node_groups_count, terraform.workspace, local.node_groups_count["default"])
-    max_size     = lookup(local.temp_max_size, terraform.workspace, local.temp_max_size["default"])
-    min_size     = lookup(local.temp_min_size, terraform.workspace, local.temp_min_size["default"])
+    max_size     = 150
+    min_size     = lookup(local.default_ng_min_count, terraform.workspace, local.default_ng_min_count["default"])
 
     block_device_mappings = {
       xvda = {
