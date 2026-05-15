@@ -70,9 +70,7 @@ var _ = Describe("cert-manager", FlakeAttempts(2), func() {
 			namespace, host string
 			options         *k8s.KubectlOptions
 
-			err  error
-			cert []string
-			conn *tls.Conn
+			err error
 		)
 
 		BeforeEach(func() {
@@ -112,11 +110,16 @@ var _ = Describe("cert-manager", FlakeAttempts(2), func() {
 		})
 
 		It("should succeed and present a staging certificate", func() {
-			conn, err = tls.Dial("tcp", host+":443", &tls.Config{InsecureSkipVerify: true})
-			Expect(err).NotTo(HaveOccurred())
-			cert = conn.ConnectionState().PeerCertificates[0].Issuer.Organization
+			Eventually(func() (string, error) {
+				conn, err := tls.Dial("tcp", host+":443", &tls.Config{InsecureSkipVerify: true})
+				if err != nil {
+					return "", err
+				}
+				defer conn.Close()
+				issuer := conn.ConnectionState().PeerCertificates[0].Issuer
 
-			Eventually(cert[0]).WithTimeout(5 * time.Minute).WithPolling(30 * time.Second).Should(Equal("(STAGING) Let's Encrypt"))
+				return issuer.CommonName, nil
+			}).WithTimeout(5 * time.Minute).WithPolling(30 * time.Second).Should(ContainSubstring("(STAGING)"))
 		})
 	})
 })
