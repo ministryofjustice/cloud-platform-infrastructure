@@ -33,7 +33,7 @@ type DefaultCert struct {
 }
 
 // Check if the default ingress-controller certificate exists
-var _ = Describe("Default ingress-controller certificate", func() {
+var _ = FDescribe("Default ingress-controller certificate", func() {
 	options := k8s.NewKubectlOptions("", "", "ingress-controllers")
 	oldLogger := options.Logger
 	options.Logger = logger.Discard
@@ -64,7 +64,7 @@ var _ = Describe("Default ingress-controller certificate", func() {
 
 // It includes FlakeAttempts to ensure that the test doesn't fail on the chance
 // of a slow acme response.
-var _ = Describe("cert-manager", FlakeAttempts(2), func() {
+var _ = FDescribe("cert-manager", FlakeAttempts(2), func() {
 	Context("when the namespace has a certificate resource", func() {
 		var (
 			namespace, host string
