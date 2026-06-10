@@ -2,6 +2,12 @@
 # Calico
 ##########
 
+/*
+When upgrading the helm chart ensure that tigera_operator and calico crds are up to date.
+
+Also check for any new or removed CRDs.
+*/
+
 locals {
   calico_crds = {
     tigera_apiserver                    = "https://raw.githubusercontent.com/projectcalico/calico/v3.30.7/charts/tigera-operator/crds/operator.tigera.io_apiservers_crd.yaml"
