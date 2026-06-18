@@ -1,0 +1,222 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2026-05-18T14:58:48Z"
+  generateName: kube-proxy-
+  generation: 1
+  labels:
+    controller-revision-hash: 5cfcc6954
+    k8s-app: kube-proxy
+    pod-template-generation: "1"
+    topology.kubernetes.io/region: eu-west-2
+    topology.kubernetes.io/zone: eu-west-2b
+  name: kube-proxy-7cm6g
+  namespace: kube-system
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: kube-proxy
+    uid: f6820c7d-4246-450b-ab83-bec5bf108af3
+  resourceVersion: "2130"
+  uid: 0eb1f994-a319-49bf-b0ec-c5029ba8f9b8
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - ip-10-0-189-78.eu-west-2.compute.internal
+  containers:
+  - command:
+    - kube-proxy
+    - --v=2
+    - --config=/var/lib/kube-proxy-config/config
+    - --hostname-override=$(NODE_NAME)
+    env:
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    image: 602401143452.dkr.ecr.eu-west-2.amazonaws.com/eks/kube-proxy:v1.35.3-eksbuild.5
+    imagePullPolicy: IfNotPresent
+    name: kube-proxy
+    resources:
+      requests:
+        cpu: 100m
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/log
+      name: varlog
+    - mountPath: /run/xtables.lock
+      name: xtables-lock
+    - mountPath: /lib/modules
+      name: lib-modules
+      readOnly: true
+    - mountPath: /var/lib/kube-proxy/
+      name: kubeconfig
+    - mountPath: /var/lib/kube-proxy-config/
+      name: config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-lv762
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostNetwork: true
+  nodeName: ip-10-0-189-78.eu-west-2.compute.internal
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: kube-proxy
+  serviceAccountName: kube-proxy
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/disk-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/pid-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/unschedulable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/network-unavailable
+    operator: Exists
+  volumes:
+  - hostPath:
+      path: /var/log
+      type: ""
+    name: varlog
+  - hostPath:
+      path: /run/xtables.lock
+      type: FileOrCreate
+    name: xtables-lock
+  - hostPath:
+      path: /lib/modules
+      type: ""
+    name: lib-modules
+  - configMap:
+      defaultMode: 420
+      name: kube-proxy
+    name: kubeconfig
+  - configMap:
+      defaultMode: 420
+      name: kube-proxy-config
+    name: config
+  - name: kube-api-access-lv762
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2026-05-18T14:58:51Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodReadyToStartContainers
+  - lastProbeTime: null
+    lastTransitionTime: "2026-05-18T14:58:48Z"
+    observedGeneration: 1
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2026-05-18T14:58:51Z"
+    observedGeneration: 1
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2026-05-18T14:58:51Z"
+    observedGeneration: 1
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2026-05-18T14:58:48Z"
+    observedGeneration: 1
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - allocatedResources:
+      cpu: 100m
+    containerID: containerd://5d64e4e13674f03c76c4ee55f41cd9e7c050855b5d6737e53ef922b7ebeb2747
+    image: 602401143452.dkr.ecr.eu-west-2.amazonaws.com/eks/kube-proxy:v1.35.3-eksbuild.5
+    imageID: 602401143452.dkr.ecr.eu-west-2.amazonaws.com/eks/kube-proxy@sha256:f975afeb6647ec2b12c813c91fb23620929b091903b20dfcd6e79776552d56b3
+    lastState: {}
+    name: kube-proxy
+    ready: true
+    resources:
+      requests:
+        cpu: 100m
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2026-05-18T14:58:50Z"
+    user:
+      linux:
+        gid: 0
+        supplementalGroups:
+        - 0
+        uid: 0
+    volumeMounts:
+    - mountPath: /var/log
+      name: varlog
+    - mountPath: /run/xtables.lock
+      name: xtables-lock
+    - mountPath: /lib/modules
+      name: lib-modules
+      readOnly: true
+      recursiveReadOnly: Disabled
+    - mountPath: /var/lib/kube-proxy/
+      name: kubeconfig
+    - mountPath: /var/lib/kube-proxy-config/
+      name: config
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-lv762
+      readOnly: true
+      recursiveReadOnly: Disabled
+  hostIP: 10.0.189.78
+  hostIPs:
+  - ip: 10.0.189.78
+  observedGeneration: 1
+  phase: Running
+  podIP: 10.0.189.78
+  podIPs:
+  - ip: 10.0.189.78
+  qosClass: Burstable
+  startTime: "2026-05-18T14:58:48Z"
