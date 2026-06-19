@@ -131,8 +131,8 @@ locals {
     }
   }
 
-    # TEMP: Hardcoded node counts to be amended post recycle
-    default_ng_19_06_26 = {
+  # TEMP: Hardcoded node counts to be amended post recycle
+  default_ng_19_06_26 = {
     desired_size = 5
     max_size     = 150
     min_size     = 2
@@ -227,7 +227,7 @@ locals {
     ]
   }
 
-    monitoring_ng_19_06_26 = {
+  monitoring_ng_19_06_26 = {
     desired_size = lookup(local.default_mon_desired_count, terraform.workspace, local.default_mon_desired_count["default"])
     max_size     = 6
     min_size     = lookup(local.default_mon_min_count, terraform.workspace, local.default_mon_min_count["default"])
@@ -325,7 +325,7 @@ locals {
     ]
   }
 
-    containment_ng_19_06_26 = {
+  containment_ng_19_06_26 = {
     desired_size = 6
     max_size     = 10
     min_size     = 3
@@ -425,7 +425,7 @@ locals {
     ]
   }
 
-    thanos_ng_19_06_26 = {
+  thanos_ng_19_06_26 = {
     desired_size = 1
     max_size     = 1
     min_size     = 1
