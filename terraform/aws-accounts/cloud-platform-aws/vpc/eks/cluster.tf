@@ -227,55 +227,6 @@ locals {
     ]
   }
 
-  containment_ng_27_01_26 = {
-    desired_size = 6
-    max_size     = 10
-    min_size     = 3
-    block_device_mappings = {
-      xvda = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size           = 140
-          volume_type           = "gp3"
-          iops                  = 0
-          encrypted             = false
-          kms_key_id            = ""
-          delete_on_termination = true
-        }
-      }
-    }
-
-    subnet_ids = data.aws_subnets.eks_private.ids
-    name       = "${terraform.workspace}-containment-ng"
-
-    create_security_group  = false
-    create_launch_template = true
-    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {
-      dockerhub_credentials = local.dockerhub_credentials
-    })
-
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
-    instance_types               = ["r8i.4xlarge", "r7i.4xlarge", "r6i.4xlarge"]
-    labels = {
-      Terraform                                      = "true"
-      "cloud-platform.justice.gov.uk/containment-ng" = "true"
-      Cluster                                        = terraform.workspace
-      Domain                                         = local.fqdn
-    }
-    tags = {
-      containment_ng = "true"
-      application    = "moj-cloud-platform"
-      business-unit  = "platforms"
-    }
-    taints = [
-      {
-        key    = "containment-node"
-        value  = true
-        effect = "NO_SCHEDULE"
-      }
-    ]
-  }
-
   containment_ng_19_06_26 = {
     desired_size = 6
     max_size     = 10
@@ -383,7 +334,7 @@ locals {
       monitoring_ng_19_06_26 = local.monitoring_ng_19_06_26,
     },
     terraform.workspace == "manager" ? { thanos_ng_19_06_26 = local.thanos_ng_19_06_26 } : {},
-    terraform.workspace == "live" ? { containment_ng_27_01_26 = local.containment_ng_27_01_26, containment_ng_19_06_26 = local.containment_ng_19_06_26 } : {},
+    terraform.workspace == "live" ? { containment_ng_19_06_26 = local.containment_ng_19_06_26 } : {},
   )
 }
 
