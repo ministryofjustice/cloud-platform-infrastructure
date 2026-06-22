@@ -325,57 +325,6 @@ locals {
     ]
   }
 
-  thanos_ng_10_10_25 = {
-    desired_size = 1
-    max_size     = 1
-    min_size     = 1
-    block_device_mappings = {
-      xvda = {
-        device_name = "/dev/xvda"
-        ebs = {
-          volume_size           = 400
-          volume_type           = "gp3"
-          iops                  = 6000
-          throughput            = 300
-          encrypted             = false
-          kms_key_id            = ""
-          delete_on_termination = true
-        }
-      }
-    }
-
-    subnet_ids = data.aws_subnets.thanos_nodegroup_az.ids
-    name       = "${terraform.workspace}-thanos-ng"
-
-    create_security_group  = false
-    create_launch_template = true
-    pre_bootstrap_user_data = templatefile("${path.module}/templates/user-data-101025.tpl", {
-      dockerhub_credentials = local.dockerhub_credentials
-    })
-
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
-    instance_types               = lookup(local.thanos_node_size, terraform.workspace, local.thanos_node_size["default"])
-    labels = {
-      "topology.kubernetes.io/zone"             = "eu-west-2a"
-      Terraform                                 = "true"
-      "cloud-platform.justice.gov.uk/thanos-ng" = "true"
-      Cluster                                   = terraform.workspace
-      Domain                                    = local.fqdn
-    }
-    tags = {
-      monitoring_ng = "true"
-      application   = "moj-cloud-platform"
-      business-unit = "platforms"
-    }
-    taints = [
-      {
-        key    = "thanos-node"
-        value  = true
-        effect = "NO_SCHEDULE"
-      }
-    ]
-  }
-
   thanos_ng_19_06_26 = {
     desired_size = 1
     max_size     = 1
@@ -433,7 +382,7 @@ locals {
       default_ng_19_06_26    = local.default_ng_19_06_26,
       monitoring_ng_19_06_26 = local.monitoring_ng_19_06_26,
     },
-    terraform.workspace == "manager" ? { thanos_ng_10_10_25 = local.thanos_ng_10_10_25, thanos_ng_19_06_26 = local.thanos_ng_19_06_26 } : {},
+    terraform.workspace == "manager" ? { thanos_ng_19_06_26 = local.thanos_ng_19_06_26 } : {},
     terraform.workspace == "live" ? { containment_ng_27_01_26 = local.containment_ng_27_01_26, containment_ng_19_06_26 = local.containment_ng_19_06_26 } : {},
   )
 }
