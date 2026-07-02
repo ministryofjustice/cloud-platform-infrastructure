@@ -1,5 +1,5 @@
 module "cert_manager" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=upgrade-helm-1.20.3"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-certmanager?ref=1.20.0"
 
   cluster_domain_name = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   hostzone            = lookup(local.hostzones, terraform.workspace, local.hostzones["default"])
