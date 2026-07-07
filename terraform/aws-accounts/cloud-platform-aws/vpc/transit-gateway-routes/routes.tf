@@ -27,6 +27,9 @@ locals {
     "10.204.0.0/20",   # LAA Platform Stage
     "10.200.96.0/19",  # Analytical Platform Compute Test
     "10.201.128.0/17", # Analytical Platform Compute Production
+    "10.200.144.0/20", # Data Platform Test
+    "10.200.176.0/20", # Data Platform Preproduction
+    "10.200.224.0/19", # Data Platform Production
   ]
 }
 
