@@ -55,7 +55,7 @@ locals {
     live    = "1.33"
     live-2  = "1.33"
     manager = "1.33"
-    default = "1.33"
+    default = "1.34"
   }
 
   node_size = {
