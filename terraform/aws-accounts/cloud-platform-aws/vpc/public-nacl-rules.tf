@@ -25,7 +25,7 @@ resource "aws_network_acl_rule" "deny_inbound_2" {
 
 resource "aws_network_acl_rule" "deny_inbound_3" {
   network_acl_id = module.vpc.public_network_acl_id
-  rule_number    = 10
+  rule_number    = 11
   egress         = false
   protocol       = "-1" # -1 means all protocols
   rule_action    = "deny"
