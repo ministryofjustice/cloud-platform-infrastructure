@@ -12,6 +12,28 @@
 #  to_port        = 0
 #}
 
+resource "aws_network_acl_rule" "deny_inbound_2" {
+  network_acl_id = module.vpc.public_network_acl_id
+  rule_number    = 10
+  egress         = false
+  protocol       = "-1" # -1 means all protocols
+  rule_action    = "deny"
+  cidr_block     = "20.198.114.210/32"
+  from_port      = 0
+  to_port        = 0
+}
+
+resource "aws_network_acl_rule" "deny_inbound_3" {
+  network_acl_id = module.vpc.public_network_acl_id
+  rule_number    = 10
+  egress         = false
+  protocol       = "-1" # -1 means all protocols
+  rule_action    = "deny"
+  cidr_block     = "20.219.1.235/32"
+  from_port      = 0
+  to_port        = 0
+}
+
 # resource "aws_network_acl_rule" "deny_outbound_1" {
 #   network_acl_id = module.vpc.public_network_acl_id
 #   rule_number    = 10
