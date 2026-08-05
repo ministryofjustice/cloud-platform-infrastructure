@@ -11,3 +11,28 @@ module "external_dns" {
 
   eks_cluster_oidc_issuer_url = data.terraform_remote_state.cluster.outputs.cluster_oidc_issuer_url
 }
+
+module "external_dns" {
+  source = "github.com/ministryofjustice/container-platform-terraform-external-dns?ref=0.1.0"
+
+  eks_cluster_name = "live"
+
+  required_inputs = {
+    live = {
+      version                 = "1.21.1"
+      domain_name_prefix      = "envoy"
+      sync_interval           = "60m"
+      aws_zone_cache_duration = "2h"
+      log_level               = "info"
+    }
+  }
+  tags = {
+    application   = "External DNS"
+    business-unit = "OCTO"
+    owner         = "Container Platform: External DNS"
+    service-area  = "Hosting"
+    source-code   = "https://github.com/ministryofjustice/container-platform-terraform-external-dns"
+    slack-channel = "cloud-platform"
+    is-production = "true"
+  }
+}
