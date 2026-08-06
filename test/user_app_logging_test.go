@@ -68,7 +68,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 			Expect(err).ToNot(HaveOccurred())
 
 			// Wait for the job to complete
-			err = k8s.WaitUntilJobSucceedE(GinkgoT(), options, "logging-smoketest", 10, 20*time.Second)
+			err = helpers.WaitForJobPodToSucceed(GinkgoT(), options, "logging-smoketest", 10, 20*time.Second)
 			Expect(err).ToNot(HaveOccurred())
 		})
 
