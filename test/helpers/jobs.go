@@ -17,7 +17,7 @@ import (
 // It deliberately asserts on the pod's terminal phase (set by the kubelet the
 // moment the container exits 0) rather than the Job's Complete condition. The
 // Job condition is written by the job controller in kube-controller-manager,
-// whose finalizer-removal / status reconciliation can lag well beyond the wait
+// whose finalizer-removal/status reconciliation can lag well beyond the wait
 // budget on the cluster control plane, producing false test timeouts even though
 // the workload itself succeeded.
 func WaitForJobPodToSucceed(t testing.TestingT, options *k8s.KubectlOptions, jobName string, retries int, sleepBetweenRetries time.Duration) error {
