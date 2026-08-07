@@ -88,7 +88,7 @@ var _ = Describe("ingress-controllers", Serial, func() {
 			err = k8s.KubectlApplyFromStringE(GinkgoT(), options, tpl)
 			Expect(err).To(BeNil())
 
-			err = k8s.WaitUntilJobSucceedE(GinkgoT(), options, "smoketest-internal-ingress", 10, 20*time.Second)
+			err = helpers.WaitForJobPodToSucceed(GinkgoT(), options, "smoketest-internal-ingress", 10, 20*time.Second)
 			Expect(err).To(BeNil())
 		})
 	})
