@@ -9,7 +9,7 @@ resource "opensearch_index_template" "live_kubernetes_cluster" {
   "template": {
     "settings": {
       "index": {
-        "number_of_shards": "15",
+        "number_of_shards": "20",
         "number_of_replicas": "1"
       }
     },
