@@ -36,18 +36,23 @@ var _ = Describe("Kube State Metrics", func() {
 		var result testHelpers.PrometheusResponse
 
 		client := &http.Client{Timeout: 30 * time.Second}
-		resp, err := client.Get(prometheusURL + "/api/v1/query?" + query.Encode())
-		Expect(err).NotTo(HaveOccurred())
+		Eventually(func() bool {
+			resp, err := client.Get(prometheusURL + "/api/v1/query?" + query.Encode())
+			if err != nil {
+				return false
+			}
+			defer resp.Body.Close()
 
-		defer resp.Body.Close()
+			if resp.StatusCode != http.StatusOK {
+				return false
+			}
+			if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+				return false
+			}
 
-		err = json.NewDecoder(resp.Body).Decode(&result)
-		Expect(err).NotTo(HaveOccurred())
+			return result.Status == "success" && len(result.Data.Result) > 0
+		}).WithTimeout(5*time.Minute).WithPolling(30*time.Second).Should(BeTrue(), "no successful 'up' series found for job=kube-state-metrics — KSM may be down or not scraped yet")
 
-		Expect(resp.StatusCode).To(Equal(http.StatusOK))
-		Expect(result.Status).To(Equal("success"))
-
-		Expect(result.Data.Result).NotTo(BeEmpty(), "no 'up' series found for job=kube-state-metrics — KSM may be down or not scraped yet")
 		Expect(result.Data.Result[0].Value[1]).To(Equal("1"), "kube-state-metrics scrape is unhealthy (up=0); check the KSM pod in the monitoring namespace")
 	})
 })
