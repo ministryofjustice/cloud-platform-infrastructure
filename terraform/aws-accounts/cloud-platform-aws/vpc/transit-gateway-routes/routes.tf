@@ -30,6 +30,7 @@ locals {
     "10.200.144.0/20", # Data Platform Test
     "10.200.176.0/20", # Data Platform Preproduction
     "10.200.224.0/19", # Data Platform Production
+    "51.231.0.0/16",   # LECN / Home Office BSG
   ]
 }
 
