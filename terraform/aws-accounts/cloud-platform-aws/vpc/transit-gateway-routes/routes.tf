@@ -20,6 +20,7 @@ locals {
     "10.162.96.0/20",  # Delius Core Training VPC
     "10.26.0.0/16",    # Mod Platform Dev and Test
     "10.27.0.0/16",    # Mod Platform Pre-Prod and Prod
+    "10.195.48.0/20",  # Container Platform octo-nonlive
     "10.202.0.0/20",   # LAA Platform Dev
     "10.203.0.0/20",   # LAA Platform Test
     "10.206.0.0/20",   # LAA Platform UAT
