@@ -404,7 +404,7 @@ module "aws_eks_addons" {
   addon_tags              = local.tags
 
   addon_vpc_cni_version         = "v1.23.1-eksbuild.1"
-  addon_coredns_version         = "v1.13.2-eksbuild.11"
+  addon_coredns_version         = "v1.13.2-eksbuild.31"
   addon_kube_proxy_version      = "v1.34.6-eksbuild.29"
   addon_guardduty_agent_version = "v1.16.0-eksbuild.2"
 }
