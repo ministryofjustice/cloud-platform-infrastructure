@@ -1,5 +1,5 @@
 module "velero" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=2.8.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-velero?ref=2.9.0"
 
   enable_velero               = lookup(local.prod_2_workspace, terraform.workspace, false)
   cluster_domain_name         = data.terraform_remote_state.cluster.outputs.cluster_domain_name
