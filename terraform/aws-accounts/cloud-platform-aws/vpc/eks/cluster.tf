@@ -114,7 +114,10 @@ locals {
       dockerhub_credentials = local.dockerhub_credentials
     })
 
-    iam_role_additional_policies = ["arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"]
+    iam_role_additional_policies = [
+      "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+      aws_iam_policy.ecr_pull_through_cache.arn,
+    ]
 
     instance_types = lookup(local.node_size, terraform.workspace, local.node_size["default"])
     labels = {
@@ -288,6 +291,22 @@ locals {
     terraform.workspace == "manager" ? { thanos_ng_19_06_26 = local.thanos_ng_19_06_26 } : {},
     terraform.workspace == "live" ? { containment_ng_19_06_26 = local.containment_ng_19_06_26 } : {},
   )
+}
+
+resource "aws_iam_policy" "ecr_pull_through_cache" {
+  name        = "${terraform.workspace}-ecr-pull-through-cache"
+  description = "Allow EKS nodes to create and import ECR pull-through cache images"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "ecr:CreateRepository",
+        "ecr:BatchImportUpstreamImage",
+      ]
+      Resource = "*"
+    }]
+  })
 }
 
 module "eks" {
