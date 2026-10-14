@@ -124,3 +124,23 @@ resource "aws_route53_record" "parent_zone_internal_laa_ns" {
     aws_route53_zone.internal_laa_ingress_controller_zone[count.index].name_servers[3],
   ]
 }
+
+resource "aws_route53_zone" "gateway_api_test_zone" {
+  count = local.is_live_cluster ? 1 : 0
+  name  = "gateway-api-test.cloud-platform.service.justice.gov.uk."
+}
+
+resource "aws_route53_record" "gateway_api_test_parent_zone_ns" {
+  count   = local.is_live_cluster ? 1 : 0
+  zone_id = data.aws_route53_zone.cloud_platform_justice_gov_uk.zone_id
+  name    = aws_route53_zone.gateway_api_test_zone[count.index].name
+  type    = "NS"
+  ttl     = "30"
+
+  records = [
+    aws_route53_zone.gateway_api_test_zone[count.index].name_servers[0],
+    aws_route53_zone.gateway_api_test_zone[count.index].name_servers[1],
+    aws_route53_zone.gateway_api_test_zone[count.index].name_servers[2],
+    aws_route53_zone.gateway_api_test_zone[count.index].name_servers[3],
+  ]
+}
