@@ -1,10 +1,11 @@
-module "modsec_for_php_ingress_controllers_v1" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.3.1"
+module "non_prod_modsec_ingress_controllers_v2" {
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.3.0"
 
   count = terraform.workspace == "live" ? 1 : 0
 
   replica_count            = "10"
-  controller_name          = "modsec-for-php"
+  is_non_prod_modsec       = true
+  controller_name          = "modsec-non-prod-v2"
   cluster_domain_name      = data.terraform_remote_state.cluster.outputs.cluster_domain_name
   is_live_cluster          = lookup(local.prod_workspace, terraform.workspace, false)
   live1_cert_dns_name      = lookup(local.live1_cert_dns_name, terraform.workspace, "")
@@ -33,12 +34,12 @@ module "modsec_for_php_ingress_controllers_v1" {
   depends_on = [module.ingress_controllers_v1]
 }
 
-module "modsec_for_php_ingress_controllers_validator" {
+module "modsec_non_prod_ingress_controllers_v2_validator" {
   source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-validation-controller?ref=0.1.0"
   count  = terraform.workspace == "live" ? 1 : 0
 
   replica_count      = "3"
-  controller_name    = "modsec-for-php"
+  controller_name    = "modsec-non-prod-v2"
   memory_requests    = "2Gi"
   memory_limits      = "4Gi"
   cluster            = terraform.workspace
