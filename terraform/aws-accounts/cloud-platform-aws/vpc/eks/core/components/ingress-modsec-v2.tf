@@ -9,6 +9,7 @@ module "modsec_ingress_controllers_v2" {
   proxy_response_buffering = "on"
   enable_anti_affinity     = terraform.workspace == "live" ? true : false
   enable_modsec            = true
+  is_non_prod_modsec       = true # this one is to allow we can create a new config without clash, we should remove this when we remove this after deprecating the v1 to prevent confusion
   enable_owasp             = true
   enable_latest_tls        = true
   memory_requests          = lookup(local.live_workspace, terraform.workspace, false) ? "4Gi" : "512Mi"
