@@ -68,7 +68,7 @@ locals {
   monitoring_node_size = {
     live    = ["r7i.12xlarge", "r6i.12xlarge", "r7i.16xlarge", "r6i.16xlarge"]
     live-2  = ["r6i.2xlarge", "r5a.2xlarge"]
-    manager = ["t3a.large", "t3.large", "m6a.2xlarge"]
+    manager = ["m6a.2xlarge", "r6i.xlarge"]
     default = ["t3a.medium", "t3.medium"]
   }
 
