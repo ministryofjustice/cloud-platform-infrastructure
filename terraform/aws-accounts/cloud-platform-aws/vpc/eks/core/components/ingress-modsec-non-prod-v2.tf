@@ -1,5 +1,5 @@
 module "non_prod_modsec_ingress_controllers_v2" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.4.0"
 
   count = terraform.workspace == "live" ? 1 : 0
 
