@@ -390,7 +390,8 @@ module "eks" {
       groups   = ["system:masters"]
     },
     {
-      # Wiz read-only access (role defined in aws-accounts/cloud-platform-aws/account/wiz.tf).
+      # Wiz read-only access. WizAccess-Role (path /) is created by the Wiz StackSet in
+      # ministryofjustice/aws-root-account (modules/wiz-stackset), not in this repo.
       # wiz-reader is bound to a read-only ClusterRole in core/components/rbac.tf.
       rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/WizAccess-Role"
       username = "wiz"

@@ -23,8 +23,3 @@ output "concourse_environments_live-reports_bucket" {
   value       = module.s3_bucket_environments_live_reports.s3_bucket_id
   description = "S3 bucket arn for environmnts-live-reports"
 }
-
-output "wiz_access_role_arn" {
-  value       = one(module.wiz[*].role_arn)
-  description = "WizAccess-Role ARN for the Wiz connector; null while disabled"
-}
