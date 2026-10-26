@@ -413,7 +413,7 @@ module "aws_eks_addons" {
   cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   addon_tags              = local.tags
 
-  addon_vpc_cni_version         = "v1.23.1-eksbuild.1"
+  addon_vpc_cni_version         = "v1.23.2-eksbuild.8"
   addon_coredns_version         = "v1.13.2-eksbuild.31"
   addon_kube_proxy_version      = "v1.34.6-eksbuild.29"
   addon_guardduty_agent_version = "v1.17.1-eksbuild.2"
