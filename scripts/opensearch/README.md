@@ -81,16 +81,16 @@ From the `/cloud-platform-infrastructure/scripts/opensearch` dir, after the terr
 
 The script works per index (curl's SigV4 signing breaks on wildcard paths) and writes a per-index TSV report. It exits non-zero if anything needs attention:
 
-| Class | Meaning |
-|---|---|
-| `CANDIDATE` | On `hot-warm-cold-delete` in `cold` – `apply` will move it onto the hold |
-| `HELD` | Already on the current version of `legal-hold-retain` |
-| `HELD_STALE` | On `legal-hold-retain` but an older version (for example after `legal_hold_delete_transition` changed) – `apply` refreshes it, `verify` fails until it has |
-| `AT_RISK_DELETE` | Actively in the `delete` state – the hold cannot stop it. `apply` refuses to run until these are resolved |
-| `STALLED` | Policy disabled or action failed – not currently progressing to delete, left unchanged |
-| `STALLED_DELETE` | In the `delete` state but the delete failed and the policy is disabled – not deleting now, but an ISM retry would delete it. Reported, left unchanged |
-| `UNMANAGED` / `OTHER` | No policy / a different policy – left unchanged |
-| `FAIL_CHANGE` / `FAIL_NOT_APPLIED` | `change_policy` was rejected / ISM did not apply it within `VERIFY_TIMEOUT_SECS` |
+| Class                              | Meaning                                                                                                                                                    |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CANDIDATE`                        | On `hot-warm-cold-delete` in `cold` – `apply` will move it onto the hold                                                                                   |
+| `HELD`                             | Already on the current version of `legal-hold-retain`                                                                                                      |
+| `HELD_STALE`                       | On `legal-hold-retain` but an older version (for example after `legal_hold_delete_transition` changed) – `apply` refreshes it, `verify` fails until it has |
+| `AT_RISK_DELETE`                   | Actively in the `delete` state – the hold cannot stop it. `apply` refuses to run until these are resolved                                                  |
+| `STALLED`                          | Policy disabled or action failed – not currently progressing to delete, left unchanged                                                                     |
+| `STALLED_DELETE`                   | In the `delete` state but the delete failed and the policy is disabled – not deleting now, but an ISM retry would delete it. Reported, left unchanged      |
+| `UNMANAGED` / `OTHER`              | No policy / a different policy – left unchanged                                                                                                            |
+| `FAIL_CHANGE` / `FAIL_NOT_APPLIED` | `change_policy` was rejected / ISM did not apply it within `VERIFY_TIMEOUT_SECS`                                                                           |
 
 `change_policy` is asynchronous, so `apply` polls `explain` until each index is confirmed on the hold policy.
 
