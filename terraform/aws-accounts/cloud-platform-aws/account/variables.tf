@@ -47,7 +47,7 @@ variable "delete_transition" {
 variable "legal_hold_delete_transition" {
   type        = string
   default     = "3650d"
-  description = "Index age at which indices on the legal-hold-retain policy are deleted. Set back to 366d to lift the hold."
+  description = "Index age (from creation) at which indices on the legal-hold-retain policy are deleted. Lowering it deletes every held index older than the new value on the next ISM run - preview with scripts/opensearch/legal-hold/change_policy_cold.sh preview-lift first."
 }
 
 variable "index_pattern_live_modsec_audit" {

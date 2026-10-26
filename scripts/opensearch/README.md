@@ -49,22 +49,55 @@ From the `/cloud-platform-infrastructure/scripts/opensearch` dir, run the follow
 
 # Legal hold: defer deletion of cold indices
 
-`hot-warm-cold-delete` deletes cold indices at 366 days. To keep existing cold indices (for example for an investigation), move them onto the `legal-hold-retain` policy defined in `terraform/aws-accounts/cloud-platform-aws/account/app-opensearch-legal-hold.tf`. That policy runs no actions in its `cold` state and only deletes after `legal_hold_delete_transition`. New indices are unaffected and still follow `hot-warm-cold-delete`.
+`hot-warm-cold-delete` deletes cold indices at 366 days. To keep existing cold indices (for example for an investigation), move them onto the `legal-hold-retain` policy defined in `terraform/aws-accounts/cloud-platform-aws/account/app-opensearch-legal-hold.tf`. That policy runs no actions in its `cold` state and only deletes at `legal_hold_delete_transition`. New indices are unaffected and still follow `hot-warm-cold-delete`.
 
 Updating `hot-warm-cold-delete` itself does not help: existing indices keep the policy version they started with, and re-entering its `cold` state would re-run `cold_migration` on indices that are already cold.
+
+## Before you start: add these TODOs to your ticket
+
+A legal hold is an ongoing obligation, not a one-off change. Your ticket must explicitly include:
+
+- [ ] Re-run `apply` then `verify` at least weekly while the hold is needed. Indices that move to cold after a run are still on `hot-warm-cold-delete` and will be deleted at 366 days.
+- [ ] A review/end date for the hold, agreed with whoever requested it. Held indices keep accruing cold-storage cost until the hold is lifted.
+- [ ] Lifting the hold (see below) once it is no longer needed.
+
+While the hold is active the cold index count grows, so the `opensearch-indices-health-check` "Cold index count above expected" alert will start firing. Treat it as a reminder that a hold is active rather than silencing it.
+
+## Applying the hold
 
 From the `/cloud-platform-infrastructure/scripts/opensearch` dir, after the terraform has been applied:
 
 ```bash
-    # 1. Test on one cold index and confirm policy_id is legal-hold-retain
-    ./legal-hold/change_policy_cold.sh false apply <one-cold-index>
-    ./legal-hold/change_policy_cold.sh false verify <one-cold-index>
+    # 1. Read-only: classify every cold index and see what would change
+    ./legal-hold/change_policy_cold.sh false plan
 
-    # 2. Apply to every cold index (one call per prefix), then verify
+    # 2. Test on one cold index
+    ./legal-hold/change_policy_cold.sh false apply <one-cold-index>
+
+    # 3. Apply to every eligible cold index, then verify
     ./legal-hold/change_policy_cold.sh false apply
     ./legal-hold/change_policy_cold.sh false verify
 ```
 
-Indices that move to cold after this keep `hot-warm-cold-delete`; re-run step 2 periodically while the hold is needed.
+The script works per index (curl's SigV4 signing breaks on wildcard paths) and writes a per-index TSV report. It exits non-zero if anything needs attention:
 
-To lift the hold, set `legal_hold_delete_transition` back to `366d`, apply the terraform, and re-run step 2 so indices pick up the new policy version.
+| Class | Meaning |
+|---|---|
+| `CANDIDATE` | On `hot-warm-cold-delete` in `cold` – `apply` will move it onto the hold |
+| `HELD` | Already on the current version of `legal-hold-retain` |
+| `HELD_STALE` | On `legal-hold-retain` but an older version (for example after `legal_hold_delete_transition` changed) – `apply` refreshes it, `verify` fails until it has |
+| `AT_RISK_DELETE` | Actively in the `delete` state – the hold cannot stop it. `apply` refuses to run until these are resolved |
+| `STALLED` | Policy disabled or action failed – not currently progressing to delete, left unchanged |
+| `STALLED_DELETE` | In the `delete` state but the delete failed and the policy is disabled – not deleting now, but an ISM retry would delete it. Reported, left unchanged |
+| `UNMANAGED` / `OTHER` | No policy / a different policy – left unchanged |
+| `FAIL_CHANGE` / `FAIL_NOT_APPLIED` | `change_policy` was rejected / ISM did not apply it within `VERIFY_TIMEOUT_SECS` |
+
+`change_policy` is asynchronous, so `apply` polls `explain` until each index is confirmed on the hold policy.
+
+## Lifting the hold – run with care
+
+**Do not simply set `legal_hold_delete_transition` back to `366d`.** ISM measures age from index creation, so on the next ISM run (about 5 minutes) every held index older than the new value is deleted – potentially thousands of indices at once. Deleted cold indices are only recoverable for 14 days (see [AWS cold storage](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cold-storage.html#cold-snapshot)).
+
+1. Agree the lift with the requester and take snapshots of anything that must be kept.
+2. Preview exactly what a value would delete: `./legal-hold/change_policy_cold.sh false preview-lift <days>`.
+3. Lower `legal_hold_delete_transition` in reviewed steps (oldest first). After each terraform apply, held indices are `HELD_STALE` (still on the old policy version, so nothing changes yet); run `apply` to move them onto the new version – deletions happen from that point – then `verify`.

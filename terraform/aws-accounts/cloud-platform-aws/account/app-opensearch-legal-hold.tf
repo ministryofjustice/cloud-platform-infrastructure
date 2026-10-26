@@ -9,7 +9,10 @@
 # existing cold indices are moved onto it with change_policy (see scripts/opensearch/README.md).
 # hot -> warm -> cold for new indices is unchanged.
 #
-# To lift the hold: set legal_hold_delete_transition back to "366d", apply, and re-run change_policy.
+# To lift the hold: DO NOT simply set legal_hold_delete_transition back to "366d". ISM measures age from
+# index creation, so every held index older than the new value is deleted on the next ISM run (~5 min) –
+# potentially thousands of indices at once. Preview with `change_policy_cold.sh false preview-lift <days>`
+# and step the value down in reviewed batches. See scripts/opensearch/README.md.
 resource "elasticsearch_opensearch_ism_policy" "legal_hold_retain_live_app_logs" {
   provider  = elasticsearch.app_logs
   policy_id = "legal-hold-retain"
