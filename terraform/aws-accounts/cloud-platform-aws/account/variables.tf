@@ -44,6 +44,12 @@ variable "delete_transition" {
   description = "Time until indexes are permanently deleted"
 }
 
+variable "legal_hold_delete_transition" {
+  type        = string
+  default     = "3650d"
+  description = "Index age at which indices on the legal-hold-retain policy are deleted. Set back to 366d to lift the hold."
+}
+
 variable "index_pattern_live_modsec_audit" {
   default = [
     "live_k8s_modsec_ingress-*",

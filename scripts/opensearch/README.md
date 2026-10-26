@@ -46,3 +46,25 @@ From the `/cloud-platform-infrastructure/scripts/opensearch` dir, run the follow
 ```bash
     ./policies/fix.sh false
 ```
+
+# Legal hold: defer deletion of cold indices
+
+`hot-warm-cold-delete` deletes cold indices at 366 days. To keep existing cold indices (for example for an investigation), move them onto the `legal-hold-retain` policy defined in `terraform/aws-accounts/cloud-platform-aws/account/app-opensearch-legal-hold.tf`. That policy runs no actions in its `cold` state and only deletes after `legal_hold_delete_transition`. New indices are unaffected and still follow `hot-warm-cold-delete`.
+
+Updating `hot-warm-cold-delete` itself does not help: existing indices keep the policy version they started with, and re-entering its `cold` state would re-run `cold_migration` on indices that are already cold.
+
+From the `/cloud-platform-infrastructure/scripts/opensearch` dir, after the terraform has been applied:
+
+```bash
+    # 1. Test on one cold index and confirm policy_id is legal-hold-retain
+    ./legal-hold/change_policy_cold.sh false apply <one-cold-index>
+    ./legal-hold/change_policy_cold.sh false verify <one-cold-index>
+
+    # 2. Apply to every cold index (one call per prefix), then verify
+    ./legal-hold/change_policy_cold.sh false apply
+    ./legal-hold/change_policy_cold.sh false verify
+```
+
+Indices that move to cold after this keep `hot-warm-cold-delete`; re-run step 2 periodically while the hold is needed.
+
+To lift the hold, set `legal_hold_delete_transition` back to `366d`, apply the terraform, and re-run step 2 so indices pick up the new policy version.
