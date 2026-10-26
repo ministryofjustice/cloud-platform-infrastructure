@@ -86,7 +86,8 @@ resource "kubernetes_cluster_role_binding" "concourse_build_environments" {
 # include, so core ("") resources are listed explicitly.
 resource "kubernetes_cluster_role" "wiz_reader" {
   metadata {
-    name = "wiz-reader"
+    # Wiz checks for a ClusterRole with this exact name
+    name = "wiz-cluster-reader"
   }
 
   rule {
