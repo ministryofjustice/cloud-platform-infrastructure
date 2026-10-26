@@ -134,7 +134,7 @@ reminder() {
   cat <<'EOF'
 
 ==================================================================================================
- REMINDER – legal hold is an ongoing obligation, not a one-off change:
+ REMINDER: legal hold is an ongoing obligation, not a one-off change:
   * Indices that move to cold AFTER this run are still on hot-warm-cold-delete and will be deleted
     at 366 days. Re-run "apply" (then "verify") at least weekly for as long as the hold is needed.
   * Held indices are kept until the hold is lifted and keep accruing cold-storage cost.
