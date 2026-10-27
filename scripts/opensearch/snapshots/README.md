@@ -58,13 +58,6 @@ With `EXTRACT_NAMESPACE` set, `restore_snapshot.sh` copies that namespace into `
 
 ## cp-silas-log-restore: after first apply
 
-Switch on audit logging (no terraform resource for it):
+Create the `silas150-extract-*` index pattern (`@timestamp`) in the Global tenant.
 
-```bash
-curl -XPUT --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" -H "x-amz-security-token: $AWS_SESSION_TOKEN" \
-  --aws-sigv4 "aws:amz:eu-west-2:es" -H "Content-Type: application/json" \
-  https://silas-log-restore.cloud-platform.service.justice.gov.uk/_plugins/_security/api/audit/config \
-  -d '{"enabled": true, "audit": {"enable_rest": true, "disabled_rest_categories": ["AUTHENTICATED", "GRANTED_PRIVILEGES"], "enable_transport": false}, "compliance": {"enabled": true, "read_metadata_only": true, "read_watched_fields": {"silas150-extract-*": []}}}'
-```
-
-Then create the `silas150-extract-*` index pattern (`@timestamp`) in the Global tenant.
+Audit and application log publishing are not enabled: the account is at the CloudWatch Logs resource policy limit in eu-west-2.
