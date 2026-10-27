@@ -328,10 +328,12 @@ resource "opensearch_snapshot_repository" "silas_log_restore" {
   name     = "${local.live_app_logs_domain}-snapshot-s3-repository"
   type     = "s3"
 
+  # Live writes to this repository; other clusters must register it read-only.
   settings = {
     bucket   = module.s3_bucket_live_app_log.s3_bucket_id
     region   = data.aws_region.current.name
     role_arn = aws_iam_role.opensearch_snapshot_role.arn
+    readonly = "true"
   }
 
   depends_on = [elasticsearch_opensearch_roles_mapping.all_access_silas_log_restore]
