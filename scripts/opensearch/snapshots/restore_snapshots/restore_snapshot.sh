@@ -1,174 +1,148 @@
 #!/bin/bash
+# Restore snapshots listed in S3 onto the restore domain. Stops on the first failure.
+# EXTRACT_NAMESPACE set: copy that namespace into ${EXTRACT_PREFIX}<index>, check counts, delete the full index.
+# Usage: ./restore_snapshot.sh <true|false>  Env: RESTORE_OS_ENDPOINT, EXTRACT_NAMESPACE, EXTRACT_PREFIX, MAX_BATCH, STEP_TIMEOUT_SECS
 
-set -eu
+set -uo pipefail
 
-IS_PIPELINE=$1
+IS_PIPELINE=${1:-}
+[[ "$IS_PIPELINE" == true || "$IS_PIPELINE" == false ]] || { echo "usage: $0 <true|false>"; exit 1; }
 
-if [[ "$IS_PIPELINE" = true ]]; then
-  export USE_SESSION_TOKEN=false
-else
-  export USE_SESSION_TOKEN=true
-fi
-
-RESTORE_OS_ENDPOINT="https://search-test-restore-5utyz7htozji7omw54emmciqum.eu-west-2.es.amazonaws.com"
+RESTORE_OS_ENDPOINT=${RESTORE_OS_ENDPOINT:-https://silas-log-restore.cloud-platform.service.justice.gov.uk}
 SNAPSHOT_REPO="cp-live-app-logs-snapshot-s3-repository"
 S3_SOURCE_INDEX_FILE="s3://cloud-platform-concourse-environments-live-reports/opensearch-snapshots/source-index-list.txt"
 S3_RESTORED_INDEX_FILE="s3://cloud-platform-concourse-environments-live-reports/opensearch-snapshots/snapshot-restored.txt"
+EXTRACT_NAMESPACE=${EXTRACT_NAMESPACE:-}
+EXTRACT_PREFIX=${EXTRACT_PREFIX:-silas150-extract-}
+MAX_BATCH=${MAX_BATCH:-10}
+STEP_TIMEOUT_SECS=${STEP_TIMEOUT_SECS:-7200}
 
-MAX_BATCH=10
 TMP_FILE="$(mktemp)"
 RESTORED_INDICES_FILE="$(mktemp)"
 EXISTING_RESTORED_FILE="$(mktemp)"
-
-echo "Downloading index list from $S3_SOURCE_INDEX_FILE"
-aws s3 cp "$S3_SOURCE_INDEX_FILE" "$TMP_FILE"
-TOTAL_INDICES_TO_RESTORE=$(wc -l < "$TMP_FILE")
-aws s3 cp "$S3_RESTORED_INDEX_FILE" "$EXISTING_RESTORED_FILE"
-
 COUNT=0
 
-wait_for_restore() {
-  local index_name="$1"
-  echo "Waiting for restore to complete for index: $index_name"
+AUTH=(--user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" --aws-sigv4 "aws:amz:eu-west-2:es")
+[[ "$IS_PIPELINE" != true ]] && AUTH+=(-H "x-amz-security-token: $AWS_SESSION_TOKEN")
 
-  while true; do
-    local recovery_output
-    recovery_output=$(curl -s -XGET -L \
-      --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
-      ${USE_SESSION_TOKEN:+ -H "x-amz-security-token: $AWS_SESSION_TOKEN"} \
-      --aws-sigv4 "aws:amz:eu-west-2:es" \
-      "$RESTORE_OS_ENDPOINT/${index_name}/_recovery")
+die() { echo "FATAL: $*" >&2; exit 1; }
 
-    local shard_count
-    shard_count=$(echo "$recovery_output" | jq -r ".\"${index_name}\".shards | length")
-    echo "Checking $shard_count shards for index: $index_name"
+req() {
+  local out
+  out=$(curl -s -w $'\n%{http_code}' "${AUTH[@]}" "$@") || out=$'\n000'
+  HTTP_CODE=${out##*$'\n'}
+  BODY=${out%$'\n'*}
+  [[ "$HTTP_CODE" == 401 || "$HTTP_CODE" == 403 ]] && die "HTTP $HTTP_CODE on $* - credentials expired or not permitted"
+  return 0
+}
 
-    local ready_snapshot_shards=0
-
-    for ((i = 0; i < shard_count; i++)); do
-      local type stage percent
-
-      type=$(echo "$recovery_output" | jq -r ".\"${index_name}\".shards[$i].type")
-      stage=$(echo "$recovery_output" | jq -r ".\"${index_name}\".shards[$i].stage")
-      percent=$(echo "$recovery_output" | jq -r ".\"${index_name}\".shards[$i].index.size.percent")
-
-      echo "Shard $i — type=$type, stage=$stage, percent=$percent"
-
-      if [[ "$type" == "SNAPSHOT" && "$stage" == "DONE" && "$percent" == "100.0%" ]]; then
-        (( ++ready_snapshot_shards ))
-      fi
-    done
-
-    total_snapshot_shards=$(echo "$recovery_output" | jq -r ".\"${index_name}\".shards | map(select(.type == \"SNAPSHOT\")) | length")    
-    
-    echo "Ready: $ready_snapshot_shards / Total: $total_snapshot_shards"
-
-    if (( ready_snapshot_shards == total_snapshot_shards )); then
-      echo "Restore completed for index: $index_name"
-      return 0
-    else
-      echo "Waiting for restore to complete..."
-      sleep 60
-    fi
+wait_until() {
+  local what=$1 fn=$2 deadline=$(( $(date +%s) + STEP_TIMEOUT_SECS ))
+  until "$fn"; do
+    [[ $(date +%s) -ge $deadline ]] && { echo "  timed out waiting for: $what"; return 1; }
+    sleep 30
   done
 }
 
-while IFS= read -r line; do
-  [[ -z "$line" || "$line" =~ ^# ]] && continue
+is_green() {
+  req "$RESTORE_OS_ENDPOINT/_cluster/health/$INDEX"
+  [[ "$HTTP_CODE" == 200 && $(jq -r '.status' <<<"$BODY") == green ]]
+}
 
-  if [[ "$line" == snapshot-taken-* ]]; then
-    raw_index_name="${line#snapshot-taken-}"
-    echo "Processing index: $raw_index_name"
+ns_query() { jq -nc --arg ns "$EXTRACT_NAMESPACE" '{term: {"kubernetes.namespace_name.keyword": $ns}}'; }
 
-    STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" -I -L \
-      --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
-      ${USE_SESSION_TOKEN:+ -H "x-amz-security-token: $AWS_SESSION_TOKEN"} \
-      --aws-sigv4 "aws:amz:eu-west-2:es" \
-      "$RESTORE_OS_ENDPOINT/${raw_index_name}")
+count_ns() { # count_ns <index> <query-json>
+  req -H "Content-Type: application/json" "$RESTORE_OS_ENDPOINT/$1/_count" -d "{\"query\": $2}"
+  [[ "$HTTP_CODE" == 200 ]] && jq -r '.count' <<<"$BODY" || echo "ERR"
+}
 
-    if [[ "$STATUS_CODE" == "200" ]]; then
-      echo "Index $raw_index_name already exists in this OpenSearch cluster. Skipping."
-      continue
-    fi
+reindex_done() {
+  req "$RESTORE_OS_ENDPOINT/_tasks/$TASK_ID"
+  [[ "$HTTP_CODE" == 200 && $(jq -r '.completed' <<<"$BODY") == true ]]
+}
 
-    echo "Index $raw_index_name does not exist in this OpenSearch cluster. Restoring..."
+extract() {
+  local dest="${EXTRACT_PREFIX}${INDEX}" mapping src_count dest_count failures
+  req "$RESTORE_OS_ENDPOINT/$INDEX/_mapping"
+  [[ "$HTTP_CODE" == 200 ]] || { echo "  !! cannot read mapping: HTTP $HTTP_CODE"; return 1; }
+  mapping=$(jq -c --arg i "$INDEX" '.[$i].mappings' <<<"$BODY")
+  req -XPUT -H "Content-Type: application/json" "$RESTORE_OS_ENDPOINT/$dest" \
+    -d "{\"settings\": {\"index\": {\"number_of_shards\": 1, \"number_of_replicas\": 0}}, \"mappings\": $mapping}"
+  [[ "$HTTP_CODE" == 200 ]] || { echo "  !! cannot create $dest: HTTP $HTTP_CODE $BODY"; return 1; }
 
-    # Restore snapshot
-    curl -s -XPOST -L \
-      --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
-      ${USE_SESSION_TOKEN:+ -H "x-amz-security-token: $AWS_SESSION_TOKEN"} \
-      -H "Content-Type: application/json" \
-      --aws-sigv4 "aws:amz:eu-west-2:es" \
-      "$RESTORE_OS_ENDPOINT/_snapshot/$SNAPSHOT_REPO/$raw_index_name/_restore" \
-      -d "{
-        \"indices\": \"$raw_index_name\",
-        \"include_global_state\": false,
-        \"partial\": false,
-        \"ignore_unavailable\": false,
-        \"include_aliases\": false
-      }"
+  src_count=$(count_ns "$INDEX" "$(ns_query)")
+  [[ "$src_count" =~ ^[0-9]+$ ]] || { echo "  !! cannot count source"; return 1; }
+  echo "  $INDEX has $src_count documents for $EXTRACT_NAMESPACE; copying to $dest"
 
-    echo
-    echo "Setting replicas to 0 for $raw_index_name..."
-    curl -s -XPUT -L \
-      --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
-      ${USE_SESSION_TOKEN:+ -H "x-amz-security-token: $AWS_SESSION_TOKEN"} \
-      -H "Content-Type: application/json" \
-      --aws-sigv4 "aws:amz:eu-west-2:es" \
-      "$RESTORE_OS_ENDPOINT/$raw_index_name/_settings" \
-      -d '{
-        "index": {
-          "number_of_replicas": 0
-        }
-      }'
+  req -XPOST -H "Content-Type: application/json" "$RESTORE_OS_ENDPOINT/_reindex?wait_for_completion=false&slices=auto" \
+    -d "{\"source\": {\"index\": \"$INDEX\", \"query\": $(ns_query)}, \"dest\": {\"index\": \"$dest\"}}"
+  TASK_ID=$(jq -r '.task // empty' <<<"$BODY")
+  [[ -n "$TASK_ID" ]] || { echo "  !! reindex not started: HTTP $HTTP_CODE $BODY"; return 1; }
+  wait_until "reindex $INDEX -> $dest" reindex_done || return 1
+  failures=$(jq -c '(.response.failures // []) + (if .error then [.error] else [] end)' <<<"$BODY")
+  [[ "$failures" == "[]" ]] || { echo "  !! reindex failures: ${failures:0:500}"; return 1; }
 
-    sleep 100
-    wait_for_restore "$raw_index_name"
-
-    echo "Checking if index $raw_index_name is green..."
-
-    while true; do
-        index_health=$(curl -s -XGET -L \
-            --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
-            ${USE_SESSION_TOKEN:+ -H "x-amz-security-token: $AWS_SESSION_TOKEN"}  \
-            --aws-sigv4 "aws:amz:eu-west-2:es" \
-            "$RESTORE_OS_ENDPOINT/_cat/indices/$raw_index_name?h=health")
-
-        if [[ "$index_health" == "green" ]]; then
-            echo "Index $raw_index_name is green. Proceeding to migrate to warm tier."
-            break
-        else
-            echo "Index $raw_index_name health is $index_health. Sleeping 60s and retrying..."
-            sleep 10
-        fi
-    done
-
-    echo "Migrating $raw_index_name to warm tier..."
-    curl -s -XPOST -L \
-      --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
-      ${USE_SESSION_TOKEN:+ -H "x-amz-security-token: $AWS_SESSION_TOKEN"} \
-      --aws-sigv4 "aws:amz:eu-west-2:es" \
-      "$RESTORE_OS_ENDPOINT/_ultrawarm/migration/$raw_index_name/_warm"
-
-    echo
-    echo "$raw_index_name" >> "$RESTORED_INDICES_FILE"
-
-    COUNT=$((COUNT + 1))
-    if [[ "$COUNT" -ge "$MAX_BATCH" ]]; then
-      echo "Reached max batch size of $MAX_BATCH. Stopping."
-      break
-    fi
-  else
-    echo "Skipping non-taken snapshot line: $line"
+  req -XPOST "$RESTORE_OS_ENDPOINT/$dest/_refresh"
+  dest_count=$(count_ns "$dest" '{"match_all": {}}')
+  if [[ "$dest_count" != "$src_count" ]]; then
+    echo "  !! count mismatch: source $src_count, $dest $dest_count - keeping $INDEX for investigation"
+    return 1
   fi
-done < "$TMP_FILE"
+  echo "  counts match ($dest_count); deleting restored full index $INDEX"
+  req -XDELETE "$RESTORE_OS_ENDPOINT/$INDEX"
+  [[ "$HTTP_CODE" == 200 ]] || { echo "  !! delete of $INDEX failed: HTTP $HTTP_CODE"; return 1; }
+  echo "$INDEX $dest $dest_count" >>"$RESTORED_INDICES_FILE"
+}
 
-# Append newly restored indices to existing list and upload to S3
-cat "$RESTORED_INDICES_FILE" >> "$EXISTING_RESTORED_FILE"
-aws s3 cp "$EXISTING_RESTORED_FILE" "$S3_RESTORED_INDEX_FILE"
+echo "Restore endpoint: $RESTORE_OS_ENDPOINT${EXTRACT_NAMESPACE:+ (extract mode: $EXTRACT_NAMESPACE -> ${EXTRACT_PREFIX}*)}"
+req "$RESTORE_OS_ENDPOINT/_cluster/health"
+[[ "$HTTP_CODE" == 200 ]] || die "cannot reach $RESTORE_OS_ENDPOINT (HTTP $HTTP_CODE)"
 
-echo "Batch complete. $COUNT index snapshots restored."
+aws s3 cp "$S3_SOURCE_INDEX_FILE" "$TMP_FILE" || die "cannot download $S3_SOURCE_INDEX_FILE"
+TOTAL_INDICES_TO_RESTORE=$(grep -c '^snapshot-taken-' "$TMP_FILE")
+aws s3 cp "$S3_RESTORED_INDEX_FILE" "$EXISTING_RESTORED_FILE" || : >"$EXISTING_RESTORED_FILE"
 
-TOTAL_RESTORED_INDICES=$(wc -l < "$EXISTING_RESTORED_FILE")
+FAILED=""
+while IFS= read -r line || [[ -n "$line" ]]; do
+  [[ "$line" == snapshot-taken-* ]] || continue
+  INDEX="${line#snapshot-taken-}"
+  awk -v i="$INDEX" '$1 == i {f = 1} END {exit !f}' "$EXISTING_RESTORED_FILE" && continue
 
-echo "Total restored snapshot: $TOTAL_RESTORED_INDICES / $TOTAL_INDICES_TO_RESTORE"
+  if [[ -n "$EXTRACT_NAMESPACE" ]]; then
+    req "$RESTORE_OS_ENDPOINT/${EXTRACT_PREFIX}${INDEX}/_settings"
+    if [[ "$HTTP_CODE" == 200 ]]; then
+      echo "!! ${EXTRACT_PREFIX}${INDEX} exists but $INDEX is not recorded as restored (partial earlier run)."
+      FAILED=$INDEX; break
+    fi
+  fi
+
+  echo "=== $INDEX"
+  req "$RESTORE_OS_ENDPOINT/$INDEX/_settings"
+  if [[ "$HTTP_CODE" == 404 ]]; then
+    req -XPOST -H "Content-Type: application/json" "$RESTORE_OS_ENDPOINT/_snapshot/$SNAPSHOT_REPO/$INDEX/_restore" \
+      -d "{\"indices\": \"$INDEX\", \"include_global_state\": false, \"partial\": false, \"include_aliases\": false, \"index_settings\": {\"index.number_of_replicas\": 0}}"
+    [[ "$HTTP_CODE" == 200 ]] || { echo "  !! restore request failed: HTTP $HTTP_CODE $BODY"; FAILED=$INDEX; break; }
+  else
+    echo "  $INDEX already present on restore domain - resuming"
+  fi
+  wait_until "$INDEX green" is_green || { FAILED=$INDEX; break; }
+
+  if [[ -n "$EXTRACT_NAMESPACE" ]]; then
+    extract || { FAILED=$INDEX; break; }
+  else
+    req -XPOST "$RESTORE_OS_ENDPOINT/_ultrawarm/migration/$INDEX/_warm"
+    [[ "$HTTP_CODE" == 200 ]] || { echo "  !! warm migration request failed: HTTP $HTTP_CODE $BODY"; FAILED=$INDEX; break; }
+    echo "$INDEX" >>"$RESTORED_INDICES_FILE"
+  fi
+
+  COUNT=$((COUNT + 1))
+  (( COUNT >= MAX_BATCH )) && { echo "Reached max batch size of $MAX_BATCH. Stopping."; break; }
+done <"$TMP_FILE"
+
+cat "$RESTORED_INDICES_FILE" >>"$EXISTING_RESTORED_FILE"
+aws s3 cp "$EXISTING_RESTORED_FILE" "$S3_RESTORED_INDEX_FILE" || die "upload of $S3_RESTORED_INDEX_FILE failed"
+
+echo "Batch complete. $COUNT indices restored."
+echo "Total restored: $(grep -cv '^\s*$' "$EXISTING_RESTORED_FILE") / $TOTAL_INDICES_TO_RESTORE"
+[[ -n "$FAILED" ]] && die "stopped at $FAILED - investigate before re-running"
+exit 0

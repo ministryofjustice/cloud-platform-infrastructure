@@ -1,7 +1,7 @@
 locals {
   snapshot_allowed_domains = distinct(concat(
     [local.live_app_logs_domain],
-    ["test-restore"]
+    ["test-restore", "cp-silas-log-restore"]
   ))
 }
 
