@@ -252,7 +252,6 @@ resource "aws_opensearch_domain_saml_options" "silas_log_restore" {
       metadata_content = data.http.saml_metadata_silas_log_restore[0].response_body
     }
     master_backend_role = aws_iam_role.os_access_role_silas_log_restore[0].arn
-    master_user_name    = aws_iam_role.os_access_role_silas_log_restore[0].arn
     roles_key           = "http://schemas.xmlsoap.org/claims/Group"
   }
 }
