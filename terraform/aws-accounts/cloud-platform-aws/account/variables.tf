@@ -50,6 +50,36 @@ variable "legal_hold_delete_transition" {
   description = "Index age (from creation) at which indices on the legal-hold-retain policy are deleted. Lowering it deletes every held index older than the new value on the next ISM run - preview with scripts/opensearch/legal-hold/change_policy_cold.sh preview-lift first."
 }
 
+variable "enable_silas_log_restore" {
+  type        = bool
+  default     = false
+  description = "Create the temporary cp-silas-log-restore OpenSearch domain (app-opensearch-silas-restore.tf). Set to false to tear it down."
+}
+
+variable "silas_log_restore_instance_type" {
+  type        = string
+  default     = "r6g.large.search"
+  description = "Data node instance type for the cp-silas-log-restore domain (3 nodes)."
+}
+
+variable "silas_log_restore_volume_size" {
+  type        = number
+  default     = 1000
+  description = "gp3 storage (GB) per data node for the cp-silas-log-restore domain. Must hold the largest restored index (~1.6 TB) across all nodes."
+}
+
+variable "silas_log_restore_audit_log_retention_days" {
+  type        = number
+  default     = 400
+  description = "CloudWatch retention for cp-silas-log-restore audit logs."
+}
+
+variable "silas_log_restore_reader_teams" {
+  type        = list(string)
+  default     = ["laa-portal-stabilisation-tech"]
+  description = "GitHub teams with read-only access to silas150-extract-* on cp-silas-log-restore."
+}
+
 variable "index_pattern_live_modsec_audit" {
   default = [
     "live_k8s_modsec_ingress-*",

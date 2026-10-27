@@ -1,15 +1,6 @@
 #!/bin/bash
-# Move existing COLD indices on the live app-logs domain onto the legal-hold-retain ISM policy
-# (terraform/aws-accounts/cloud-platform-aws/account/app-opensearch-legal-hold.tf). See scripts/opensearch/README.md.
-#
-# Usage: ./legal-hold/change_policy_cold.sh <IS_PIPELINE> <mode> [arg]
-#   plan     [index]  read-only: classify every cold index (or one index) and report what apply would do
-#   apply    [index]  change_policy each eligible cold index, then poll until it is confirmed on the hold policy
-#   verify   [index]  read-only: fail if any cold index is still eligible, at risk, or errored
-#   preview-lift <N>  read-only: list held indices that would be DELETED if legal_hold_delete_transition were set to <N>d
-#
-# Calls are made per index: curl --aws-sigv4 does not sign wildcard paths correctly (403).
-# Exit code is non-zero if anything needs attention. A per-index TSV report is written to $OUT_DIR (default .).
+# Move cold app-logs indices onto the legal-hold-retain ISM policy. See scripts/opensearch/README.md.
+# Usage: ./legal-hold/change_policy_cold.sh <true|false> plan|apply|verify [index] | preview-lift <days>
 
 set -uo pipefail
 
@@ -33,23 +24,23 @@ case "$MODE" in plan|apply|verify) ;; preview-lift) [[ "$ARG" =~ ^[0-9]+$ ]] || 
 AUTH=(--user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" --aws-sigv4 "aws:amz:eu-west-2:es")
 [[ "$IS_PIPELINE" != true ]] && AUTH+=(-H "x-amz-security-token: $AWS_SESSION_TOKEN")
 
-# req <curl args...> -> sets HTTP_CODE and BODY; aborts the whole run on auth failure
+# Sets HTTP_CODE and BODY. Aborts on 401/403.
 req() {
   local out
   out=$(curl -s -w $'\n%{http_code}' "${AUTH[@]}" "$@") || out=$'\n000'
   HTTP_CODE=${out##*$'\n'}
   BODY=${out%$'\n'*}
-  [[ "$HTTP_CODE" == 401 || "$HTTP_CODE" == 403 ]] && die "HTTP $HTTP_CODE on $* – credentials expired or not permitted"
+  [[ "$HTTP_CODE" == 401 || "$HTTP_CODE" == 403 ]] && die "HTTP $HTTP_CODE on $*: credentials expired or not permitted"
   return 0
 }
 
-# --- preflight ---------------------------------------------------------------------------------
+# Preflight
 req "$ENDPOINT/_cluster/health"
 [[ "$HTTP_CODE" == 200 ]] || die "cannot reach $ENDPOINT (HTTP $HTTP_CODE)"
 HOLD_SEQ=""
 req "$ENDPOINT/_plugins/_ism/policies/$HOLD_POLICY"
 if [[ "$HTTP_CODE" != 200 ]]; then
-  [[ "$MODE" == apply ]] && die "policy $HOLD_POLICY not found – apply the terraform first"
+  [[ "$MODE" == apply ]] && die "policy $HOLD_POLICY not found: apply the terraform first"
   echo "WARNING: policy $HOLD_POLICY not found on the domain"
 else
   cold_actions=$(jq '[.policy.states[] | select(.name == "cold") | .actions | length] | first // -1' <<<"$BODY")
@@ -59,7 +50,7 @@ else
   echo "Hold policy $HOLD_POLICY: cold state has no actions, deletes at min_index_age=$hold_age"
 fi
 
-# --- list cold indices (index, creation_date, size) via the paginated cold API --------------------
+# List cold indices (index, creation_date, size) via the paginated cold api
 COLD=$(mktemp); trap 'rm -f "$COLD"' EXIT
 req "$ENDPOINT/_cold/indices/_search"
 [[ "$HTTP_CODE" == 200 ]] || die "cold index listing failed (HTTP $HTTP_CODE)"
@@ -84,9 +75,9 @@ done <"$COLD"
 [[ -n "$ARG" && "$MODE" != preview-lift && ${#TARGETS[@]} -eq 0 ]] && die "$ARG is not a cold index"
 echo "Cold indices on domain: $total; in scope: ${#TARGETS[@]}"
 
-# --- classify ------------------------------------------------------------------------------------
+# Classify
 # classes: HELD HELD_STALE CANDIDATE STALLED STALLED_DELETE UNMANAGED OTHER AT_RISK_DELETE ERROR
-# HELD_STALE = on the hold policy but an older version (e.g. after legal_hold_delete_transition changed)
+# HELD_STALE: on an older version of the hold policy.
 classify() {
   req "$ENDPOINT/_plugins/_ism/explain/$1?type=_cold"
   [[ "$HTTP_CODE" == 200 ]] || { echo -e "ERROR\t-\t-\t-\t-\texplain HTTP $HTTP_CODE"; return; }
@@ -123,7 +114,7 @@ class_of() { awk -F'\t' -v i="$1" '$1 == i {print $2}' "$REPORT"; }
 summary() {
   echo; echo "Summary ($MODE):"
   cut -f2 "$REPORT" | tail -n +2 | sort | uniq -c
-  has_class STALLED_DELETE && { echo "  WARNING STALLED_DELETE (delete failed, policy disabled – an ISM retry on these would delete them):"; awk -F'\t' '$2 == "STALLED_DELETE" {print "     " $1 "  " $9}' "$REPORT"; }
+  has_class STALLED_DELETE && { echo "  WARNING STALLED_DELETE (delete failed, policy disabled: an ISM retry on these would delete them):"; awk -F'\t' '$2 == "STALLED_DELETE" {print "     " $1 "  " $9}' "$REPORT"; }
   for bad in AT_RISK_DELETE ERROR HELD_STALE FAIL_CHANGE FAIL_NOT_APPLIED; do
     has_class "$bad" && { echo "  !! $bad:"; awk -F'\t' -v b="$bad" '$2 == b {print "     " $1 "  " $9}' "$REPORT"; }
   done
@@ -131,18 +122,8 @@ summary() {
 }
 
 reminder() {
-  cat <<'EOF'
-
-==================================================================================================
- REMINDER: legal hold is an ongoing obligation, not a one-off change:
-  * Indices that move to cold AFTER this run are still on hot-warm-cold-delete and will be deleted
-    at 366 days. Re-run "apply" (then "verify") at least weekly for as long as the hold is needed.
-  * Held indices are kept until the hold is lifted and keep accruing cold-storage cost.
-  * Record both of the above as explicit TODOs in your ticket, with a review/end date.
-  * Lifting: NEVER just set legal_hold_delete_transition back to 366d – every held index older than
-    that is deleted on the next ISM run. Use "preview-lift <days>" and step down in batches.
-==================================================================================================
-EOF
+  echo
+  echo "REMINDER: re-run apply and verify weekly while the hold is needed. Agree an end date. Lift with preview-lift, in batches."
 }
 
 case "$MODE" in

@@ -6,6 +6,8 @@ data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
 
+data "aws_caller_identity" "current" {}
+
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
@@ -387,6 +389,14 @@ module "eks" {
       username = "{{SessionName}}"
       groups   = ["system:masters"]
     },
+    {
+      # Wiz read-only access. WizAccess-Role (path /) is created by the Wiz StackSet in
+      # ministryofjustice/aws-root-account (modules/wiz-stackset), not in this repo.
+      # wiz-reader is bound to a read-only ClusterRole in core/components/rbac.tf.
+      rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/WizAccess-Role"
+      username = "wiz"
+      groups   = ["wiz-reader"]
+    },
   ]
 
   tags = local.tags
@@ -403,7 +413,7 @@ module "aws_eks_addons" {
   cluster_oidc_issuer_url = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
   addon_tags              = local.tags
 
-  addon_vpc_cni_version         = "v1.23.1-eksbuild.1"
+  addon_vpc_cni_version         = "v1.23.2-eksbuild.8"
   addon_coredns_version         = "v1.14.7-eksbuild.22"
   addon_kube_proxy_version      = "v1.34.6-eksbuild.29"
   addon_guardduty_agent_version = "v1.17.1-eksbuild.2"

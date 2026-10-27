@@ -10,8 +10,13 @@ exports.onExecutePostLogin = async (event, api) => {
     event.client.client_id ===
       event.secrets.OPENSEARCH_APP_LIVE2_CLIENT_ID_APP_LOGS &&
     event.connection.name === "github";
+  const silasRestoreClientId =
+    !!event.secrets.OPENSEARCH_SILAS_RESTORE_CLIENT_ID &&
+    event.client.client_id ===
+      event.secrets.OPENSEARCH_SILAS_RESTORE_CLIENT_ID &&
+    event.connection.name === "github";
 
-  if (modsecClientId || appClientId || appLive2ClientId) {
+  if (modsecClientId || appClientId || appLive2ClientId || silasRestoreClientId) {
     const git_teams = event.user.user_metadata["gh_teams"].map((t) =>
       t.replace("github:", ""),
     );
