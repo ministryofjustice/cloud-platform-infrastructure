@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "assume_role_policy_silas_log_restore" {
     actions = ["sts:AssumeRole"]
     principals {
       type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      identifiers = [local.manager_concourse_arn, local.silas_log_restore_sso_arn]
     }
   }
 }
