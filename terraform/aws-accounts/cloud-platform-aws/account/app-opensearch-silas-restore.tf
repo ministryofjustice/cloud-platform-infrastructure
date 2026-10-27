@@ -145,51 +145,11 @@ resource "aws_opensearch_domain" "silas_log_restore" {
     enabled = true
   }
 
-  log_publishing_options {
-    log_type                 = "AUDIT_LOGS"
-    cloudwatch_log_group_arn = aws_cloudwatch_log_group.silas_log_restore["audit-logs"].arn
-  }
-
-  log_publishing_options {
-    log_type                 = "ES_APPLICATION_LOGS"
-    cloudwatch_log_group_arn = aws_cloudwatch_log_group.silas_log_restore["application-logs"].arn
-  }
-
   tags = local.silas_log_restore_tags
-
-  depends_on = [aws_cloudwatch_log_resource_policy.silas_log_restore]
 }
 
-# Logs and alarms
-resource "aws_cloudwatch_log_group" "silas_log_restore" {
-  for_each          = var.enable_silas_log_restore ? { "audit-logs" = var.silas_log_restore_audit_log_retention_days, "application-logs" = 60 } : {}
-  name              = "/aws/aes/domains/${local.silas_log_restore_domain}/${each.key}"
-  retention_in_days = each.value
-  tags              = local.silas_log_restore_tags
-}
-
-data "aws_iam_policy_document" "silas_log_restore_logs" {
-  statement {
-    actions   = ["logs:CreateLogStream", "logs:PutLogEvents", "logs:PutLogEventsBatch"]
-    resources = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:/aws/aes/domains/${local.silas_log_restore_domain}/*"]
-    principals {
-      type        = "Service"
-      identifiers = ["es.amazonaws.com"]
-    }
-    condition {
-      test     = "StringEquals"
-      variable = "aws:SourceAccount"
-      values   = [data.aws_caller_identity.current.account_id]
-    }
-  }
-}
-
-resource "aws_cloudwatch_log_resource_policy" "silas_log_restore" {
-  count           = local.silas_log_restore_count
-  policy_name     = "OpenSearchService-${local.silas_log_restore_domain}-logs"
-  policy_document = data.aws_iam_policy_document.silas_log_restore_logs.json
-}
-
+# Alarms
+# No CloudWatch log publishing: the account is at the 10 CloudWatch Logs resource policy limit in eu-west-2.
 module "silas_log_restore_opensearch_monitoring" {
   count                                       = local.silas_log_restore_count
   source                                      = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.2"
@@ -215,19 +175,22 @@ resource "aws_route53_record" "silas_log_restore" {
   records = [aws_opensearch_domain.silas_log_restore[0].endpoint]
 }
 
+# Principal must be "*": SAML Dashboards requests are not SigV4-signed. Fine-grained access control is the gate.
 data "aws_iam_policy_document" "silas_log_restore" {
   statement {
-    actions = [
-      "es:Describe*",
-      "es:List*",
-      "es:ESHttpGet",
-      "es:ESHttpHead",
-      "es:ESHttpPost",
-      "es:ESHttpPut",
-      "es:ESHttpPatch",
-      "es:ESHttpDelete",
-    ]
+    actions   = ["es:ESHttp*"]
     resources = ["arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${local.silas_log_restore_domain}/*"]
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+  }
+
+  # SQL errors reveal whether an index exists
+  statement {
+    effect    = "Deny"
+    actions   = ["es:*"]
+    resources = ["arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${local.silas_log_restore_domain}/_plugins/_sql"]
     principals {
       type        = "AWS"
       identifiers = ["*"]

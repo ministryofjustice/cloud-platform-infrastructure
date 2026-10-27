@@ -52,7 +52,7 @@ variable "legal_hold_delete_transition" {
 
 variable "enable_silas_log_restore" {
   type        = bool
-  default     = false
+  default     = true
   description = "Create the temporary cp-silas-log-restore OpenSearch domain (app-opensearch-silas-restore.tf). Set to false to tear it down."
 }
 
@@ -66,12 +66,6 @@ variable "silas_log_restore_volume_size" {
   type        = number
   default     = 1000
   description = "gp3 storage (GB) per data node for the cp-silas-log-restore domain. Must hold the largest restored index (~1.6 TB) across all nodes."
-}
-
-variable "silas_log_restore_audit_log_retention_days" {
-  type        = number
-  default     = 400
-  description = "CloudWatch retention for cp-silas-log-restore audit logs."
 }
 
 variable "silas_log_restore_reader_teams" {
