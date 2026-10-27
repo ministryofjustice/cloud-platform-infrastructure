@@ -47,3 +47,24 @@ Taking an OpenSearch snapshot can take more than 30+ minutes per index, dependin
 1. Run the take-snapshot.sh script to initiate snapshot creation.
 2. Wait some batch to be completed.
 3. Once snapshots are expected to be complete, run the restore-snapshot.sh script to begin restoring the indices.
+
+## Checks
+
+Both scripts check each step and stop on the first failure. `take_snapshot_cold_indices.sh` also checks the snapshot contains only the one index and that the index returns to cold on `EXPECTED_COLD_POLICY`.
+
+## Extract mode
+
+With `EXTRACT_NAMESPACE` set, `restore_snapshot.sh` copies that namespace into `${EXTRACT_PREFIX}<index>`, checks the counts match and deletes the restored full index. The restore domain then needs no UltraWarm.
+
+## cp-silas-log-restore: after first apply
+
+Switch on audit logging (no terraform resource for it):
+
+```bash
+curl -XPUT --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" -H "x-amz-security-token: $AWS_SESSION_TOKEN" \
+  --aws-sigv4 "aws:amz:eu-west-2:es" -H "Content-Type: application/json" \
+  https://silas-log-restore.cloud-platform.service.justice.gov.uk/_plugins/_security/api/audit/config \
+  -d '{"enabled": true, "audit": {"enable_rest": true, "disabled_rest_categories": ["AUTHENTICATED", "GRANTED_PRIVILEGES"], "enable_transport": false}, "compliance": {"enabled": true, "read_metadata_only": true, "read_watched_fields": {"silas150-extract-*": []}}}'
+```
+
+Then create the `silas150-extract-*` index pattern (`@timestamp`) in the Global tenant.
