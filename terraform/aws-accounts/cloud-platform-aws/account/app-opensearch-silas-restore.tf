@@ -215,19 +215,22 @@ resource "aws_route53_record" "silas_log_restore" {
   records = [aws_opensearch_domain.silas_log_restore[0].endpoint]
 }
 
+# Principal must be "*": SAML Dashboards requests are not SigV4-signed. Fine-grained access control is the gate.
 data "aws_iam_policy_document" "silas_log_restore" {
   statement {
-    actions = [
-      "es:Describe*",
-      "es:List*",
-      "es:ESHttpGet",
-      "es:ESHttpHead",
-      "es:ESHttpPost",
-      "es:ESHttpPut",
-      "es:ESHttpPatch",
-      "es:ESHttpDelete",
-    ]
+    actions   = ["es:ESHttp*"]
     resources = ["arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${local.silas_log_restore_domain}/*"]
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+  }
+
+  # SQL errors reveal whether an index exists
+  statement {
+    effect    = "Deny"
+    actions   = ["es:*"]
+    resources = ["arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${local.silas_log_restore_domain}/_plugins/_sql"]
     principals {
       type        = "AWS"
       identifiers = ["*"]

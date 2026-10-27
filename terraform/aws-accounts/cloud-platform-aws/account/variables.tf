@@ -52,7 +52,7 @@ variable "legal_hold_delete_transition" {
 
 variable "enable_silas_log_restore" {
   type        = bool
-  default     = false
+  default     = true
   description = "Create the temporary cp-silas-log-restore OpenSearch domain (app-opensearch-silas-restore.tf). Set to false to tear it down."
 }
 
