@@ -32,7 +32,7 @@ req() {
   out=$(curl -s -w $'\n%{http_code}' "${AUTH[@]}" "$@") || out=$'\n000'
   HTTP_CODE=${out##*$'\n'}
   BODY=${out%$'\n'*}
-  [[ "$HTTP_CODE" == 401 || "$HTTP_CODE" == 403 ]] && die "HTTP $HTTP_CODE on $* - credentials expired or not permitted"
+  [[ "$HTTP_CODE" == 401 || "$HTTP_CODE" == 403 ]] && die "HTTP $HTTP_CODE on $* - credentials expired, not permitted, or request signing failed"
   return 0
 }
 
@@ -56,42 +56,44 @@ count_ns() { # count_ns <index> <query-json>
   [[ "$HTTP_CODE" == 200 ]] && jq -r '.count' <<<"$BODY" || echo "ERR"
 }
 
+# Task IDs contain ":", which curl --aws-sigv4 cannot sign in a path, so list running reindex tasks instead.
 reindex_done() {
-  req "$RESTORE_OS_ENDPOINT/_tasks/$TASK_ID"
-  [[ "$HTTP_CODE" == 200 && $(jq -r '.completed' <<<"$BODY") == true ]]
+  req "$RESTORE_OS_ENDPOINT/_tasks?actions=*reindex&detailed=true"
+  [[ "$HTTP_CODE" == 200 ]] || return 1
+  [[ $(jq --arg d "$DEST" '[.nodes[].tasks[] | select(.description | contains("to [" + $d + "]"))] | length' <<<"$BODY") == 0 ]]
 }
 
-extract() {
-  local dest="${EXTRACT_PREFIX}${INDEX}" mapping src_count dest_count failures
-  req "$RESTORE_OS_ENDPOINT/$INDEX/_mapping"
-  [[ "$HTTP_CODE" == 200 ]] || { echo "  !! cannot read mapping: HTTP $HTTP_CODE"; return 1; }
-  mapping=$(jq -c --arg i "$INDEX" '.[$i].mappings' <<<"$BODY")
-  req -XPUT -H "Content-Type: application/json" "$RESTORE_OS_ENDPOINT/$dest" \
-    -d "{\"settings\": {\"index\": {\"number_of_shards\": 1, \"number_of_replicas\": 0}}, \"mappings\": $mapping}"
-  [[ "$HTTP_CODE" == 200 ]] || { echo "  !! cannot create $dest: HTTP $HTTP_CODE $BODY"; return 1; }
-
+finish_extract() {
+  local src_count dest_count
   src_count=$(count_ns "$INDEX" "$(ns_query)")
   [[ "$src_count" =~ ^[0-9]+$ ]] || { echo "  !! cannot count source"; return 1; }
-  echo "  $INDEX has $src_count documents for $EXTRACT_NAMESPACE; copying to $dest"
-
-  req -XPOST -H "Content-Type: application/json" "$RESTORE_OS_ENDPOINT/_reindex?wait_for_completion=false&slices=auto" \
-    -d "{\"source\": {\"index\": \"$INDEX\", \"query\": $(ns_query)}, \"dest\": {\"index\": \"$dest\"}}"
-  TASK_ID=$(jq -r '.task // empty' <<<"$BODY")
-  [[ -n "$TASK_ID" ]] || { echo "  !! reindex not started: HTTP $HTTP_CODE $BODY"; return 1; }
-  wait_until "reindex $INDEX -> $dest" reindex_done || return 1
-  failures=$(jq -c '(.response.failures // []) + (if .error then [.error] else [] end)' <<<"$BODY")
-  [[ "$failures" == "[]" ]] || { echo "  !! reindex failures: ${failures:0:500}"; return 1; }
-
-  req -XPOST "$RESTORE_OS_ENDPOINT/$dest/_refresh"
-  dest_count=$(count_ns "$dest" '{"match_all": {}}')
+  req -XPOST "$RESTORE_OS_ENDPOINT/$DEST/_refresh"
+  dest_count=$(count_ns "$DEST" '{"match_all": {}}')
   if [[ "$dest_count" != "$src_count" ]]; then
-    echo "  !! count mismatch: source $src_count, $dest $dest_count - keeping $INDEX for investigation"
+    echo "  !! count mismatch: source $src_count, $DEST $dest_count - keeping $INDEX for investigation"
     return 1
   fi
   echo "  counts match ($dest_count); deleting restored full index $INDEX"
   req -XDELETE "$RESTORE_OS_ENDPOINT/$INDEX"
   [[ "$HTTP_CODE" == 200 ]] || { echo "  !! delete of $INDEX failed: HTTP $HTTP_CODE"; return 1; }
-  echo "$INDEX $dest $dest_count" >>"$RESTORED_INDICES_FILE"
+  echo "$INDEX $DEST $dest_count" >>"$RESTORED_INDICES_FILE"
+}
+
+extract() {
+  local mapping
+  req "$RESTORE_OS_ENDPOINT/$INDEX/_mapping"
+  [[ "$HTTP_CODE" == 200 ]] || { echo "  !! cannot read mapping: HTTP $HTTP_CODE"; return 1; }
+  mapping=$(jq -c --arg i "$INDEX" '.[$i].mappings' <<<"$BODY")
+  req -XPUT -H "Content-Type: application/json" "$RESTORE_OS_ENDPOINT/$DEST" \
+    -d "{\"settings\": {\"index\": {\"number_of_shards\": 1, \"number_of_replicas\": 0}}, \"mappings\": $mapping}"
+  [[ "$HTTP_CODE" == 200 ]] || { echo "  !! cannot create $DEST: HTTP $HTTP_CODE $BODY"; return 1; }
+  echo "  copying $EXTRACT_NAMESPACE documents from $INDEX to $DEST"
+
+  req -XPOST -H "Content-Type: application/json" "$RESTORE_OS_ENDPOINT/_reindex?wait_for_completion=false&slices=auto" \
+    -d "{\"source\": {\"index\": \"$INDEX\", \"query\": $(ns_query)}, \"dest\": {\"index\": \"$DEST\"}}"
+  [[ -n "$(jq -r '.task // empty' <<<"$BODY")" ]] || { echo "  !! reindex not started: HTTP $HTTP_CODE $BODY"; return 1; }
+  wait_until "reindex $INDEX -> $DEST" reindex_done || return 1
+  finish_extract
 }
 
 echo "Restore endpoint: $RESTORE_OS_ENDPOINT${EXTRACT_NAMESPACE:+ (extract mode: $EXTRACT_NAMESPACE -> ${EXTRACT_PREFIX}*)}"
@@ -108,10 +110,20 @@ while IFS= read -r line || [[ -n "$line" ]]; do
   INDEX="${line#snapshot-taken-}"
   awk -v i="$INDEX" '$1 == i {f = 1} END {exit !f}' "$EXISTING_RESTORED_FILE" && continue
 
+  DEST="${EXTRACT_PREFIX}${INDEX}"
   if [[ -n "$EXTRACT_NAMESPACE" ]]; then
-    req "$RESTORE_OS_ENDPOINT/${EXTRACT_PREFIX}${INDEX}/_settings"
+    req "$RESTORE_OS_ENDPOINT/$DEST/_settings"
     if [[ "$HTTP_CODE" == 200 ]]; then
-      echo "!! ${EXTRACT_PREFIX}${INDEX} exists but $INDEX is not recorded as restored (partial earlier run)."
+      req "$RESTORE_OS_ENDPOINT/$INDEX/_settings"
+      if [[ "$HTTP_CODE" != 200 ]]; then
+        echo "!! $DEST exists but $INDEX is gone and not recorded as restored - check manually."
+        FAILED=$INDEX; break
+      fi
+      echo "=== $INDEX (resuming: $DEST already exists)"
+      if wait_until "reindex $INDEX -> $DEST" reindex_done && finish_extract; then
+        COUNT=$((COUNT + 1)); (( COUNT >= MAX_BATCH )) && { echo "Reached max batch size of $MAX_BATCH. Stopping."; break; }
+        continue
+      fi
       FAILED=$INDEX; break
     fi
   fi
