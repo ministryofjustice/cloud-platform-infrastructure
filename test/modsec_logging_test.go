@@ -40,6 +40,8 @@ var _ = Describe("logging", Ordered, Serial, func() {
 
 		emptySlice := make([]interface{}, 0)
 
+		maliciousUri := "/aresourcethatdoesnotexist/modsecloggingtest?exec=/bin/bash"
+
 		BeforeAll(func() {
 			if !(c.ClusterName == "live") {
 				Skip(fmt.Sprintf("Logs don't go to opensearch for cluster: %s", c.ClusterName))
@@ -96,7 +98,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 			}
 			getClient := &http.Client{Transport: tr}
 
-			req, _ := http.NewRequest(http.MethodGet, "http://"+host+"/aphpfilethatdonotexist.php?something=../../etc", nil)
+			req, _ := http.NewRequest(http.MethodGet, "http://"+host+maliciousUri, nil)
 
 			time.Sleep(40 * time.Second) // // prevent dial tcp: lookup smoketest-logs-usepwe.integrationtest.service.justice.gov.uk: no such host errors
 
@@ -173,7 +175,7 @@ var _ = Describe("logging", Ordered, Serial, func() {
 									GithubTeams: "all-org-members",
 								}},
 								{Match: helpers.PhraseData{
-									ProcessedRequestUri: "/aphpfilethatdonotexist.php?something=../../etc",
+									ProcessedRequestUri: maliciousUri,
 								}},
 								{Match: helpers.PhraseData{
 									ProcessedStatus: 403,
