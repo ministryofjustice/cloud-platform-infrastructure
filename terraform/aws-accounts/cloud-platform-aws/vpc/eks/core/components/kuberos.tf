@@ -13,6 +13,9 @@ module "kuberos" {
     module.ingress_controllers_v1,
     module.modsec_ingress_controllers_v1,
     module.non_prod_ingress_controllers_v1,
-    module.modsec_ingress_controllers_validator
+    module.default_ingress_controllers_validator,
+    module.internal_ingress_controllers_validator,
+    module.modsec_ingress_controllers_validator,
+    module.modsec_ingress_controllers_v2_validator
   ]
 }
