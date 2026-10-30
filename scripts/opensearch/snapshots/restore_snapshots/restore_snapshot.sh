@@ -63,6 +63,18 @@ reindex_done() {
   [[ $(jq --arg d "$DEST" '[.nodes[].tasks[] | select(.description | contains("to [" + $d + "]"))] | length' <<<"$BODY") == 0 ]]
 }
 
+delete_full_index() {
+  local deadline=$(( $(date +%s) + STEP_TIMEOUT_SECS )) waiting=""
+  until req -XDELETE "$RESTORE_OS_ENDPOINT/$INDEX"; [[ "$HTTP_CODE" == 200 ]]; do
+    if [[ "$HTTP_CODE" != 400 || ( "$BODY" != *snapshot_in_progress* && "$BODY" != *"being snapshotted"* ) ]] || (( $(date +%s) >= deadline )); then
+      echo "  !! delete of $INDEX failed: HTTP $HTTP_CODE ${BODY:0:500}"
+      return 1
+    fi
+    [[ -n "$waiting" ]] || { echo "  $INDEX is in a running snapshot; waiting to delete it"; waiting=1; }
+    sleep 30
+  done
+}
+
 finish_extract() {
   local src_count dest_count
   src_count=$(count_ns "$INDEX" "$(ns_query)")
@@ -74,8 +86,7 @@ finish_extract() {
     return 1
   fi
   echo "  counts match ($dest_count); deleting restored full index $INDEX"
-  req -XDELETE "$RESTORE_OS_ENDPOINT/$INDEX"
-  [[ "$HTTP_CODE" == 200 ]] || { echo "  !! delete of $INDEX failed: HTTP $HTTP_CODE"; return 1; }
+  delete_full_index || return 1
   echo "$INDEX $DEST $dest_count" >>"$RESTORED_INDICES_FILE"
 }
 
