@@ -113,7 +113,7 @@ resource "aws_opensearch_domain" "silas_log_restore" {
 
   cluster_config {
     instance_type            = var.silas_log_restore_instance_type
-    instance_count           = 3
+    instance_count           = var.silas_log_restore_instance_count
     dedicated_master_enabled = false
     zone_awareness_enabled   = true
 

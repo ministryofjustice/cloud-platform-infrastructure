@@ -59,7 +59,13 @@ variable "enable_silas_log_restore" {
 variable "silas_log_restore_instance_type" {
   type        = string
   default     = "r6g.large.search"
-  description = "Data node instance type for the cp-silas-log-restore domain (3 nodes)."
+  description = "Data node instance type for the cp-silas-log-restore domain."
+}
+
+variable "silas_log_restore_instance_count" {
+  type        = number
+  default     = 9
+  description = "Data nodes for the cp-silas-log-restore domain (multiple of 3 for three AZs)."
 }
 
 variable "silas_log_restore_volume_size" {
