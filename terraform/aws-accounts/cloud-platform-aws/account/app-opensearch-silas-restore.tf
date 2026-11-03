@@ -148,23 +148,9 @@ resource "aws_opensearch_domain" "silas_log_restore" {
   tags = local.silas_log_restore_tags
 }
 
-# Alarms
-# No CloudWatch log publishing: the account is at the 10 CloudWatch Logs resource policy limit in eu-west-2.
-module "silas_log_restore_opensearch_monitoring" {
-  count                                       = local.silas_log_restore_count
-  source                                      = "github.com/ministryofjustice/cloud-platform-terraform-opensearch-cloudwatch-alarm?ref=0.0.2"
-  alarm_name_prefix                           = "CP-silas-log-restore-"
-  domain_name                                 = local.silas_log_restore_domain
-  sns_topic                                   = module.baselines.slack_sns_topic
-  min_available_nodes                         = aws_opensearch_domain.silas_log_restore[0].cluster_config[0].instance_count
-  monitor_free_storage_space_total_too_low    = true
-  monitor_master_cpu_utilization_too_high     = false
-  monitor_master_jvm_memory_pressure_too_high = false
-
-  free_storage_space_threshold       = var.silas_log_restore_volume_size * 0.25 * 1024
-  free_storage_space_total_threshold = var.silas_log_restore_volume_size * aws_opensearch_domain.silas_log_restore[0].cluster_config[0].instance_count * 0.25 * 1024
-  tags                               = local.silas_log_restore_tags
-}
+# No CloudWatch alarms: restores make the cluster go yellow and busy by design, and the
+# restore job stops on any failure. No log publishing: the account is at the CloudWatch
+# Logs resource policy limit in eu-west-2.
 
 resource "aws_route53_record" "silas_log_restore" {
   count   = local.silas_log_restore_count
