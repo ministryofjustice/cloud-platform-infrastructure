@@ -1,5 +1,5 @@
 module "ingress_controllers_laa" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.3.0"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.4.1"
 
   count = terraform.workspace == "live" ? 1 : 0
 
