@@ -290,6 +290,11 @@ locals {
   )
 }
 
+# ATTENTION if looking to bump EKS terraform module:
+# As part of the work to enable Wiz to scan our EKS clusters (live, live-2 and manager) 
+# we have changed the authentication mode from CONFIG_MAP to API_AND_CONFIG_MAP via the AWS Console.
+# See Slack thread for more details:
+# https://mojdt.slack.com/archives/C514ETYJX/p1793358843483899
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "18.31.2"
