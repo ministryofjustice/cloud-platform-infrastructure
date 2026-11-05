@@ -1,5 +1,5 @@
 locals {
-  prometheus_operator_crd_version = "v0.85.0"
+  prometheus_operator_crd_version = "v0.94.2"
 
   prometheus_crd_yamls = {
     alertmanager_configs = "https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/${local.prometheus_operator_crd_version}/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagerconfigs.yaml"
