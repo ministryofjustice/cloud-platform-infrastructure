@@ -6,8 +6,6 @@ data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }
 
-data "aws_caller_identity" "current" {}
-
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority[0].data)
@@ -292,6 +290,11 @@ locals {
   )
 }
 
+# ATTENTION if looking to bump EKS terraform module:
+# As part of the work to enable Wiz to scan our EKS clusters (live, live-2 and manager) 
+# we have changed the authentication mode from CONFIG_MAP to API_AND_CONFIG_MAP via the AWS Console.
+# See Slack thread for more details:
+# https://mojdt.slack.com/archives/C514ETYJX/p1793358843483899
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "18.31.2"
@@ -388,14 +391,6 @@ module "eks" {
       rolearn  = "arn:aws:iam::754256621582:role/AWSReservedSSO_AdministratorAccess_ae2d551dbf676d8f"
       username = "{{SessionName}}"
       groups   = ["system:masters"]
-    },
-    {
-      # Wiz read-only access. WizAccess-Role (path /) is created by the Wiz StackSet in
-      # ministryofjustice/aws-root-account (modules/wiz-stackset), not in this repo.
-      # wiz-reader is bound to a read-only ClusterRole in core/components/rbac.tf.
-      rolearn  = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/WizAccess-Role"
-      username = "wiz"
-      groups   = ["wiz-reader"]
     },
   ]
 
