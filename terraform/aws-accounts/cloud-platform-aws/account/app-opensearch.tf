@@ -251,6 +251,8 @@ resource "elasticsearch_opensearch_roles_mapping" "all_access_app_logs" {
     data.terraform_remote_state.components_live.outputs.fluent_bit_irsa_arn,
     data.terraform_remote_state.components_live.outputs.fluent_bit_modsec_irsa_arn,
     data.terraform_remote_state.components_live.outputs.fluent_bit_non_prod_modsec_irsa_arn,
+    "arn:aws:iam::754256621582:role/cloud-platform-modsec-v2-fluentbit-irsa-live",
+    "arn:aws:iam::754256621582:role/cloud-platform-modsec-non-prod-v2-fluentbit-irsa-live",
   ], values(data.aws_eks_node_group.current)[*].node_role_arn, values(data.aws_eks_node_group.manager)[*].node_role_arn)
 
   // Permissions to manager-concourse in order to run logging tests
