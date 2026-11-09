@@ -114,7 +114,9 @@ resource "aws_opensearch_domain" "silas_log_restore" {
   cluster_config {
     instance_type            = var.silas_log_restore_instance_type
     instance_count           = var.silas_log_restore_instance_count
-    dedicated_master_enabled = false
+    dedicated_master_enabled = var.silas_log_restore_instance_count > 10
+    dedicated_master_type    = var.silas_log_restore_instance_count > 10 ? "m6g.large.search" : null
+    dedicated_master_count   = var.silas_log_restore_instance_count > 10 ? 3 : null
     zone_awareness_enabled   = true
 
     zone_awareness_config {
