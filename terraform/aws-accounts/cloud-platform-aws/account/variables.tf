@@ -64,7 +64,7 @@ variable "silas_log_restore_instance_type" {
 
 variable "silas_log_restore_instance_count" {
   type        = number
-  default     = 9
+  default     = 18
   description = "Data nodes for the cp-silas-log-restore domain (multiple of 3 for three AZs)."
 }
 
