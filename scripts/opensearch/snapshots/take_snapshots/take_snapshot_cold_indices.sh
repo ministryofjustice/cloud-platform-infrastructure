@@ -1,6 +1,6 @@
 #!/bin/bash
 # Snapshot cold app-logs indices listed in S3, one at a time. Stops on the first failure.
-# Usage: ./take_snapshot_cold_indices.sh <true|false>  Env: MAX_BATCH, STEP_TIMEOUT_SECS, EXPECTED_COLD_POLICY
+# Usage: ./take_snapshot_cold_indices.sh <true|false>  Env: MAX_BATCH, STEP_TIMEOUT_SECS, EXPECTED_COLD_POLICY, SNAPSHOT_ATTEMPTS
 
 set -uo pipefail
 
@@ -13,6 +13,7 @@ S3_SOURCE_INDEX_FILE="s3://cloud-platform-concourse-environments-live-reports/op
 MAX_BATCH=${MAX_BATCH:-10}
 STEP_TIMEOUT_SECS=${STEP_TIMEOUT_SECS:-3600}
 EXPECTED_COLD_POLICY=${EXPECTED_COLD_POLICY-legal-hold-retain}
+SNAPSHOT_ATTEMPTS=${SNAPSHOT_ATTEMPTS:-3}
 
 LOCAL_INDEX_FILE="index_list.txt"
 TMP_FILE="$(mktemp)"
@@ -62,6 +63,37 @@ snapshot_done() {
   [[ "$SNAP_STATE" == SUCCESS || "$SNAP_STATE" == FAILED || "$SNAP_STATE" == PARTIAL ]]
 }
 
+snapshot_gone() {
+  req "$LIVE_OS_ENDPOINT/_snapshot/$SNAPSHOT_REPO/$INDEX"
+  [[ "$HTTP_CODE" == 404 ]]
+}
+
+take_snapshot() {
+  local attempt
+  for (( attempt = 1; attempt <= SNAPSHOT_ATTEMPTS; attempt++ )); do
+    echo "  taking snapshot $INDEX..."
+    req -XPUT -H "Content-Type: application/json" "$LIVE_OS_ENDPOINT/_snapshot/$SNAPSHOT_REPO/$INDEX" \
+      -d "{\"indices\": \"$INDEX\", \"include_global_state\": false, \"partial\": false}"
+    [[ "$HTTP_CODE" == 200 ]] || { echo "  !! snapshot request failed: HTTP $HTTP_CODE $BODY"; return 1; }
+    # The snapshot must contain only this index
+    req "$LIVE_OS_ENDPOINT/_snapshot/$SNAPSHOT_REPO/$INDEX"
+    if [[ $(jq -c '.snapshots[0].indices' <<<"$BODY") != "[\"$INDEX\"]" ]]; then
+      echo "  !! snapshot contents unexpected: $(jq -c '.snapshots[0].indices | length' <<<"$BODY") indices - deleting it"
+      req -XDELETE "$LIVE_OS_ENDPOINT/_snapshot/$SNAPSHOT_REPO/$INDEX"
+      return 1
+    fi
+    wait_until "snapshot $INDEX" snapshot_done || return 1
+    [[ "$SNAP_STATE" == SUCCESS ]] && return 0
+    echo "  !! snapshot $INDEX ended as $SNAP_STATE: $(jq -c '[.snapshots[0].failures[]? | {shard: .shard_id, reason: .reason[0:120]}]' <<<"$BODY")"
+    (( attempt < SNAPSHOT_ATTEMPTS )) || return 1
+    echo "  deleting snapshot $INDEX and retrying ($attempt/$((SNAPSHOT_ATTEMPTS - 1)))"
+    req -XDELETE "$LIVE_OS_ENDPOINT/_snapshot/$SNAPSHOT_REPO/$INDEX"
+    [[ "$HTTP_CODE" == 200 ]] || { echo "  !! delete of snapshot $INDEX failed: HTTP $HTTP_CODE $BODY"; return 1; }
+    wait_until "snapshot $INDEX deleted" snapshot_gone || return 1
+  done
+  return 1
+}
+
 back_to_cold() {
   echo "  migrating $INDEX back to cold..."
   req -XPOST -H "Content-Type: application/json" "$LIVE_OS_ENDPOINT/_ultrawarm/migration/$INDEX/_cold" -d '{"timestamp_field": "@timestamp"}'
@@ -99,24 +131,8 @@ while IFS= read -r INDEX || [[ -n "$INDEX" ]]; do
     FAILED=$INDEX; echo "$INDEX" >>"$TMP_FILE"; continue
   fi
 
-  echo "  taking snapshot $INDEX..."
-  req -XPUT -H "Content-Type: application/json" "$LIVE_OS_ENDPOINT/_snapshot/$SNAPSHOT_REPO/$INDEX" \
-    -d "{\"indices\": \"$INDEX\", \"include_global_state\": false, \"partial\": false}"
   SNAP_OK=false
-  if [[ "$HTTP_CODE" == 200 ]]; then
-    # The snapshot must contain only this index
-    req "$LIVE_OS_ENDPOINT/_snapshot/$SNAPSHOT_REPO/$INDEX"
-    if [[ $(jq -c '.snapshots[0].indices' <<<"$BODY") != "[\"$INDEX\"]" ]]; then
-      echo "  !! snapshot contents unexpected: $(jq -c '.snapshots[0].indices | length' <<<"$BODY") indices - deleting it"
-      req -XDELETE "$LIVE_OS_ENDPOINT/_snapshot/$SNAPSHOT_REPO/$INDEX"
-    elif wait_until "snapshot $INDEX" snapshot_done && [[ "$SNAP_STATE" == SUCCESS ]]; then
-      SNAP_OK=true
-    else
-      echo "  !! snapshot $INDEX ended as ${SNAP_STATE:-unknown}"
-    fi
-  else
-    echo "  !! snapshot request failed: HTTP $HTTP_CODE $BODY"
-  fi
+  take_snapshot && SNAP_OK=true
 
   if back_to_cold && [[ "$SNAP_OK" == true ]]; then
     echo "snapshot-taken-$INDEX" >>"$TMP_FILE"
