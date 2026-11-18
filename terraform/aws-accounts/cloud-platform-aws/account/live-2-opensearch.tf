@@ -8,6 +8,16 @@ provider "elasticsearch" {
   sniff               = false
 }
 
+provider "opensearch" {
+  alias               = "app_logs_live_2"
+  url                 = "https://${aws_opensearch_domain.live_2_app_logs.endpoint}"
+  aws_assume_role_arn = aws_iam_role.os_access_role_live_2_app_logs.arn
+  aws_profile         = "moj-cp"
+  sign_aws_requests   = true
+  healthcheck         = false
+  sniff               = false
+}
+
 locals {
   live_2_app_logs_domain = "cp-live-2-app-logs"
   live_2_app_logs_tags = {
@@ -469,5 +479,92 @@ module "live_2_app_logs_opensearch_monitoring" {
   # Using this calculation of (size-in-gb * total instance count * 25% * 1024) because 25% is the best-practice for low disk, per AWS's recommendations. This value is in MiB so need to * 1024
   free_storage_space_total_threshold = aws_opensearch_domain.live_2_app_logs.ebs_options[0].volume_size * aws_opensearch_domain.live_2_app_logs.cluster_config[0].instance_count * 0.25 * 1024
   tags                               = local.live_2_app_logs_tags
+}
+
+resource "opensearch_index_template" "live_2_kubernetes_cluster" {
+  provider = opensearch.app_logs_live_2
+  name     = "live_2_kubernetes_cluster"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "live-2_kubernetes_cluster-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "5",
+        "number_of_replicas": "1"
+      }
+    },
+    "mappings": {
+      "properties": {
+        "time" : {
+          "type" :  "date"
+        }
+      }
+    }
+  }
+}
+EOF
+}
+
+resource "opensearch_index_template" "live_2_kubernetes_ingress" {
+  provider = opensearch.app_logs_live_2
+  name     = "live_2_kubernetes_ingress"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "live-2_kubernetes_ingress-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "5",
+        "number_of_replicas": "1"
+      }
+    }
+  }
+}
+EOF
+}
+
+resource "opensearch_index_template" "live_2_eventrouter" {
+  provider = opensearch.app_logs_live_2
+  name     = "live_2_eventrouter"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "live-2_eventrouter-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "number_of_replicas": "1"
+      }
+    }
+  }
+}
+EOF
+}
+
+resource "opensearch_index_template" "live_2_ipamd" {
+  provider = opensearch.app_logs_live_2
+  name     = "live_2_ipamd"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "live-2_ipamd-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "number_of_replicas": "1"
+      }
+    }
+  }
+}
+EOF
 }
 
