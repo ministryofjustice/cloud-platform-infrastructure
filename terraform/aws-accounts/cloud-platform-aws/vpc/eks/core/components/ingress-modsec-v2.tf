@@ -1,5 +1,5 @@
 module "modsec_ingress_controllers_v2" {
-  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=chainguard-151"
+  source = "github.com/ministryofjustice/cloud-platform-terraform-ingress-controller?ref=3.4.1"
 
   replica_count            = terraform.workspace == "live" ? "12" : "3"
   controller_name          = "modsec-v2"
