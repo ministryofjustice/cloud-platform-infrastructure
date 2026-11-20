@@ -93,6 +93,16 @@ data "terraform_remote_state" "components_live" {
   }
 }
 
+data "terraform_remote_state" "components_live_2" {
+  backend = "s3"
+  config = {
+    bucket  = "cloud-platform-terraform-state"
+    region  = "eu-west-1"
+    key     = "aws-accounts/cloud-platform-aws/vpc/eks/core/components/live-2/terraform.tfstate"
+    profile = "moj-cp"
+  }
+}
+
 # used for cloudfront/waf
 provider "aws" {
   alias  = "northvirginia"
