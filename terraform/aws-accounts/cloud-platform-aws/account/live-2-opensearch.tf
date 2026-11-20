@@ -8,6 +8,16 @@ provider "elasticsearch" {
   sniff               = false
 }
 
+provider "opensearch" {
+  alias               = "app_logs_live_2"
+  url                 = "https://${aws_opensearch_domain.live_2_app_logs.endpoint}"
+  aws_assume_role_arn = aws_iam_role.os_access_role_live_2_app_logs.arn
+  aws_profile         = "moj-cp"
+  sign_aws_requests   = true
+  healthcheck         = false
+  sniff               = false
+}
+
 locals {
   live_2_app_logs_domain = "cp-live-2-app-logs"
   live_2_app_logs_tags = {
@@ -253,6 +263,33 @@ resource "elasticsearch_opensearch_roles_mapping" "all_access_live_2_app_logs" {
   ]
 }
 
+resource "elasticsearch_opensearch_role" "fluent_bit_live_2_app_logs" {
+  provider    = elasticsearch.app_logs_live_2
+  role_name   = "fluent_bit_ingest"
+  description = "Allow live-2 Fluent Bit to create and bulk-index log documents"
+
+  cluster_permissions = ["indices:data/write/bulk"]
+
+  index_permissions {
+    index_patterns = [
+      "live-2_kubernetes_cluster-*",
+      "live-2_kubernetes_ingress-*",
+      "live-2_eventrouter-*",
+      "live-2_ipamd-*",
+    ]
+    allowed_actions = ["index", "create_index"]
+  }
+
+  depends_on = [aws_opensearch_domain_saml_options.live_2_app_logs]
+}
+
+resource "elasticsearch_opensearch_roles_mapping" "fluent_bit_live_2_app_logs" {
+  provider      = elasticsearch.app_logs_live_2
+  role_name     = elasticsearch_opensearch_role.fluent_bit_live_2_app_logs.role_name
+  description   = "Map the live-2 Fluent Bit IRSA role to the ingest role"
+  backend_roles = [data.terraform_remote_state.components_live_2.outputs.fluent_bit_irsa_arn]
+}
+
 resource "elasticsearch_opensearch_roles_mapping" "security_manager_live_2_app_logs" {
   provider    = elasticsearch.app_logs_live_2
   role_name   = "security_manager"
@@ -372,7 +409,7 @@ resource "elasticsearch_opensearch_role" "all_org_members_live_2_app_logs" {
   }
 
   index_permissions {
-    index_patterns  = ["live_kubernetes_cluster-*"]
+    index_patterns  = ["live-2_kubernetes_cluster-*"]
     allowed_actions = ["read", "search", "data_access"]
 
     document_level_security = "{\"terms\": { \"github_teams.keyword\": [$${user.roles}]}}"
@@ -471,3 +508,89 @@ module "live_2_app_logs_opensearch_monitoring" {
   tags                               = local.live_2_app_logs_tags
 }
 
+resource "opensearch_index_template" "live_2_kubernetes_cluster" {
+  provider = opensearch.app_logs_live_2
+  name     = "live_2_kubernetes_cluster"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "live-2_kubernetes_cluster-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "5",
+        "number_of_replicas": "1"
+      }
+    },
+    "mappings": {
+      "properties": {
+        "time" : {
+          "type" :  "date"
+        }
+      }
+    }
+  }
+}
+EOF
+}
+
+resource "opensearch_index_template" "live_2_kubernetes_ingress" {
+  provider = opensearch.app_logs_live_2
+  name     = "live_2_kubernetes_ingress"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "live-2_kubernetes_ingress-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "5",
+        "number_of_replicas": "1"
+      }
+    }
+  }
+}
+EOF
+}
+
+resource "opensearch_index_template" "live_2_eventrouter" {
+  provider = opensearch.app_logs_live_2
+  name     = "live_2_eventrouter"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "live-2_eventrouter-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "number_of_replicas": "1"
+      }
+    }
+  }
+}
+EOF
+}
+
+resource "opensearch_index_template" "live_2_ipamd" {
+  provider = opensearch.app_logs_live_2
+  name     = "live_2_ipamd"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "live-2_ipamd-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "1",
+        "number_of_replicas": "1"
+      }
+    }
+  }
+}
+EOF
+}

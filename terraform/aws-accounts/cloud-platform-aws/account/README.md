@@ -72,3 +72,13 @@ terraform init
 terraform workspace select/new <AWSaccountName>
 terraform apply
 ```
+
+### Live-2 application log ingestion
+
+The `cp-live-2-app-logs` domain maps the `live-2` components workspace's
+`fluent_bit_irsa_arn` output to the `fluent_bit_ingest` OpenSearch role. Apply the
+components workspace first if that output is not yet in state. The ingest role
+allows bulk writes and index creation for the four Fluent Bit index patterns.
+After applying the account configuration, check Fluent Bit for `/_bulk`
+authorization errors and use `GET _cat/indices/live-2_*?v` in live-2 OpenSearch
+Dashboards Dev Tools to check that document counts are increasing.
