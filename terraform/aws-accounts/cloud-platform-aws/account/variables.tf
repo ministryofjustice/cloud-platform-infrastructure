@@ -74,12 +74,6 @@ variable "silas_log_restore_volume_size" {
   description = "gp3 storage (GB) per data node for the cp-silas-log-restore domain. Must hold the largest restored index (~1.6 TB) across all nodes."
 }
 
-variable "silas_log_restore_reader_teams" {
-  type        = list(string)
-  default     = ["laa-portal-stabilisation-tech"]
-  description = "GitHub teams with read-only access to silas150-extract-* on cp-silas-log-restore."
-}
-
 variable "index_pattern_live_modsec_audit" {
   default = [
     "live_k8s_modsec_ingress-*",
