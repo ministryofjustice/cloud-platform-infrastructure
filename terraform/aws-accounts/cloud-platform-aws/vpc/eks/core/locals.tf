@@ -12,6 +12,12 @@ locals {
     default = false
   }
 
+  live_workspace = {
+    live    = true
+    live-2  = true
+    default = false
+  }
+
   hostzones = {
     default = [
       "arn:aws:route53:::hostedzone/${data.aws_route53_zone.selected.zone_id}",
