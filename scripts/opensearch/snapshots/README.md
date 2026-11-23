@@ -55,9 +55,3 @@ Both scripts check each step and stop on the first failure. `take_snapshot_cold_
 ## Extract mode
 
 With `EXTRACT_NAMESPACE` set, `restore_snapshot.sh` copies that namespace into `${EXTRACT_PREFIX}<index>`, checks the counts match and deletes the restored full index. The restore domain then needs no UltraWarm.
-
-## cp-silas-log-restore: after first apply
-
-Create the `silas150-extract-*` index pattern (`@timestamp`) in the Global tenant.
-
-Audit and application log publishing are not enabled: the account is at the CloudWatch Logs resource policy limit in eu-west-2.
