@@ -1,10 +1,10 @@
 module ministryofjustice/cloud-platform-infrastructure/scripts/generate-token-oauth
 
-go 1.22.1
+go 1.23.0
 
 require (
 	github.com/google/go-github/v32 v32.1.0
-	golang.org/x/oauth2 v0.19.0
+	golang.org/x/oauth2 v0.27.0
 )
 
 require (
