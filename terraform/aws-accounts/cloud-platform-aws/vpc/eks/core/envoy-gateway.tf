@@ -6,5 +6,8 @@ module "envoy_gateway" {
   memory_requests           = lookup(local.live_workspace, terraform.workspace, false) ? "1Gi" : "512Mi"
   memory_limits             = lookup(local.live_workspace, terraform.workspace, false) ? "2Gi" : "1Gi"
 
-  depends_on = [module.gatekeeper]
+  depends_on = [
+    module.gatekeeper,
+    kubectl_manifest.envoy_gateway_crds
+  ]
 }
