@@ -16,7 +16,7 @@ variable "blocked_ip" {
 resource "aws_network_acl_rule" "deny_inbound_1" {
   for_each       = var.blocked_ip
   network_acl_id = module.vpc.public_network_acl_id
-  rule_number    = 10
+  rule_number    = 10 + index(keys(var.blocked_ip), each.key) + 1
   egress         = false
   protocol       = "-1" # -1 means all protocols
   rule_action    = "deny"
@@ -28,7 +28,7 @@ resource "aws_network_acl_rule" "deny_inbound_1" {
 resource "aws_network_acl_rule" "deny_outbound_1" {
   for_each       = var.blocked_ip
   network_acl_id = module.vpc.public_network_acl_id
-  rule_number    = 10
+  rule_number    = 10 + index(keys(var.blocked_ip), each.key) + 1
   egress         = true
   protocol       = "-1" # -1 means all protocols
   rule_action    = "deny"
