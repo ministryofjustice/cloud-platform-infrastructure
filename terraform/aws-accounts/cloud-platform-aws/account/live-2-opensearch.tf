@@ -594,3 +594,83 @@ resource "opensearch_index_template" "live_2_ipamd" {
 }
 EOF
 }
+
+
+# Add additional OpenSearch index templates below as needed for live-2 environment for envoy gateway logs
+
+resource "opensearch_index_template" "live_2_envoy_gateway" {
+  provider = opensearch.app_logs_live_2
+  name     = "live_2_envoy_gateway"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "live-2_envoy_gateway-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "5",
+        "number_of_replicas": "1"
+      }
+    }
+  }
+}
+EOF
+}
+
+
+## Test cluster OpenSearch index templates for coraza and envoy gateway logs
+
+resource "opensearch_index_template" "test_envoy_gateway_cluster" {
+  provider = opensearch.app_logs_live_2
+  name     = "test_envoy_gateway_cluster"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "test_envoy_gateway_cluster-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "5",
+        "number_of_replicas": "1"
+      }
+    },
+    "mappings": {
+      "properties": {
+        "time" : {
+          "type" :  "date"
+        }
+      }
+    }
+  }
+}
+EOF
+}
+
+resource "opensearch_index_template" "test_envoy_coraza_cluster" {
+  provider = opensearch.app_logs_live_2
+  name     = "test_envoy_coraza_cluster"
+  body     = <<EOF
+{
+  "index_patterns": [
+    "test_envoy_coraza_cluster-*"
+  ],
+  "template": {
+    "settings": {
+      "index": {
+        "number_of_shards": "5",
+        "number_of_replicas": "1"
+      }
+    },
+    "mappings": {
+      "properties": {
+        "time" : {
+          "type" :  "date"
+        }
+      }
+    }
+  }
+}
+EOF
+}
